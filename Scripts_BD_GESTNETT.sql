@@ -1,6 +1,6 @@
-Create Database BD_GESTNETT
+Create Database BD_GESTNETT_Pruebav5
 GO
-USE BD_GESTNETT
+USE BD_GESTNETT_Pruebav5
 GO
 -- CREACION DE LA TABLA ROLES
 Create table Roles(
@@ -84,7 +84,7 @@ IdModificadoPor int constraint Fk_ClienteIdModificadoPor foreign Key references 
 GO
 -- CREACION DE LA TABLA ESTADOPROVEEDORES
 Create Table EstadoProveedores(
-IdEstadoProveedor int identity constraint PK_IdCliente primary key,
+IdEstadoProveedor int identity constraint PK_IdEstadoProveedor primary key,
 EstadoNombre varchar(15),
 )
 -- CREACION DE LA TABLA ESTADO PROVEEDORES
@@ -97,3 +97,58 @@ IdCreadoPor int constraint Fk_ProveedorIdCreadoPor foreign Key references Usuari
 FechaCreacion date,
 IdModificadoPor int constraint Fk_ProveedorIdModificadoPor foreign Key references Usuarios(IdUsuario),
 )
+
+
+-- INSERTANDO EN LA TABLA ROLES
+INSERT INTO Roles (NombreRol) VALUES ('Administrador');
+INSERT INTO Roles (NombreRol) VALUES ('Administrador de usuario');
+INSERT INTO Roles (NombreRol) VALUES ('Asistente');
+INSERT INTO Roles (NombreRol) VALUES ('Asistente administrativo');
+
+--" "
+GO
+--" "
+
+-- INSERTANDO EN LA TABLA USUARIOS
+INSERT INTO Usuarios (NombreUsuario, Correo, Contraseña, IdRol) 
+VALUES ('edwin123ceo', 'edwin123@gmail.com', 'edwin123pass', 1);
+--
+INSERT INTO Usuarios (NombreUsuario, Correo, Contraseña, IdRol) 
+VALUES ('maria123rrhh', 'maria123@gmail.com', 'maria123pass', 2);
+--
+INSERT INTO Usuarios (NombreUsuario, Correo, Contraseña, IdRol) 
+VALUES ('carlos123emp', 'carlos123@gmail.com', 'carlos123pass', 3);
+--
+INSERT INTO Usuarios (NombreUsuario, Correo, Contraseña, IdRol) 
+VALUES ('felipe123emp', 'felipe123@gmail.com', 'felipe123emp', 3);
+--
+INSERT INTO Usuarios (NombreUsuario, Correo, Contraseña, IdRol) 
+VALUES ('cristian123ad', 'cristian123@gmail.com', 'cristian123ad', 4);
+
+--" "
+GO
+--" "
+
+INSERT INTO Sexos (SexoNombre) VALUES ('Masculino');
+INSERT INTO Sexos (SexoNombre) VALUES ('Femenino');
+
+INSERT INTO Paises (PaisNombre) VALUES ('República Dominicana');
+INSERT INTO Paises (PaisNombre) VALUES ('Estados Unidos');
+INSERT INTO Paises (PaisNombre) VALUES ('México');
+INSERT INTO Paises (PaisNombre) VALUES ('España');
+
+INSERT INTO Ciudades (CiudadNombre, IdPais) VALUES ('Santo Domingo', 1);
+INSERT INTO Ciudades (CiudadNombre, IdPais) VALUES ('New York', 2);
+INSERT INTO Ciudades (CiudadNombre, IdPais) VALUES ('Ciudad de México', 3);
+INSERT INTO Ciudades (CiudadNombre, IdPais) VALUES ('Madrid', 4);
+
+INSERT INTO Personas (Nombres, Apellidos, Telefono1, Telefono2, Direccion, Correo, Edad, FechaDeNacimiento, Cedula, IdSexo, IdCiudad, IdCreadoPor, FechaCreacion, IdModificadoPor) VALUES ('Juan', 'Pérez', '8095555555', '8296666666', 'Calle 1 #10', 'juanperez@gmail.com', 25, '1998-01-01', '001-0000000-0', 1, 1, 1, '2023-05-14', 1);
+
+INSERT INTO Empresas (NombreEmpresa, RNC, Correo, Teléfono1, Teléfono2, SitioWeb, Dirección, IdCiudad, IdCreadoPor, FechaCreacion, IdModificadoPor) VALUES ('Mi Empresa', '101010101', 'miempresa@gmail.com', '8095555555', '8296666666', 'www.miempresa.com', 'Calle 2 #15', 1, 1, '2023-05-14', 1);
+
+INSERT INTO Clientes (IdEmpresa, IdPersonaDeContacto, IdCreadoPor, FechaCreacion, IdModificadoPor) VALUES (1, 1, 1, '2023-05-14', 1);
+
+INSERT INTO EstadoProveedores (EstadoNombre) VALUES ('Activo');
+INSERT INTO EstadoProveedores (EstadoNombre) VALUES ('Inactivo');
+
+INSERT INTO Proveedores (IdEstadoProveedor, IdEmpresa, IdPersonaDeContacto, IdCreadoPor, FechaCreacion, IdModificadoPor) VALUES (1, 1, 1, 1, '2023-05-14', 1);
