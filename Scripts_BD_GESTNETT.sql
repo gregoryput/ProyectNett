@@ -87,6 +87,7 @@ Create Table EstadoProveedores(
 IdEstadoProveedor int identity constraint PK_IdEstadoProveedor primary key,
 EstadoNombre varchar(15),
 )
+GO
 -- CREACION DE LA TABLA ESTADO PROVEEDORES
 Create Table Proveedores(
 IdProveedor int identity constraint PK_IdProveedor primary key,
@@ -97,7 +98,68 @@ IdCreadoPor int constraint Fk_ProveedorIdCreadoPor foreign Key references Usuari
 FechaCreacion date,
 IdModificadoPor int constraint Fk_ProveedorIdModificadoPor foreign Key references Usuarios(IdUsuario),
 )
+GO
+-- CREACION DE LA TABLA EMPLEADOS:
+CREATE TABLE Empleados (
+  IDempleado INT identity constraint PK_IdEmpleado PRIMARY KEY,
+  FechadDeContratación DATE NOT NULL,
+  IdPersona INT NOT NULL,
+  IdCredencialUsuario INT NOT NULL,
+  IdCreadoPor INT NOT NULL,
+  FechaCreación DATE,
+  CONSTRAINT Fk_EmpleadoIdPersona FOREIGN KEY (IdPersona) REFERENCES Personas(IdPersona),
+  CONSTRAINT Fk_EmpleadoIdUsuario FOREIGN KEY (IdCredencialUsuario) REFERENCES Usuarios(IdUsuario),
+  CONSTRAINT Fk_EmpleadoIdCreadoPor FOREIGN KEY (IdCreadoPor) REFERENCES Empleados(IDempleado)
+);
+GO
+-- CREACION DE LA TABLA CARGOS:
+CREATE TABLE Cargos (
+  IdCargo INT IDENTITY CONSTRAINT Pk_IdCargo PRIMARY KEY,
+  NombreCargo VARCHAR(40)
+);
+GO
+-- CREACION DE LA TABLA CARGOS:
+CREATE TABLE EmpleadosCargos (
+  IdEmpleado INT,
+  IdCargo INT,
+  Descripción VARCHAR(255),
+  CONSTRAINT Fk_CargoIdEmpleado FOREIGN KEY (IdEmpleado) REFERENCES Empleados(IDempleado),
+  CONSTRAINT Fk_CargoIdCargo FOREIGN KEY (IdCargo) REFERENCES Cargos(IdCargo)
+);
+GO
+-- CREACION DE LA TABLA UnidadesDeMedida:
+CREATE TABLE UnidadesDeMedida (
+    IdUnidad_DeMedida INT IDENTITY CONSTRAINT Pk_IdUnidad_DeMedida PRIMARY KEY,
+    UnidadNombre VARCHAR(255)
+);
+GO
+-- CREACION DE LA TABLA PRODUCTOS:
+CREATE TABLE Productos (
+  IdProducto INT PRIMARY KEY,
+  Nombre VARCHAR(255),
+  Descripción VARCHAR(255),
+  Modelo VARCHAR(50),
+  PrecioCosto DECIMAL(10, 2),
+  PrecioVenta DECIMAL(10, 2),
+  CantidadDisponible INT,
+  ITBIS DECIMAL(5, 2),
+  IdUnidadDeMedida INT,
+  IdEstado INT,
+  IdCreadoPor INT,
+  IdTipoProducto INT,
+  FechaCreación DATE,
+  CONSTRAINT Fk_IdUnidadDeMedida FOREIGN KEY (IdUnidadDeMedida) REFERENCES UnidadesDeMedida(IdUnidad_DeMedida),
+  CONSTRAINT Fk_IdEstado FOREIGN KEY (IdEstado) REFERENCES Estados(IdEstado),
+  CONSTRAINT Fk_ProductoIdCreadoPor FOREIGN KEY (IdCreadoPor) REFERENCES Usuarios(IdUsuario),
+  CONSTRAINT Fk_CargoIdCargo FOREIGN KEY (IdTipoProducto) REFERENCES TiposProductos(IdTipoProducto)
+);
+GO
 
+-- A CONTINUACIÓN LAS INSERCIONES DE DATOS:
+
+--" "
+GO
+--" "
 
 -- INSERTANDO EN LA TABLA ROLES
 INSERT INTO Roles (NombreRol) VALUES ('Administrador');
