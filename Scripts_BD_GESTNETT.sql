@@ -1,6 +1,6 @@
-CREATE DATABASE BD_PROYENETT
+CREATE DATABASE BD_PROYENETT_VP3
 GO
-USE BD_PROYENETT
+USE BD_PROYENETT_VP3
 GO
 -- CREACION DE LA TABLA ESTADOS_REGISTROS
 Create table EstadosRegistros(
@@ -19,7 +19,6 @@ GO
 -- CREACION DE LA TABLA USUARIOS:
 Create table Usuarios(
   IdUsuario int identity constraint PK_IdUsuario primary key,
-  NombreRol varchar(40),
   NombreUsuario varchar(30),
   Correo varchar(60),
   Contraseña varchar(30),
@@ -179,7 +178,7 @@ Create Table Clientes(
   IdModificadoPor int constraint Fk_ClientesIdModificadoPor foreign Key references Usuarios(IdUsuario),
   FechaModificacion Datetime,
   IdEstadoRegistro int constraint Fk_ClientesIdEstadoR foreign Key references EstadosRegistros(IdEstadoRegistro),
-)
+) 
 GO
 
 -- CREACION DE LA TABLA ESTADOPROVEEDORES
@@ -764,6 +763,79 @@ CREATE TABLE Tareas (
   IdEstadoRegistro int constraint Fk_TareasIdEstadoR foreign Key references EstadosRegistros(IdEstadoRegistro),
 );
 
+GO
 
+-- A CONTINUACIÓN ALGUNOS PROCEDIMIENTOS ALMACENADOS:
 
--- A CONTINUACIÓN LAS INSERCIONES DE DATOS:
+-- Procedimiento almacenado para Visualizar la lista de clientes: --
+CREATE OR ALTER PROCEDURE dbo.ListadoClientes
+AS
+BEGIN
+    SET NOCOUNT ON 
+	SELECT C.IdCliente, Nombres, Apellidos, Telefono1, Telefono2, Direccion, P.Correo, Edad, FechaDeNacimiento, Cedula, SexoNombre, E.NombreEmpresa
+    FROM Clientes C INNER JOIN Empresas E ON C.IdEmpresa = E.IdEmpresa
+	                INNER JOIN Personas P ON C.IdPersonaDeContacto = p.IdPersona
+					INNER JOIN Sexos S ON P.IdSexo = S.IdSexo
+END
+
+-- Execute dbo.ListadoClientes 
+
+GO
+
+/*Algunas insersiones de datos:*/
+
+-- Insertar datos en la tabla EstadosRegistros:
+INSERT INTO EstadosRegistros (NombreEstado) VALUES
+('Activo'),
+('Inactivo'); 
+--Select * From EstadosRegistros
+
+-- Insertar datos en la tabla Roles
+INSERT INTO Roles (NombreRol, IdEstadoRegistro) VALUES
+('Administrador', 1),
+('Administrador De Usuario', 1),
+('Asistente Administrativo', 1),
+('Asistente', 1);
+
+-- Insertar datos en la tabla Usuarios
+INSERT INTO Usuarios (NombreUsuario, Correo, Contraseña, IdRol, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro) VALUES
+('admin', 'admin@example.com', 'admin123', 1, 1, GETDATE(), 1, GETDATE(), 1),
+('usuario1', 'usuario1@example.com', 'user123', 2, 1, GETDATE(), 1, GETDATE(), 1),
+('usuario2', 'usuario2@example.com', 'user456', 2, 1, GETDATE(), 1, GETDATE(), 1); 
+-- Select * FROM Usuarios
+
+-- Insertar datos en la tabla Sexos
+INSERT INTO Sexos (SexoNombre, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro) VALUES
+('Masculino', 1, GETDATE(), 1, GETDATE(), 1),
+('Femenino', 1, GETDATE(), 1, GETDATE(), 1); 
+-- Select * FROM Sexos
+
+-- Insertar datos en la tabla Paises
+INSERT INTO Paises (PaisNombre, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro) VALUES
+('República Dominicana', 1, GETDATE(), 1, GETDATE(), 1),
+('Estados Unidos', 1, GETDATE(), 1, GETDATE(), 1); 
+-- Select * FROM Paises
+
+-- Insertar datos en la tabla Ciudades
+INSERT INTO Ciudades (CiudadNombre, IdPais, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro) VALUES
+('Santo Domingo', 1, 1, GETDATE(), 1, GETDATE(), 1),
+('Nueva York', 2, 1, GETDATE(), 1, GETDATE(), 1); 
+-- Select * FROM Ciudades
+
+-- Insertar datos en la tabla Personas
+INSERT INTO Personas (Nombres, Apellidos, Telefono1, Telefono2, Direccion, Correo, Edad, FechaDeNacimiento, Cedula, IdSexo, IdCiudad, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro) VALUES
+('Juan', 'Pérez', '809-123-4567', '809-987-6543', 'Calle 1', 'juan@example.com', 30, '1993-05-15', '001-1234567-8', 1, 1, 1, GETDATE(), 1, GETDATE(), 1),
+('María', 'González', '809-111-2222', '809-333-4444', 'Calle 2', 'maria@example.com', 25, '1998-08-10', '002-2345678-9', 2, 1, 1, GETDATE(), 1, GETDATE(), 1);
+-- Select * FROM Personas
+
+-- Insertar datos en la tabla Empresas (continuación)
+INSERT INTO Empresas (NombreEmpresa, RNC, Correo, Teléfono1, Teléfono2, SitioWeb, Dirección, IdCiudad, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro) VALUES
+('Empresa 1', '123456789', 'empresa1@example.com', '809-111-1111', '809-222-2222', 'www.empresa1.com', 'Calle A', 1, 1, GETDATE(), 1, GETDATE(), 1),
+('Empresa 2', '987654321', 'empresa2@example.com', '809-333-3333', '809-444-4444', 'www.empresa2.com', 'Calle B', 2, 1, GETDATE(), 1, GETDATE(), 1);
+-- Select * FROM Empresas
+
+-- Insertar datos en la tabla Clientes
+INSERT INTO Clientes (IdEmpresa, IdPersonaDeContacto, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro) VALUES
+(1, 1, 1, GETDATE(), 1, GETDATE(), 1),
+(2, 2, 1, GETDATE(), 1, GETDATE(), 1);
+-- Select * FROM Clientes
