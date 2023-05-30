@@ -5,13 +5,27 @@ import { Button} from "./LoginStyled/Button";
 import { DivContainerPage } from "./LoginStyled/DivContainerPage";
 import { ButtonPassword, DivPassword } from "./LoginStyled/DivPassword";
 
-/// importanciones de los componente del login 
+import { DivContainer } from "./Menu/DivContianer";
+import { ButtonMenu } from "./Menu/ButtonMenu";
+import { Avatar } from "./Menu/Avatar";
+import { DivNav } from "./Menu/DivNav";
+import { DivRotate } from "./Menu/DivRotate";
+import { DropdownContent } from "./Menu/DropdownContent";
+/// importanciones de los componente 
 export {
-FormContainer, 
-Input,
-Label, 
-Button, 
-DivContainerPage,
-DivPassword,ButtonPassword,
+    FormContainer, 
+    Input,
+    Label, 
+    Button, 
+    DivContainerPage,
+    DivPassword,ButtonPassword,
+    DivContainer,
 
+    ///importacion de estilo de menu
+    ButtonMenu,
+    Avatar,
+    DivNav,
+    DivRotate,
+    DropdownContent,
+ 
 };

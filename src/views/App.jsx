@@ -1,10 +1,11 @@
-import Login from "./Login"
+//import Login from "./Login"
+import Menu from "../layout/Menu"
 
 function App() {
 
   return (
     <>
-     <Login/>
+     <Menu/>
     </>
   )
 }

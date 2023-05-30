@@ -1,7 +1,6 @@
 import styled from 'styled-components';
 
 export const DivContainerPage = styled.div`
-  background:"black";
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -9,3 +8,5 @@ export const DivContainerPage = styled.div`
   width: 100vw;
   height: 100vh;
 `;
+
+
