@@ -1,6 +1,6 @@
 //import Login from "./Login"
 //import Menu from "../layout/Menu"
-import Layout from "../page/Layout"
+import Layout from "./Layout"
 
 
 function App() {

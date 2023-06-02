@@ -24,4 +24,30 @@ html{
 
 
 
+
+    overflow-y: scroll; /* Habilitar el scroll vertical */
+ 
+}
+
+
+html::-webkit-scrollbar {
+  width: 10px; /* Ancho del scroll */
+}
+
+/* Estilo para el thumb (la barra de scroll) */
+html::-webkit-scrollbar-thumb {
+  background-color: #C3C3C3; /* Color del thumb */
+  border-radius: 5px; /* Borde del thumb */
+}
+
+html::-webkit-scrollbar-thumb:hover {
+    background-color: #1C3C6D; /* Color del thumb */
+    border-radius: 5px; /* Borde del thumb */
+
+  }
+  
+
+/* Estilo para el track (el área detrás del thumb) */
+html::-webkit-scrollbar-track {
+  background-color: #E4E4E4; /* Color del track */
 }

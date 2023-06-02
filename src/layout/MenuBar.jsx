@@ -14,13 +14,12 @@ import {
   DivRotate,
   DropdownContent,
 } from "../components";
-import { DivContainer } from "../components/Menu/DivContianer";
 
 export default function MenuBar() {
   const [activo, setActivo] = useState(false);
 
   return (
-    <DivContainer>
+    <>
       <DivNav>
         <IoCalendarNumberOutline
           style={{
@@ -28,7 +27,6 @@ export default function MenuBar() {
             height: 30,
             marginRight: 50,
             color: "#C3C3C3",
-            cursor: "pointer",
           }}
         />
         <OutsideClick onOutsideClick={() => setActivo(false)}>
@@ -81,6 +79,6 @@ export default function MenuBar() {
           </DropdownContent>
         </OutsideClick>
       </DivNav>
-    </DivContainer>
+    </>
   );
 }

@@ -1,12 +1,11 @@
 import styled from 'styled-components';
 
-export const DivContainerPage = styled.div`
+export const ViewContainerPages = styled.div`
   display: flex;
+  padding-left: 100px;
+  padding-top: 60px;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
+
   width: 100%;
   height: 100vh;
 `;
-
-

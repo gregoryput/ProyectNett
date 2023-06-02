@@ -4,8 +4,7 @@ import { Label } from "./LoginStyled/Label";
 import { Button} from "./LoginStyled/Button";
 import { DivContainerPage } from "./LoginStyled/DivContainerPage";
 import { ButtonPassword, DivPassword } from "./LoginStyled/DivPassword";
-import { DivContainer } from "./Menu/DivContianer";
-import { ButtonMenu } from "./Menu/ButtonMenu";
+import { ButtonInformation } from "./Menu/ButtonInformation";
 import { Avatar } from "./Menu/Avatar";
 import { DivNav } from "./Menu/DivNav";
 import { DivRotate } from "./Menu/DivRotate";
@@ -16,6 +15,9 @@ import { ButtonOption } from "./Menu/ButtonOption";
 import { DivContainerNav } from "./MenuNavegacion/DivContainerNav";
 import { ButtonNav } from "./MenuNavegacion/ButtonNav";
 import { LabelNav } from "./MenuNavegacion/LabelNav";
+import { Column } from "./LayoutComponent/Column";
+import { Row } from "./LayoutComponent/Row";
+import { ViewContainerPages } from "./LayoutComponent/ViewContainerPages";
 
 
 
@@ -28,10 +30,9 @@ export {
     Button, 
     DivContainerPage,
     DivPassword,ButtonPassword,
-    DivContainer,
 
     ///importacion de estilo de menu de informacion 
-    ButtonMenu,
+    ButtonInformation as ButtonMenu,
     Avatar,
     DivNav,
     DivRotate,
@@ -45,6 +46,10 @@ export {
     ButtonNav,
     LabelNav,
 
+    //importacion de estilo de layout
+    Column,
+    Row,
+    ViewContainerPages,
 
 
     

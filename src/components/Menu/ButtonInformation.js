@@ -4,7 +4,7 @@ import { DivRotate } from "./DivRotate";
 
 
 
-export  const ButtonMenu = styled.button`
+export  const ButtonInformation = styled.button`
   outline: none;
   border: none;
   display: flex;
