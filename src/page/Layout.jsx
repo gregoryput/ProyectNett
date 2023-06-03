@@ -1,7 +1,8 @@
+import { Outlet } from "react-router-dom";
 import {Column, Row } from "../components";
 import MenuBar from "../layout/MenuBar";
 import Navegation from "../layout/Navegation";
-import Cliente from "../views/Cliente";
+
 
 export default function Layout() {
   return (
@@ -10,7 +11,7 @@ export default function Layout() {
         <Navegation />
         <Column>
           <MenuBar />
-          <Cliente/>
+           <Outlet />
         </Column>
       </Row>
     </>

@@ -15,7 +15,7 @@ export const slideRightAnimation = keyframes`
   }`;
 
 
-export  const LabelNav= styled.label`
+export  const LabelNav= styled.span`
   font-weight: 400;
   font-size: 12px;
   color:#9c9c9c;

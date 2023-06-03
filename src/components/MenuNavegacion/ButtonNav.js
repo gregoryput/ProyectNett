@@ -1,10 +1,11 @@
+import { NavLink,} from 'react-router-dom';
 import { styled } from "styled-components";
 import { LabelNav } from "./LabelNav";
 
 
 
 
-export  const ButtonNav= styled.button`
+export  const ButtonNav= styled(NavLink)`
   outline: none;
   border: none;
   display: flex;
@@ -17,9 +18,9 @@ export  const ButtonNav= styled.button`
   margin: 10px 5px;
   background-color: #fff;
   font-weight: 400;
-  color:#9c9c9c;
+  color:#9c9c9c ;
   overflow: hidden;
-
+  text-decoration: none;
   
   &:hover {
     color:#1C3C6D;

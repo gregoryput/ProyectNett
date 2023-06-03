@@ -1,10 +1,10 @@
 import { ViewContainerPages } from '../components'
 
-export default function Cliente()
+export default function Usuario()
  {
   return (
     <ViewContainerPages >
-        <h1>Clientes</h1>
+        <h1>Usuario</h1>
     </ViewContainerPages>
   )
 }

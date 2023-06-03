@@ -15,10 +15,18 @@ import {
   DropdownContent,
 } from "../components";
 
+import { useNavigate } from "react-router-dom";
+
 export default function MenuBar() {
   const [activo, setActivo] = useState(false);
 
+ const navigate = useNavigate();
+
+  const handleClick = () => {
+    navigate('/');
+  };
   return (
+
     <>
       <DivNav>
         <IoCalendarNumberOutline
@@ -73,7 +81,7 @@ export default function MenuBar() {
               <IoPersonCircleOutline style={{ width: 20, height: 20, marginRight: 10 }} />
               Perfil
             </ButtonOption>
-            <ButtonOption>
+            <ButtonOption onClick={handleClick}>
             <IoExitOutline style={{ width: 20, height: 20, marginRight: 10 }} />
               Cerrar Sesion</ButtonOption>
           </DropdownContent>
