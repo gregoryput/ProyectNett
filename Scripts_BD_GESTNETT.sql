@@ -1,6 +1,6 @@
-CREATE DATABASE BD_PROYENETT_VP3
+CREATE DATABASE BD_PROYENETT
 GO
-USE BD_PROYENETT_VP3
+USE BD_PROYENETT
 GO
 -- CREACION DE LA TABLA ESTADOS_REGISTROS
 Create table EstadosRegistros(
@@ -129,8 +129,8 @@ Create Table Personas(
   IdPersona int identity constraint PK_IdPersona primary key,
   Nombres varchar(40),
   Apellidos varchar(40),
-  Telefono1 varchar(15),
-  Telefono2 varchar(15),
+  Telefono1 varchar(12),
+  Telefono2 varchar(12),
   Direccion varchar(60),
   Correo varchar(60),
   Edad int,
@@ -141,22 +141,23 @@ Create Table Personas(
   IdCiudad int constraint Fk_IdCiudad foreign Key references Ciudades(IdCiudad),
   --
   IdCreadoPor int constraint Fk_IdCreadoPor foreign Key references Usuarios(IdUsuario),
-  FechaCreacion date,
+  FechaCreacion datetime,
   IdModificadoPor int constraint Fk_IdModificadoPor foreign Key references Usuarios(IdUsuario),
-  FechaModificacion date,
+  FechaModificacion datetime,
   IdEstadoRegistro int constraint Fk_IdEstado foreign Key references EstadosRegistros(IdEstadoRegistro),
 )
 GO
+
 -- CREACION DE LA TABLA EMPRESAS
 Create Table Empresas(
   IdEmpresa int identity constraint PK_IdEmpresa primary key,
   NombreEmpresa varchar(60),
   RNC varchar(9),
   Correo varchar(60),
-  Teléfono1 varchar(15),
-  Teléfono2 varchar(15),
-  SitioWeb varchar(40),
-  Dirección varchar(40),
+  Teléfono1 varchar(12),
+  Teléfono2 varchar(12),
+  SitioWeb varchar(255),
+  Dirección varchar(50),
   IdCiudad int constraint Fk_IdCiudadEmpresa foreign Key references Ciudades(IdCiudad),
   --
   IdCreadoPor int constraint Fk_EmpresasIdCreadoPor foreign Key references Usuarios(IdUsuario),
@@ -170,7 +171,6 @@ GO
 -- CREACION DE LA TABLA CLIENTES
 Create Table Clientes(
   IdCliente int identity constraint PK_IdCliente primary key,
-  IdEmpresa int null constraint Fk_IdEmpresa foreign Key references Empresas(IdEmpresa),
   IdPersonaDeContacto int constraint Fk_Cliente_IdPersonaDeContacto foreign Key references Personas(IdPersona),
   --
   IdCreadoPor int constraint Fk_ClientesIdCreadoPor foreign Key references Usuarios(IdUsuario),
@@ -184,7 +184,7 @@ GO
 -- CREACION DE LA TABLA ESTADOPROVEEDORES
 Create Table EstadoProveedores(
   IdEstadoProveedor int identity constraint PK_IdEstadoProveedor primary key,
-  EstadoNombre varchar(15),
+  EstadoNombre varchar(30),
   --
   IdCreadoPor int constraint Fk_EPIdCreadoPor foreign Key references Usuarios(IdUsuario),
   FechaCreacion Datetime,
@@ -194,11 +194,10 @@ Create Table EstadoProveedores(
 )
 GO
 
--- CREACION DE LA TABLA ESTADO PROVEEDORES
+-- CREACION DE LA TABLA ESTADO PROVEEDORES:
 Create Table Proveedores(
   IdProveedor int identity constraint PK_IdProveedor primary key,
   IdEstadoProveedor int constraint Fk_IdEstadoProveedor foreign Key references EstadoProveedores(IdEstadoProveedor),
-  IdEmpresa int constraint Fk_ProveedorIdEmpresa foreign Key references Empresas(IdEmpresa),
   IdPersonaDeContacto int constraint Fk_Proveedor_IdPersonaDeContacto foreign Key references Personas(IdPersona),
   --
   IdCreadoPor int constraint Fk_ProveedoresIdCreadoPor foreign Key references Usuarios(IdUsuario),
@@ -206,6 +205,36 @@ Create Table Proveedores(
   IdModificadoPor int constraint Fk_ProveedoresIdModificadoPor foreign Key references Usuarios(IdUsuario),
   FechaModificacion Datetime,
   IdEstadoRegistro int constraint Fk_ProveedoresIdEstadoR foreign Key references EstadosRegistros(IdEstadoRegistro),
+)
+GO
+
+-- CREACION DE LA TABLA CLIENTES_EMPRESAS:
+Create Table Clientes_Empresas(
+  IdClienteEmpresa int identity constraint PK_IdClienteEmpresa primary key,
+  IdCliente int constraint Fk_CE_IdCliente foreign Key references Clientes(IdCliente),
+  IdEmpresa int constraint UK_CE_IdEmpresa Unique
+  constraint Fk_CE_IdEmpresa foreign Key references Empresas(IdEmpresa),
+  --
+  IdCreadoPor int constraint Fk_CE_IdCreadoPor foreign Key references Usuarios(IdUsuario),
+  FechaCreacion Datetime,
+  IdModificadoPor int constraint Fk_CE_IdModificadoPor foreign Key references Usuarios(IdUsuario),
+  FechaModificacion Datetime,
+  IdEstadoRegistro int constraint Fk_CE_IdEstadoR foreign Key references EstadosRegistros(IdEstadoRegistro),
+)
+GO 
+
+-- CREACION DE LA TABLA PROVEEDORES_EMPRESAS:
+Create Table Proveedores_Empresas(
+  IdProveedorEmpresa int identity constraint PK_IdProveedorEmpresa primary key,
+  IdProveedor int constraint Fk_PE_IdProveedor foreign Key references Proveedores(IdProveedor),
+  IdEmpresa int Constraint UK_PE_IdEmpresa Unique
+  constraint Fk_PE_IdEmpresa foreign Key references Empresas(IdEmpresa),
+  --
+  IdCreadoPor int constraint Fk_PE_IdCreadoPor foreign Key references Usuarios(IdUsuario),
+  FechaCreacion Datetime,
+  IdModificadoPor int constraint Fk_PE_IdModificadoPor foreign Key references Usuarios(IdUsuario),
+  FechaModificacion Datetime,
+  IdEstadoRegistro int constraint Fk_PE_IdEstadoR foreign Key references EstadosRegistros(IdEstadoRegistro),
 )
 GO
 
@@ -601,7 +630,7 @@ CREATE TABLE Documentos (
   DiasMora INT,
   MontoMora DECIMAL(18, 2),
   MontoTotal DECIMAL(18, 2),
-  NCF NVARCHAR(255),
+  NCF varchar(20),
   IdTipoDocumento INT,
   IdCliente INT,
   IdEstado INT,
@@ -765,21 +794,539 @@ CREATE TABLE Tareas (
 
 GO
 
--- A CONTINUACIÓN ALGUNOS PROCEDIMIENTOS ALMACENADOS:
-
--- Procedimiento almacenado para Visualizar la lista de clientes: --
+-- A CONTINUACIÓN ALGUNOS PROCEDIMIENTOS ALMACENADOS (SECCION --.P.R.O.C.E.D.U.R.E....... P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P):
+--
+--
+--.P.R.O.C.E.D.U.R.E.......P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P Procedimiento almacenado para devolver la lista de Clientes: --
 CREATE OR ALTER PROCEDURE dbo.ListadoClientes
 AS
 BEGIN
     SET NOCOUNT ON 
-	SELECT C.IdCliente, Nombres, Apellidos, Telefono1, Telefono2, Direccion, P.Correo, Edad, FechaDeNacimiento, Cedula, SexoNombre, E.NombreEmpresa
-    FROM Clientes C INNER JOIN Empresas E ON C.IdEmpresa = E.IdEmpresa
-	                INNER JOIN Personas P ON C.IdPersonaDeContacto = p.IdPersona
+	SELECT C.IdCliente, Nombres, Apellidos, Telefono1, Telefono2, Direccion, P.Correo, Edad, FechaDeNacimiento, Cedula, SexoNombre, CiudadNombre, PaisNombre
+    FROM Clientes C INNER JOIN Personas P ON C.IdPersonaDeContacto = p.IdPersona
 					INNER JOIN Sexos S ON P.IdSexo = S.IdSexo
+					INNER JOIN Ciudades CU ON P.IdCiudad = CU.IdCiudad
+					INNER JOIN Paises PA ON CU.IdPais = PA.IdPais
+					WHERE C.IdEstadoRegistro = 1
 END
-
+/*EJECUCION DE PROCEDIMIENTO:
 -- Execute dbo.ListadoClientes 
+*/
 
+
+GO
+--
+--
+--.P.R.O.C.E.D.U.R.E.......P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P Procedimiento almacenado para devolver la lista de Proveedores: --
+CREATE OR ALTER PROCEDURE dbo.ListadoProveedores
+AS
+BEGIN
+    SET NOCOUNT ON 
+	SELECT pr.IdProveedor, p.Nombres, p.Apellidos, p.Telefono1, p.Telefono2, p.Direccion, p.Correo, p.Edad, p.FechaDeNacimiento, 
+	p.Cedula, s.SexoNombre, pa.PaisNombre, cu.CiudadNombre
+    FROM Proveedores PR INNER JOIN Personas P ON pr.IdPersonaDeContacto = p.IdPersona
+					INNER JOIN Sexos S ON P.IdSexo = S.IdSexo
+					INNER JOIN Ciudades CU ON P.IdCiudad = CU.IdCiudad
+					INNER JOIN Paises PA ON CU.IdPais = PA.IdPais
+					WHERE PR.IdEstadoRegistro = 1
+END
+/*EJECUCION DE PROCEDIMIENTO:
+-- Execute dbo.ListadoProveedores 
+*/
+
+
+GO
+-- TiPO DE DATO TABLA PARA ALMACENAR UNA LISTA DE EmpresaId Y PODERLO USAR EN UN PROCEDIMIENTO ALMACENADO:
+CREATE TYPE EmpresaIdsTableType AS TABLE
+(
+    IdEmpresa INT
+);
+
+
+GO
+--
+--
+--.P.R.O.C.E.D.U.R.E.......P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P Procedimiento almacenado para devolver la lista de Clientes: --
+CREATE OR ALTER PROCEDURE dbo.EmpresasBy_ListaIdEmpresas
+@EmpresaIds EmpresaIdsTableType READONLY,
+@IdCliente INT
+AS
+BEGIN
+    SET NOCOUNT ON 
+	SELECT E.IdEmpresa, NombreEmpresa, RNC, Correo, Teléfono1, Teléfono2, SitioWeb, Dirección, IdCiudad, 
+	       E.IdCreadoPor, E.FechaCreacion, E.IdModificadoPor, E.FechaModificacion, E.IdEstadoRegistro 
+    FROM Empresas E INNER JOIN Clientes_Empresas CE ON E.IdEmpresa = CE.IdEmpresa 
+	WHERE CE.IdCliente = @IdCliente AND E.IdEmpresa not in (Select IdEmpresa from @EmpresaIds) AND E.IdEstadoRegistro != 2
+END
+/*EJECUCION DE PROCEDIMIENTO:
+-- Execute dbo.EmpresasBy_ListaIdEmpresas 
+*/
+Select * From Usuarios
+Select * From Roles
+
+GO
+--
+--
+--.P.R.O.C.E.D.U.R.E.......P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P Procedimiento almacenado para devolver la lista de Empresas de un cliente: --
+CREATE OR ALTER PROCEDURE dbo.GetIdEmpresaByIdCliente
+@IdCliente int
+AS
+BEGIN
+     SET NOCOUNT ON
+     SELECT E.IdEmpresa From Empresas E INNER JOIN Clientes_Empresas CE ON E.IdEmpresa = CE.IdEmpresa WHERE IdCliente = @IdCliente
+END
+/*EJECUCION DE PROCEDIMIENTO:
+-- Execute dbo.GetIdEmpresaByIdCliente @IdCliente = 4 
+*/
+
+
+GO 
+--
+--
+--.P.R.O.C.E.D.U.R.E.......P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P Procedimiento almacenado para insertar en la tabla Personas: --
+Create or Alter procedure dbo.InsertarPersona
+  @IdPersona int,
+  @Nombres varchar(40),
+  @Apellidos varchar(40),
+  @Telefono1 varchar(12),
+  @Telefono2 varchar(12),
+  @Direccion varchar(60),
+  @Correo varchar(60),
+  @Edad int,
+  @FechaDeNacimiento date,
+  @Cedula varchar(13),
+  --
+  @IdSexo int,
+  @IdCiudad int,
+  --
+  @IdCreadoPor int,
+  @FechaCreacion date,
+  @IdModificadoPor int,
+  @FechaModificacion date,
+  @IdEstadoRegistro int
+  AS
+  BEGIN
+      Set nocount On
+	  Insert Into Personas(Nombres, Apellidos, Telefono1, Telefono2, Direccion, Correo, Edad, FechaDeNacimiento, Cedula, IdSexo, 
+	                       IdCiudad, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro)
+
+				  Values(@Nombres, @Apellidos, @Telefono1, @Telefono2, @Direccion, @Correo, @Edad, @FechaDeNacimiento, @Cedula, 
+				  @IdSexo, @IdCiudad, @IdCreadoPor, @FechaCreacion, @IdModificadoPor, @FechaModificacion, @IdEstadoRegistro)
+
+				  Select SCOPE_IDENTITY();
+END
+/* EJECUCION DEL PROCEDIMIENTO
+DECLARE @FechaActual DATETIME = GETDATE(); -- 'Fecha actual'
+
+EXEC dbo.InsertarPersona @IdPersona = 0, @Nombres = 'Ignacio Mael', @Apellidos = 'Lima Leopoldo', @Telefono1 = '809-193-3209', 
+                          @Telefono2 = '849-105-0525', @Direccion = 'Bo. Las Boemias, Calle 3, #29', 
+                          @Correo = 'ignaciomael@example.com', @Edad = 32, @FechaDeNacimiento = '1992-05-10', @Cedula = '2123406080', @IdSexo = 1, 
+						  @IdCiudad = 2, @IdCreadoPor = 1, @FechaCreacion = @FechaActual, @IdModificadoPor = 1, @FechaModificacion = @FechaActual,
+						  @IdEstadoRegistro = 1;
+*/ -- Select * From Personas
+
+GO
+--
+--
+--.P.R.O.C.E.D.U.R.E.......P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P Procedimiento almacenado para insertar en la tabla Clientes: --
+Create or Alter procedure dbo.InsertarCliente
+  @IdPersona int,
+  --
+  @IdCreadoPor int,
+  @FechaCreacion Datetime,
+  @IdModificadoPor int,
+  @FechaModificacion Datetime,
+  @IdEstadoRegistro int
+  AS
+  BEGIN
+      Set nocount On
+	  Insert Into Clientes (IdPersonaDeContacto, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro) 
+	                 VALUES(@IdPersona, @IdCreadoPor,  GETDATE(), @IdModificadoPor,  GETDATE(), @IdEstadoRegistro)
+
+	  SELECT SCOPE_IDENTITY();
+END
+/* EJECUCION DEL PROCEDIMIENTO
+DECLARE @FechaActual DATETIME = GETDATE(); -- 'Fecha actual'
+
+EXEC dbo.InsertarCliente
+     @IdPersona = 6, @IdCreadoPor = 1, @FechaCreacion = @FechaActual, 
+     @IdModificadoPor = 1, @FechaModificacion = @FechaActual, @IdEstadoRegistro = 1;
+*/ -- Select * From Clientes
+
+
+GO
+--
+--
+--.P.R.O.C.E.D.U.R.E.......P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P Procedimiento almacenado para insertar en la tabla EMPRESAS: --
+Create or Alter procedure dbo.InsertarEmpresa
+  @IdEmpresa int,
+  @NombreEmpresa varchar(60),
+  @RNC varchar(9),
+  @Correo varchar(60),
+  @Teléfono1 varchar(12),
+  @Teléfono2 varchar(12),
+  @SitioWeb varchar(255),
+  @Dirección varchar(50),
+  @IdCiudad int,
+  --
+  @IdCreadoPor int,
+  @FechaCreacion Datetime,
+  @IdModificadoPor int,
+  @FechaModificacion Datetime,
+  @IdEstadoRegistro int
+  AS
+  BEGIN
+      Set nocount On
+	  Insert Into Empresas(NombreEmpresa, RNC, Correo, Teléfono1, Teléfono2, SitioWeb, Dirección, IdCiudad, IdCreadoPor, FechaCreacion, 
+	                       IdModificadoPor, FechaModificacion, IdEstadoRegistro)
+
+				  VALUES(@NombreEmpresa, @RNC, @Correo, @Teléfono1, @Teléfono2, @SitioWeb, @Dirección, @IdCiudad, @IdCreadoPor, 
+				  @FechaCreacion, @IdModificadoPor, @FechaModificacion, @IdEstadoRegistro)
+
+				  SELECT SCOPE_IDENTITY();
+END
+/* EJECUCION DEL PROCEDIMIENTO
+DECLARE @FechaActual DATETIME = GETDATE(); -- 'Fecha actual'
+
+EXEC dbo.InsertarEmpresa 
+    @IdEmpresa = 0, @NombreEmpresa = 'Ignacio Auditorias', @RNC = '1312555900', @Correo = 'igaudi@gmail.com', @Teléfono1 = '829-400-5001', 
+	@Teléfono2 = '849-805-8488', @SitioWeb = 'www.igaudi.com', @Dirección = 'Bo. La Nueve, Calle C, #53', @IdCiudad = 1, 
+	@IdCreadoPor = 1, @FechaCreacion = @FechaActual, @IdModificadoPor = 1, @FechaModificacion = @FechaActual, @IdEstadoRegistro = 1;
+*/ -- Select * From Empresas
+
+
+GO
+--
+-- 
+--.P.R.O.C.E.D.U.R.E.......P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P Procedimiento almacenado para insertar en la tabla Clientes_Empresas: --
+Create or Alter procedure dbo.Insertar_Cliente_Empresa
+  @IdCliente int,
+  @IdEmpresa int,
+  --
+  @IdCreadoPor int,
+  @FechaCreacion Datetime,
+  @IdModificadoPor int,
+  @FechaModificacion Datetime,
+  @IdEstadoRegistro int
+  AS
+  BEGIN
+      Set nocount On
+	  Insert Into Clientes_Empresas(IdCliente, IdEmpresa, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro)
+				         VALUES(@IdCliente, @IdEmpresa, @IdCreadoPor, GETDATE(), @IdModificadoPor, GETDATE(), @IdEstadoRegistro)
+END
+/* EJECUCION DEL PROCEDIMIENTO
+DECLARE @FechaActual DATETIME = GETDATE(); -- 'Fecha actual'
+
+EXEC dbo.Insertar_Cliente_Empresa 
+    @IdCliente = 6, @IdEmpresa = 7, @IdCreadoPor = 1, @FechaCreacion = @FechaActual, 
+	@IdModificadoPor = 1, @FechaModificacion = @FechaActual, @IdEstadoRegistro = 1;
+*/
+
+
+
+GO
+--
+--
+--.P.R.O.C.E.D.U.R.E.......P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P Procedimiento almacenado para insertar en la tabla Proveedor: --
+Create or Alter procedure dbo.InsertarProveedor
+  @IdEstadoProveedor int,
+  @IdPersona int,
+  --
+  @IdCreadoPor int,
+  @FechaCreacion Datetime,
+  @IdModificadoPor int,
+  @FechaModificacion Datetime,
+  @IdEstadoRegistro int
+  AS
+  BEGIN
+      Set nocount On
+	  Insert Into Proveedores(IdEstadoProveedor, IdPersonaDeContacto, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro) 
+	                 VALUES(@IdEstadoProveedor, @IdPersona, @IdCreadoPor, GETDATE(), @IdModificadoPor,  GETDATE(), @IdEstadoRegistro)
+
+	  SELECT SCOPE_IDENTITY();
+END
+/* EJECUCION DEL PROCEDIMIENTO
+DECLARE @FechaActual DATETIME = GETDATE(); -- 'Fecha actual'
+
+EXEC dbo.InsertarProveedor
+     @IdEstadoProveedor = 1, @IdPersona = 16,  @IdCreadoPor = 1, @FechaCreacion = @FechaActual, 
+     @IdModificadoPor = 1, @FechaModificacion = @FechaActual, @IdEstadoRegistro = 1;
+*/ -- Select * From Proveedores
+
+
+GO
+--
+-- 
+--.P.R.O.C.E.D.U.R.E.......P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P Procedimiento almacenado para insertar en la tabla Proveedores_Empresas: --
+Create or Alter procedure dbo.Insertar_Proveedor_Empresa
+  @IdProveedor int,
+  @IdEmpresa int,
+  --
+  @IdCreadoPor int,
+  @FechaCreacion Datetime,
+  @IdModificadoPor int,
+  @FechaModificacion Datetime,
+  @IdEstadoRegistro int
+  AS
+  BEGIN
+      Set nocount On
+	  Insert Into Proveedores_Empresas(IdProveedor, IdEmpresa, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro)
+				         VALUES(@IdProveedor, @IdEmpresa, @IdCreadoPor, GETDATE(), @IdModificadoPor, GETDATE(), @IdEstadoRegistro)
+END
+/* EJECUCION DEL PROCEDIMIENTO
+DECLARE @FechaActual DATETIME = GETDATE(); -- 'Fecha actual'
+
+EXEC dbo.Insertar_Proveedor_Empresa 
+    @IdProveedor = 6, @IdEmpresa = 16, @IdCreadoPor = 1, @FechaCreacion = @FechaActual, 
+	@IdModificadoPor = 1, @FechaModificacion = @FechaActual, @IdEstadoRegistro = 1;
+*/
+
+
+GO 
+--
+--
+--.P.R.O.C.E.D.U.R.E.......U.P.D.A.T.E._._._._._.U.P.D.A.T.E._._._._._._ Procedimiento almacenado (Update) para acualizar la tabla Personas: --
+Create or Alter procedure dbo.ActualizarPersona
+  @IdPersona int,
+  @Nombres varchar(40),
+  @Apellidos varchar(40),
+  @Telefono1 varchar(15),
+  @Telefono2 varchar(15),
+  @Direccion varchar(60),
+  @Correo varchar(60),
+  @Edad int,
+  @FechaDeNacimiento date,
+  @Cedula varchar(13),
+  --
+  @IdSexo int,
+  @IdCiudad int,
+  --
+  @IdCreadoPor int,
+  @FechaCreacion date,
+  @IdModificadoPor int,
+  @FechaModificacion date,
+  @IdEstadoRegistro int
+  AS
+  BEGIN
+      Set nocount On
+	  Update Personas SET Nombres = @Nombres, Apellidos = @Apellidos, Telefono1 = @Telefono1, Telefono2 = @Telefono2, Direccion = @Direccion, 
+                    Correo = @Correo, Edad = @Edad, FechaDeNacimiento = @FechaDeNacimiento, Cedula = @Cedula, IdSexo = @IdSexo, 
+	                IdCiudad = @IdCiudad, IdModificadoPor = @IdModificadoPor, FechaModificacion = @FechaModificacion WHERE IdPersona = @IdPersona
+END
+/* EJECUCION DEL PROCEDIMIENTO
+DECLARE @FechaActual DATETIME = GETDATE(); -- 'Fecha actual'
+
+EXEC dbo.ActualizarPersona @IdPersona = 3, @Nombres = 'Johncito', @Apellidos = 'Doecito', @Telefono1 = '829456789', @Telefono2 = '929654321', @Direccion = 'Calle Secundaria', 
+                          @Correo = 'johncitodoe@example.com', @Edad = 31, @FechaDeNacimiento = '1993-05-10', @Cedula = '2034668998', @IdSexo = 1, 
+						  @IdCiudad = 2, @IdCreadoPor = 0, @FechaCreacion = @FechaActual, @IdModificadoPor = 1, @FechaModificacion = @FechaActual,
+						  @IdEstadoRegistro = 1;
+*/
+
+
+GO
+--
+--
+--.P.R.O.C.E.D.U.R.E.......U.P.D.A.T.E._._._._._.U.P.D.A.T.E._._._._._._. Procedimiento almacenado (Update) para insertar en la tabla EMPRESAS: --
+Create or Alter procedure dbo.ActualizarEmpresa
+  @IdEmpresa int,
+  @NombreEmpresa varchar(60),
+  @RNC varchar(9),
+  @Correo varchar(60),
+  @Teléfono1 varchar(15),
+  @Teléfono2 varchar(15),
+  @SitioWeb varchar(40),
+  @Dirección varchar(40),
+  @IdCiudad int,
+  --
+  @IdCreadoPor int,
+  @FechaCreacion Datetime,
+  @IdModificadoPor int,
+  @FechaModificacion Datetime,
+  @IdEstadoRegistro int
+  AS
+  BEGIN
+      Set nocount On
+	  Update Empresas SET NombreEmpresa = @NombreEmpresa, RNC = @RNC, Correo = @Correo, Teléfono1 = @Teléfono1, Teléfono2 = @Teléfono2, SitioWeb = @SitioWeb, 
+	                       Dirección = @Dirección, IdCiudad = @IdCiudad, IdModificadoPor = @IdModificadoPor, FechaModificacion = @FechaModificacion 
+						   WHERE IdEmpresa = @IdEmpresa
+END
+/* EJECUCION DEL PROCEDIMIENTO
+DECLARE @FechaActual DATETIME = GETDATE(); -- 'Fecha actual'
+
+EXEC dbo.ActualizarSoloEmpresa_ByIdEmpresa 
+    @IdEmpresa = 3,  @NombreEmpresa = 'Mi Empresaaa 22', @RNC = '123456789', @Correo = 'empresa@example.com', @Teléfono1 = '123456789', @Teléfono2 = '987654321',
+    @SitioWeb = 'www.empresa.com', @Dirección = 'Calle Principal', @IdCiudad = 1, @IdCreadoPor = 1, @FechaCreacion = @FechaActual,
+    @IdModificadoPor = 1, @FechaModificacion = @FechaActual, @IdEstadoRegistro = 1;
+*/
+
+
+GO
+--
+--
+--.P.R.O.C.E.D.U.R.E.......P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P Procedimiento almacenado para eliminar en la tabla Clientes_Empresas:
+Create OR Alter Procedure dbo.Eliminar_Clientes_Empresas
+@IdCliente int
+AS 
+BEGIN
+    Set Nocount On
+    Update Clientes_Empresas set IdEstadoRegistro = 2 WHERE IdCliente = @IdCliente
+END
+/* EJECUCION DEL PROCEDIMIENTO
+EXEC dbo.Eliminar_Clientes_Empresas @IdCliente = 10
+*/
+
+
+GO
+--
+--
+--.P.R.O.C.E.D.U.R.E.......P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P Procedimiento almacenado para eliminar en la tabla Clientes_Empresas:
+                                                                                                                             -- Por IdEmpresa
+Create OR Alter Procedure dbo.EliminarClientes_Empresas_ByEmpresaId
+@IdEmpresa int
+AS 
+BEGIN
+    Set Nocount On
+    Update Clientes_Empresas set IdEstadoRegistro = 2 WHERE IdEmpresa = @IdEmpresa
+END
+/* EJECUCION DEL PROCEDIMIENTO
+EXEC dbo.EliminarClientes_Empresas_ByEmpresaId @IdEmpresa = 7
+*/
+
+
+GO
+--
+--
+--.P.R.O.C.E.D.U.R.E.......P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P Procedimiento almacenado para eliminar en la tabla Empresas:
+Create OR Alter Procedure dbo.EliminarEmpresas
+@IdCliente int
+AS 
+BEGIN
+    Set Nocount On
+    Update Empresas set IdEstadoRegistro = 2 WHERE IdEmpresa 
+    In (Select CE.IdEmpresa From Clientes C INNER JOIN Clientes_Empresas CE ON C.IdCliente = CE.IdCliente WHERE C.IdCliente = @IdCliente)
+END
+/* EJECUCION DEL PROCEDIMIENTO
+EXEC dbo.EliminarEmpresas @IdCliente = 10
+*/
+
+
+GO
+--
+--
+--.P.R.O.C.E.D.U.R.E.......P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P Procedimiento almacenado para eliminar en la tabla Clientes:
+Create OR Alter Procedure dbo.EliminarClientes
+@IdCliente int
+AS 
+BEGIN
+    Set Nocount On
+    Update Clientes set IdEstadoRegistro = 2 WHERE IdCliente = @IdCliente
+END
+/* EJECUCION DEL PROCEDIMIENTO
+EXEC dbo.EliminarClientes @IdCliente = 10
+*/
+
+
+GO
+--
+--
+--.P.R.O.C.E.D.U.R.E.......P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P Procedimiento almacenado para eliminar en la tabla Proveedores:
+Create OR Alter Procedure dbo.EliminarProveedores
+@IdProveedor int
+AS 
+BEGIN
+    Set Nocount On
+    Update Proveedores set IdEstadoRegistro = 2 WHERE IdProveedor = @IdProveedor
+END
+/* EJECUCION DEL PROCEDIMIENTO
+EXEC dbo.EliminarProveedores @IdProveedor = 1
+*/
+
+
+GO
+--
+--
+--.P.R.O.C.E.D.U.R.E.......P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P Procedimiento almacenado para eliminar en la tabla Empresas por IdProveedor:
+Create OR Alter Procedure dbo.EliminarEmpresas_ByIdProveedor
+@IdProveedor int
+AS 
+BEGIN
+    Set Nocount On
+    Update Empresas set IdEstadoRegistro = 2 WHERE IdEmpresa 
+    In (Select PE.IdEmpresa From Proveedores P INNER JOIN Proveedores_Empresas PE ON P.IdProveedor = PE.IdProveedor 
+	     WHERE P.IdProveedor = @IdProveedor)
+END
+/* EJECUCION DEL PROCEDIMIENTO
+EXEC dbo.EliminarEmpresas_ByIdProveedor @IdProveedor = 1
+*/
+
+
+GO
+--
+--
+--.P.R.O.C.E.D.U.R.E.......P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P Procedimiento almacenado para eliminar en la tabla Proveedores_Empresas:
+Create OR Alter Procedure dbo.Eliminar_Proveedores_Empresas
+@IdProveedor int
+AS 
+BEGIN
+    Set Nocount On
+    Update Proveedores_Empresas set IdEstadoRegistro = 2 WHERE IdProveedor = @IdProveedor
+END
+/* EJECUCION DEL PROCEDIMIENTO
+EXEC dbo.Eliminar_Proveedores_Empresas @IdProveedor = 1
+*/
+
+
+GO
+--
+--
+--.P.R.O.C.E.D.U.R.E.......P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P Procedimiento almacenado para eliminar en la tabla Persona por IdProveedor:
+Create OR Alter Procedure dbo.EliminarPersonas_ByIdProveedor
+@IdProveedor int
+AS 
+BEGIN
+    Set Nocount On
+    Update Personas set IdEstadoRegistro =  2 WHERE IdPersona 
+    in (Select IdPersona FROM Proveedores P INNER JOIN Personas PS ON P.IdPersonaDeContacto = PS.IdPersona 
+	WHERE P.IdProveedor = @IdProveedor)
+END
+/* EJECUCION DEL PROCEDIMIENTO
+EXEC dbo.EliminarPersonas_ByIdProveedor @IdProveedor = 1
+*/
+
+
+GO
+--
+--
+--.P.R.O.C.E.D.U.R.E.......P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P Procedimiento almacenado para eliminar en la tabla Personas:
+Create OR Alter Procedure dbo.EliminarPersonas
+@IdCliente int
+AS 
+BEGIN
+    Set Nocount On
+    Update Personas set IdEstadoRegistro =  2 WHERE IdPersona 
+in (Select IdPersona FROM Clientes C INNER JOIN Personas P ON C.IdPersonaDeContacto = P.IdPersona WHERE C.IdCliente = @IdCliente)
+END
+/* EJECUCION DEL PROCEDIMIENTO
+EXEC dbo.EliminarPersonas @IdCliente = 10
+*/
+
+
+GO
+--
+--
+--.P.R.O.C.E.D.U.R.E.......P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P Procedimiento almacenado para eliminar en la tabla Empresas:
+Create OR Alter Procedure dbo.EliminarEmpresa_ByEmpresaId
+@IdEmpresa int
+AS 
+BEGIN
+    Set Nocount On
+    Update Empresas set IdEstadoRegistro = 2 WHERE IdEmpresa = @IdEmpresa
+END
+/* EJECUCION DEL PROCEDIMIENTO
+EXEC dbo.EliminarEmpresa_ByEmpresaId @IdEmpresa = 7
+*/
+Select * From Empresas
+Select * From Clientes_Empresas
 GO
 
 /*Algunas insersiones de datos:*/
@@ -790,12 +1337,16 @@ INSERT INTO EstadosRegistros (NombreEstado) VALUES
 ('Inactivo'); 
 --Select * From EstadosRegistros
 
+
+
 -- Insertar datos en la tabla Roles
 INSERT INTO Roles (NombreRol, IdEstadoRegistro) VALUES
 ('Administrador', 1),
 ('Administrador De Usuario', 1),
 ('Asistente Administrativo', 1),
 ('Asistente', 1);
+
+
 
 -- Insertar datos en la tabla Usuarios
 INSERT INTO Usuarios (NombreUsuario, Correo, Contraseña, IdRol, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro) VALUES
@@ -804,11 +1355,15 @@ INSERT INTO Usuarios (NombreUsuario, Correo, Contraseña, IdRol, IdCreadoPor, Fec
 ('usuario2', 'usuario2@example.com', 'user456', 2, 1, GETDATE(), 1, GETDATE(), 1); 
 -- Select * FROM Usuarios
 
+
+
 -- Insertar datos en la tabla Sexos
 INSERT INTO Sexos (SexoNombre, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro) VALUES
 ('Masculino', 1, GETDATE(), 1, GETDATE(), 1),
 ('Femenino', 1, GETDATE(), 1, GETDATE(), 1); 
 -- Select * FROM Sexos
+
+
 
 -- Insertar datos en la tabla Paises
 INSERT INTO Paises (PaisNombre, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro) VALUES
@@ -816,26 +1371,236 @@ INSERT INTO Paises (PaisNombre, IdCreadoPor, FechaCreacion, IdModificadoPor, Fec
 ('Estados Unidos', 1, GETDATE(), 1, GETDATE(), 1); 
 -- Select * FROM Paises
 
+
+
 -- Insertar datos en la tabla Ciudades
-INSERT INTO Ciudades (CiudadNombre, IdPais, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro) VALUES
-('Santo Domingo', 1, 1, GETDATE(), 1, GETDATE(), 1),
-('Nueva York', 2, 1, GETDATE(), 1, GETDATE(), 1); 
+/*PROVINCIAS DE REPUBLICA DOMINICANA*/
+INSERT INTO Ciudades (CiudadNombre, IdPais, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro) 
+VALUES ('Santo Domingo', 1, 1, GETDATE(), 1, GETDATE(), 1);
+GO ------
+INSERT INTO Ciudades (CiudadNombre, IdPais, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro)
+VALUES ('Santiago', 1, 1, GETDATE(), 1, GETDATE(), 1);
+GO ------
+INSERT INTO Ciudades (CiudadNombre, IdPais, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro)
+VALUES ('San Pedro de Macorís', 1, 1, GETDATE(), 1, GETDATE(), 1);
+GO ------
+INSERT INTO Ciudades (CiudadNombre, IdPais, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro)
+VALUES ('La Romana', 1, 1, GETDATE(), 1, GETDATE(), 1);
+GO ------
+INSERT INTO Ciudades (CiudadNombre, IdPais, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro)
+VALUES ('Puerto Plata', 1, 1, GETDATE(), 1, GETDATE(), 1);
+GO ------
+INSERT INTO Ciudades (CiudadNombre, IdPais, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro)
+VALUES ('Higüey', 1, 1, GETDATE(), 1, GETDATE(), 1);
+GO ------
+INSERT INTO Ciudades (CiudadNombre, IdPais, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro)
+VALUES ('Mao', 1, 1, GETDATE(), 1, GETDATE(), 1);
+GO ------
+INSERT INTO Ciudades (CiudadNombre, IdPais, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro)
+VALUES ('Monte Cristi', 1, 1, GETDATE(), 1, GETDATE(), 1);
+GO -----
+INSERT INTO Ciudades (CiudadNombre, IdPais, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro)
+VALUES ('Azua', 1, 1, GETDATE(), 1, GETDATE(), 1);
+GO -----
+INSERT INTO Ciudades (CiudadNombre, IdPais, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro)
+VALUES ('San Francisco de Macorís', 1, 1, GETDATE(), 1, GETDATE(), 1);
+GO -----
+INSERT INTO Ciudades (CiudadNombre, IdPais, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro)
+VALUES ('San Juan de la Maguana', 1, 1, GETDATE(), 1, GETDATE(), 1);
+GO -----
+INSERT INTO Ciudades (CiudadNombre, IdPais, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro)
+VALUES ('La Vega', 1, 1, GETDATE(), 1, GETDATE(), 1);
+GO -----
+INSERT INTO Ciudades (CiudadNombre, IdPais, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro)
+VALUES ('Hato Mayor', 1, 1, GETDATE(), 1, GETDATE(), 1);
+GO -----
+INSERT INTO Ciudades (CiudadNombre, IdPais, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro)
+VALUES ('San Cristóbal', 1, 1, GETDATE(), 1, GETDATE(), 1);
+GO -----
+INSERT INTO Ciudades (CiudadNombre, IdPais, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro)
+VALUES ('Barahona', 1, 1, GETDATE(), 1, GETDATE(), 1);
+GO -----
+INSERT INTO Ciudades (CiudadNombre, IdPais, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro)
+VALUES ('Bonao', 1, 1, GETDATE(), 1, GETDATE(), 1);
+GO -----
+INSERT INTO Ciudades (CiudadNombre, IdPais, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro)
+VALUES ('Neiba', 1, 1, GETDATE(), 1, GETDATE(), 1);
+GO -----
+INSERT INTO Ciudades (CiudadNombre, IdPais, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro)
+VALUES ('Moca', 1, 1, GETDATE(), 1, GETDATE(), 1);
+GO -----
+INSERT INTO Ciudades (CiudadNombre, IdPais, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro)
+VALUES ('Samana', 1, 1, GETDATE(), 1, GETDATE(), 1);
+GO -----
+INSERT INTO Ciudades (CiudadNombre, IdPais, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro)
+VALUES ('Elias piña', 1, 1, GETDATE(), 1, GETDATE(), 1);
+GO -----
+INSERT INTO Ciudades (CiudadNombre, IdPais, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro)
+VALUES ('San José de Ocoa', 1, 1, GETDATE(), 1, GETDATE(), 1);
+GO -----
+INSERT INTO Ciudades (CiudadNombre, IdPais, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro)
+VALUES ('El Seibo', 1, 1, GETDATE(), 1, GETDATE(), 1);
+GO -----
+INSERT INTO Ciudades (CiudadNombre, IdPais, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro)
+VALUES ('Dajabón', 1, 1, GETDATE(), 1, GETDATE(), 1);
+GO -----
+INSERT INTO Ciudades (CiudadNombre, IdPais, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro)
+VALUES ('Monte Plata', 1, 1, GETDATE(), 1, GETDATE(), 1);
+GO -----
+INSERT INTO Ciudades (CiudadNombre, IdPais, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro)
+VALUES ('Jimaní', 1, 1, GETDATE(), 1, GETDATE(), 1);
+GO -----
+INSERT INTO Ciudades (CiudadNombre, IdPais, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro)
+VALUES ('Pedernales', 1, 1, GETDATE(), 1, GETDATE(), 1);
+GO -----
+INSERT INTO Ciudades (CiudadNombre, IdPais, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro)
+VALUES ('Cotuí', 1, 1, GETDATE(), 1, GETDATE(), 1);
+GO ----
+INSERT INTO Ciudades (CiudadNombre, IdPais, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro)
+VALUES ('Jarabacoa', 1, 1, GETDATE(), 1, GETDATE(), 1);
+GO ----
+INSERT INTO Ciudades (CiudadNombre, IdPais, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro)
+VALUES ('Sánchez Ramírez', 1, 1, GETDATE(), 1, GETDATE(), 1);
+GO ----
+INSERT INTO Ciudades (CiudadNombre, IdPais, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro)
+VALUES ('Santiago Rodríguez', 1, 1, GETDATE(), 1, GETDATE(), 1);
+GO ----
+INSERT INTO Ciudades (CiudadNombre, IdPais, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro)
+VALUES ('Espaillat', 1, 1, GETDATE(), 1, GETDATE(), 1);
+GO
+/*PROVINCIAS DE ESTADOS UNIDOS*/
+INSERT INTO Ciudades (CiudadNombre, IdPais, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro) 
+VALUES ('New York', 2, 1, GETDATE(), 1, GETDATE(), 1);
+GO ----
+INSERT INTO Ciudades (CiudadNombre, IdPais, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro) 
+VALUES ('Brooklin', 2, 1, GETDATE(), 1, GETDATE(), 1);
+GO ----
+INSERT INTO Ciudades (CiudadNombre, IdPais, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro) 
+VALUES ('Miami', 2, 1, GETDATE(), 1, GETDATE(), 1);
 -- Select * FROM Ciudades
 
--- Insertar datos en la tabla Personas
+
+
+
+-- Insertar datos en la tabla Personas:
 INSERT INTO Personas (Nombres, Apellidos, Telefono1, Telefono2, Direccion, Correo, Edad, FechaDeNacimiento, Cedula, IdSexo, IdCiudad, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro) VALUES
-('Juan', 'Pérez', '809-123-4567', '809-987-6543', 'Calle 1', 'juan@example.com', 30, '1993-05-15', '001-1234567-8', 1, 1, 1, GETDATE(), 1, GETDATE(), 1),
-('María', 'González', '809-111-2222', '809-333-4444', 'Calle 2', 'maria@example.com', 25, '1998-08-10', '002-2345678-9', 2, 1, 1, GETDATE(), 1, GETDATE(), 1);
+/*1*/('Juan José', 'Pérez Melindo', '809-123-4567', '809-987-6543', 'Bo. Santa fé, Calle 1, #26', 'juan@gmail.com', 30, '1993-05-15', '001-1234567-8', 1, 1, 1, GETDATE(), 1, GETDATE(), 1),
+/*2*/('María Lola', 'González Ruíz', '809-111-2222', '809-333-4444', 'Bo. La luz, calle 2, #40', 'maria@gmail.com', 25, '1998-08-10', '002-2345678-9', 2, 1, 1, GETDATE(), 1, GETDATE(), 1),
+/*3*/('Emenejildo', 'Santana Cruz', '809-098-1010', '809-222-5555', 'Bo. La estrellita, calle 3, #10', 'emels@outlook.com', 25, '1998-08-10', '402-2040608-9', 1, 1, 1, GETDATE(), 1, GETDATE(), 1),
+/*4*/('Ignacio Alex', 'Lopez Severino', '829-345-1345', '809-409-0197', 'Bo. Castañuela, calle 4 #20', 'alexig@hotmail.com', 25, '1998-08-10', '402-1234568-0', 1, 1, 1, GETDATE(), 1, GETDATE(), 1),
+/*5*/('Maribel Ana', 'De la Rosa', '809-232-9876', '809-209-1076', 'Bo. Concepción, calle 5, #9', 'anamaria@gmail.com', 25, '1998-08-10', '402-1041111-9', 2, 1, 1, GETDATE(), 1, GETDATE(), 1),
+/*6*/('María Eugenia', 'Gómez Fernández', '809-234-5678', '809-876-5432', 'Bo. Pueblo Nuevo, Calle 2, #15', 'mariaeugenia@gmail.com', 28, '1995-11-22', '002-8765432-1', 2, 2, 1, GETDATE(), 1, GETDATE(), 1),
+/*7*/('Luis Miguel', 'Hernández Rodríguez', '809-345-6789', '809-987-6543', 'Bo. El Paraíso, Calle 5, #10', 'luismiguel@gmail.com', 35, '1986-09-10', '003-3456789-1', 1, 1, 1, GETDATE(), 1, GETDATE(), 1),
+/*8*/('Ana Gabriela', 'González Soto', '809-456-7890', '809-321-6547', 'Bo. Las Flores, Calle 8, #20', 'anagabriela@gmail.com', 27, '1996-07-12', '004-4567890-2', 2, 2, 1, GETDATE(), 1, GETDATE(), 1),
+/*9*/('Carlos Andrés', 'López Ramírez', '809-567-8901', '809-234-5678', 'Bo. Los Alamos, Calle 12, #30', 'carloslopez@gmail.com', 32, '1989-03-25', '005-5678901-3', 1, 2, 1, GETDATE(), 1, GETDATE(), 1),
+/*10*/('María Fernanda', 'Guzmán Peña', '809-678-9012', '809-345-6789', 'Bo. El Carmen, Calle 20, #5', 'mariafernanda@gmail.com', 29, '1994-12-08', '006-6789012-4', 2, 1, 1, GETDATE(), 1, GETDATE(), 1),
+/*11*/('Luis Alberto', 'Hernández Rodríguez', '809-890-1234', '809-456-7890', 'Bo. Los Jardines, Calle 30, #15', 'luis.hernandez@gmail.com', 35, '1988-09-20', '007-8901234-5', 1, 2, 1, GETDATE(), 1, GETDATE(), 1),
+/*12*/('Laura', 'Gómez Martínez', '809-234-5678', '809-678-9012', 'Bo. Los Robles, Calle 5, #10', 'laura.gomez@gmail.com', 28, '1995-11-12', '008-2345678-6', 2, 1, 1, GETDATE(), 1, GETDATE(), 1),
+/*13*/('Carlos', 'Santana López', '809-345-6789', '809-890-1234', 'Bo. Los Alamos, Calle 15, #8', 'carlos.santana@gmail.com', 32, '1989-07-20', '009-3456789-7', 1, 2, 1, GETDATE(), 1, GETDATE(), 1),
+/*14*/('Crisencio', 'Sinmi Ruiz', '829-333-1010', '849-202-2620', 'Bo. Los Guilamos, Calle 13, #9', 'sinmi.ruiz@gmail.com', 33, '1985-03-21', '113-2224444-8', 1, 2, 1, GETDATE(), 1, GETDATE(), 1),
+/*15*/('Jolio', 'Carmuel Joanl', '849-103-1299', '829-112-1631', 'Bo. Los Casiz, Calle 11, #90', 'carmuel.joanl@gmail.com', 33, '1995-03-21', '100-0224040-1', 1, 2, 1, GETDATE(), 1, GETDATE(), 1);
 -- Select * FROM Personas
 
--- Insertar datos en la tabla Empresas (continuación)
+
+
+
+-- Insertar datos en la tabla Empresas:
 INSERT INTO Empresas (NombreEmpresa, RNC, Correo, Teléfono1, Teléfono2, SitioWeb, Dirección, IdCiudad, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro) VALUES
-('Empresa 1', '123456789', 'empresa1@example.com', '809-111-1111', '809-222-2222', 'www.empresa1.com', 'Calle A', 1, 1, GETDATE(), 1, GETDATE(), 1),
-('Empresa 2', '987654321', 'empresa2@example.com', '809-333-3333', '809-444-4444', 'www.empresa2.com', 'Calle B', 2, 1, GETDATE(), 1, GETDATE(), 1);
+/*1*/('José Inversiones', '123456789', 'joseinv@hotmail.com', '809-111-1111', '809-222-2222', 'https://www.joseinv.com', 'Bo. Villa Cruz, calle 1, #26', 1, 1, GETDATE(), 1, GETDATE(), 1),
+/*2*/('Ferreteria María', '987654321', 'ferrema@gmail.com', '809-333-3333', '809-444-4444', 'https://www.ferrema.com', 'Bo. Villa navarro, calle 2, #30', 2, 1, GETDATE(), 1, GETDATE(), 1),
+/*3*/('Banco Veracruz', '023454321', 'bancoveracruz@outlook.com', '809-554-2424', '809-321-1212', 'https://www.bancoveracruz.com', 'Bo. Vista Hermosa, calle 4, #31', 3, 1, GETDATE(), 1, GETDATE(), 1),
+/*4*/('Tienda Ignacio', '123333320', 'ignacioshop@outlook.com', '829-222-1113', '809-309-4343', 'https://www.shopignacio.com', 'Bo. Consuelito, calle 5, #30', 3, 1, GETDATE(), 1, GETDATE(), 1),
+/*5*/('Gym Mari', '234568091', 'gymmariana@outlook.com', '829-333-5590', '809-901-1234', 'https://www.gymmaria.com', 'Bo. nuñez 1, calle 7, #60', 4, 1, GETDATE(), 1, GETDATE(), 1),
+/*6*/('María Construcciones', '987654321', 'mariaconstruct@gmail.com', '809-555-1234', '809-888-9999', 'https://www.mariaconstruct.com', 'Bo. Los Pinos, Calle 3, #8', 1, 1, GETDATE(), 1, GETDATE(), 1),
+/*7*/('Luis Consultores', '987654123', 'luisconsult@gmail.com', '809-222-3333', '809-444-5555', 'https://www.luisconsult.com', 'Bo. Las Palmas, Calle 6, #12', 2, 1, GETDATE(), 1, GETDATE(), 1),
+/*8*/('Ana Servicios', '987654987', 'anaserv@gmail.com', '809-777-8888', '809-999-0000', 'https://www.anaserv.com', 'Bo. Los Jardines, Calle 10, #5', 1, 1, GETDATE(), 1, GETDATE(), 1),
+/*9*/('López Construcciones', '987654789', 'lopezconstruc@gmail.com', '809-333-4444', '809-555-6666', 'https://www.lopezconstruc.com', 'Bo. Los Pinos, Calle 15, #40', 1, 1, GETDATE(), 1, GETDATE(), 1),
+/*10*/('Guzmán Arquitectura', '987654321', 'guzmanarq@gmail.com', '809-777-8888', '809-999-0000', 'https://www.guzmanarq.com', 'Bo. Los Almendros, Calle 25, #10', 1, 1, GETDATE(), 1, GETDATE(), 1),
+/*11*/('Hernández Ingeniería', '987654123', 'hernandezing@gmail.com', '809-111-2222', '809-333-4444', 'https://www.hernandezing.com', 'Bo. Los Pinos, Calle 10, #20', 2, 1, GETDATE(), 1, GETDATE(), 1),
+/*12*/('Gómez Arquitectos', '987654987', 'gomezarq@gmail.com', '809-111-3333', '809-444-5555', 'https://www.gomezarq.com', 'Bo. Los Pinos, Calle 8, #15', 1, 1, GETDATE(), 1, GETDATE(), 1),
+/*13*/('Santana Construcciones', '987654321', 'santanaconstruc@gmail.com', '809-222-3333', '809-444-5555', 'https://www.santanaconstruc.com', 'Bo. Los Jardines, Calle 10, #25', 2, 1, GETDATE(), 1, GETDATE(), 1),
+/*14*/('Crisencio Baterias', '001340009', 'bateriascris@gmail.com', '829-201-3103', '849-303-1503', 'https://www.bateriascris.com', 'Bo. Los Rulos, Calle 11, #23', 2, 1, GETDATE(), 1, GETDATE(), 1),
+/*15*/('Carmuel Prestamos', '566649912', 'prestamoscarmuel@gmail.com', '849-221-2191', '809-220-1117', 'https://www.prestamoscarmuel.com', 'Bo. Las Raiz, Calle 09, #11', 2, 1, GETDATE(), 1, GETDATE(), 1);
 -- Select * FROM Empresas
 
--- Insertar datos en la tabla Clientes
-INSERT INTO Clientes (IdEmpresa, IdPersonaDeContacto, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro) VALUES
-(1, 1, 1, GETDATE(), 1, GETDATE(), 1),
-(2, 2, 1, GETDATE(), 1, GETDATE(), 1);
--- Select * FROM Clientes
+
+
+
+-- Insertar datos en la tabla Clientes:
+INSERT INTO Clientes (IdPersonaDeContacto, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro) VALUES
+/*1*/(1, 1, GETDATE(), 1, GETDATE(), 1),
+/*2*/(2, 1, GETDATE(), 1, GETDATE(), 1),
+/*3*/(3, 1, GETDATE(), 1, GETDATE(), 1),
+/*4*/(4, 1, GETDATE(), 1, GETDATE(), 1),
+/*5*/(5, 1, GETDATE(), 1, GETDATE(), 1),
+/*6*/(6, 1, GETDATE(), 1, GETDATE(), 1),
+/*7*/(7, 1, GETDATE(), 1, GETDATE(), 1),
+/*8*/(8, 1, GETDATE(), 1, GETDATE(), 1),
+/*9*/(9, 1, GETDATE(), 1, GETDATE(), 1),
+/*10*/(10, 1, GETDATE(), 1, GETDATE(), 1);
+
+
+
+-- Insertar datos en la tabla Clientes_Empresas:
+INSERT INTO Clientes_Empresas(IdCliente, IdEmpresa, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro) VALUES
+/*1*/(1, 1, 1, GETDATE(), 1, GETDATE(), 1),
+/*2*/(2, 2, 1, GETDATE(), 1, GETDATE(), 1),
+/*3*/(3, 3, 1, GETDATE(), 1, GETDATE(), 1),
+/*4*/(4, 4, 1, GETDATE(), 1, GETDATE(), 1),
+/*5*/(5, 5, 1, GETDATE(), 1, GETDATE(), 1),
+/*6*/(6, 6, 1, GETDATE(), 1, GETDATE(), 1),
+/*7*/(7, 7, 1, GETDATE(), 1, GETDATE(), 1),
+/*8*/(8, 8, 1, GETDATE(), 1, GETDATE(), 1),
+/*9*/(9, 9, 1, GETDATE(), 1, GETDATE(), 1),
+/*10*/(10, 10, 1, GETDATE(), 1, GETDATE(), 1);
+-- Select * FROM Clientes_Empresas
+
+
+
+-- Insertar datos en la tabla EstadoProveedores:
+Insert Into EstadoProveedores(EstadoNombre, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro)
+VALUES ('Proveedor estandar', 1, GETDATE(), 1, GETDATE(), 1);
+--
+Insert Into EstadoProveedores(EstadoNombre, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro)
+VALUES ('Proveedor Principal', 1, GETDATE(), 1, GETDATE(), 1);
+
+
+
+-- Insertar datos en la tabla Proveedores:
+Insert Into Proveedores (IdEstadoProveedor, IdPersonaDeContacto, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro) VALUES
+/*11*/(1, 11, 1, GETDATE(), 1, GETDATE(), 1),
+/*12*/(1, 12, 1, GETDATE(), 1, GETDATE(), 1),
+/*13*/(1, 13, 1, GETDATE(), 1, GETDATE(), 1),
+/*14*/(1, 14, 1, GETDATE(), 1, GETDATE(), 1),
+/*15*/(1, 15, 1, GETDATE(), 1, GETDATE(), 1);
+-- Select * FROM Proveedores
+
+
+
+-- Insertar datos en la tabla Proveedores_Empresas:
+INSERT INTO Proveedores_Empresas(IdProveedor, IdEmpresa, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro) VALUES
+/*11*/(1, 11, 1, GETDATE(), 1, GETDATE(), 1),
+/*12*/(2, 12, 1, GETDATE(), 1, GETDATE(), 1),
+/*13*/(3, 13, 1, GETDATE(), 1, GETDATE(), 1),
+/*14*/(4, 14, 1, GETDATE(), 1, GETDATE(), 1),
+/*15*/(5, 15, 1, GETDATE(), 1, GETDATE(), 1);
+-- Select * FROM Proveedores_Empresas
+GO
+
+-- Procedimiento para Obtener usuario y loguear:
+CREATE OR ALTER PROCEDURE dbo.GetUsuarioLogin
+@NombreUsuario varchar(30),
+@Contraseña varchar(30)
+AS
+BEGIN
+     SET NOCOUNT ON
+     SELECT IdUsuario, NombreUsuario, Correo, Contraseña, NombreRol
+	 FROM Usuarios U INNER JOIN Roles R ON U.IdRol = R.IdRol
+	 WHERE NombreUsuario = @NombreUsuario AND Contraseña = @Contraseña
+END
+
+GO
+
+/*
+Exec GetIdEmpresaByIdCliente @NombreUsuario = 'admin', @Contraseña = 'admin123'
+*/
