@@ -2,64 +2,53 @@
 
 namespace ProyectNettApi.Models
 {
-    public class Persona
+    public class Empresa
     {
         [Key]
-        public int IdPersona { get; set; }
+        public int IdEmpresa { get; set; }
         //<--
         //<--
 
+        [StringLength(maximumLength: 60, MinimumLength = 2, ErrorMessage = "Este campo debe estar entre 2 y 60 caracteres")]
         [Required(ErrorMessage = "Este campo es requerido")]
-        [StringLength(maximumLength: 40, MinimumLength = 2, ErrorMessage = "Este campo debe estar entre 2 y 40 caracteres")]
-        public string Nombres { get; set; }
+        public string NombreEmpresa { get; set; }
         //<--
         //<--
 
+        [RegularExpression(@"^[0-9]{9}$", ErrorMessage = "El formato del RNC no es válido. Debe tener exactamente 9 dígitos.")]
+        [StringLength(9, MinimumLength = 9, ErrorMessage = "El RNC debe tener exactamente 9 numeros.")]
         [Required(ErrorMessage = "Este campo es requerido")]
-        [StringLength(maximumLength: 40, MinimumLength = 2, ErrorMessage = "Este campo debe estar entre 2 y 40 caracteres")]
-        public string Apellidos { get; set; }
+        public string RNC { get; set; }
         //<--
         //<--
+
+        [EmailAddress(ErrorMessage = "El formato del correo electrónico no es válido.")]
+        [Required(ErrorMessage = "Este campo es requerido")]
+        public string Correo { get; set; }
+        //<--
+        //<--
+
         [RegularExpression(@"^\d{3}-\d{3}-\d{4}$", ErrorMessage = "El formato del número de teléfono no es válido.")]
         [Required(ErrorMessage = "Este campo es requerido")]
-        public string Telefono1 { get; set; }
+        public string Teléfono1 { get; set; }
         //<--
         //<--
 
         [RegularExpression(@"^\d{3}-\d{3}-\d{4}$", ErrorMessage = "El formato del número de teléfono no es válido.")]
         [Required(ErrorMessage = "Este campo es requerido")]
-        public string Telefono2 { get; set; }
+        public string Teléfono2 { get; set; }
+        //<--
+        //<--
+
+        [Url(ErrorMessage = "El formato del sitio web no es válido.")]
+        [Required(ErrorMessage = "Este campo es requerido")]
+        public string SitioWeb { get; set; }
         //<--
         //<--
 
         [Required(ErrorMessage = "Este campo es requerido")]
         [StringLength(maximumLength: 60, MinimumLength = 3, ErrorMessage = "Este campo debe estar entre 3 y 60 caracteres")]
-        public string Direccion { get; set; }
-        //<--
-        //<--
-
-        [EmailAddress(ErrorMessage = "El formato del correo electrónico no es válido.")]
-        public string Correo { get; set; }
-        //<--
-        //<--
-
-        [Required(ErrorMessage = "Este campo es requerido")]
-        public int Edad { get; set; }
-        //<--
-        //<--
-
-        [Required(ErrorMessage = "Este campo es requerido")]
-        public DateTime FechaDeNacimiento { get; set; }
-        //<--
-        //<--
-
-        [RegularExpression(@"^\d{3}-\d{7}-\d{1}$", ErrorMessage = "El formato de la cédula no es válido.")]
-        public string Cedula { get; set; }
-        //<--
-        //<--
-
-        [Required(ErrorMessage = "Este campo es requerido")]
-        public int IdSexo { get; set; }
+        public string Dirección { get; set; }
         //<--
         //<--
 
@@ -75,6 +64,10 @@ namespace ProyectNettApi.Models
 
         [Required(ErrorMessage = "Este campo es requerido")]
         public DateTime FechaCreacion { get; set; }
+        //<--
+        //<--
+
+        [Required(ErrorMessage = "Este campo es requerido")]
         public int IdModificadoPor { get; set; }
         //<--
         //<--
