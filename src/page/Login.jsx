@@ -2,6 +2,9 @@ import { useState } from "react";
 //libreria para implementar formularios 
 import { useForm } from "react-hook-form";
 
+import { useLoginUserMutation } from "../redux/Api/AuthApi"; 
+
+
 //componente creacdo con styled component
 import {
   DivContainerPage,
@@ -24,13 +27,20 @@ export default function Login() {
   /// useState para el toogle de ver contrase;o 
   const [activo, setActivo] = useState(false);
 
+  const [loginUser, { data: loginData, isSuccess: isLoginSuccess, isLoading: isLoadingLoding }] =
+  useLoginUserMutation("");
+
   /// destruturacion de componente useform 
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
-  const onSubmit = (data) => console.log(data);
+
+  const onSubmit = async (data) => {
+    const result = await loginUser(data);
+    console.log(result);
+  };
 
   return (
     <>
@@ -42,7 +52,7 @@ export default function Login() {
           <Label> Usuario </Label>
           <Input Error={errors.usuario}
             placeholder="Usuario@gestnett.com"
-            {...register("usuario", { required: true, minLength: 1, maxLength: 50 })}
+            {...register("NombreUsuario", { required: true, minLength: 1, maxLength: 50 })}
           />
           {errors.usuario && <span style={{color:"red" ,fontSize:15 , marginBottom: 5,}}>Verifica tu Usuario</span>}
 
@@ -50,9 +60,9 @@ export default function Login() {
           <DivPassword>
 
             <Input
-              type={activo ? "text" : "password"}
+              type={activo ? "text" : "Contraseña"}
               placeholder="Ingresar tu contraseña"
-              {...register("Password", { required: true, minLength: 1,  maxLength: 50 })}
+              {...register("Contraseña", { required: true, minLength: 1,  maxLength: 50 })}
               Error={errors.Password}
             />
 
@@ -79,3 +89,11 @@ export default function Login() {
     </>
   );
 }
+
+/*
+    const onSubmit: SubmitHandler<ILoginData> = async (data) => {
+        const result = await loginUser({ userName: data.userName, password: data.password });
+        console.log(data, result);
+    };
+
+*/
