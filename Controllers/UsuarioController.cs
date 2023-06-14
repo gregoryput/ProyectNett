@@ -31,12 +31,12 @@ namespace ProyectNettApi.Controllers
         {
             var data = JsonConvert.DeserializeObject<dynamic>(usuarioData.ToString());
 
-            string NombreUsuario = data.NombreDeUsuario.ToString();
+            string NombreUsuario = data.NombreUsuario.ToString();
             string Contraseña = data.Contraseña.ToString();
 
             var resultSetDataUser = _usuarioRepositorio.GetUsuarioLogin(NombreUsuario, Contraseña);
 
-            if (resultSetDataUser.NombreUsuario == null)
+            if (resultSetDataUser?.NombreUsuario == null)
             {
                 return new
                 {

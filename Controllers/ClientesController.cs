@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using ProyectNettApi.Interfaces;
 using ProyectNettApi.Models;
 using ProyectNettApi.Repositories;
@@ -7,6 +8,7 @@ namespace ProyectNettApi.Controllers
 {
     [Route("Clientes")]
     [ApiController]
+    [Authorize]
     public class ClientesController : ControllerBase
     {
         protected Respuesta _respuesta;
