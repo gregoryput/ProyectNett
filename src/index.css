@@ -21,13 +21,9 @@ html{
     color:#0D192B;
     color:#9c9c9c;
     color:#1C3C6D;
-
-
-
-
-    overflow-y: scroll; /* Habilitar el scroll vertical */
+   
  
-}
+}  
 
 
 html::-webkit-scrollbar {

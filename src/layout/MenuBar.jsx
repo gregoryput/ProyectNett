@@ -11,6 +11,7 @@ import {
   ButtonTheme,
   DivButtonSesion,
   DivNav,
+  DivRoll,
   DivRotate,
   DropdownContent,
 } from "../components";
@@ -23,12 +24,15 @@ export default function MenuBar() {
  const navigate = useNavigate();
 
   const handleClick = () => {
-    navigate('/');
+    navigate('/login');
   };
   return (
 
     <>
       <DivNav>
+        <DivRoll>
+          Administrador
+        </DivRoll>
         <IoCalendarNumberOutline
           style={{
             width: 30,
@@ -37,6 +41,7 @@ export default function MenuBar() {
             color: "#C3C3C3",
           }}
         />
+
         <OutsideClick onOutsideClick={() => setActivo(false)}>
           <div>
             <ButtonMenu onMouseUp={() => setActivo(!activo)}>

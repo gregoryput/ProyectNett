@@ -18,6 +18,7 @@ import { LabelNav } from "./MenuNavegacion/LabelNav";
 import { Column } from "./LayoutComponent/Column";
 import { Row } from "./LayoutComponent/Row";
 import { ViewContainerPages } from "./LayoutComponent/ViewContainerPages";
+import { DivRoll } from "./Menu/DivRoll";
 
 
 
@@ -50,6 +51,7 @@ export {
     Column,
     Row,
     ViewContainerPages,
+    DivRoll,
 
 
     

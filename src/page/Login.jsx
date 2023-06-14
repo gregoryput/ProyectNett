@@ -35,7 +35,7 @@ export default function Login() {
   return (
     <>
       <DivContainerPage>
-        <img style={{ marginBottom: "50px" }} src={logo} alt="" />
+        <img style={{ marginBottom: "50px" ,}} src={logo} alt="" />
 
         <FormContainer onSubmit={handleSubmit(onSubmit)}>
 
@@ -44,7 +44,7 @@ export default function Login() {
             placeholder="Usuario@gestnett.com"
             {...register("usuario", { required: true, minLength: 1, maxLength: 50 })}
           />
-          {errors.usuario && <span style={{color:"red" ,fontSize:15 , marginBottom: 5}}> Verifica tu Usuario</span>}
+          {errors.usuario && <span style={{color:"red" ,fontSize:15 , marginBottom: 5,}}>Verifica tu Usuario</span>}
 
           <Label> Contraseña </Label>
           <DivPassword>
@@ -55,22 +55,22 @@ export default function Login() {
               {...register("Password", { required: true, minLength: 1,  maxLength: 50 })}
               Error={errors.Password}
             />
-             {errors.Password && <span style={{color:"red" ,fontSize:15 , marginBottom: 5}}>Verifica tu contraseña</span>}
 
             <button
               type="button"
               onMouseUp={() => setActivo(!activo)}
               onMouseDown={() => setActivo(!activo)}
-            >
+              >
               {activo == false ? (
                 <IoEyeOutline style={StyleButtonPassword} />
-              ) : (
-                <IoEyeOffOutline style={StyleButtonPassword} />
-              )}
+                ) : (
+                  <IoEyeOffOutline style={StyleButtonPassword} />
+                  )}
             </button>
 
           </DivPassword>
 
+          {errors.Password && <span style={{color:"red" ,fontSize:15 , marginBottom: 5}}>Verifica tu contraseña</span>}
           <Button type="submit">Iniciar Sesion</Button>
 
         </FormContainer>
