@@ -7,7 +7,16 @@ export const usersSlice = createSlice({
   },
   reducers: {
     setUsers: (state, action) => {
+      const { token } = action.payload;
       state.users = action.payload;
+      localStorage.setItem("token", token);
+      state.token = token;
+      console.log(localStorage);
+    },
+    logOut: (state) => {
+        console.log("Cerrar sesión");
+        state.token = null;
+        localStorage.removeItem("token");
     },
   },
 });

@@ -6,10 +6,14 @@ export const store = configureStore({
   reducer: {
     auth: authApi.reducer,
     users: usersReducer,
+    [authApi.reducerPath]: authApi.reducer, // Agrega el reducer de authApi utilizando authApi.reducerPath como nombre de propiedad
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(authApi.middleware),
-    [authApi.reducerPath]: authApi.reducer
 });
 
-export default store; 
+export default store;
+
+
+
+
