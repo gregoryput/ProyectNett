@@ -1,4 +1,4 @@
-import React from 'react';
+
 import styled, { keyframes } from 'styled-components';
 
 const spin = keyframes`
@@ -6,7 +6,7 @@ const spin = keyframes`
   100% { transform: rotate(360deg); }
 `;
 
-const Spinner = styled.div`
+export const Spinner = styled.div`
   width: 50px;
   height: 50px;
   border: 4px solid #f3f3f3;
@@ -14,9 +14,3 @@ const Spinner = styled.div`
   border-radius: 50%;
   animation: ${spin} 1s linear infinite;
 `;
-
-const LoadingSpinnerForms = () => {
-  return <Spinner />;
-};
-
-export default LoadingSpinnerForms;

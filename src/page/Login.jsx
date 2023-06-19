@@ -1,4 +1,4 @@
-import { React, useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 //libreria para implementar formularios
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
@@ -14,10 +14,10 @@ import {
   FormContainer,
   DivPassword,
   ButtonPassword as StyleButtonPassword,
+  Spinner,
 } from "../components";
 
 import { setUsers } from "../redux/authSlice";
-
 /// libreria de iconos
 import { IoEyeOutline, IoEyeOffOutline } from "react-icons/io5";
 //// importacion de logo de la empresa
@@ -37,6 +37,7 @@ export default function Login() {
         dispatch(
             setUsers({
                 token: dataUser?.result,
+                
             }),
         );
     }
@@ -44,17 +45,20 @@ export default function Login() {
 
   /// -----------------------------------
   useEffect(() => {
+
     if (isSuccess) {
-      console.log("autenticacion correcta");
-      dispatchUser();
-      navigate("/");
+      if(dataUser.success) {
+        console.log("autenticacion correcta");
+        dispatchUser();
+        navigate("/");
+      }
     }
-  }, [dispatchUser, isSuccess, navigate]);
+  }, [isSuccess,dispatchUser,navigate,dataUser]);
 
   /// -----------------------------------
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (verifyTokenExpiration(token)) {
+    if (verifyTokenExpiration(token) ) {
       navigate("/");
     }
   }, [navigate]);
@@ -69,23 +73,19 @@ export default function Login() {
   /// -----------------------------------
   const onSubmit = async (data) => {
     const result = await loginUser(data);
-    //console.log(result);
+    console.log(result);
     //console.log(data, isSuccess, isLoading);
   };
-
-  useEffect(() => {
-    console.log(dataUser, isSuccess, isLoading);
-  }, [dataUser, isSuccess, isLoading]);
 
   return (
     <>
       <DivContainerPage>
-        <img style={{ marginBottom: "50px" }} src={logo} alt="" />
+        <img style={{ marginBottom: "50px" }} src={logo} />
 
         <FormContainer onSubmit={handleSubmit(onSubmit)}>
           <Label> Usuario </Label>
           <Input
-            Error={errors.usuario}
+         
             placeholder="Usuario@gestnett.com"
             {...register("NombreUsuario", {
               required: true,
@@ -93,7 +93,7 @@ export default function Login() {
               maxLength: 50,
             })}
           />
-          {errors.usuario && (
+          {errors.NombreUsuario && (
             <span style={{ color: "red", fontSize: 15, marginBottom: 5 }}>
               Verifica tu Usuario
             </span>
@@ -102,14 +102,14 @@ export default function Login() {
           <Label> Contraseña </Label>
           <DivPassword>
             <Input
-              type={activo ? "text" : "Contraseña"}
+              type={activo ? "text" : "Password"}
               placeholder="Ingresar tu contraseña"
               {...register("Contraseña", {
                 required: true,
                 minLength: 1,
                 maxLength: 50,
               })}
-              Error={errors.Password}
+              
             />
 
             <button
@@ -125,13 +125,13 @@ export default function Login() {
             </button>
           </DivPassword>
 
-          {errors.Password && (
+          {errors.Contraseña && (
             <span style={{ color: "red", fontSize: 15, marginBottom: 5 }}>
               Verifica tu contraseña
             </span>
           )}
           <Button type="submit">
-            {isLoading ? "Cargando" : "Iniciar Sesion"}
+            {isLoading ? <Spinner/> : "Iniciar Sesion"}
           </Button>
         </FormContainer>
       </DivContainerPage>

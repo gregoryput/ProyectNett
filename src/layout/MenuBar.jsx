@@ -1,7 +1,12 @@
 import { useState } from "react";
 import { OutsideClick } from "outsideclick-react";
 import {
-  IoMoonOutline, IoChevronDownSharp, IoCalendarNumberOutline, IoSunnyOutline, IoExitOutline,IoPersonCircleOutline
+  IoMoonOutline,
+  IoChevronDownSharp,
+  IoCalendarNumberOutline,
+  IoSunnyOutline,
+  IoExitOutline,
+  IoPersonCircleOutline,
 } from "react-icons/io5";
 
 import {
@@ -17,22 +22,27 @@ import {
 } from "../components";
 
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { logOut } from "../redux/authSlice";
 
 export default function MenuBar() {
   const [activo, setActivo] = useState(false);
 
- const navigate = useNavigate();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
+  //const [logOut] = useSelector((state) => state.users);
   const handleClick = () => {
-    navigate('/login');
-  };
+    //  var token = localStorage.getItem("token");
+    //  if (token){
+       dispatch(logOut());
+       navigate("/login");
+    //  }
+  }
   return (
-
     <>
       <DivNav>
-        <DivRoll>
-          Administrador
-        </DivRoll>
+        <DivRoll>Administrador</DivRoll>
         <IoCalendarNumberOutline
           style={{
             width: 30,
@@ -72,23 +82,32 @@ export default function MenuBar() {
               </p>
               <DivButtonSesion>
                 <ButtonTheme>
-                  <IoSunnyOutline style={{ width: 30, height: 30, marginRight: 10 }} />
+                  <IoSunnyOutline
+                    style={{ width: 30, height: 30, marginRight: 10 }}
+                  />
                   Claro
                 </ButtonTheme>
                 <ButtonTheme>
-                  <IoMoonOutline style={{ width: 30, height: 30, marginRight: 10 }} />
+                  <IoMoonOutline
+                    style={{ width: 30, height: 30, marginRight: 10 }}
+                  />
                   Oscuro
                 </ButtonTheme>
               </DivButtonSesion>
             </div>
 
             <ButtonOption>
-              <IoPersonCircleOutline style={{ width: 20, height: 20, marginRight: 10 }} />
+              <IoPersonCircleOutline
+                style={{ width: 20, height: 20, marginRight: 10 }}
+              />
               Perfil
             </ButtonOption>
-            <ButtonOption onClick={handleClick}>
-            <IoExitOutline style={{ width: 20, height: 20, marginRight: 10 }} />
-              Cerrar Sesion</ButtonOption>
+            <ButtonOption onClick={()=> handleClick()}>
+              <IoExitOutline
+                style={{ width: 20, height: 20, marginRight: 10 }}
+              />
+              Cerrar Sesion
+            </ButtonOption>
           </DropdownContent>
         </OutsideClick>
       </DivNav>

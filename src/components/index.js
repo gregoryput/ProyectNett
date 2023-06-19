@@ -19,6 +19,7 @@ import { Column } from "./LayoutComponent/Column";
 import { Row } from "./LayoutComponent/Row";
 import { ViewContainerPages } from "./LayoutComponent/ViewContainerPages";
 import { DivRoll } from "./Menu/DivRoll";
+import { Spinner } from "./LoadingSpinnerForms/loadingSpinnerForms.styled";
 
 
 
@@ -53,7 +54,8 @@ export {
     ViewContainerPages,
     DivRoll,
 
-
+ /// pantallla y componente de cargas 
+    Spinner
     
 
 

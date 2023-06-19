@@ -32,7 +32,7 @@ export default function Navegation() {
         <LabelNav>Proyecto</LabelNav>
       </ButtonNav>
 
-      <ButtonNav to="cliente"  style={({ isActive }) => {return { color: isActive ? "#365583" : ""}}} >
+      <ButtonNav exact to="cliente"  style={({ isActive }) => {return { color: isActive ? "#365583" : ""}}} >
         <BiBriefcaseAlt style={style}  />
         <LabelNav>Cliente</LabelNav>
       </ButtonNav>
@@ -42,7 +42,7 @@ export default function Navegation() {
         <LabelNav>Proveedores</LabelNav>
       </ButtonNav>
 
-       <ButtonNav  exact to="invetario"  style={({ isActive }) => {return { color: isActive ? "#365583" : ""}}} >
+       <ButtonNav  exact to="inventario"  style={({ isActive }) => {return { color: isActive ? "#365583" : ""}}} >
         <BiBox style={style} />
         <LabelNav>Inventario</LabelNav>
       </ButtonNav>

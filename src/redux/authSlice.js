@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-export const usersSlice = createSlice({
+export const Slice = createSlice({
   name: "users",
   initialState: {
     users: [],
@@ -11,6 +11,7 @@ export const usersSlice = createSlice({
       state.users = action.payload;
       localStorage.setItem("token", token);
       state.token = token;
+     
       console.log(localStorage);
     },
     logOut: (state) => {
@@ -21,8 +22,8 @@ export const usersSlice = createSlice({
   },
 });
 
-export const { setUsers } = usersSlice.actions;
+export const { setUsers , logOut } = Slice.actions;
 
 export const selectUsers = (state) => state.users.users;
 
-export default usersSlice.reducer;
+export default Slice.reducer;
