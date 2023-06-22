@@ -283,7 +283,7 @@ CREATE TABLE EmpleadosCargos (
   IdEmpleado INT,
   IdCargo INT,
   Descripción VARCHAR(255),
-  CONSTRAINT Fk_CargoIdEmpleado FOREIGN KEY (IdEmpleado) REFERENCES Empleados(IDempleado),
+  CONSTRAINT Fk_CargoIdEmpleado FOREIGN KEY (IdEmpleado) REFERENCES Empleados(IdEmpleado),
   CONSTRAINT Fk_CargoIdCargo FOREIGN KEY (IdCargo) REFERENCES Cargos(IdCargo),
   --
   IdCreadoPor int constraint Fk_ECIdCreadoPor foreign Key references Usuarios(IdUsuario),
@@ -832,6 +832,28 @@ BEGIN
 END
 /*EJECUCION DE PROCEDIMIENTO:
 -- Execute dbo.ListadoProveedores 
+*/
+
+
+
+GO
+-- A CONTINUACIÓN ALGUNOS PROCEDIMIENTOS ALMACENADOS (SECCION --.P.R.O.C.E.D.U.R.E....... P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P):
+--
+--
+--.P.R.O.C.E.D.U.R.E.......P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P Procedimiento almacenado para devolver la lista de Empleados: --
+CREATE OR ALTER PROCEDURE dbo.ListadoEmpleados
+AS
+BEGIN
+    SET NOCOUNT ON 
+	SELECT C.IdCliente, Nombres, Apellidos, Telefono1, Telefono2, Direccion, P.Correo, Edad, FechaDeNacimiento, Cedula, SexoNombre, CiudadNombre, PaisNombre
+    FROM Clientes C INNER JOIN Personas P ON C.IdPersonaDeContacto = p.IdPersona
+					INNER JOIN Sexos S ON P.IdSexo = S.IdSexo
+					INNER JOIN Ciudades CU ON P.IdCiudad = CU.IdCiudad
+					INNER JOIN Paises PA ON CU.IdPais = PA.IdPais
+					WHERE C.IdEstadoRegistro = 1
+END
+/*EJECUCION DE PROCEDIMIENTO:
+-- Execute dbo.ListadoClientes 
 */
 
 
@@ -1498,7 +1520,13 @@ INSERT INTO Personas (Nombres, Apellidos, Telefono1, Telefono2, Direccion, Corre
 /*12*/('Laura', 'Gómez Martínez', '809-234-5678', '809-678-9012', 'Bo. Los Robles, Calle 5, #10', 'laura.gomez@gmail.com', 28, '1995-11-12', '008-2345678-6', 2, 1, 1, GETDATE(), 1, GETDATE(), 1),
 /*13*/('Carlos', 'Santana López', '809-345-6789', '809-890-1234', 'Bo. Los Alamos, Calle 15, #8', 'carlos.santana@gmail.com', 32, '1989-07-20', '009-3456789-7', 1, 2, 1, GETDATE(), 1, GETDATE(), 1),
 /*14*/('Crisencio', 'Sinmi Ruiz', '829-333-1010', '849-202-2620', 'Bo. Los Guilamos, Calle 13, #9', 'sinmi.ruiz@gmail.com', 33, '1985-03-21', '113-2224444-8', 1, 2, 1, GETDATE(), 1, GETDATE(), 1),
-/*15*/('Jolio', 'Carmuel Joanl', '849-103-1299', '829-112-1631', 'Bo. Los Casiz, Calle 11, #90', 'carmuel.joanl@gmail.com', 33, '1995-03-21', '100-0224040-1', 1, 2, 1, GETDATE(), 1, GETDATE(), 1);
+/*15*/('Jolio', 'Carmuel Joanl', '849-103-1299', '829-112-1631', 'Bo. Los Casiz, Calle 11, #90', 'carmuel.joanl@gmail.com', 33, '1995-03-21', '100-0224040-1', 1, 2, 1, GETDATE(), 1, GETDATE(), 1),
+/*16*/('Juan', 'Pérez', '849-555-1234', '809-505-5678', 'Calle Principal 123', 'juan.perez@example.com', 30, '1992-05-10', '1234567890123', 1, 1, 1, GETDATE(), 1, GETDATE(), 1),
+/*17*/('Maria', 'López', '849-555-4321', '809-505-5678', 'Avenida Central 456', 'maria.lopez@example.com', 28, '1994-09-18', '9876543210987', 2, 2, 1, GETDATE(), 1, GETDATE(), 1),
+/*18*/('Alvarez', 'Cruz Filip', '809-055-5078', '829-050-5021', 'Calle Secundaria 789', 'pedro.rodriguez@example.com', 35, '1987-12-03', '4567890123456', 1, 1, 1, GETDATE(), 1, GETDATE(), 1),
+/*19*/('Ana Lia', 'Gómez Lopez', '809-555-8765', '829-555-9071', 'Carrera Principal 321', 'ana.gomez@example.com', 42, '1980-07-22', '7890123456789', 2, 3, 1, GETDATE(), 1, GETDATE(), 1),
+/*20*/('Sofia Sael', 'García Moreno', '849-535-1010', '829-515-9292', 'Avenida Norte 789', 'sofia.garcia@example.com', 31, '1991-03-27', '3456789012345', 2, 2, 1, GETDATE(), 1, GETDATE(), 1),
+/*21*/('Joeli', 'Sabino', '829-312-3303', '809-505-1292', 'Calle Oeste 567', 'carlos.martinez@example.com', 29, '1993-08-14', '5678901234567', 1, 3, 1, GETDATE(), 1, GETDATE(), 1);
 -- Select * FROM Personas
 
 
@@ -1587,6 +1615,49 @@ INSERT INTO Proveedores_Empresas(IdProveedor, IdEmpresa, IdCreadoPor, FechaCreac
 -- Select * FROM Proveedores_Empresas
 GO
 
+
+
+--  Insertar datos en la tabla Cargos:
+INSERT INTO Cargos (NombreCargo, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro) VALUES
+/*1*/('Coordinador de Recursos Humanos', 1, GETDATE(), 1, GETDATE(), 1),
+/*2*/('Jefe Coordinador', 1, GETDATE(), 1, GETDATE(), 1),
+/*3*/('Ingeniero de Redes', 1, GETDATE(), 1, GETDATE(), 1),
+/*4*/('Técnico en Telecomunicaciones', 1, GETDATE(), 1, GETDATE(), 1),
+/*5*/('Administrador de Redes', 1, GETDATE(), 1, GETDATE(), 1),
+/*6*/('Asistente administrativo', 1, GETDATE(), 1, GETDATE(), 1);
+-- Select * FROM Cargos
+GO
+
+
+
+--  Insertar datos en la tabla Empleados:
+INSERT INTO Empleados (FechadDeContratación, IdPersona, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro) VALUES
+/*1*/('2021-01-11', 16, 1, GETDATE(), 1, GETDATE(), 1),
+/*2*/('2022-02-12', 17, 1, GETDATE(), 1, GETDATE(), 1),
+/*3*/('2020-03-13', 18, 1, GETDATE(), 1, GETDATE(), 1),
+/*4*/('2021-01-11', 19, 1, GETDATE(), 1, GETDATE(), 1),
+/*5*/('2022-04-13', 20, 1, GETDATE(), 1, GETDATE(), 1),
+/*6*/('2020-05-14', 21, 1, GETDATE(), 1, GETDATE(), 1);
+-- Select * from Empleados
+GO
+
+
+
+--  Insertar datos en la tabla EmpleadosCargos:
+INSERT INTO EmpleadosCargos (IdEmpleado, IdCargo, Descripción, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro) VALUES
+(1, 1, 'Encargado de gestionar y desarrollar el talento de la organización.', 1, GETDATE(), 1, GETDATE(), 1),
+(2, 2, 'Encargado de coordinar los trabajos diarios en los proyectos.', 1, GETDATE(), 1, GETDATE(), 1),
+(3, 3, 'Responsable del diseño, implementación y mantenimiento de infraestructuras de red.', 1, GETDATE(), 1, GETDATE(), 1),
+(4, 4, 'Encargado de la instalación, configuración y mantenimiento de sistemas de telecomunicaciones.', 1, GETDATE(), 1, GETDATE(), 1),
+(5, 5, 'Responsable de la supervisión, gestión y mantenimiento de la infraestructura de red.', 1, GETDATE(), 1, GETDATE(), 1),
+(6, 6, 'Asistente en el ambito de coordinar los trabajos diarios en los proyectos.', 1, GETDATE(), 1, GETDATE(), 1);
+-- Select * from EmpleadosCargos
+GO
+
+
+
+
+GO
 -- Procedimiento para Obtener usuario y loguear:
 CREATE OR ALTER PROCEDURE dbo.GetUsuarioLogin
 @NombreUsuario varchar(30),
@@ -1604,3 +1675,17 @@ GO
 /*
 Exec GetIdEmpresaByIdCliente @NombreUsuario = 'admin', @Contraseña = 'admin123'
 */
+
+
+	SELECT C.IdCliente, Nombres, Apellidos, Telefono1, Telefono2, Direccion, P.Correo, Edad, FechaDeNacimiento, Cedula, SexoNombre, CiudadNombre, PaisNombre
+    FROM Clientes C INNER JOIN Personas P ON C.IdPersonaDeContacto = p.IdPersona
+					INNER JOIN Sexos S ON P.IdSexo = S.IdSexo
+					INNER JOIN Ciudades CU ON P.IdCiudad = CU.IdCiudad
+					INNER JOIN Paises PA ON CU.IdPais = PA.IdPais
+					WHERE C.IdEstadoRegistro = 1
+					   
+
+Select * From Personas
+
+SELECT Nombres, Apellidos, Telefono1, Telefono2, Direccion, P.Correo, Edad, FechaDeNacimiento, Cedula, SexoNombre, CiudadNombre, PaisNombre 
+FROM Personas AS P INNER JOIN
