@@ -29,11 +29,7 @@ export const Slice = createSlice({
 
 export const { setUser, logOut, setInfoUser } = Slice.actions;
 
-<<<<<<< HEAD
-export default Slice.reducer;
-=======
 export const selectInfoUser = (state) => state.auth.infoUser;
 export const selectCurrentToken = (state) => state.auth.token;
 
 export default Slice.reducer;
->>>>>>> 2cc2a7fd55a550a5a13ed328b3119d4a707eb73a

@@ -96,7 +96,7 @@ export default function Navegation() {
         {userRol === "Administrador" && (
           <ButtonNav
             exact
-            to="proveedor"
+            to="proveedores"
             style={({ isActive }) => {
               return { color: isActive ? "#365583" : "" };
             }}
@@ -122,7 +122,7 @@ export default function Navegation() {
         {userRol === "Administrador" && (
           <ButtonNav
             exact
-            to="cuentaPorCobrar"
+            to="cuenta-por-cobrar"
             style={({ isActive }) => {
               return { color: isActive ? "#365583" : "" };
             }}
@@ -134,7 +134,7 @@ export default function Navegation() {
 
         {userRol === "Administrador" && (
           <ButtonNav
-            to="cuentaPorPagar"
+            to="cuenta-por-pagar"
             style={({ isActive }) => {
               return { color: isActive ? "#365583" : "" };
             }}

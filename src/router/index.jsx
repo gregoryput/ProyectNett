@@ -1,4 +1,4 @@
-import { Navigate, createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter } from "react-router-dom";
 import {
   Cliente,
   CuentaPorCobrar,
@@ -13,16 +13,9 @@ import {
 } from "../views";
 import Login from "../page/Login";
 import ErrorPages from "../page/ErrorPages";
-import Layout from "../page/Layout";
-<<<<<<< HEAD
-
-
-
-const usuario = { rol: "admin" };
-=======
 import RequireLogin from "../utils/require-login";
 import ProtectedRoute from "../components/protected-route/protected-route";
->>>>>>> 2cc2a7fd55a550a5a13ed328b3119d4a707eb73a
+
 
 export const createRouter = () => {
   const router = createBrowserRouter([
@@ -50,6 +43,62 @@ export const createRouter = () => {
               roles={["Administrador De Usuario", "Administrador"]}
             >
               <Usuario />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "/cliente",
+          element: (
+            <ProtectedRoute roles={["Administrador"]}>
+              <Cliente />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "/cuenta-por-cobrar",
+          element: (
+            <ProtectedRoute roles={["Administrador"]}>
+              <CuentaPorCobrar />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "/cuenta-por-pagar",
+          element: (
+            <ProtectedRoute roles={["Administrador"]}>
+              <CuentaPorPagar />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "/inventario",
+          element: (
+            <ProtectedRoute roles={["Administrador"]}>
+              <Inventario />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "/proveedores",
+          element: (
+            <ProtectedRoute roles={["Administrador"]}>
+              <Proveedores />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "/proyecto",
+          element: (
+            <ProtectedRoute roles={["Administrador"]}>
+              <Proyecto />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "/reporte",
+          element: (
+            <ProtectedRoute roles={["Administrador"]}>
+              <Reporte />
             </ProtectedRoute>
           ),
         },

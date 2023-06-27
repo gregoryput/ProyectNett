@@ -4,8 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { useLoginUserMutation } from "../redux/Api/AuthApi";
-import { useDispatch, useSelector } from "react-redux";
-import { setInfoUser } from "../redux/authSlice";
+import { useDispatch } from "react-redux";
 import { JwtUtils } from "../utils";
 //componente creacdo con styled component
 import {
@@ -45,22 +44,10 @@ export default function Login() {
     }
   }, [dispatch, isLoading, loginData?.result]);
 
-<<<<<<< HEAD
-
-
-
-  /// -----------------------------------
-  useEffect(() => {
-
-
-    if (isSuccess) {
-      if(dataUser.success) {
-=======
   useEffect(() => {
     if (isLoginSuccess) {
       if (loginData?.result != null && loginData?.result != "") {
         console.log("autenticacion correcta");
->>>>>>> 2cc2a7fd55a550a5a13ed328b3119d4a707eb73a
         dispatchUser();
     
         navigate("/");
