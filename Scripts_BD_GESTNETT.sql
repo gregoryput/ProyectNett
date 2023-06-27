@@ -1368,16 +1368,12 @@ INSERT INTO Roles (NombreRol, IdEstadoRegistro) VALUES
 ('Asistente Administrativo', 1),
 ('Asistente', 1);
 
-
-
 -- Insertar datos en la tabla Usuarios
 INSERT INTO Usuarios (NombreUsuario, Correo, Contraseña, IdRol, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro) VALUES
-('admin', 'admin@example.com', 'admin123', 1, 1, GETDATE(), 1, GETDATE(), 1),
-('usuario1', 'usuario1@example.com', 'user123', 2, 1, GETDATE(), 1, GETDATE(), 1),
-('usuario2', 'usuario2@example.com', 'user456', 2, 1, GETDATE(), 1, GETDATE(), 1); 
+('gregoryO1', 'greg@gestnett.com', '123', 1, 1, GETDATE(), 1, GETDATE(), 1),
+('carlos01', 'carlos@gestnett.com', '123', 2, 1, GETDATE(), 1, GETDATE(), 1),
+('joselo01', 'joselo@gestnett.com', '123', 2, 1, GETDATE(), 1, GETDATE(), 1); 
 -- Select * FROM Usuarios
-
-
 
 -- Insertar datos en la tabla Sexos
 INSERT INTO Sexos (SexoNombre, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro) VALUES
