@@ -24,8 +24,14 @@ import {
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { logOut } from "../redux/authSlice";
+import { JwtUtils } from "../utils";
 
 export default function MenuBar() {
+  const token = localStorage.getItem("token");
+  const userRol = JwtUtils.getRolesByToken(token);
+  const userName = JwtUtils.getUserNameByToken(token);
+  console.log(userRol);
+
   const [activo, setActivo] = useState(false);
 
   const navigate = useNavigate();
@@ -35,14 +41,14 @@ export default function MenuBar() {
   const handleClick = () => {
     //  var token = localStorage.getItem("token");
     //  if (token){
-       dispatch(logOut());
-       navigate("/login");
+    dispatch(logOut());
+    navigate("/login");
     //  }
-  }
+  };
   return (
     <>
       <DivNav>
-        <DivRoll>Administrador</DivRoll>
+        <DivRoll>{userRol}</DivRoll>
         <IoCalendarNumberOutline
           style={{
             width: 30,
@@ -66,7 +72,7 @@ export default function MenuBar() {
                   color: "#365583",
                 }}
               >
-                Gregoryput{" "}
+                {userName}{" "}
               </p>
               <Avatar>
                 <h1>G</h1>
@@ -102,7 +108,7 @@ export default function MenuBar() {
               />
               Perfil
             </ButtonOption>
-            <ButtonOption onClick={()=> handleClick()}>
+            <ButtonOption onClick={() => handleClick()}>
               <IoExitOutline
                 style={{ width: 20, height: 20, marginRight: 10 }}
               />
