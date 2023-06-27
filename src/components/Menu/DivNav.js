@@ -11,4 +11,5 @@ export const DivNav = styled.nav`
   justify-content: flex-end;
   padding: 0 50px;
   background-color:#fff;
+  zindex: 1000;
 `;

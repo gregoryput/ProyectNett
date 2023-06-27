@@ -1,4 +1,4 @@
-import Cliente from "./Cliente"
+import Cliente from "./ViewsCliente/Cliente"
 import CuentaPorCobrar from "./CuentaPorCobrar"
 import CuentaPorPagar from "./CuentaPorPagar"
 import DashBoard from "./DashBoard"

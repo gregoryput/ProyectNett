@@ -6,7 +6,7 @@ import Layout from "../page/Layout";
 
 
 
-const usuario = { rol: "usuario" };
+const usuario = { rol: "admin" };
 
 export const createRouter = () => {
 

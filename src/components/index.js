@@ -20,12 +20,20 @@ import { Row } from "./LayoutComponent/Row";
 import { ViewContainerPages } from "./LayoutComponent/ViewContainerPages";
 import { DivRoll } from "./Menu/DivRoll";
 import { Spinner } from "./LoadingSpinnerForms/loadingSpinnerForms.styled";
+import { ContainerButton } from "./Formularios/ContainerButton";
+import { DivAnimetor } from "./Formularios/divAnimetor";
+import { ContainerForm } from "./Formularios/ContainerForm";
+import { InputFor } from "./Formularios/InputFor";
+import { LabelFor } from "./Formularios/LabelFor";
+import { Option, Select, } from "./Formularios/Select";
+import { ContainerTable } from "./Formularios/ContainerTable";
 
 
 
 
 /// importanciones de los componente 
 export {
+    /// componente de login 
     FormContainer, 
     Input,
     Label, 
@@ -55,9 +63,16 @@ export {
     DivRoll,
 
  /// pantallla y componente de cargas 
-    Spinner
+    Spinner,
     
-
-
- 
+//// componente de formularios de cliente proveedores ...
+    ContainerButton,
+    DivAnimetor,
+    ContainerForm,
+    InputFor,
+    LabelFor,
+    Option,
+    Select,
+    ContainerTable,
+    
 };

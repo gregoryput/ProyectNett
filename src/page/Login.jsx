@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+
 //libreria para implementar formularios
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
@@ -43,13 +44,17 @@ export default function Login() {
     }
 }, [dispatch, isLoading, dataUser?.result]);
 
+
+
+
   /// -----------------------------------
   useEffect(() => {
 
+
     if (isSuccess) {
       if(dataUser.success) {
-        console.log("autenticacion correcta");
         dispatchUser();
+    
         navigate("/");
       }
     }
@@ -72,10 +77,9 @@ export default function Login() {
 
   /// -----------------------------------
   const onSubmit = async (data) => {
-    const result = await loginUser(data);
-    console.log(result);
-    //console.log(data, isSuccess, isLoading);
+     await loginUser(data);
   };
+
 
   return (
     <>
