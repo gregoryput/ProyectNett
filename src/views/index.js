@@ -7,6 +7,7 @@ import Proveedores from "./Proveedores"
 import Proyecto from "./Proyecto"
 import Reporte from "./Reporte"
 import Usuario from "./Usuario"
+import Home from "./Home"
 
 ///importaciones de las views de la app system
 
@@ -20,5 +21,5 @@ export {
     CuentaPorCobrar,
     CuentaPorPagar,
     Inventario,
-
+    Home,
 }

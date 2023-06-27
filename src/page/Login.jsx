@@ -3,8 +3,9 @@ import { useState, useEffect, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { useLoginUserMutation } from "../redux/Api/AuthApi";
-import { useDispatch } from "react-redux";
-import { verifyTokenExpiration } from "../utils/jwt-utils";
+import { useDispatch, useSelector } from "react-redux";
+import { setInfoUser } from "../redux/authSlice";
+import { JwtUtils } from "../utils";
 //componente creacdo con styled component
 import {
   DivContainerPage,
@@ -17,7 +18,7 @@ import {
   Spinner,
 } from "../components";
 
-import { setUsers } from "../redux/authSlice";
+import { setUser } from "../redux/authSlice";
 /// libreria de iconos
 import { IoEyeOutline, IoEyeOffOutline } from "react-icons/io5";
 //// importacion de logo de la empresa
@@ -30,35 +31,38 @@ export default function Login() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const [loginUser, { data: dataUser, isSuccess, isLoading }] = useLoginUserMutation();
+  const [loginUser, { data: loginData, isSuccess: isLoginSuccess, isLoading }] =
+    useLoginUserMutation();
 
   const dispatchUser = useCallback(() => {
-    if (!isLoading) {
-        dispatch(
-            setUsers({
-                token: dataUser?.result,
-                
-            }),
-        );
+    if (!isLoading && loginData?.result != "" && loginData?.result != null) {
+      dispatch(
+        setUser({
+          token: loginData?.result,
+        })
+      );
     }
-}, [dispatch, isLoading, dataUser?.result]);
+  }, [dispatch, isLoading, loginData?.result]);
 
-  /// -----------------------------------
   useEffect(() => {
-
-    if (isSuccess) {
-      if(dataUser.success) {
+    if (isLoginSuccess) {
+      if (loginData?.result != null && loginData?.result != "") {
         console.log("autenticacion correcta");
         dispatchUser();
         navigate("/");
       }
+      if (loginData?.result == null) {
+        console.log("autenticacion correcta");
+      }
     }
-  }, [isSuccess,dispatchUser,navigate,dataUser]);
+  }, [dispatchUser, isLoginSuccess, loginData?.result, navigate]);
 
-  /// -----------------------------------
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (verifyTokenExpiration(token) ) {
+    if (JwtUtils.verifyTokenExpiration(token)) {
+      navigate("/login");
+    }
+    else{
       navigate("/");
     }
   }, [navigate]);
@@ -85,7 +89,6 @@ export default function Login() {
         <FormContainer onSubmit={handleSubmit(onSubmit)}>
           <Label> Usuario </Label>
           <Input
-         
             placeholder="Usuario@gestnett.com"
             {...register("NombreUsuario", {
               required: true,
@@ -109,7 +112,6 @@ export default function Login() {
                 minLength: 1,
                 maxLength: 50,
               })}
-              
             />
 
             <button
@@ -131,7 +133,7 @@ export default function Login() {
             </span>
           )}
           <Button type="submit">
-            {isLoading ? <Spinner/> : "Iniciar Sesion"}
+            {isLoading ? <Spinner /> : "Iniciar Sesion"}
           </Button>
         </FormContainer>
       </DivContainerPage>
