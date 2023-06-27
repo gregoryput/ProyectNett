@@ -65,7 +65,7 @@ namespace ProyectNettApi.Controllers
                 jwt.Issuer,
                 jwt.Audience,
                 claims,
-                expires: DateTime.Now.AddMinutes(60),
+                expires: DateTime.Now.AddMinutes(10),
                 signingCredentials: singIng
                 );
 
