@@ -22,14 +22,12 @@ import { DivRoll } from "./Menu/DivRoll";
 import { Spinner } from "./Spinner/Spinner";
 import { ContainerButton } from "./Formularios/ContainerButton";
 import { DivAnimetor } from "./Formularios/divAnimetor";
-import { ContainerForm } from "./Formularios/ContainerForm";
+import { ContainerForm, ContainerFormPrueba, PrincipalContainerForm } from "./Formularios/ContainerForm";
 import { InputFor } from "./Formularios/InputFor";
 import { LabelFor } from "./Formularios/LabelFor";
 import { Option, Select } from "./Formularios/Select";
 import { ContainerTable } from "./Formularios/ContainerTable";
 import { NotificationContainer } from "./notifiaciones/notificaciones";
-import { ContainerFormPrueba } from "./Formularios/ContainerForm";
-import { PrincipalContainerForm } from "./Formularios/ContainerForm";
 
 /// importanciones de los componente
 export {
