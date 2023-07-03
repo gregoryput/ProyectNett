@@ -23,7 +23,7 @@ import {
 
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { logOut } from "../redux/authSlice";
+import { logOut } from "../redux/Slice/authSlice";
 import { JwtUtils } from "../utils";
 
 export default function MenuBar() {

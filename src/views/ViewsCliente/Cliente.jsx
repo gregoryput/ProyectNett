@@ -1,54 +1,39 @@
-import { useState } from 'react';
-import { Space, Table } from 'antd';
-import { ContainerButton, ContainerForm, DivAnimetor, InputFor, LabelFor, Option, Select, ViewContainerPages } from '../../components'
-
+import { useState } from "react";
+import { Space, Table, Skeleton } from "antd";
 import {
-  IoChevronDownSharp,
-  IoCloseCircleOutline,
-} from "react-icons/io5";
-import { useForm } from 'react-hook-form';
+  ContainerButton,
+  DivAnimetor,
+  ViewContainerPages,
+} from "../../components";
 
+import { FormClientes } from "./Form";
+import { useGetClientsQuery } from "../../redux/Api/clientsApi";
 
-const options = [
-  { value: 'option1', label: 'Option 1' },
-  { value: 'option2', label: 'Option 2' },
-  { value: 'option3', label: 'Option 3' },
-];
+import { IoChevronDownSharp, IoCloseCircleOutline } from "react-icons/io5";
 
-
-
-
-export default function Cliente()
- {
-  const [toggle, setToggle] = useState(true)
+export default function Cliente() {
+  const [toggle, setToggle] = useState(true);
 
   const {
-    register,
-    handleSubmit,
-   //formState: { errors },
-  } = useForm()
+    data: clientesData,
+    isSuccess: isClientsSuccess,
+    isLoading: isLoadingClients,
+  } = useGetClientsQuery("");
 
-  const onSubmit = (data) => console.log(data)
-
-
-  // const handleChange = (event) => {
-  //   // console.log('Selected option:', event.target.value);
-  // };
-
+  console.log(clientesData);
 
   return (
-    <ViewContainerPages >
-    <ContainerButton   onClick={()=> setToggle(!toggle)}>
+    <ViewContainerPages>
+      <ContainerButton onClick={() => setToggle(!toggle)}>
         <h4>Crear nuevo cliente</h4>
         <DivAnimetor>
-        <IoChevronDownSharp style={{width: 20, height:20}} />
+          <IoChevronDownSharp style={{ width: 20, height: 20 }} />
         </DivAnimetor>
       </ContainerButton>
-       
 
-       <ContainerForm display={toggle} >
-        <div style={{display:"flex" ,alignItems:"center" ,marginBottom:50, borderBottom:"1px solid #cecece "}}>
+      <FormClientes toggle={toggle} />
 
+<<<<<<< HEAD
         <h3>Información personal </h3>
         </div>
         
@@ -123,64 +108,16 @@ export default function Cliente()
 
 
       <Tabla/>
+=======
+      {isLoadingClients ? <Skeleton active /> : <Tabla data={clientesData?.result} />}
+>>>>>>> 0bf79c873628f10f3254c70c4998e2b1243ed4e8
     </ViewContainerPages>
-  )
+  );
 }
-
-
-
-
-
 
 const { Column } = Table;
 
-function Tabla() {
-  
-  const data = [
-    {
-      key: '1',
-      Nombre: 'John',
-      Apellido: 'Brown',
-      'Telefono 1': '123456789',
-      'Telefono 2': '987654321', // Opcional
-      Direccion: 'New York No. 1 Lake Park',
-      Correo: 'john@example.com',
-      Celular: '9876543210',
-      Edad: 32,
-      Sexo: 'Masculino',
-      Pais: 'Estados Unidos',
-      Ciudad: 'Nueva York',
-    },
-    {
-      key: '2',
-      Nombre: 'Jim',
-      Apellido: 'Green',
-      'Telefono 1': '987654321',
-      'Telefono 2': '', // Opcional (dejar en blanco)
-      Direccion: 'London No. 1 Lake Park',
-      Correo: 'jim@example.com',
-      Celular: '1234567890',
-      Edad: 42,
-      Sexo: 'Masculino',
-      Pais: 'Reino Unido',
-      Ciudad: 'Londres',
-    },
-    {
-      key: '3',
-      Nombre: 'Joe',
-      Apellido: 'Black',
-      'Telefono 1': '555555555',
-      'Telefono 2': '999999999', // Opcional
-      Direccion: 'Sydney No. 1 Lake Park',
-      Correo: 'joe@example.com',
-      Celular: '1231231234',
-      Edad: 32,
-      Sexo: 'Masculino',
-      Pais: 'Australia',
-      Ciudad: 'Sídney',
-    },
-  ];
-
+function Tabla(props) {
   return (
     <div style={{ margin:12 ,border:"1px solid #e2e2e2" ,padding:20,borderRadius:12 }} >  
     <Table dataSource={data} >
@@ -195,13 +132,19 @@ function Tabla() {
       key="action"
      
 
-      render={(_, record) => (
-        <Space size="middle">
-          <button>Invite {record.lastName}</button>
-          <button><IoCloseCircleOutline/></button>
-        </Space>
-      )}
-    />
-  </Table></div>
-  )
+        <Column
+          title="Accion"
+          key="action"
+          render={(_, record) => (
+            <Space size="middle">
+              <button>Invite {record.lastName}</button>
+              <button>
+                <IoCloseCircleOutline />
+              </button>
+            </Space>
+          )}
+        />
+      </Table>
+    </div>
+  );
 }

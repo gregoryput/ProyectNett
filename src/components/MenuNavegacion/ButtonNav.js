@@ -1,37 +1,30 @@
-import { NavLink,} from 'react-router-dom';
-import { styled } from "styled-components";
+import { NavLink } from "react-router-dom";
+import styled from "styled-components";
 import { LabelNav } from "./LabelNav";
 
-
-
-
-export  const ButtonNav= styled(NavLink)`
+export const ButtonNav = styled(NavLink)`
   outline: none;
   border: none;
   display: flex;
   border-radius: 12px;
   align-items: center;
   cursor: pointer;
-  height:40px;
-  width:90%;
-  padding-left: 14px ;
+  height: 40px;
+  width: 90%;
+  padding-left: 14px;
   margin: 10px 5px;
   background-color: #fff;
   font-weight: 400;
-  color:#9c9c9c ;
+  color: #9c9c9c;
   overflow: hidden;
   text-decoration: none;
-  
+
   &:hover {
-    color:#1C3C6D;
-    background-color: #E4E4E490;
-    
+    color: #1c3c6d;
+    background-color: #e4e4e490;
   }
-  
- 
-  
+
   &:hover ${LabelNav} {
-    color:#1C3C6D;
+    color: #1c3c6d;
   }
- 
-`
+`;

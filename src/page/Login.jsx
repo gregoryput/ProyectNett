@@ -18,7 +18,8 @@ import {
 
 } from "../components";
 
-import { setUser } from "../redux/authSlice";
+import { setUser } from "../redux/slice/authSlice";
+
 /// libreria de iconos
 import { IoEyeOutline, IoEyeOffOutline } from "react-icons/io5";
 //// importacion de logo de la empresa
@@ -34,6 +35,7 @@ export default function Login() {
   const [loginUser, { data: loginData, isSuccess: isLoginSuccess, isLoading }] =
     useLoginUserMutation();
 
+  
   const dispatchUser = useCallback(() => {
     if (!isLoading && loginData?.result != "" && loginData?.result != null) {
       dispatch(
@@ -43,13 +45,14 @@ export default function Login() {
       );
     }
   }, [dispatch, isLoading, loginData?.result]);
+  
 
   useEffect(() => {
     if (isLoginSuccess) {
       if (loginData?.result != null && loginData?.result != "") {
         console.log("autenticacion correcta");
         dispatchUser();
-    
+
         navigate("/");
       }else{
         console.log("autenticacion incorrecta");
@@ -60,14 +63,13 @@ export default function Login() {
         console.log("autenticacion correcta");
       }
     }
-  }, [dispatchUser, isLoginSuccess, loginData?.result, navigate]);
+  }, [isLoginSuccess, loginData?.result, navigate]);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (JwtUtils.verifyTokenExpiration(token)) {
       navigate("/login");
-    }
-    else{
+    } else {
       navigate("/");
     }
   }, [navigate]);
@@ -81,9 +83,8 @@ export default function Login() {
 
   /// -----------------------------------
   const onSubmit = async (data) => {
-     await loginUser(data);
+    await loginUser(data);
   };
-
 
   return (
     <>

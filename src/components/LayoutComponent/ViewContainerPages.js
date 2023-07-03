@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled from "styled-components";
 
 export const ViewContainerPages = styled.div`
   margin-left:80px;
