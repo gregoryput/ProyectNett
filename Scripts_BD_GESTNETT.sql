@@ -930,10 +930,10 @@ Create or Alter procedure dbo.InsertarPersona
   BEGIN
       Set nocount On
 	  Insert Into Personas(Nombres, Apellidos, Telefono1, Telefono2, Direccion, Correo, Edad, FechaDeNacimiento, Cedula, IdSexo, 
-	                       IdCiudad, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro)
+	                       IdCiudad, IdCreadoPor, FechaCreacion, IdEstadoRegistro)
 
 				  Values(@Nombres, @Apellidos, @Telefono1, @Telefono2, @Direccion, @Correo, @Edad, @FechaDeNacimiento, @Cedula, 
-				  @IdSexo, @IdCiudad, @IdCreadoPor, @FechaCreacion, @IdModificadoPor, @FechaModificacion, @IdEstadoRegistro)
+				  @IdSexo, @IdCiudad, @IdCreadoPor, GETDATE(), 1)
 
 				  Select SCOPE_IDENTITY();
 END
@@ -946,6 +946,7 @@ EXEC dbo.InsertarPersona @IdPersona = 0, @Nombres = 'Ignacio Mael', @Apellidos =
 						  @IdCiudad = 2, @IdCreadoPor = 1, @FechaCreacion = @FechaActual, @IdModificadoPor = 1, @FechaModificacion = @FechaActual,
 						  @IdEstadoRegistro = 1;
 */ -- Select * From Personas
+
 
 GO
 --
@@ -962,8 +963,8 @@ Create or Alter procedure dbo.InsertarCliente
   AS
   BEGIN
       Set nocount On
-	  Insert Into Clientes (IdPersonaDeContacto, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro) 
-	                 VALUES(@IdPersona, @IdCreadoPor,  GETDATE(), @IdModificadoPor,  GETDATE(), @IdEstadoRegistro)
+	  Insert Into Clientes (IdPersonaDeContacto, IdCreadoPor, FechaCreacion, IdEstadoRegistro) 
+	                 VALUES(@IdPersona, @IdCreadoPor,  GETDATE(), 1)
 
 	  SELECT SCOPE_IDENTITY();
 END
@@ -999,11 +1000,9 @@ Create or Alter procedure dbo.InsertarEmpresa
   AS
   BEGIN
       Set nocount On
-	  Insert Into Empresas(NombreEmpresa, RNC, Correo, Teléfono1, Teléfono2, SitioWeb, Dirección, IdCiudad, IdCreadoPor, FechaCreacion, 
-	                       IdModificadoPor, FechaModificacion, IdEstadoRegistro)
+	  Insert Into Empresas(NombreEmpresa, RNC, Correo, Teléfono1, Teléfono2, SitioWeb, Dirección, IdCiudad, IdCreadoPor, FechaCreacion, IdEstadoRegistro)
 
-				  VALUES(@NombreEmpresa, @RNC, @Correo, @Teléfono1, @Teléfono2, @SitioWeb, @Dirección, @IdCiudad, @IdCreadoPor, 
-				  @FechaCreacion, @IdModificadoPor, @FechaModificacion, @IdEstadoRegistro)
+				  VALUES(@NombreEmpresa, @RNC, @Correo, @Teléfono1, @Teléfono2, @SitioWeb, @Dirección, @IdCiudad, @IdCreadoPor, @FechaCreacion, 1)
 
 				  SELECT SCOPE_IDENTITY();
 END
@@ -1033,8 +1032,8 @@ Create or Alter procedure dbo.Insertar_Cliente_Empresa
   AS
   BEGIN
       Set nocount On
-	  Insert Into Clientes_Empresas(IdCliente, IdEmpresa, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro)
-				         VALUES(@IdCliente, @IdEmpresa, @IdCreadoPor, GETDATE(), @IdModificadoPor, GETDATE(), @IdEstadoRegistro)
+	  Insert Into Clientes_Empresas(IdCliente, IdEmpresa, IdCreadoPor, FechaCreacion, IdEstadoRegistro)
+				         VALUES(@IdCliente, @IdEmpresa, @IdCreadoPor, GETDATE(), 1)
 END
 /* EJECUCION DEL PROCEDIMIENTO
 DECLARE @FechaActual DATETIME = GETDATE(); -- 'Fecha actual'
@@ -1370,9 +1369,12 @@ INSERT INTO Roles (NombreRol, IdEstadoRegistro) VALUES
 
 -- Insertar datos en la tabla Usuarios
 INSERT INTO Usuarios (NombreUsuario, Correo, Contraseña, IdRol, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro) VALUES
-('gregoryO1', 'greg@gestnett.com', '123', 1, 1, GETDATE(), 1, GETDATE(), 1),
+('gregory01', 'greg@gestnett.com', '123', 1, 1, GETDATE(), 1, GETDATE(), 1),
 ('carlos01', 'carlos@gestnett.com', '123', 2, 1, GETDATE(), 1, GETDATE(), 1),
-('joselo01', 'joselo@gestnett.com', '123', 2, 1, GETDATE(), 1, GETDATE(), 1); 
+('joselo01', 'joselo@gestnett.com', '123', 2, 1, GETDATE(), 1, GETDATE(), 1),
+('cristian01', 'cristiano@gestnett.com', '123', 3, 1, GETDATE(), 1, GETDATE(), 1),
+('pedro01', 'pedro@gestnett.com', '123', 4, 1, GETDATE(), 1, GETDATE(), 1),
+('juan01andres', 'juan@gestnett.com', '123', 1, 1, GETDATE(), 1, GETDATE(), 1);
 -- Select * FROM Usuarios
 
 -- Insertar datos en la tabla Sexos
@@ -1673,15 +1675,5 @@ Exec GetIdEmpresaByIdCliente @NombreUsuario = 'admin', @Contraseña = 'admin123'
 */
 
 
-	SELECT C.IdCliente, Nombres, Apellidos, Telefono1, Telefono2, Direccion, P.Correo, Edad, FechaDeNacimiento, Cedula, SexoNombre, CiudadNombre, PaisNombre
-    FROM Clientes C INNER JOIN Personas P ON C.IdPersonaDeContacto = p.IdPersona
-					INNER JOIN Sexos S ON P.IdSexo = S.IdSexo
-					INNER JOIN Ciudades CU ON P.IdCiudad = CU.IdCiudad
-					INNER JOIN Paises PA ON CU.IdPais = PA.IdPais
-					WHERE C.IdEstadoRegistro = 1
-					   
-
 Select * From Personas
 
-SELECT Nombres, Apellidos, Telefono1, Telefono2, Direccion, P.Correo, Edad, FechaDeNacimiento, Cedula, SexoNombre, CiudadNombre, PaisNombre 
-FROM Personas AS P INNER JOIN
