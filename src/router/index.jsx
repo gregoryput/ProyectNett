@@ -14,7 +14,7 @@ import {
 import Login from "../page/Login";
 import ErrorPages from "../page/ErrorPages";
 import RequireLogin from "../utils/require-login";
-import ProtectedRoute from "../components/protected-route/protected-route";
+import ProtectedRoute from "./protected-route/protected-route";
 
 
 export const createRouter = () => {

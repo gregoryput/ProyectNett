@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback } from "react";
-
 //libreria para implementar formularios
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
@@ -16,6 +15,7 @@ import {
   DivPassword,
   ButtonPassword as StyleButtonPassword,
   Spinner,
+
 } from "../components";
 
 import { setUser } from "../redux/authSlice";
@@ -51,6 +51,10 @@ export default function Login() {
         dispatchUser();
     
         navigate("/");
+      }else{
+        console.log("autenticacion incorrecta");
+     
+  
       }
       if (loginData?.result == null) {
         console.log("autenticacion correcta");
@@ -85,7 +89,7 @@ export default function Login() {
     <>
       <DivContainerPage>
         <img style={{ marginBottom: "50px" }} src={logo} />
-
+        
         <FormContainer onSubmit={handleSubmit(onSubmit)}>
           <Label> Usuario </Label>
           <Input
@@ -133,7 +137,7 @@ export default function Login() {
             </span>
           )}
           <Button type="submit">
-            {isLoading ? <Spinner /> : "Iniciar Sesion"}
+            {isLoading ? <Spinner/> : "Iniciar Sesion"}
           </Button>
         </FormContainer>
       </DivContainerPage>

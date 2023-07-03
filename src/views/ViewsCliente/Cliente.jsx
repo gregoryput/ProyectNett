@@ -49,7 +49,7 @@ export default function Cliente()
        <ContainerForm display={toggle} >
         <div style={{display:"flex" ,alignItems:"center" ,marginBottom:50, borderBottom:"1px solid #cecece "}}>
 
-        <h3>Informacion personal </h3>
+        <h3>Información personal </h3>
         </div>
         
         <form  style={{display: "grid", gridTemplateColumns: "0.5fr 0.5fr 0.5fr", gap: 5 ,marginTop:20}} onSubmit={handleSubmit(onSubmit)}>
@@ -182,7 +182,7 @@ function Tabla() {
   ];
 
   return (
-    <div style={{ margin:30 ,border:"1px solid #e2e2e2" ,padding:20,borderRadius:12 }} >  
+    <div style={{ margin:12 ,border:"1px solid #e2e2e2" ,padding:20,borderRadius:12 }} >  
     <Table dataSource={data} >
         <Column title="Nombre" dataIndex="Nombre" key="Nombre" />
         <Column title="Apellido" dataIndex="Apellido" key="Apellido" />

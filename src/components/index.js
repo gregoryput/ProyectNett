@@ -19,7 +19,7 @@ import { Column } from "./LayoutComponent/Column";
 import { Row } from "./LayoutComponent/Row";
 import { ViewContainerPages } from "./LayoutComponent/ViewContainerPages";
 import { DivRoll } from "./Menu/DivRoll";
-import { Spinner } from "./LoadingSpinnerForms/loadingSpinnerForms.styled";
+import { Spinner } from "./Spinner/Spinner";
 import { ContainerButton } from "./Formularios/ContainerButton";
 import { DivAnimetor } from "./Formularios/divAnimetor";
 import { ContainerForm } from "./Formularios/ContainerForm";
@@ -27,6 +27,7 @@ import { InputFor } from "./Formularios/InputFor";
 import { LabelFor } from "./Formularios/LabelFor";
 import { Option, Select, } from "./Formularios/Select";
 import { ContainerTable } from "./Formularios/ContainerTable";
+import { NotificationContainer } from "./notifiaciones/notificaciones";
 
 
 
@@ -62,8 +63,9 @@ export {
     ViewContainerPages,
     DivRoll,
 
- /// pantallla y componente de cargas 
+ /// spinner y notifiaciones 
     Spinner,
+    NotificationContainer,
     
 //// componente de formularios de cliente proveedores ...
     ContainerButton,
@@ -76,3 +78,4 @@ export {
     ContainerTable,
     
 };
+

@@ -30,7 +30,6 @@ export default function MenuBar() {
   const token = localStorage.getItem("token");
   const userRol = JwtUtils.getRolesByToken(token);
   const userName = JwtUtils.getUserNameByToken(token);
-  console.log(userRol);
 
   const [activo, setActivo] = useState(false);
 
@@ -48,6 +47,7 @@ export default function MenuBar() {
   return (
     <>
       <DivNav>
+       
         <DivRoll>{userRol}</DivRoll>
         <IoCalendarNumberOutline
           style={{
@@ -75,7 +75,7 @@ export default function MenuBar() {
                 {userName}{" "}
               </p>
               <Avatar>
-                <h1>G</h1>
+                <h1>{userName[0].toUpperCase()}</h1>
               </Avatar>
             </ButtonMenu>
           </div>

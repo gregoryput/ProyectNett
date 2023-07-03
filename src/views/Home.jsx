@@ -4,21 +4,8 @@ export default function Home()
  {
   return (
     <ViewContainerPages >
-        <h1>Bienvenido a ProyeNett</h1>
-        <h1>Bienvenido a ProyeNett</h1>
-        <h1>Bienvenido a ProyeNett</h1>
-        <h1>Bienvenido a ProyeNett</h1>
-        <h1>Bienvenido a ProyeNett</h1>
-        <h1>Bienvenido a ProyeNett</h1>
-        <h1>Bienvenido a ProyeNett</h1>
-        <h1>Bienvenido a ProyeNett</h1>
-        <h1>Bienvenido a ProyeNett</h1>
-        <h1>Bienvenido a ProyeNett</h1>
-        <h1>Bienvenido a ProyeNett</h1>
-        <h1>Bienvenido a ProyeNett</h1>
-        <h1>Bienvenido a ProyeNett</h1>
-        <h1>Bienvenido a ProyeNett</h1>
-        <h1>Bienvenido a ProyeNett</h1>
+        <h1>Bienvenido</h1>
+      
     </ViewContainerPages>
   )
 }

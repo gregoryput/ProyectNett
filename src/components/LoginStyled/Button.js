@@ -11,6 +11,9 @@ export  const Button = styled.button`
     border-radius: 5px;
     font-size: 14px;
     margin-top:60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     &:hover {
         background-color: ${Colores.Azulclaro};
         cursor: pointer;
