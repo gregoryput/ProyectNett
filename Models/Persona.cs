@@ -27,7 +27,6 @@ namespace ProyectNettApi.Models
         //<--
 
         [RegularExpression(@"^\d{3}-\d{3}-\d{4}$", ErrorMessage = "El formato del número de teléfono no es válido.")]
-        [Required(ErrorMessage = "Este campo es requerido")]
         public string Telefono2 { get; set; }
         //<--
         //<--
