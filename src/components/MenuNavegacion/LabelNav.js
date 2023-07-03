@@ -1,4 +1,4 @@
-import styled,{keyframes} from 'styled-components';
+import styled, { keyframes } from "styled-components";
 
 export const slideRightAnimation = keyframes`
   from {
@@ -14,20 +14,16 @@ export const slideRightAnimation = keyframes`
 
   }`;
 
-
-export  const LabelNav= styled.span`
+export const LabelNav = styled.span`
   font-weight: 400;
   font-size: 12px;
-  color:#9c9c9c;
-  border:none;
-  background-color:transparent;
-  margin : 0 15px;
+  color: #9c9c9c;
+  border: none;
+  background-color: transparent;
+  margin: 0 15px;
   text-align: left;
   cursor: pointer;
   animation: ${slideRightAnimation} 0.3s ease-in-out;
   display: none;
-  min-width:120px;
-  
-
- 
-`
+  min-width: 120px;
+`;

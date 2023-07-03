@@ -1,7 +1,6 @@
- 
- import styled from 'styled-components';
+import styled from "styled-components";
 
- export const Avatar = styled.div`
+export const Avatar = styled.div`
   display: flex;
   height: 40px;
   width: 40px;

@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled from "styled-components";
 import { Colores} from "../GlobalColor"
 
 export const Select = styled.select`

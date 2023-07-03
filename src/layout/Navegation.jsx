@@ -22,7 +22,6 @@ const style = { minWidth: 22, height: 22, margin: 2 };
 export default function Navegation() {
   const token = localStorage.getItem("token");
   const userRol = JwtUtils.getRolesByToken(token);
-  console.log("DENTRO DEL Navegation", userRol);
 
   return (
     <>

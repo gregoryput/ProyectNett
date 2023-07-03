@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Space, Table } from "antd";
+import { Space, Table, Skeleton } from "antd";
 import {
   ContainerButton,
   DivAnimetor,
@@ -7,11 +7,20 @@ import {
 } from "../../components";
 
 import { FormClientes } from "./Form";
+import { useGetClientsQuery } from "../../redux/Api/clientsApi";
 
 import { IoChevronDownSharp, IoCloseCircleOutline } from "react-icons/io5";
 
 export default function Cliente() {
   const [toggle, setToggle] = useState(true);
+
+  const {
+    data: clientesData,
+    isSuccess: isClientsSuccess,
+    isLoading: isLoadingClients,
+  } = useGetClientsQuery("");
+
+  console.log(clientesData);
 
   return (
     <ViewContainerPages>
@@ -24,59 +33,14 @@ export default function Cliente() {
 
       <FormClientes toggle={toggle} />
 
-      <Tabla />
+      {isLoadingClients ? <Skeleton active /> : <Tabla data={clientesData?.result} />}
     </ViewContainerPages>
   );
 }
 
 const { Column } = Table;
 
-function Tabla() {
-  const data = [
-    {
-      key: "1",
-      Nombre: "John",
-      Apellido: "Brown",
-      "Telefono 1": "123456789",
-      "Telefono 2": "987654321", // Opcional
-      Direccion: "New York No. 1 Lake Park",
-      Correo: "john@example.com",
-      Celular: "9876543210",
-      Edad: 32,
-      Sexo: "Masculino",
-      Pais: "Estados Unidos",
-      Ciudad: "Nueva York",
-    },
-    {
-      key: "2",
-      Nombre: "Jim",
-      Apellido: "Green",
-      "Telefono 1": "987654321",
-      "Telefono 2": "", // Opcional (dejar en blanco)
-      Direccion: "London No. 1 Lake Park",
-      Correo: "jim@example.com",
-      Celular: "1234567890",
-      Edad: 42,
-      Sexo: "Masculino",
-      Pais: "Reino Unido",
-      Ciudad: "Londres",
-    },
-    {
-      key: "3",
-      Nombre: "Joe",
-      Apellido: "Black",
-      "Telefono 1": "555555555",
-      "Telefono 2": "999999999", // Opcional
-      Direccion: "Sydney No. 1 Lake Park",
-      Correo: "joe@example.com",
-      Celular: "1231231234",
-      Edad: 32,
-      Sexo: "Masculino",
-      Pais: "Australia",
-      Ciudad: "Sídney",
-    },
-  ];
-
+function Tabla(props) {
   return (
     <div
       style={{
@@ -86,12 +50,12 @@ function Tabla() {
         borderRadius: 12,
       }}
     >
-      <Table dataSource={data}>
-        <Column title="Nombre" dataIndex="Nombre" key="Nombre" />
-        <Column title="Apellido" dataIndex="Apellido" key="Apellido" />
-        <Column title="Teléfono 1" dataIndex="Telefono 1" key="Telefono 1" />
-        <Column title="Correo" dataIndex="Correo" key="Correo" />
-        <Column title="Celular" dataIndex="Celular" key="Celular" />
+      <Table dataSource={props.data}>
+        <Column title="Nombres" dataIndex="nombres" key="nombres" />
+        <Column title="Apellidos" dataIndex="apellidos" key="apellidos" />
+        <Column title="Teléfono 1" dataIndex="telefono1" key="telefono1" />
+        <Column title="Correo" dataIndex="correo" key="correo" />
+        <Column title="Celular" dataIndex="telefono1" key="telefono1" />
 
         <Column
           title="Accion"

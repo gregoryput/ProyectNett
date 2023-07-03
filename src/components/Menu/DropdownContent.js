@@ -1,5 +1,4 @@
-import styled, { keyframes } from 'styled-components';
-
+import styled, { keyframes } from "styled-components";
 
 const scaleAnimation = keyframes`
   0% {
@@ -11,21 +10,19 @@ const scaleAnimation = keyframes`
   }
 `;
 
-
 export const DropdownContent = styled.div`
-  display: ${(props) => (props.activo ? 'block' : 'none')};
-  background-color:#F9F9F9;
+  display: ${(props) => (props.activo ? "block" : "none")};
+  background-color: #f9f9f9;
   width: 290px;
-  height:200px;
-  position:absolute;
+  height: 200px;
+  position: absolute;
   top: 60px;
-  right:50px;
+  right: 50px;
   box-shadow: 0px 1px 15px 2px rgba(0, 0, 0, 0.2);
   z-index: 100;
-  border-radius:12px;
-  
-  transform: scale(0.90);
+  border-radius: 12px;
+
+  transform: scale(0.9);
   transition: transfrom 0.3s ease-in;
-  animation: ${scaleAnimation} 0.3s ;
-  
+  animation: ${scaleAnimation} 0.3s;
 `;
