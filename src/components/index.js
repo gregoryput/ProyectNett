@@ -28,6 +28,8 @@ import { LabelFor } from "./Formularios/LabelFor";
 import { Option, Select } from "./Formularios/Select";
 import { ContainerTable } from "./Formularios/ContainerTable";
 import { NotificationContainer } from "./notifiaciones/notificaciones";
+import { ContainerFormPrueba } from "./Formularios/ContainerForm";
+import { PrincipalContainerForm } from "./Formularios/ContainerForm";
 
 /// importanciones de los componente
 export {
@@ -74,6 +76,7 @@ export {
     Option,
     Select,
     ContainerTable,
-    
+    ContainerFormPrueba,
+    PrincipalContainerForm,
 };
 
