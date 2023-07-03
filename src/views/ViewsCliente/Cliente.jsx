@@ -42,18 +42,20 @@ const { Column } = Table;
 
 function Tabla(props) {
   return (
-    <div style={{ margin:12 ,border:"1px solid #e2e2e2" ,padding:20,borderRadius:12 }} >  
-    <Table dataSource={data} >
-        <Column title="Nombre" dataIndex="Nombre" key="Nombre" />
-        <Column title="Apellido" dataIndex="Apellido" key="Apellido" />
-      <Column title="Teléfono 1" dataIndex="Telefono 1" key="Telefono 1" />
-      <Column title="Correo" dataIndex="Correo" key="Correo" />
-      <Column title="Celular" dataIndex="Celular" key="Celular" />
- 
-    <Column
-      title="Accion"
-      key="action"
-     
+    <div
+      style={{
+        margin: 30,
+        border: "1px solid #e2e2e2",
+        padding: 20,
+        borderRadius: 12,
+      }}
+    >
+      <Table dataSource={props.data}>
+        <Column title="Nombres" dataIndex="nombres" key="nombres" />
+        <Column title="Apellidos" dataIndex="apellidos" key="apellidos" />
+        <Column title="Teléfono 1" dataIndex="telefono1" key="telefono1" />
+        <Column title="Correo" dataIndex="correo" key="correo" />
+        <Column title="Celular" dataIndex="telefono1" key="telefono1" />
 
         <Column
           title="Accion"

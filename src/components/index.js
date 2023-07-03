@@ -27,12 +27,7 @@ import { InputFor } from "./Formularios/InputFor";
 import { LabelFor } from "./Formularios/LabelFor";
 import { Option, Select } from "./Formularios/Select";
 import { ContainerTable } from "./Formularios/ContainerTable";
-<<<<<<< HEAD
 import { NotificationContainer } from "./notifiaciones/notificaciones";
-=======
-import { PrincipalContainerForm } from "./Formularios/ContainerForm";
-import { ContainerFormPrueba } from "./Formularios/ContainerForm";
->>>>>>> 0bf79c873628f10f3254c70c4998e2b1243ed4e8
 
 /// importanciones de los componente
 export {
