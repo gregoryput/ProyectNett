@@ -322,7 +322,7 @@ export default function InformacionPersonal(props) {
               -- Seleccione la ciudad --
             </Option>
             {citiesData?.result
-              .filter((citie) => citie.idPais === IdPaisSeleccionado)
+              ?.filter((citie) => citie.idPais === IdPaisSeleccionado)
               .map((citie, index) => (
                 <Option key={index} value={parseInt(citie.idCiudad)}>
                   {citie.ciudadNombre}
