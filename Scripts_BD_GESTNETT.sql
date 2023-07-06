@@ -815,6 +815,35 @@ END
 
 
 GO
+CREATE OR ALTER PROCEDURE dbo.ListadoClientesV2
+    @PageNumber INT,
+    @PageSize INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @Offset INT = (@PageNumber - 1) * @PageSize;
+
+    SELECT C.IdCliente, Nombres, Apellidos, Telefono1, Telefono2, Direccion, Correo, Edad, FechaDeNacimiento, Cedula, SexoNombre, CiudadNombre, PaisNombre
+    FROM (
+        SELECT C.IdCliente, Nombres, Apellidos, Telefono1, Telefono2, Direccion, P.Correo, Edad, FechaDeNacimiento, Cedula, SexoNombre, CiudadNombre, PaisNombre,
+               ROW_NUMBER() OVER (ORDER BY C.IdCliente) AS RowNumber
+        FROM Clientes C
+        INNER JOIN Personas P ON C.IdPersonaDeContacto = P.IdPersona
+        INNER JOIN Sexos S ON P.IdSexo = S.IdSexo
+        INNER JOIN Ciudades CU ON P.IdCiudad = CU.IdCiudad
+        INNER JOIN Paises PA ON CU.IdPais = PA.IdPais
+        WHERE C.IdEstadoRegistro = 1
+    ) AS C
+    WHERE C.RowNumber > @Offset
+      AND C.RowNumber <= (@Offset + @PageSize);
+END
+
+Execute dbo.ListadoClientesV2 @PageNumber = 2, @PageSize = 5
+
+
+
+GO
 --
 --
 --.P.R.O.C.E.D.U.R.E.......P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P Procedimiento almacenado para devolver la lista de Proveedores: --
@@ -921,11 +950,7 @@ Create or Alter procedure dbo.InsertarPersona
   @IdSexo int,
   @IdCiudad int,
   --
-  @IdCreadoPor int,
-  @FechaCreacion date,
-  @IdModificadoPor int,
-  @FechaModificacion date,
-  @IdEstadoRegistro int
+  @IdCreadoPor int
   AS
   BEGIN
       Set nocount On
@@ -955,11 +980,7 @@ GO
 Create or Alter procedure dbo.InsertarCliente
   @IdPersona int,
   --
-  @IdCreadoPor int,
-  @FechaCreacion Datetime,
-  @IdModificadoPor int,
-  @FechaModificacion Datetime,
-  @IdEstadoRegistro int
+  @IdCreadoPor int
   AS
   BEGIN
       Set nocount On
@@ -992,17 +1013,13 @@ Create or Alter procedure dbo.InsertarEmpresa
   @Dirección varchar(50),
   @IdCiudad int,
   --
-  @IdCreadoPor int,
-  @FechaCreacion Datetime,
-  @IdModificadoPor int,
-  @FechaModificacion Datetime,
-  @IdEstadoRegistro int
+  @IdCreadoPor int
   AS
   BEGIN
       Set nocount On
 	  Insert Into Empresas(NombreEmpresa, RNC, Correo, Teléfono1, Teléfono2, SitioWeb, Dirección, IdCiudad, IdCreadoPor, FechaCreacion, IdEstadoRegistro)
 
-				  VALUES(@NombreEmpresa, @RNC, @Correo, @Teléfono1, @Teléfono2, @SitioWeb, @Dirección, @IdCiudad, @IdCreadoPor, @FechaCreacion, 1)
+				  VALUES(@NombreEmpresa, @RNC, @Correo, @Teléfono1, @Teléfono2, @SitioWeb, @Dirección, @IdCiudad, @IdCreadoPor, GetDate(), 1)
 
 				  SELECT SCOPE_IDENTITY();
 END
@@ -1024,11 +1041,7 @@ Create or Alter procedure dbo.Insertar_Cliente_Empresa
   @IdCliente int,
   @IdEmpresa int,
   --
-  @IdCreadoPor int,
-  @FechaCreacion Datetime,
-  @IdModificadoPor int,
-  @FechaModificacion Datetime,
-  @IdEstadoRegistro int
+  @IdCreadoPor int
   AS
   BEGIN
       Set nocount On
@@ -1676,4 +1689,3 @@ Exec GetIdEmpresaByIdCliente @NombreUsuario = 'admin', @Contraseña = 'admin123'
 
 
 Select * From Personas
-
