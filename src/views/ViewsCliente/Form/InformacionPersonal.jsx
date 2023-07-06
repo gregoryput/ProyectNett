@@ -340,7 +340,7 @@ export default function InformacionPersonal(props) {
         <LabelFor>
           {" "}
           Fecha de nacimiento
-          <InputFor type="datetime-local" {...register("FechaNacimiento")} />
+          <InputFor type="date" {...register("FechaDeNacimiento")} />
         </LabelFor>
       </div>
       <br />
