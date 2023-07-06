@@ -14,26 +14,37 @@ namespace ProyectNettApi.Controllers
         protected Respuesta _respuesta;
         private readonly IConfiguration _configuration;
         private readonly IClienteRepositorio _clienteRepositorio;
-         
+        private readonly InfoUserByToken _infoUser;
+
         public ClientesController(IConfiguration configuration)
         {
             _respuesta = new Respuesta();
             _configuration = configuration;
             _clienteRepositorio = new ClienteRepositorio(_configuration);
+            _infoUser = new InfoUserByToken();
         }
 
 
         //
         // .A.C.C.I.O.N -- Para obtener la lista basica de Clientes: --------------------------------------------
+        [Authorize]
         [Route("obtenerClientes")]
         [HttpGet]
-        public IActionResult getClientes()
+        public IActionResult getClientes(int pageNumber = 1, int pageSize = 5)
         {
             try
             {
-                var listaClientes = _clienteRepositorio.GetClientes();
+                var (listaClientes, totalCount) = _clienteRepositorio.GetClientes(pageNumber, pageSize);
+
+                // Calcular el número total de páginas
+                int totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
+
                 _respuesta.Result = listaClientes;
-                _respuesta.DisplayMessage = "Listado de clientes obtenido con exito:";
+                _respuesta.TotalItems = totalCount;
+                _respuesta.TotalPages = totalPages;
+                _respuesta.CurrentPage = pageNumber;
+                _respuesta.PageSize = pageSize;
+                _respuesta.DisplayMessage = "Listado de clientes obtenido con éxito:";
             }
             catch (Exception ex)
             {
@@ -48,10 +59,13 @@ namespace ProyectNettApi.Controllers
 
         //
         // .A.C.C.I.O.N -- Para insertar Cliente: --------------------------------------------
+        [Authorize]
         [Route("insertarClientes")]
         [HttpPost]
         public IActionResult insertarCliente(Cliente cliente)
         {
+            string token = HttpContext.Request.Headers["Authorization"];
+            cliente.IdCreadoPor = _infoUser.getUsuarioIdByToken(token);
             try
             {
                 _clienteRepositorio.InsertarCliente(cliente);
@@ -72,6 +86,7 @@ namespace ProyectNettApi.Controllers
 
         //
         // .A.C.C.I.O.N -- Para eliminar Cliente: --------------------------------------------
+        [Authorize]
         [Route("eliminarCliente")]
         [HttpPost]
         public IActionResult eliminarCliente(int IdCliente)
@@ -96,6 +111,7 @@ namespace ProyectNettApi.Controllers
 
         //
         // .A.C.C.I.O.N -- Para Actualizar Cliente: --------------------------------------------
+        [Authorize]
         [Route("actualizarCliente")]
         [HttpPost]
         public IActionResult actualizarClientes(Cliente cliente)

@@ -24,11 +24,33 @@ namespace ProyectNettApi.Repositories
 
 
         // REPOSITORIO--A-P-I----P-R-O-Y-E-N-E-T-T ------ (Metodo para DEVOLVER una LISTA de CLIENTES):
-        public IEnumerable<ClienteDTO> GetClientes()
+        public IEnumerable<ClienteDTO> GetClientesv1()
         {
             string query = "Execute dbo.ListadoClientes";
             var resultSet = _conexionDB.GetConnection(_configuration).Query<ClienteDTO>(query);
             return resultSet.ToList();
+        }
+
+
+
+        // REPOSITORIO--A-P-I----P-R-O-Y-E-N-E-T-T ------ (Metodo para DEVOLVER una LISTA de CLIENTES) METODO PAGINADO:
+        public (IEnumerable<ClienteDTO> clientes, int totalCount) GetClientes(int pageNumber, int pageSize)
+        {
+            string query = "dbo.ListadoClientesV2";
+            var parameters = new DynamicParameters();
+            parameters.Add("@PageNumber", pageNumber);
+            parameters.Add("@PageSize", pageSize);
+
+            using (var connection = _conexionDB.GetConnection(_configuration))
+            {
+                var resultSet = connection.Query<ClienteDTO>(query, parameters, commandType: CommandType.StoredProcedure);
+
+                // Obtener el recuento total de clientes
+                string countQuery = "SELECT COUNT(*) FROM dbo.Clientes";
+                var totalCount = connection.ExecuteScalar<int>(countQuery);
+
+                return (resultSet.ToList(), totalCount);
+            }
         }
 
 
@@ -45,18 +67,31 @@ namespace ProyectNettApi.Repositories
                 // -
                 // - ..I.N.S.E.R.T.. Insertando en la tabla Persona: ........................................
                 string queryPersona = "dbo.InsertarPersona";
-                int IdPersona = connection.ExecuteScalar<int>(queryPersona, cliente.Persona, transaction, commandType: CommandType.StoredProcedure);
+                var dataClient = new 
+                { 
+                    IdPersona = cliente.Persona.IdPersona,
+                    Nombres = cliente.Persona.Nombres,
+                    Apellidos = cliente.Persona.Apellidos,
+                    Telefono1 = cliente.Persona.Telefono1,
+                    Telefono2 = cliente.Persona.Telefono2,
+                    Direccion = cliente.Persona.Direccion,
+                    Correo = cliente.Persona.Correo,
+                    Edad = cliente.Persona.Edad,
+                    FechaDeNacimiento = cliente.Persona.FechaDeNacimiento,
+                    Cedula = cliente.Persona.FechaDeNacimiento,
+                    IdSexo = cliente.Persona.IdSexo,
+                    IdCiudad = cliente.Persona.IdCiudad,
+                    IdCreadoPor = cliente.IdCreadoPor,
 
+                };
+                int IdPersona = connection.ExecuteScalar<int>(queryPersona, dataClient, transaction, commandType: CommandType.StoredProcedure);
+                
                 // -
                 // - ..I.N.S.E.R.T.. Insertando en la tabla Clientes: ........................................
                 int IdCliente = connection.ExecuteScalar<int>("dbo.InsertarCliente", 
                     new {
                         IdPersona,
                         cliente.IdCreadoPor,
-                        cliente.FechaCreacion,
-                        cliente.IdModificadoPor,
-                        cliente.FechaModificacion,
-                        cliente.IdEstadoRegistro
                     }, transaction, commandType: CommandType.StoredProcedure);
 
                 // -
@@ -67,7 +102,21 @@ namespace ProyectNettApi.Repositories
                 {
                     // -- Inserto en la tabla Empresas:
                     string queryEmpresa = "dbo.InsertarEmpresa";
-                    int IdEmpresa = connection.ExecuteScalar<int>(queryEmpresa, empresa, transaction, commandType: CommandType.StoredProcedure);
+                    var dataEmpresa = new
+                    {
+                        IdEmpresa = empresa.IdEmpresa,
+                        NombreEmpresa = empresa.NombreEmpresa,
+                        RNC = empresa.RNC,
+                        SitioWeb = empresa.SitioWeb,
+                        Correo = empresa.Correo,
+                        Teléfono1 = empresa.Teléfono1,
+                        Teléfono2 = empresa.Teléfono2,
+                        Dirección = empresa.Dirección,
+                        IdCiudad = empresa.IdCiudad,
+                        IdCreadoPor = cliente.IdCreadoPor,
+
+                    };
+                    int IdEmpresa = connection.ExecuteScalar<int>(queryEmpresa, dataEmpresa, transaction, commandType: CommandType.StoredProcedure);
 
                     // -- Inserto en la tabla Clientes_Empresas:
                     string query_Clientes_Empresas = "dbo.Insertar_Cliente_Empresa";
@@ -76,10 +125,6 @@ namespace ProyectNettApi.Repositories
                             IdCliente, 
                             IdEmpresa,
                             cliente.IdCreadoPor,
-                            cliente.FechaCreacion,
-                            cliente.IdModificadoPor,
-                            cliente.FechaModificacion,
-                            cliente.IdEstadoRegistro
                         }, transaction, commandType: CommandType.StoredProcedure);
                 }
 
