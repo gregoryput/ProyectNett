@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Space, Table, Skeleton } from "antd";
+import { Space, Table } from "antd";
 import {
   ContainerButton,
   DivAnimetor,
@@ -16,8 +16,8 @@ export default function Cliente() {
 
   const {
     data: clientesData,
-    isSuccess: isClientsSuccess,
-    isLoading: isLoadingClients,
+   // isSuccess: isClientsSuccess,
+   // isLoading: isLoadingClients,
   } = useGetClientsQuery("");
 
   console.log(clientesData);
@@ -33,24 +33,27 @@ export default function Cliente() {
 
       <FormClientes toggle={toggle} />
 
-      {isLoadingClients ? <Skeleton active /> : <Tabla data={clientesData?.result} />}
+       <Tabla data={clientesData?.result} />
     </ViewContainerPages>
   );
 }
 
 const { Column } = Table;
 
-function Tabla(props) {
+function Tabla({data}) {
   return (
     <div
       style={{
-        margin: 30,
+        margin: 15,
         border: "1px solid #e2e2e2",
         padding: 20,
         borderRadius: 12,
       }}
     >
-      <Table dataSource={props.data}>
+      <h3 style={{marginTop: 5, marginBottom:20}}>Registro de cliente</h3>
+      <Table dataSource={data}
+      
+      >
         <Column title="Nombres" dataIndex="nombres" key="nombres" />
         <Column title="Apellidos" dataIndex="apellidos" key="apellidos" />
         <Column title="Teléfono 1" dataIndex="telefono1" key="telefono1" />

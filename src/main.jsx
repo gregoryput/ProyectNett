@@ -4,14 +4,15 @@ import { RouterProvider,} from "react-router-dom";
 import { Provider } from 'react-redux';
 import { store } from './redux/store';
 import { createRouter  } from './router/index';
+import Modal from 'react-modal';
+
+
 import "./index.css"
 
-
-// // Roles del usuario actual (puedes obtenerlos desde tu sistema de autenticación)
-// const userRoles = ["admin"];
-
-// // Crear las rutas basadas en los roles del usuario
 const router = createRouter();
+// Configura la raíz del modal
+Modal.setAppElement('#root');
+
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>

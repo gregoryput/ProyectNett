@@ -28,6 +28,9 @@ import { LabelFor } from "./Formularios/LabelFor";
 import { Option, Select } from "./Formularios/Select";
 import { ContainerTable } from "./Formularios/ContainerTable";
 import { NotificationContainer } from "./notifiaciones/notificaciones";
+import { GradientText } from "./404/GrandientText";
+
+
 
 /// importanciones de los componente
 export {
@@ -76,5 +79,6 @@ export {
     ContainerTable,
     ContainerFormPrueba,
     PrincipalContainerForm,
-};
+    GradientText,
 
+};

@@ -21,7 +21,6 @@ html{
     color:#9c9c9c;
     color:#e2e2e2;
     color:#1C3C6D;
-   
 
 }  
 
@@ -53,3 +52,9 @@ html::-webkit-scrollbar-track {
   z-index: -3;
 }
 
+
+
+.fondo{
+
+  background-image: url("./assets/fondo.png");
+}
