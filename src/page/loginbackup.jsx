@@ -5,7 +5,6 @@ import { useNavigate } from "react-router-dom";
 import { useLoginUserMutation } from "../redux/Api/AuthApi";
 import { useDispatch } from "react-redux";
 import { JwtUtils } from "../utils";
-import { message } from "antd";
 //componente creacdo con styled component
 import {
   DivContainerPage,
@@ -50,20 +49,14 @@ export default function Login() {
       if (loginData?.result != null && loginData?.result != "") {
         console.log("autenticacion correcta");
         dispatchUser();
-        message.success({
-          content: "Sesión iniciada correctamente",
-        });
+
         navigate("/");
       } else {
-        message.success({
-          content: "Error al iniciar sesión",
-        });
+        console.log("autenticacion incorrecta");
       }
-      /*
       if (loginData?.result == null) {
         console.log("autenticacion correcta");
       }
-      */
     }
   }, [isLoginSuccess, loginData?.result, navigate]);
 
@@ -113,7 +106,7 @@ export default function Login() {
           <DivPassword>
             <Input
               type={activo ? "text" : "Password"}
-              placeholder="Ingresa tu contraseña"
+              placeholder="Ingresar tu contraseña"
               {...register("Contraseña", {
                 required: true,
                 minLength: 1,
