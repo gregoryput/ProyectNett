@@ -1688,4 +1688,4 @@ Exec GetIdEmpresaByIdCliente @NombreUsuario = 'admin', @Contraseña = 'admin123'
 */
 
 
-Select * From Personas
+Select * From Usuarios
