@@ -57,7 +57,7 @@ export const createRouter = () => {
         {
           path: "/cuenta-por-cobrar",
           element: (
-            <ProtectedRoute roles={["Administrador"]}>
+            <ProtectedRoute roles={["Administrador", "Asistente Administrativo"]}>
               <CuentaPorCobrar />
             </ProtectedRoute>
           ),
@@ -65,7 +65,7 @@ export const createRouter = () => {
         {
           path: "/cuenta-por-pagar",
           element: (
-            <ProtectedRoute roles={["Administrador"]}>
+            <ProtectedRoute roles={["Administrador", "Asistente Administrativo"]}>
               <CuentaPorPagar />
             </ProtectedRoute>
           ),
@@ -73,7 +73,7 @@ export const createRouter = () => {
         {
           path: "/inventario",
           element: (
-            <ProtectedRoute roles={["Administrador"]}>
+            <ProtectedRoute roles={["Administrador", "Asistente Administrativo"]}>
               <Inventario />
             </ProtectedRoute>
           ),
@@ -81,7 +81,7 @@ export const createRouter = () => {
         {
           path: "/proveedores",
           element: (
-            <ProtectedRoute roles={["Administrador"]}>
+            <ProtectedRoute roles={["Administrador", "Asistente Administrativo"]}>
               <Proveedores />
             </ProtectedRoute>
           ),
@@ -89,7 +89,7 @@ export const createRouter = () => {
         {
           path: "/proyecto",
           element: (
-            <ProtectedRoute roles={["Administrador"]}>
+            <ProtectedRoute roles={["Administrador", "Asistente Administrativo", "asistente"]}>
               <Proyecto />
             </ProtectedRoute>
           ),

@@ -66,7 +66,7 @@ export default function Navegation() {
           </ButtonNav>
         )}
 
-        {userRol === "Administrador" && (
+        {(userRol === "Administrador" || userRol === "Administrador") && (
           <ButtonNav
             exact
             to="proyecto"
@@ -92,7 +92,8 @@ export default function Navegation() {
           </ButtonNav>
         )}
 
-        {userRol === "Administrador" && (
+        {(userRol === "Administrador" ||
+          userRol === "Asistente Administrativo") && (
           <ButtonNav
             exact
             to="proveedores"
@@ -105,7 +106,8 @@ export default function Navegation() {
           </ButtonNav>
         )}
 
-        {userRol === "Administrador" && (
+        {(userRol === "Administrador" ||
+          userRol == "Asistente Administrativo") && (
           <ButtonNav
             exact
             to="inventario"
@@ -118,7 +120,8 @@ export default function Navegation() {
           </ButtonNav>
         )}
 
-        {userRol === "Administrador" && (
+        {(userRol === "Administrador," ||
+          userRol == "Asistente Administrativo") && (
           <ButtonNav
             exact
             to="cuenta-por-cobrar"
@@ -143,7 +146,8 @@ export default function Navegation() {
           </ButtonNav>
         )}
 
-        {userRol === "Administrador" || userRol === "Administrador De Usuario" && (
+        {(userRol === "Administrador" ||
+          userRol === "Administrador De Usuario") && (
           <ButtonNav
             exact
             to="control-usuarios"
@@ -156,16 +160,18 @@ export default function Navegation() {
           </ButtonNav>
         )}
 
-        <ButtonNav
-          exact
-          to="reporte"
-          style={({ isActive }) => {
-            return { color: isActive ? "#365583" : "" };
-          }}
-        >
-          <BiPieChartAlt style={style} />
-          <LabelNav>Reporte</LabelNav>
-        </ButtonNav>
+        {(userRol === "Administrador De Usuario" || userRol == "Administrador") && (
+          <ButtonNav
+            exact
+            to="reporte"
+            style={({ isActive }) => {
+              return { color: isActive ? "#365583" : "" };
+            }}
+          >
+            <BiPieChartAlt style={style} />
+            <LabelNav>Reporte</LabelNav>
+          </ButtonNav>
+        )}
       </DivContainerNav>
     </>
   );

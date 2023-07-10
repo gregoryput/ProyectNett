@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { Space, Table } from "antd";
+import { Space, Table, Pagination } from "antd";
 import {
   ContainerButton,
   DivAnimetor,
+  SpinnerTables,
   ViewContainerPages,
 } from "../../components";
 
@@ -10,17 +11,24 @@ import { FormClientes } from "./Form";
 import { useGetClientsQuery } from "../../redux/Api/clientsApi";
 
 import { IoChevronDownSharp, IoCloseCircleOutline } from "react-icons/io5";
+import { useEffect } from "react";
 
 export default function Cliente() {
   const [toggle, setToggle] = useState(true);
+  const [dataClients, setDataClients] = useState();
 
   const {
     data: clientesData,
-   // isSuccess: isClientsSuccess,
-   // isLoading: isLoadingClients,
+    isSuccess: isClientsSuccess,
+    isLoading: isLoadingClients,
   } = useGetClientsQuery("");
 
-  console.log(clientesData);
+  useEffect(() => {
+    if (isClientsSuccess) {
+      setDataClients(clientesData);
+      console.log("dataclients", dataClients)
+    }
+  }, [isClientsSuccess]);
 
   return (
     <ViewContainerPages>
@@ -33,14 +41,18 @@ export default function Cliente() {
 
       <FormClientes toggle={toggle} />
 
-       <Tabla data={clientesData?.result} />
+      {isLoadingClients ? (
+        <SpinnerTables />
+      ) : (
+        <Tabla data={clientesData?.result} dataClients={clientesData} />
+      )}
     </ViewContainerPages>
   );
 }
 
 const { Column } = Table;
 
-function Tabla({data}) {
+function Tabla({ data, dataClients }) {
   return (
     <div
       style={{
@@ -50,10 +62,8 @@ function Tabla({data}) {
         borderRadius: 12,
       }}
     >
-      <h3 style={{marginTop: 5, marginBottom:20}}>Registro de cliente</h3>
-      <Table dataSource={data}
-      
-      >
+      <h3 style={{ marginTop: 5, marginBottom: 20 }}>Registro de clientes</h3>
+      <Table dataSource={data}>
         <Column title="Nombres" dataIndex="nombres" key="nombres" />
         <Column title="Apellidos" dataIndex="apellidos" key="apellidos" />
         <Column title="Teléfono 1" dataIndex="telefono1" key="telefono1" />
@@ -71,6 +81,12 @@ function Tabla({data}) {
               </button>
             </Space>
           )}
+        />
+        <Pagination
+          current={4}
+          pageSize={30}
+          total={3}
+          //onChange={handleChangePage}
         />
       </Table>
     </div>

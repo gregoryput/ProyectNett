@@ -20,6 +20,7 @@ import { Row } from "./LayoutComponent/Row";
 import { ViewContainerPages } from "./LayoutComponent/ViewContainerPages";
 import { DivRoll } from "./Menu/DivRoll";
 import { Spinner } from "./Spinner/Spinner";
+import { SpinnerTables } from "./Spinner/Spinner";
 import { ContainerButton } from "./Formularios/ContainerButton";
 import { DivAnimetor } from "./Formularios/divAnimetor";
 import { ContainerForm, ContainerFormPrueba, PrincipalContainerForm } from "./Formularios/ContainerForm";
@@ -29,6 +30,7 @@ import { Option, Select } from "./Formularios/Select";
 import { ContainerTable } from "./Formularios/ContainerTable";
 import { NotificationContainer } from "./notifiaciones/notificaciones";
 import { GradientText } from "./404/GrandientText";
+import { ButtonNext } from "./Formularios/ButtonNext";
 
 
 
@@ -66,6 +68,7 @@ export {
 
  /// spinner y notifiaciones 
     Spinner,
+    SpinnerTables,
     NotificationContainer,
     
 //// componente de formularios de cliente proveedores ...
@@ -80,5 +83,5 @@ export {
     ContainerFormPrueba,
     PrincipalContainerForm,
     GradientText,
-
+    ButtonNext
 };

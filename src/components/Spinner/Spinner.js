@@ -13,3 +13,14 @@ export const Spinner = styled.div`
   height: 20px;
   animation: ${spin} 0.8s linear infinite;
 `;
+
+
+export const SpinnerTables = styled.div`
+ border: 2px solid blue;
+  border-top: 4px solid transparent;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: ${spin} 0.8s linear infinite;
+  margin: 150px auto;
+`;

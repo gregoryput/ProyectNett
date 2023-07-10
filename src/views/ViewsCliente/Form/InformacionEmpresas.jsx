@@ -5,6 +5,7 @@ import {
   Select,
   Button,
   ContainerFormPrueba,
+  ButtonNext as ButtonBack
 } from "../../../components";
 
 import {
@@ -19,6 +20,8 @@ import {
 } from "../../../utils/validations";
 
 import { Spinner } from "../../../components";
+
+import { Button as ButtonAntD } from "antd";
 
 import { useCreateClientMutation } from "../../../redux/Api/clientsApi";
 import { useSelector } from "react-redux";
@@ -99,7 +102,7 @@ export default function InformacionEmpresas(props) {
   return (
     <>
       {isLoadingCreate ? (
-        <Spin size="large" />
+        <Spin size="large" style={{margin:"0 auto"}}/>
       ) : (
         <>
           {" "}
@@ -299,15 +302,15 @@ export default function InformacionEmpresas(props) {
                 </div>
               ))}
               <br />
-              <button type="button" onClick={() => append({})}>
+              <ButtonAntD type="dashed" htmlType="button" onClick={() => append({})}>
                 Agregar nueva empresa
-              </button>
+              </ButtonAntD>
               <br />
               <br />
 
-              <button type="button" onClick={irAtras}>
+              <ButtonBack htmlType="button" onClick={irAtras}>
                 Atras
-              </button>
+              </ButtonBack>
               <br />
               <Button type="submit">
                 {isLoadingCreate ? <Spinner /> : "Guardar"}{" "}

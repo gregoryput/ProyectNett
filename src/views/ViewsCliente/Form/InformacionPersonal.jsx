@@ -4,6 +4,7 @@ import {
   Option,
   Select,
   ContainerFormPrueba,
+  ButtonNext
 } from "../../../components";
 
 import { useForm } from "react-hook-form";
@@ -344,7 +345,7 @@ export default function InformacionPersonal(props) {
         </LabelFor>
       </div>
       <br />
-      <button type="submit">Siguiente</button>
+      <ButtonNext htmlType="submit">Siguiente</ButtonNext>
     </ContainerFormPrueba>
   );
 }
