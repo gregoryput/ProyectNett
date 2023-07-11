@@ -4,7 +4,7 @@ import {
   Option,
   Select,
   ContainerFormPrueba,
-  ButtonNext
+  ButtonNext,
 } from "../../../components";
 
 import { useForm } from "react-hook-form";
@@ -33,7 +33,7 @@ export default function InformacionPersonal(props) {
   const dispatch = useDispatch();
 
   const [IdPaisSeleccionado, setIdPaisSeleccionado] = React.useState(
-    props?.datavalues?.IdPais || 0
+    props?.datavalues?.IdPais ? parseInt(props?.datavalues?.IdPais) : 0
   );
 
   const {
@@ -52,6 +52,15 @@ export default function InformacionPersonal(props) {
     isSuccess: isCitiesSuccess,
     isLoading: isLoadingCities,
   } = useGetCitiesQuery("");
+
+  const optionsSelectCities = citiesData?.result
+    ?.filter((ct) => ct.idPais === IdPaisSeleccionado)
+    ?.map((citie) => {
+      return {
+        value: citie?.idCiudad,
+        label: citie?.ciudadNombre,
+      };
+    });
 
   //Traer los sexos
   const {
@@ -106,10 +115,11 @@ export default function InformacionPersonal(props) {
   //Llenar los campos(sirve para llenar los campos al cambiar de paso y tambien para el edit)
   React.useEffect(() => {
     reset(props.dataValues);
+    setIdPaisSeleccionado(parseInt(props.dataValues.IdPais));
     dispatchCities();
     dispatchCountries();
   }, []);
-  
+
   return (
     <ContainerFormPrueba onSubmit={handleSubmit(irAdelante)}>
       <div
@@ -276,7 +286,7 @@ export default function InformacionPersonal(props) {
           )}
         </LabelFor>
 
-        {/*SELEC OPTION IDPAIS*/}
+        {/*---------SELEC OPTION IDPAIS*/}
         <LabelFor>
           {" "}
           País
@@ -288,8 +298,8 @@ export default function InformacionPersonal(props) {
             onChange={(event) => {
               setValue("IdPais", parseInt(event.target.value));
               trigger("IdPais");
-              setIdPaisSeleccionado(parseInt(event.target.value));
               setValue("IdCiudad", 0);
+              setIdPaisSeleccionado(parseInt(event.target.value));
             }}
           >
             <Option disabled={true} value={0} selected>
@@ -308,7 +318,7 @@ export default function InformacionPersonal(props) {
           )}
         </LabelFor>
 
-        {/*SELEC OPTION IDCIUDAD*/}
+        {/*----SELEC OPTION IDCIUDAD*/}
         <LabelFor>
           {" "}
           Ciudad
@@ -316,19 +326,19 @@ export default function InformacionPersonal(props) {
             defaultValue={0}
             isLoading={isLoadingCities}
             {...register("IdCiudad", {
-              ...minValue(1, "debe seleccionar la ciudad"),
+              ...minValue(1, "Debe seleccionar la ciudad"),
             })}
+            s
+            option
           >
             <Option disabled={true} value={0} selected>
               -- Seleccione la ciudad --
             </Option>
-            {citiesData?.result
-              ?.filter((citie) => citie.idPais === IdPaisSeleccionado)
-              .map((citie, index) => (
-                <Option key={index} value={parseInt(citie.idCiudad)}>
-                  {citie.ciudadNombre}
-                </Option>
-              ))}
+            {optionsSelectCities?.map((option, index) => (
+              <Option key={index} value={parseInt(option.value)}>
+                {option.label}
+              </Option>
+            ))}
           </Select>
           {errors.IdCiudad && (
             <span style={{ color: "red", fontSize: 10 }}>
@@ -336,8 +346,6 @@ export default function InformacionPersonal(props) {
             </span>
           )}
         </LabelFor>
-        
-
         <LabelFor>
           {" "}
           Fecha de nacimiento

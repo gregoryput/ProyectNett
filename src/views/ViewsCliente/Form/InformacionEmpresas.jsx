@@ -5,7 +5,7 @@ import {
   Select,
   Button,
   ContainerFormPrueba,
-  ButtonNext as ButtonBack
+  ButtonNext as ButtonBack,
 } from "../../../components";
 
 import {
@@ -33,9 +33,30 @@ import { useNavigate } from "react-router-dom";
 export default function InformacionEmpresas(props) {
   const navigate = useNavigate();
 
-  //Tomar las ciudades
+  // -----------------------------------
+
+  //Tomar las ciudades:
   const cities = useSelector((state) => state.cities.cities.cities);
   const countries = useSelector((state) => state.countries.countries.countries);
+
+  const [selectedCountry, setSelectedCountry] = React.useState({
+    value: undefined,
+    index: undefined,
+  });
+
+  //Funcion para filtrar select ciudad:
+  const filterSelectCiudad = (IdPais) => {
+    return cities
+      ?.filter((ct) => ct.idPais === IdPais)
+      ?.map((citie) => {
+        return {
+          value: citie?.idCiudad,
+          label: citie?.ciudadNombre,
+        };
+      });
+  };
+
+  console.log("QLQQQQ", filterSelectCiudad(1));
 
   //Funcion para el create/insert de Cliente
   const [
@@ -56,6 +77,8 @@ export default function InformacionEmpresas(props) {
     control,
     name: "Empresas",
   });
+
+  console.log(fields);
 
   //Funcion para insertar, enviar los datos a  la api:
   const onSubmit = (data) => {
@@ -99,10 +122,14 @@ export default function InformacionEmpresas(props) {
     reset(props.dataValues);
   }, []);
 
+  React.useEffect(() => {
+    setEmpresasFields(fields);
+  }, [fields]);
+
   return (
     <>
       {isLoadingCreate ? (
-        <Spin size="large" style={{margin:"0 auto"}}/>
+        <Spin size="large" style={{ margin: "0 auto" }} />
       ) : (
         <>
           {" "}
@@ -129,7 +156,7 @@ export default function InformacionEmpresas(props) {
                   }}
                 >
                   <LabelFor>
-                    Nombre Empresa
+                    Nombre Empresa:
                     <InputFor
                       {...register(`Empresas.${index}.NombreEmpresa`, {
                         ...required("Este campo es requerido"),
@@ -236,9 +263,17 @@ export default function InformacionEmpresas(props) {
                     {" "}
                     Pais
                     <Select
-                      {...register(`Empresas.${index}.Pais`, {
+                      {...register(`Empresas.${index}.IdPais`, {
                         ...minValue(1, "Debe seleccionar el pais"),
                       })}
+                      onChange={(e) => {
+                        console.log("hola");
+                        setSelectedCountry({
+                          value: parseInt(e.target.value),
+                          index: index,
+                        });
+                        console.log(selectedCountry);
+                      }}
                     >
                       <Option disabled={true} value={0} selected>
                         -- Seleccione el pais --
@@ -268,11 +303,13 @@ export default function InformacionEmpresas(props) {
                       <Option disabled={true} value={0} selected>
                         -- Seleccione la ciudad --
                       </Option>
-                      {cities?.map((citie, index) => (
-                        <Option key={index} value={parseInt(citie.idCiudad)}>
-                          {citie.ciudadNombre}
-                        </Option>
-                      ))}
+                      {filterSelectCiudad(selectedCountry.value)?.map(
+                        (option, index) => (
+                          <Option key={index} value={parseInt(option.value)}>
+                            {option.label}
+                          </Option>
+                        )
+                      )}
                     </Select>
                     {errors.Empresas && errors.Empresas[index] && (
                       <span style={{ color: "red", fontSize: 10 }}>
@@ -302,7 +339,13 @@ export default function InformacionEmpresas(props) {
                 </div>
               ))}
               <br />
-              <ButtonAntD type="dashed" htmlType="button" onClick={() => append({})}>
+              <ButtonAntD
+                type="dashed"
+                htmlType="button"
+                onClick={() => {
+                  append({});
+                }}
+              >
                 Agregar nueva empresa
               </ButtonAntD>
               <br />
