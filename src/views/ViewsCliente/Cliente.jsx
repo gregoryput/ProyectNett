@@ -1,58 +1,123 @@
-import { useState } from "react";
-import { Space, Table, Pagination } from "antd";
+import { useState, useEffect, useRef } from "react";
+import {
+  Space,
+  Table,
+  Pagination,
+  Spin,
+  Skeleton,
+  Select,
+  message,
+} from "antd";
 import {
   ContainerButton,
   DivAnimetor,
-  SpinnerTables,
   ViewContainerPages,
+  ButtonIcon,
 } from "../../components";
+
+import { Colores } from "../../components/GlobalColor";
 
 import { FormClientes } from "./Form";
 import { useGetClientsQuery } from "../../redux/Api/clientsApi";
 
-import { IoChevronDownSharp, IoCloseCircleOutline } from "react-icons/io5";
-import { useEffect } from "react";
+import {
+  IoChevronDownSharp,
+  IoTrashSharp,
+  IoInformationCircle,
+} from "react-icons/io5";
+
+import { FaPencilAlt } from "react-icons/fa";
 
 export default function Cliente() {
+  const [loadingSave, setLoadingSave] = useState(false);
   const [toggle, setToggle] = useState(true);
-  const [dataClients, setDataClients] = useState();
+  const [pageNumber, setPageNumber] = useState(1);
+  const [pageSize, setPageSize] = useState(5);
+  const [dataClientEdit, setDataClientEdit] = useState(null);
+  const [isMessageSuccessVisible, setMessageSuccessVisible] = useState(false);
 
+  //Estado redux api para obtener la lista de clientes con paginacion
   const {
     data: clientesData,
     isSuccess: isClientsSuccess,
     isLoading: isLoadingClients,
-  } = useGetClientsQuery("");
+  } = useGetClientsQuery({
+    pageNumber: pageNumber,
+    pageSize: pageSize,
+  });
 
   useEffect(() => {
-    if (isClientsSuccess) {
-      setDataClients(clientesData);
-      console.log("dataclients", dataClients)
+    if (isClientsSuccess /* && clientesData !== null */) {
+      if (!isMessageSuccessVisible) {
+        message.success("Listado de clientes obtenido correctamente!");
+        setMessageSuccessVisible(true);
+
+        setTimeout(() => {
+          setMessageSuccessVisible(false);
+        }, 1000);
+      }
     }
-  }, [isClientsSuccess]);
+  }, [isClientsSuccess, clientesData]);
+
+  const handlePageChange = (page, pageSize) => {
+    setPageNumber(page);
+    setPageSize(pageSize);
+  };
+
+  const handlePageSizeChange = (pageSize) => {
+    setPageSize(pageSize);
+  };
+
+  //Onclick de editar:
+  const editarCliente = (dataClientEdit) => {
+    setToggle(false);
+    setDataClientEdit(dataClientEdit);
+  };
 
   return (
-    <ViewContainerPages>
-      <ContainerButton onClick={() => setToggle(!toggle)}>
-        <h4>Crear nuevo cliente</h4>
-        <DivAnimetor>
-          <IoChevronDownSharp style={{ width: 20, height: 20 }} />
-        </DivAnimetor>
-      </ContainerButton>
+    <>
+      <Spin size="large" style={{ margin: "0 auto" }} />
+      <ViewContainerPages>
+        <ContainerButton onClick={() => setToggle(!toggle)}>
+          <h4>Crear nuevo cliente</h4>
+          <DivAnimetor>
+            <IoChevronDownSharp style={{ width: 20, height: 20 }} />
+          </DivAnimetor>
+        </ContainerButton>
 
-      <FormClientes toggle={toggle} />
+        <FormClientes
+          setLoadingSave={setLoadingSave}
+          toggle={toggle}
+          setToggle={setToggle}
+          dataClientEdit={dataClientEdit}
+        />
 
-      {isLoadingClients ? (
-        <SpinnerTables />
-      ) : (
-        <Tabla data={clientesData?.result} dataClients={clientesData} />
-      )}
-    </ViewContainerPages>
+        <Tabla
+          data={clientesData}
+          dataClients={clientesData}
+          handlePageChange={handlePageChange}
+          handlePageSizeChange={handlePageSizeChange}
+          isLoadingClients={isLoadingClients}
+          loadingSave={loadingSave}
+          editarCliente={editarCliente}
+        />
+      </ViewContainerPages>
+    </>
   );
 }
 
 const { Column } = Table;
 
-function Tabla({ data, dataClients }) {
+function Tabla({
+  data,
+  dataClients,
+  handlePageChange,
+  isLoadingClients,
+  loadingSave,
+  handlePageSizeChange,
+  setToggle,
+  editarCliente,
+}) {
   return (
     <div
       style={{
@@ -63,32 +128,76 @@ function Tabla({ data, dataClients }) {
       }}
     >
       <h3 style={{ marginTop: 5, marginBottom: 20 }}>Registro de clientes</h3>
-      <Table dataSource={data}>
-        <Column title="Nombres" dataIndex="nombres" key="nombres" />
-        <Column title="Apellidos" dataIndex="apellidos" key="apellidos" />
-        <Column title="Teléfono 1" dataIndex="telefono1" key="telefono1" />
-        <Column title="Correo" dataIndex="correo" key="correo" />
-        <Column title="Celular" dataIndex="telefono1" key="telefono1" />
 
-        <Column
-          title="Accion"
-          key="action"
-          render={(_, record) => (
-            <Space size="middle">
-              <button>Invite {record.lastName}</button>
-              <button>
-                <IoCloseCircleOutline />
-              </button>
-            </Space>
-          )}
-        />
-        <Pagination
-          current={4}
-          pageSize={30}
-          total={3}
-          //onChange={handleChangePage}
-        />
-      </Table>
+      {isLoadingClients || loadingSave ? (
+        <Skeleton />
+      ) : (
+        <>
+          <Table dataSource={dataClients?.result} pagination={false}>
+            <Column title="Nombres" dataIndex="nombres" key="nombres" />
+            <Column title="Apellidos" dataIndex="apellidos" key="apellidos" />
+            <Column title="Teléfono 1" dataIndex="telefono1" key="telefono1" />
+            <Column title="Ciudad" dataIndex="ciudadNombre" key="ciudad" />
+            <Column title="Correo" dataIndex="correo" key="correo" />
+            <Column title="Celular" dataIndex="telefono1" key="telefono1" />
+
+            <Column
+              title="Acción"
+              key="action"
+              render={(_, record) => (
+                <Space size="middle">
+                  <ButtonIcon onClick={() => editarCliente(record)}>
+                    <FaPencilAlt size={19} color={`${Colores.AzulOscuro}`} />
+                  </ButtonIcon>
+
+                  <ButtonIcon>
+                    <IoTrashSharp size={21} color={"#FF7676"} />
+                  </ButtonIcon>
+                  <ButtonIcon>
+                    <IoInformationCircle
+                      size={21}
+                      color={`${Colores.AzulOscuro}`}
+                    />
+                  </ButtonIcon>
+                </Space>
+              )}
+            />
+          </Table>
+
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              flexWrap: "wrap",
+              justifyContent: "space-between",
+            }}
+          >
+            <div>
+              <Pagination
+                current={data.currentPage}
+                pageSize={data.pageSize}
+                total={data.totalItems}
+                onChange={handlePageChange}
+              />
+            </div>
+
+            <div>
+              <span style={{ fontSize: "15px" }}>Clientes por página: </span>
+              <Select
+                style={{ width: "60px" }}
+                defaultValue={parseInt(data.pageSize || 5)}
+                onChange={handlePageSizeChange}
+              >
+                <Option value={5}>5</Option>
+                <Option value={10}>10</Option>
+                <Option value={20}>20</Option>
+                <Option value={30}>30</Option>
+                <Option value={40}>50</Option>
+              </Select>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }

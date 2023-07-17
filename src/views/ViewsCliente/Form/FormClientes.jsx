@@ -1,5 +1,9 @@
 import { PrincipalContainerForm } from "../../../components";
 
+import { message } from "antd";
+
+import { FuncUtils } from "../../../utils";
+
 import React from "react";
 import InformacionPersonal from "./InformacionPersonal";
 import InformacionEmpresas from "./InformacionEmpresas";
@@ -7,6 +11,7 @@ import InformacionEmpresas from "./InformacionEmpresas";
 export default function FormClientes(props) {
   const [posicionActual, setPosicionActual] = React.useState(1);
   const [datosFormulario, setDatosFormulario] = React.useState({});
+  const [saveIsSucces, setSaveIsSucces] = React.useState(false);
 
   const siguiente = (data) => {
     setDatosFormulario({ ...datosFormulario, ...data });
@@ -18,6 +23,21 @@ export default function FormClientes(props) {
     setPosicionActual(posicionActual - 1);
   };
 
+  //Cerrar el formulario si el cliente se guarda correctamente
+  React.useEffect(() => {
+    if (saveIsSucces) {
+      props.setToggle(true);
+      setSaveIsSucces(false);
+    }
+  }, [saveIsSucces]);
+
+  // Llenar los campos con los datos del cliente a editar:
+  React.useEffect(() => {
+    if (props.dataClientEdit !== null) {
+      setDatosFormulario(FuncUtils.capitalizePropertyKeys(props.dataClientEdit));
+    }
+  }, [props.dataClientEdit]);
+
   return (
     <PrincipalContainerForm display={props.toggle}>
       <div>
@@ -28,7 +48,14 @@ export default function FormClientes(props) {
           />
         )}
         {posicionActual == 2 && (
-          <InformacionEmpresas backPart={atras} dataValues={datosFormulario} />
+          <InformacionEmpresas
+            setPosicionActual={setPosicionActual}
+            setLoadingSave={props.setLoadingSave}
+            backPart={atras}
+            dataValues={datosFormulario}
+            setDatosFormulario={setDatosFormulario}
+            setSaveIsSucces={setSaveIsSucces}
+          />
         )}
       </div>
     </PrincipalContainerForm>

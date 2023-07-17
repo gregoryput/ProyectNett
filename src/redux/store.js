@@ -9,6 +9,8 @@ import { sexesApi } from "./Api/sexesApi";
 import sexesReducer from "./Slice/sexesSlice";
 import { countriesApi } from "./Api/countriesApi";
 import countriesReducer from "./Slice/countriesSlice";
+import { companiesApi } from "./Api/companiesApi";
+import companiesReducer from "./Slice/companiesSlice";
 
 export const store = configureStore({
   reducer: {
@@ -31,6 +33,10 @@ export const store = configureStore({
     //Paises
     countries: countriesReducer,
     [countriesApi.reducerPath]: countriesApi.reducer,
+
+    //Empresas
+    companies: companiesReducer,
+    [companiesApi.reducerPath]: companiesApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware()
@@ -38,7 +44,8 @@ export const store = configureStore({
       .concat(clientsApi.middleware)
       .concat(citiesApi.middleware)
       .concat(sexesApi.middleware)
-      .concat(countriesApi.middleware),
+      .concat(countriesApi.middleware)
+      .concat(companiesApi.middleware),
 });
 
 export default store;

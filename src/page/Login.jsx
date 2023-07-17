@@ -29,6 +29,8 @@ import logo from "../assets/logo.png";
 export default function Login() {
   /// useState para el toogle de ver contrase;o
   const [activo, setActivo] = useState(false);
+  const [loadingState, setLoadingloadingState] = useState(false);
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -49,21 +51,20 @@ export default function Login() {
     if (isLoginSuccess) {
       if (loginData?.result != null && loginData?.result != "") {
         console.log("autenticacion correcta");
+        setLoadingloadingState(true);
         dispatchUser();
-        message.success({
-          content: "Sesión iniciada correctamente",
-        });
-        navigate("/");
+        message.success("Sesión iniciada correctamente", 3);
+        setTimeout(() => {
+          navigate("/");
+          window.location.reload();
+        }, 3 * 1000);
       } else {
-        message.success({
-          content: "Error al iniciar sesión",
+        setLoadingloadingState(false);
+        message.error({
+          content:
+            "Error al iniciar sesión, verifique sus datos e intente de nuevo",
         });
       }
-      /*
-      if (loginData?.result == null) {
-        console.log("autenticacion correcta");
-      }
-      */
     }
   }, [isLoginSuccess, loginData?.result, navigate]);
 
@@ -139,8 +140,8 @@ export default function Login() {
               Verifica tu contraseña
             </span>
           )}
-          <Button type="submit">
-            {isLoading ? <Spinner /> : "Iniciar Sesion"}
+          <Button type="submit" disabled={isLoading || loadingState}>
+            {isLoading || loadingState ? <Spinner /> : "Iniciar sesión"}
           </Button>
         </FormContainer>
       </DivContainerPage>

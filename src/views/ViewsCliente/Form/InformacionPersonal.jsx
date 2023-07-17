@@ -44,6 +44,7 @@ export default function InformacionPersonal(props) {
     setValue,
     trigger,
     reset,
+    initialValues,
   } = useForm();
 
   //Traer las ciudades
@@ -104,7 +105,7 @@ export default function InformacionPersonal(props) {
         })
       );
     }
-  }, [dispatch, isLoadingCities, citiesData?.result]);
+  }, [dispatch, isLoadingCities, citiesData]);
 
   //Funcion para navegar al paso Informacion Empresas
   const irAdelante = () => {
@@ -116,9 +117,14 @@ export default function InformacionPersonal(props) {
   React.useEffect(() => {
     reset(props.dataValues);
     setIdPaisSeleccionado(parseInt(props.dataValues.IdPais));
-    dispatchCities();
-    dispatchCountries();
-  }, []);
+  }, [props.dataValues]);
+
+  React.useEffect(() => {
+    if (citiesData != null && countriesData != null) {
+      dispatchCities();
+      dispatchCountries();
+    }
+  }, [citiesData, countriesData]);
 
   return (
     <ContainerFormPrueba onSubmit={handleSubmit(irAdelante)}>
