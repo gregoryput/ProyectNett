@@ -30,7 +30,7 @@ namespace ProyectNettApi.Controllers
         [Authorize]
         [Route("obtenerClientes")]
         [HttpGet]
-        public IActionResult getClientes(int pageNumber = 1, int pageSize = 5)
+        public IActionResult getClientes(int pageNumber, int pageSize)
         {
             try
             {
@@ -45,15 +45,15 @@ namespace ProyectNettApi.Controllers
                 _respuesta.CurrentPage = pageNumber;
                 _respuesta.PageSize = pageSize;
                 _respuesta.DisplayMessage = "Listado de clientes obtenido con éxito:";
+                return Ok(_respuesta);
             }
             catch (Exception ex)
             {
                 _respuesta.IsSuccess = false;
                 _respuesta.DisplayMessage = "Error al solicitar la lista de clientes";
                 _respuesta.ErrorMessages = new List<string> { ex.ToString() };
+                return StatusCode(500, _respuesta);
             }
-
-            return Ok(_respuesta);
         }
 
 
@@ -71,6 +71,7 @@ namespace ProyectNettApi.Controllers
                 _clienteRepositorio.InsertarCliente(cliente);
                 _respuesta.Result = cliente;
                 _respuesta.DisplayMessage = "Cliente insertado correctamente:";
+                return Ok(_respuesta);
             }
 
             catch (Exception ex)
@@ -78,9 +79,8 @@ namespace ProyectNettApi.Controllers
                 _respuesta.IsSuccess = false;
                 _respuesta.DisplayMessage = "Error al insertar el cliente";
                 _respuesta.ErrorMessages = new List<string> { ex.ToString() };
+                return StatusCode(500, _respuesta);
             }
-
-            return Ok(_respuesta);
         }
 
 

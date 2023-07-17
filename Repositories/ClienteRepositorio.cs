@@ -78,7 +78,7 @@ namespace ProyectNettApi.Repositories
                     Correo = cliente.Persona.Correo,
                     Edad = cliente.Persona.Edad,
                     FechaDeNacimiento = cliente.Persona.FechaDeNacimiento,
-                    Cedula = cliente.Persona.FechaDeNacimiento,
+                    Cedula = cliente.Persona.Cedula,
                     IdSexo = cliente.Persona.IdSexo,
                     IdCiudad = cliente.Persona.IdCiudad,
                     IdCreadoPor = cliente.IdCreadoPor,

@@ -12,8 +12,11 @@
         public int Edad { get; set; }
         public DateTime FechaDeNacimiento { get; set; }
         public string Cedula { get; set; }
+        public int IdSexo { get; set; }
         public string SexoNombre { get; set; }
         public string CiudadNombre { get; set; }
+        public int IdCiudad { get; set; }
         public string PaisNombre { get; set; }
+        public int IdPais { get; set; }
     }
 }
