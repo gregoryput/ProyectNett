@@ -841,12 +841,12 @@ END
 
 Execute dbo.ListadoClientesV2 @PageNumber = 2, @PageSize = 5
 
-Select * From Personas
+
 
 GO
 --
 --
---.P.R.O.C.E.D.U.R.E.......P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P Procedimiento almacenado para devolver la lista de Proveedores: --
+--.P.R.O.C.E.D.U.R.E.......P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P Procedimiento almacenado para devolver la lista de Proveedores: -------------------------------------
 CREATE OR ALTER PROCEDURE dbo.ListadoProveedores
 AS
 BEGIN
@@ -881,6 +881,7 @@ BEGIN
 					INNER JOIN Paises PA ON CU.IdPais = PA.IdPais
 					WHERE C.IdEstadoRegistro = 1
 END
+
 /*EJECUCION DE PROCEDIMIENTO:
 -- Execute dbo.ListadoClientes 
 */
@@ -1701,3 +1702,8 @@ BEGIN
 END
 Select * From Clientes_Empresas
 EXEC dbo.GetEmpresasByClienteId @clienteId = 58
+
+
+
+-----------------------------------------------------------------------------------------------------------------------------------------------
+Select * FROM Users
