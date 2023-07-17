@@ -824,9 +824,9 @@ BEGIN
 
     DECLARE @Offset INT = (@PageNumber - 1) * @PageSize;
 
-    SELECT C.IdCliente, Nombres, Apellidos, Telefono1, Telefono2, Direccion, Correo, Edad, FechaDeNacimiento, Cedula, SexoNombre, CiudadNombre, PaisNombre
+    SELECT C.IdCliente, Nombres, Apellidos, Telefono1, Telefono2, Direccion, Correo, Edad, FechaDeNacimiento, Cedula, IdSexo, SexoNombre, IdCiudad, CiudadNombre, IdPais, PaisNombre
     FROM (
-        SELECT C.IdCliente, Nombres, Apellidos, Telefono1, Telefono2, Direccion, P.Correo, Edad, FechaDeNacimiento, Cedula, SexoNombre, CiudadNombre, PaisNombre,
+        SELECT C.IdCliente, Nombres, Apellidos, Telefono1, Telefono2, Direccion, P.Correo, Edad, FechaDeNacimiento, Cedula, P.IdSexo, SexoNombre, P.IdCiudad, CiudadNombre, PA.IdPais, PaisNombre,
                ROW_NUMBER() OVER (ORDER BY C.IdCliente) AS RowNumber
         FROM Clientes C
         INNER JOIN Personas P ON C.IdPersonaDeContacto = P.IdPersona
@@ -841,7 +841,7 @@ END
 
 Execute dbo.ListadoClientesV2 @PageNumber = 2, @PageSize = 5
 
-
+Select * From Personas
 
 GO
 --
@@ -1686,6 +1686,18 @@ GO
 /*
 Exec GetIdEmpresaByIdCliente @NombreUsuario = 'admin', @Contraseña = 'admin123'
 */
-
-
-Select * From Usuarios
+Create OR ALTER PROCEDURE dbo.GetEmpresasByClienteId
+(
+@ClienteId int
+)
+AS
+BEGIN
+    Select E.IdEmpresa, NombreEmpresa, RNC, Correo, E.Teléfono1, E.Teléfono2, SitioWeb, E.Dirección, C.IdCiudad, P.IdPais 
+	FROM Empresas E INNER JOIN Ciudades C ON E.IdCiudad = C.IdCiudad
+	                INNER JOIN Paises P ON C.IdPais = P.IdPais
+					INNER JOIN Clientes_Empresas CE ON E.IdEmpresa = CE.IdEmpresa
+					INNER JOIN Clientes Cli ON CE.IdCliente = Cli.IdCliente
+	WHERE Cli.IdCliente = @clienteId
+END
+Select * From Clientes_Empresas
+EXEC dbo.GetEmpresasByClienteId @clienteId = 58
