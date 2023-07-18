@@ -11,6 +11,7 @@
         public string Correo { get; set; }
         public int Edad { get; set; }
         public DateTime FechaDeNacimiento { get; set; }
+        public DateTime FechadDeContratación { get; set; }
         public string Cedula { get; set; }
         public string SexoNombre { get; set; }
         public string CiudadNombre { get; set; }

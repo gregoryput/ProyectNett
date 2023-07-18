@@ -7,7 +7,7 @@ using System.Data;
 
 namespace ProyectNettApi.Repositories
 {
-    public class EmpleadoRepositorio :IEmpleadoRepositorio
+    public class EmpleadoRepositorio : IEmpleadoRepositorio
     {
         private readonly IConfiguration _configuration;
         private readonly ConexionDB _conexionDB;
@@ -18,20 +18,12 @@ namespace ProyectNettApi.Repositories
             _conexionDB = new ConexionDB();
         }
 
-        // REPOSITORIO--A-P-I----P-R-O-Y-E-N-E-T-T ------ (Metodo para DEVOLVER una LISTA de Empleado):
-        public IEnumerable<EmpleadoDTO> GetEmpleado()
+
+
+        // REPOSITORIO--A-P-I----P-R-O-Y-E-N-E-T-T ------ (Metodo para DEVOLVER una LISTA de Empleados) METODO PAGINADO:
+        public (IEnumerable<EmpleadoDTO> empleados, int totalCount) GetEmpleados(int pageNumber, int pageSize)
         {
-            string query = " Execute dbo.ListadoEmpleados";
-            var resultSet = _conexionDB.GetConnection(_configuration).Query<EmpleadoDTO>(query);
-            return resultSet.ToList();
-        }
-
-
-
-        // REPOSITORIO--A-P-I----P-R-O-Y-E-N-E-T-T ------ (Metodo para DEVOLVER una LISTA de Empleado) METODO PAGINADO:
-        public (IEnumerable<EmpleadoDTO> clientes, int totalCount) GetClientes(int pageNumber, int pageSize)
-        {
-            string query = "dbo.ListadoClientesV2";
+            string query = "dbo.ListadoEmpleados";
             var parameters = new DynamicParameters();
             parameters.Add("@PageNumber", pageNumber);
             parameters.Add("@PageSize", pageSize);
@@ -80,6 +72,7 @@ namespace ProyectNettApi.Repositories
                 };
                 int IdPersona = connection.ExecuteScalar<int>(queryPersona, dataEmpleado, transaction, commandType: CommandType.StoredProcedure);
 
+
                 // -
                 // - ..I.N.S.E.R.T.. Insertando en la tabla Empleado: ........................................
                 int IdEmpleado = connection.ExecuteScalar<int>("dbo.InsertarEmpleado",
@@ -87,13 +80,31 @@ namespace ProyectNettApi.Repositories
                     {
                         IdPersona,
                         empleado.IdCreadoPor,
+                        empleado.FechadDeContratación
                     }, transaction, commandType: CommandType.StoredProcedure);
 
-       
+
+
+                // -
+                // - ..I.N.S.E.R.T.. Insertando en la tabla Cargos y EmpleadosCargos: ........................................
+                foreach (var cargo in empleado.Cargos)
+                {
+                    // -- Inserto en la tabla EmpleadosCargos:
+                    string query_EmpleadosCargos = "dbo.Insertar_EmpleadosCargos";
+                    connection.Execute(query_EmpleadosCargos,
+                        new
+                        {
+                            IdEmpleado = IdEmpleado,
+                            IdCargo = cargo.IdCargo,
+                            Descripcion = cargo.Descripción,
+                            IdCreadoPor = empleado.IdCreadoPor
+                        }, transaction, commandType: CommandType.StoredProcedure);
+                }
 
                 // - .C.O.M.M.I.T. Confirmo la transaccion
                 transaction.Commit();
             }
+
             catch (Exception ex)
             {
                 transaction.Rollback();
@@ -103,9 +114,10 @@ namespace ProyectNettApi.Repositories
             connection.Close();
         }
 
+
         //
-        // REPOSITORIO--A-P-I----P-R-O-Y-E-N-E-T-T ------ (Metodo para ELIMINAR Empleado):
-        public void EliminarEmpleado(int IdEmpleado)
+        // REPOSITORIO--A-P-I----P-R-O-Y-E-N-E-T-T ------ (Metodo para ELIMINAR CLIENTES):
+        public void EliminarCliente(int IdEmpleado)
         {
             var connection = _conexionDB.GetConnection(_configuration);
             connection.Open();
@@ -113,9 +125,12 @@ namespace ProyectNettApi.Repositories
 
             try
             {
-      
-                // - Eliminando en la tabla Clientes:
-                connection.Execute("dbo.EliminarClientes", new { IdEmpleado }, transaction,
+                // - Eliminando en la tabla Empleados_Cargos:
+                connection.Execute("dbo.Eliminar_EmpleadosCargos", new { IdEmpleado }, transaction,
+                    commandType: CommandType.StoredProcedure);
+
+                // - Eliminando en la tabla Empleados:
+                connection.Execute("dbo.EliminarEmpleados", new { IdEmpleado }, transaction,
                     commandType: CommandType.StoredProcedure);
 
                 // - Eliminando en la tabla Personas:
@@ -134,33 +149,6 @@ namespace ProyectNettApi.Repositories
             connection.Close();
         }
 
-
-
-        //
-        // REPOSITORIO--A-P-I----P-R-O-Y-E-N-E-T-T ------ (Metodo para ACTUALIZAR Empleado):
-        public void ActualizarEmpleado(Empleado empleado)
-        {
-            var connection = _conexionDB.GetConnection(_configuration);
-            connection.Open();
-            var transaction = connection.BeginTransaction();
-
-            try
-            {
-                // Actualizar en la tabla Persona:
-                connection.Execute("dbo.ActualizarPersona", empleado.Persona, transaction,
-                       commandType: CommandType.StoredProcedure);
-
-               
-                transaction.Commit();
-            }
-            catch (Exception ex)
-            {
-                transaction.Rollback();
-                connection.Close();
-                throw ex;
-            }
-            connection.Close();
-        }
 
     }
 }

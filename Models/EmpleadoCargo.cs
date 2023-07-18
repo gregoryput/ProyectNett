@@ -2,27 +2,16 @@
 
 namespace ProyectNettApi.Models
 {
-    public class Empleado
+    public class EmpleadoCargo
     {
-
         [Key]
-        public int IdEmpleado { get; set; }
-
-        public int IdCreadoPor { get; set; }
-
-        public DateTime FechaCreacion { get; set; }
-
-        public DateTime FechadDeContratación { get; set; }
-        public int IdModificadoPor { get; set; }
-
-        public DateTime FechaModificacion { get; set; }
-
-        public int IdEstadoRegistro { get; set; }
-
         [Required(ErrorMessage = "Este campo es requerido")]
-        public Persona Persona { get; set; }
-
-        public List<EmpleadoCargo> Cargos { get; set; }
-
+        public int IdCargo { get; set; }
+        public string Descripción { get; set; }
+        public int IdCreadoPor { get; set; }
+        public DateTime FechaCreacion { get; set; }
+        public int IdModificadoPor { get; set; }
+        public DateTime FechaModificacion { get; set; }
+        public int IdEstadoRegistro { get; set; }
     }
 }
