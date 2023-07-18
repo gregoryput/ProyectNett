@@ -871,21 +871,32 @@ GO
 --
 --.P.R.O.C.E.D.U.R.E.......P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P Procedimiento almacenado para devolver la lista de Empleados: --
 CREATE OR ALTER PROCEDURE dbo.ListadoEmpleados
+    @PageNumber INT,
+    @PageSize INT
 AS
 BEGIN
-    SET NOCOUNT ON 
-	SELECT C.IdCliente, Nombres, Apellidos, Telefono1, Telefono2, Direccion, P.Correo, Edad, FechaDeNacimiento, Cedula, SexoNombre, CiudadNombre, PaisNombre
-    FROM Clientes C INNER JOIN Personas P ON C.IdPersonaDeContacto = p.IdPersona
+    SET NOCOUNT ON;
+
+    DECLARE @Offset INT = (@PageNumber - 1) * @PageSize;
+
+    SELECT IdEmpleado, Nombres, Apellidos, Telefono1, Telefono2, Direccion, Correo, Edad, FechaDeNacimiento, FechadDeContratación, Cedula, SexoNombre, CiudadNombre, PaisNombre
+    FROM (
+        SELECT C.IdEmpleado, Nombres, Apellidos, Telefono1, Telefono2, Direccion, P.Correo, Edad, FechaDeNacimiento, FechadDeContratación, Cedula, SexoNombre, CiudadNombre, PaisNombre,
+               ROW_NUMBER() OVER (ORDER BY C.IdEmpleado) AS RowNumber
+        FROM Empleados C INNER JOIN Personas P ON C.IdEmpleado = p.IdPersona
 					INNER JOIN Sexos S ON P.IdSexo = S.IdSexo
 					INNER JOIN Ciudades CU ON P.IdCiudad = CU.IdCiudad
 					INNER JOIN Paises PA ON CU.IdPais = PA.IdPais
 					WHERE C.IdEstadoRegistro = 1
+    ) AS C
+    WHERE C.RowNumber > @Offset
+      AND C.RowNumber <= (@Offset + @PageSize);
 END
-
 /*EJECUCION DE PROCEDIMIENTO:
--- Execute dbo.ListadoClientes 
+-- Execute dbo.ListadoEmpleados @PageNumber = 1, @PageSize = 5
 */
 
+Select * FROM Empleados
 
 GO
 -- TiPO DE DATO TABLA PARA ALMACENAR UNA LISTA DE EmpresaId Y PODERLO USAR EN UN PROCEDIMIENTO ALMACENADO:
@@ -898,7 +909,7 @@ CREATE TYPE EmpresaIdsTableType AS TABLE
 GO
 --
 --
---.P.R.O.C.E.D.U.R.E.......P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P Procedimiento almacenado para devolver la lista de Clientes: --
+--.P.R.O.C.E.D.U.R.E.......P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P Procedimiento almacenado para devolver la lista de Emplesas: --
 CREATE OR ALTER PROCEDURE dbo.EmpresasBy_ListaIdEmpresas
 @EmpresaIds EmpresaIdsTableType READONLY,
 @IdCliente INT
@@ -1198,6 +1209,65 @@ EXEC dbo.ActualizarSoloEmpresa_ByIdEmpresa
 GO
 --
 --
+--.P.R.O.C.E.D.U.R.E.......P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P Procedimiento almacenado para insertar en la tabla Empleados: --
+Create or Alter procedure dbo.InsertarEmpleado
+  @FechadDeContratación date,
+  @IdPersona int,
+  --
+  @IdCreadoPor int
+  AS
+  BEGIN
+      Set nocount On
+	  Insert Into Empleados(FechadDeContratación, IdPersona, IdCreadoPor, FechaCreacion, IdEstadoRegistro) 
+	                 VALUES(@FechadDeContratación, @IdPersona, @IdCreadoPor, GETDATE(), 1)
+
+	  SELECT SCOPE_IDENTITY();
+END
+
+
+
+GO
+--
+--
+--.P.R.O.C.E.D.U.R.E.......P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P Procedimiento almacenado para insertar en la tabla Cargos: --
+Create or Alter procedure dbo.InsertarCargos
+  @NombreCargo varchar(60),
+  @IdCreadoPor int
+  AS
+  BEGIN
+      Set nocount On
+	  Insert Into Cargos(NombreCargo, IdCreadoPor, FechaCreacion, IdEstadoRegistro) VALUES(@NombreCargo, @IdCreadoPor, GETDATE(), 1)
+	  SELECT SCOPE_IDENTITY();
+END
+/* EJECUCION DEL PROCEDIMIENTO
+EXEC dbo.InsertarCargos @IdCreadoPor = 6, @NombreCargo = 'Analista de topologías'
+*/
+
+Select * From EmpleadosCargos
+
+GO
+--
+--
+--.P.R.O.C.E.D.U.R.E.......P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P Procedimiento almacenado para insertar en la tabla Empleados_Cargos: --
+Create or Alter procedure dbo.Insertar_EmpleadosCargos
+  @IdEmpleado int,
+  @IdCargo int,
+  @Descripcion varchar(80),
+  @IdCreadoPor int
+  AS
+  BEGIN
+      Set nocount On
+	  Insert Into EmpleadosCargos(IdEmpleado, IdCargo, Descripción, IdCreadoPor, IdEstadoRegistro)
+				         VALUES(@IdEmpleado, @IdCargo, @Descripcion, @IdCreadoPor, 1)
+END
+/* EJECUCION DEL PROCEDIMIENTO
+EXEC dbo.Insertar_EmpleadosCargos @IdEmpleado = 6, @IdCargo = 1002, @Descripcion = 'Encargado de analizar las topologías de redes involucradas en cada proyecto', @IdCreadoPor = 6
+*/
+
+
+GO
+--
+--
 --.P.R.O.C.E.D.U.R.E.......P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P Procedimiento almacenado para eliminar en la tabla Clientes_Empresas:
 Create OR Alter Procedure dbo.Eliminar_Clientes_Empresas
 @IdCliente int
@@ -1205,6 +1275,57 @@ AS
 BEGIN
     Set Nocount On
     Update Clientes_Empresas set IdEstadoRegistro = 2 WHERE IdCliente = @IdCliente
+END
+/* EJECUCION DEL PROCEDIMIENTO
+EXEC dbo.Eliminar_Clientes_Empresas @IdCliente = 10
+*/
+
+
+
+GO
+--
+--
+--.P.R.O.C.E.D.U.R.E.......P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P Procedimiento almacenado para eliminar en la tabla EmpleadosCargos:
+Create OR Alter Procedure dbo.Eliminar_EmpleadosCargos
+@IdEmpleado int
+AS 
+BEGIN
+    Set Nocount On
+    Update EmpleadosCargos set IdEstadoRegistro = 2 WHERE IdEmpleado = @IdEmpleado
+END
+/* EJECUCION DEL PROCEDIMIENTO
+EXEC dbo.Eliminar_Clientes_Empresas @IdCliente = 10
+*/
+
+
+
+GO
+--
+--
+--.P.R.O.C.E.D.U.R.E.......P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P Procedimiento almacenado para eliminar en la tabla EliminarEmpleados:
+Create OR Alter Procedure dbo.EliminarEmpleados
+@IdEmpleado int
+AS 
+BEGIN
+    Set Nocount On
+    Update EmpleadosCargos set IdEstadoRegistro = 2 WHERE IdEmpleado = @IdEmpleado
+END
+/* EJECUCION DEL PROCEDIMIENTO
+EXEC dbo.Eliminar_Clientes_Empresas @IdCliente = 10
+*/
+
+
+
+GO
+--
+--
+--.P.R.O.C.E.D.U.R.E.......P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P Procedimiento almacenado para eliminar en la tabla EmpleadosCargos:
+Create OR Alter Procedure dbo.Eliminar_EmpleadosCargos
+@IdEmpleado int
+AS 
+BEGIN
+    Set Nocount On
+    Update EmpleadosCargos set IdEstadoRegistro = 2 WHERE IdEmpleado = @IdEmpleado
 END
 /* EJECUCION DEL PROCEDIMIENTO
 EXEC dbo.Eliminar_Clientes_Empresas @IdCliente = 10
@@ -1707,3 +1828,45 @@ EXEC dbo.GetEmpresasByClienteId @clienteId = 58
 
 -----------------------------------------------------------------------------------------------------------------------------------------------
 Select * FROM Users
+
+
+
+/*
+
+[9:12 p. m., 17/7/2023] Gregory: CREATE OR ALTER PROCEDURE dbo.ListadoEmpleados
+AS
+BEGIN
+    SET NOCOUNT ON 
+	SELECT C.IdEmpleado, Nombres, Apellidos, Telefono1, Telefono2, Direccion, P.Correo, Edad, FechaDeNacimiento, Cedula, SexoNombre, CiudadNombre, PaisNombre
+    FROM Empleados C INNER JOIN Personas P ON C.IdEmpleado = p.IdPersona
+					INNER JOIN Sexos S ON P.IdSexo = S.IdSexo
+					INNER JOIN Ciudades CU ON P.IdCiudad = CU.IdCiudad
+					INNER JOIN Paises PA ON CU.IdPais = PA.IdPais
+					WHERE C.IdEstadoRegistro = 1
+END
+/*EJECUCION DE PROCEDIMIENTO:
+*/ Execute dbo.ListadoEmpleados
+[9:12 p. m., 17/7/2023] Gregory: Create or Alter procedure dbo.InsertarEmpleado
+  @IdPersona int,
+  --
+  @IdCreadoPor int
+  AS
+  BEGIN
+      Set nocount On
+	  Insert Into Empleados(IdPersona, IdCreadoPor, FechaCreacion, IdEstadoRegistro) 
+	                 VALUES(@IdPersona, @IdCreadoPor,  GETDATE(), 1)
+
+	  SELECT SCOPE_IDENTITY();
+END
+
+GO
+[9:14 p. m., 17/7/2023] Gregory: Create OR Alter Procedure dbo.EliminarEmpleados
+@IdEmpleado int
+AS 
+BEGIN
+    Set Nocount On
+    Update Empleados set IdEstadoRegistro = 2 WHERE IdEmpleado = @IdEmpleado
+END
+
+GO
+--
