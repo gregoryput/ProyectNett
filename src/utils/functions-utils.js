@@ -26,6 +26,5 @@ export const AllCapitalizeOnePropertyKey = (obj, property) => {
       return;
     }
   }
-  console.log("aaaaaaa", capitalizedObj);
   return capitalizedObj;
 };
