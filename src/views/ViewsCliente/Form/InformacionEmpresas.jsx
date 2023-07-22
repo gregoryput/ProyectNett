@@ -114,6 +114,7 @@ export default function InformacionEmpresas(props) {
       idCliente: 0,
       idCreadoPor: 0,
     };
+
     //Armar el objeto persona
     const persona = { ...props.dataValues, edad: 18 };
     //Quitar el objeto empresas del objet persona
@@ -148,6 +149,7 @@ export default function InformacionEmpresas(props) {
     }
   }, [isCreateSuccess]);
 
+  //llenar campos fieldarray
   React.useEffect(() => {
     reset(props?.dataValues);
   }, [props?.dataValues]);
