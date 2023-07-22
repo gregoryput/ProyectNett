@@ -838,8 +838,7 @@ BEGIN
     WHERE C.RowNumber > @Offset
       AND C.RowNumber <= (@Offset + @PageSize);
 END
-
-Execute dbo.ListadoClientesV2 @PageNumber = 2, @PageSize = 5
+-- Execute dbo.ListadoClientesV2 @PageNumber = 2, @PageSize = 5
 
 
 
@@ -1217,6 +1216,7 @@ Create or Alter procedure dbo.ActualizarEmpleadosCargos
 END
 
 
+
 Select * From EmpleadosCargos
 GO
 --
@@ -1229,6 +1229,7 @@ Create or Alter procedure dbo.Delete_EmpleadosCargos
       Set nocount On
 	  Update EmpleadosCargos SET IdEstadoRegistro = 2 WHERE IdCargo = 2
 END
+
 
 
 GO
@@ -1268,7 +1269,7 @@ END
 EXEC dbo.InsertarCargos @IdCreadoPor = 6, @NombreCargo = 'Analista de topologías'
 */
 
-Select * From EmpleadosCargos
+
 
 GO
 --
@@ -1506,8 +1507,6 @@ END
 /* EJECUCION DEL PROCEDIMIENTO
 EXEC dbo.EliminarEmpresa_ByEmpresaId @IdEmpresa = 7
 */
-Select * From Empresas
-Select * From Clientes_Empresas
 GO
 
 /*Algunas insersiones de datos:*/
@@ -1685,7 +1684,8 @@ INSERT INTO Personas (Nombres, Apellidos, Telefono1, Telefono2, Direccion, Corre
 /*19*/('Ana Lia', 'Gómez Lopez', '809-555-8765', '829-555-9071', 'Carrera Principal 321', 'ana.gomez@example.com', 42, '1980-07-22', '7890123456789', 2, 3, 1, GETDATE(), 1, GETDATE(), 1),
 /*20*/('Sofia Sael', 'García Moreno', '849-535-1010', '829-515-9292', 'Avenida Norte 789', 'sofia.garcia@example.com', 31, '1991-03-27', '3456789012345', 2, 2, 1, GETDATE(), 1, GETDATE(), 1),
 /*21*/('Joeli', 'Sabino', '829-312-3303', '809-505-1292', 'Calle Oeste 567', 'carlos.martinez@example.com', 29, '1993-08-14', '5678901234567', 1, 3, 1, GETDATE(), 1, GETDATE(), 1),
-/*22*/('Juan Andrés', 'César Jiménez', '829-836-3523', '809-650-5069', 'Villa 1 Calle Anthurias', 'juancj@gestnett.com', 22, '2001-02-26', '1600000234567', 1, 3, 1, GETDATE(), 1, GETDATE(), 1);
+/*22*/('Juan Andrés', 'César Jiménez', '829-836-3523', '809-650-5069', 'Villa 1 Calle Anthurias', 'juancj@gmail.com', 22, '2001-02-26', '1600000234567', 1, 3, 1, GETDATE(), 1, GETDATE(), 1),
+/*23*/('Gregory Albert', 'Sanchez', '809-806-3003', '829-659-5869', 'Vlla 3 Calle C', 'greg@gmai.com', 22, '2001-06-28', '1611110234567', 1, 3, 1, GETDATE(), 1, GETDATE(), 1);
 -- Select * FROM Personas
 
 
@@ -1751,7 +1751,7 @@ Insert Into EstadoProveedores(EstadoNombre, IdCreadoPor, FechaCreacion, IdModifi
 VALUES ('Proveedor Principal', 1, GETDATE(), 1, GETDATE(), 1);
 
 
-
+GO
 -- Insertar datos en la tabla Proveedores:
 Insert Into Proveedores (IdEstadoProveedor, IdPersonaDeContacto, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro) VALUES
 /*11*/(1, 11, 1, GETDATE(), 1, GETDATE(), 1),
@@ -1762,7 +1762,7 @@ Insert Into Proveedores (IdEstadoProveedor, IdPersonaDeContacto, IdCreadoPor, Fe
 -- Select * FROM Proveedores
 
 
-
+GO
 -- Insertar datos en la tabla Proveedores_Empresas:
 INSERT INTO Proveedores_Empresas(IdProveedor, IdEmpresa, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro) VALUES
 /*11*/(1, 11, 1, GETDATE(), 1, GETDATE(), 1),
@@ -1789,7 +1789,6 @@ INSERT INTO Cargos (NombreCargo, IdCreadoPor, FechaCreacion, IdModificadoPor, Fe
 GO
 
 
-
 --  Insertar datos en la tabla Empleados:
 INSERT INTO Empleados (FechadDeContratación, IdPersona, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro) VALUES
 /*1*/('2021-01-11', 16, 1, GETDATE(), 1, GETDATE(), 1),
@@ -1798,7 +1797,8 @@ INSERT INTO Empleados (FechadDeContratación, IdPersona, IdCreadoPor, FechaCreaci
 /*4*/('2021-01-11', 19, 1, GETDATE(), 1, GETDATE(), 1),
 /*5*/('2022-04-13', 20, 1, GETDATE(), 1, GETDATE(), 1),
 /*6*/('2020-05-14', 21, 1, GETDATE(), 1, GETDATE(), 1),
-/*7*/('2022-05-14', 22, 1, GETDATE(), 1, GETDATE(), 1);
+/*7*/('2022-05-14', 22, 1, GETDATE(), 1, GETDATE(), 1),
+/*8*/('2023-01-14', 22, 1, GETDATE(), 1, GETDATE(), 1);
 -- Select * from Empleados
 GO
 
@@ -1813,14 +1813,16 @@ INSERT INTO EmpleadosCargos (IdEmpleado, IdCargo, Descripción, IdCreadoPor, Fech
 (6, 6, 'Asistente en el ambito de coordinar los trabajos diarios en los proyectos.', 1, GETDATE(), 1, GETDATE(), 1),
 (7, 7, 'Encargado de desarrollar y da soporte al sistema de la empresa y desarrollar nuevas soluciones.', 1, GETDATE(), 1, GETDATE(), 1),
 (7, 8, 'Responsable de analizar el sistema de negocios y desarrollar flujos operativos en el sistema.', 1, GETDATE(), 1, GETDATE(), 1),
-(7, 3, 'Contribuir en el funcionamiento de las redes instaladas a los clientes mediente los proyectos.', 1, GETDATE(), 1, GETDATE(), 1);
+(7, 3, 'Contribuir en el funcionamiento de las redes instaladas a los clientes mediente los proyectos.', 1, GETDATE(), 1, GETDATE(), 1),
+(8, 7, 'Programador de soluciones tecnologias en ReacJS - Asp.Net - Node-JS.', 1, GETDATE(), 1, GETDATE(), 1);
 -- Select * from EmpleadosCargos
 GO
 
 -- Asignar usuarios a los empleados:
 Update Usuarios set IdEmpleado = 7 WHERE IdUsuario = 6
+GO
+Update Usuarios set IdEmpleado = 8 WHERE IdUsuario = 1
 
-Select * From Usuarios
 
 GO
 -- Procedimiento para Obtener usuario y loguear:
@@ -1851,8 +1853,7 @@ BEGIN
 					INNER JOIN Clientes Cli ON CE.IdCliente = Cli.IdCliente
 	WHERE Cli.IdCliente = @clienteId
 END
-Select * From Clientes_Empresas
-EXEC dbo.GetEmpresasByClienteId @clienteId = 58
+-- EXEC dbo.GetEmpresasByClienteId @clienteId = 58
 
 
 
@@ -1869,8 +1870,8 @@ FROM Usuarios U INNER JOIN Empleados E ON U.IdEmpleado = E.IdEmpleado
 				WHERE IdUsuario = 6
 END
 -- exec dbo.InformacionBasicaUsuario_ByIdUsuario @IdUsuario = 6
-Select * From Usuarios
-Select * From Personas
+
+
 
 GO
 -- PROCEDIMIENTO ALMACENAD PARA OBTENER LISTADO BASICO DE INFORMACION DE USUARIO (PERFIL) - GetAll
@@ -1895,5 +1896,3 @@ BEGIN
    Select C.IdCargo, NombreCargo FROM Cargos C INNER JOIN EmpleadosCargos EC ON C.IdCargo = EC.IdCargo WHERE EC.IdEmpleado = @IdEmpleado
 END
 -- Exec dbo.CargosEmpleado_ByEmpleadoId @IdEmpleado = 7
-
-Select IdUsuario, NombreUsuario, Correo, Contraseña, Usuarios.IdRol, NombreRol From Usuarios INNER JOIN Roles on Usuarios.IdRol = Roles.IdRol
