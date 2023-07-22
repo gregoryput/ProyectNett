@@ -266,17 +266,18 @@ export default function InformacionPersonal(props) {
           )}
         </LabelFor>
 
-        {/*SELECT OPTION IDSEXO*/}
+        {/*---------SELECT OPTION IDSEXO---------*/}
         <LabelFor>
           {" "}
           Sexo
           <Select
+            defaultValue={0}
             isLoading={isLoadingSexes}
             {...register("IdSexo", {
               ...minValue(1, "debe seleccionar el sexo"),
             })}
           >
-            <Option disabled={true} value={0} selected>
+            <Option disabled value={0}>
               -- Seleccione el sexo --
             </Option>
             {sexesData?.result.map((sex, index) => (
@@ -292,11 +293,12 @@ export default function InformacionPersonal(props) {
           )}
         </LabelFor>
 
-        {/*---------SELEC OPTION IDPAIS*/}
+        {/*---------SELEC OPTION IDPAIS---------*/}
         <LabelFor>
           {" "}
           País
           <Select
+            defaultValue={0}
             isLoading={isLoadingCountries}
             {...register("IdPais", {
               ...minValue(1, "Debe seleccionar el País"),
@@ -308,7 +310,7 @@ export default function InformacionPersonal(props) {
               setIdPaisSeleccionado(parseInt(event.target.value));
             }}
           >
-            <Option disabled={true} value={0} selected>
+            <Option disabled value={0}>
               -- Seleccione el país --
             </Option>
             {countriesData?.result.map((country, index) => (
@@ -324,7 +326,7 @@ export default function InformacionPersonal(props) {
           )}
         </LabelFor>
 
-        {/*----SELEC OPTION IDCIUDAD*/}
+        {/*-------------SELEC OPTION IDCIUDAD-------------*/}
         <LabelFor>
           {" "}
           Ciudad
@@ -337,7 +339,7 @@ export default function InformacionPersonal(props) {
             s
             option
           >
-            <Option disabled={true} value={0} selected>
+            <Option disabled value={0}>
               -- Seleccione la ciudad --
             </Option>
             {optionsSelectCities?.map((option, index) => (

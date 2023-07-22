@@ -36,6 +36,7 @@ import { NotificationContainer } from "./notifiaciones/notificaciones";
 import { GradientText } from "./404/GrandientText";
 import { ButtonNext } from "./Formularios/ButtonNext";
 import { ButtonIcon } from "./General/ButtonIcon";
+import { ButtonSave } from "./Formularios/ButtonSave";
 
 /// importanciones de los componente
 export {
@@ -87,6 +88,7 @@ export {
   PrincipalContainerForm,
   GradientText,
   ButtonNext,
+  ButtonSave,
 
   ///Componentes generales:
   ButtonIcon,
