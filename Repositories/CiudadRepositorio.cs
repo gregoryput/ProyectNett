@@ -17,8 +17,8 @@ namespace ProyectNettApi.Repositories
 
         public IEnumerable<Ciudad> getCities()
         {
-            string queryExecuteProcedure = "Execute dbo.ObtenerCiudades";
-            var resultSet = _conexionDB.GetConnection(_configuration).Query<Ciudad>(queryExecuteProcedure);
+            string queryExecute = "Select * From Ciudades";
+            var resultSet = _conexionDB.GetConnection(_configuration).Query<Ciudad>(queryExecute);
             return resultSet.ToList();
         }
 
