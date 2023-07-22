@@ -6,7 +6,7 @@ import Inventario from "./Inventario"
 import Proveedores from "./Proveedores"
 import Proyecto from "./Proyecto"
 import Reporte from "./Reporte"
-import Usuario from "./Usuario"
+import Usuario from "./ViewUsuario/Usuario"
 import Home from "./Home"
 
 ///importaciones de las views de la app system

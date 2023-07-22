@@ -15,6 +15,7 @@ import Login from "../page/Login";
 import ErrorPages from "../page/ErrorPages";
 import RequireLogin from "../utils/require-login";
 import ProtectedRoute from "./protected-route/protected-route";
+import ConfiguracionPerfil from "../views/ViewUsuario/ConfiguracionPerfil";
 
 
 export const createRouter = () => {
@@ -103,7 +104,16 @@ export const createRouter = () => {
           ),
         },
         // Resto de las rutas con comprobaciones de acceso
+        {
+          path: "/Configuracion",
+          element: (
+            <ProtectedRoute roles={["Administrador", "Asistente Administrativo", "asistente"]}>
+              <ConfiguracionPerfil />
+            </ProtectedRoute>
+          ),
+        },
       ],
+      
     },
     {
       path: "/login",

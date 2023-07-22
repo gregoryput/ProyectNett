@@ -102,7 +102,9 @@ export default function MenuBar() {
               </DivButtonSesion>
             </div>
 
-            <ButtonOption>
+            <ButtonOption  onClick={()=>{
+               navigate("/Configuracion");
+            }}>
               <IoPersonCircleOutline
                 style={{ width: 20, height: 20, marginRight: 10 }}
               />
