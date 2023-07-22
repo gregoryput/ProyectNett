@@ -193,8 +193,22 @@ namespace ProyectNettApi.Repositories
             try
             {
                 // Actualizar en la tabla Persona:
-                connection.Execute("dbo.ActualizarPersona", cliente.Persona, transaction,
-                       commandType: CommandType.StoredProcedure);
+                connection.Execute("dbo.ActualizarPersona", new
+                {
+                    IdPersona = cliente.Persona.IdPersona,
+                    Nombres = cliente.Persona.Nombres,
+                    Apellidos = cliente.Persona.Apellidos,
+                    Telefono1 = cliente.Persona.Telefono1,
+                    Telefono2 = cliente.Persona.Telefono2,
+                    Direccion = cliente.Persona.Direccion,
+                    Correo = cliente.Persona.Correo,
+                    Edad = cliente.Persona.Edad,
+                    FechaDeNacimiento = cliente.Persona.FechaDeNacimiento,
+                    Cedula = cliente.Persona.Cedula,
+                    IdSexo = cliente.Persona.IdSexo,
+                    IdCiudad = cliente.Persona.IdCiudad,
+                    IdModificadoPor = cliente.IdModificadoPor,
+                }, transaction, commandType: CommandType.StoredProcedure);
 
                 // Actualizar empresas:
                 foreach (var empresa in cliente.Empresas)
@@ -202,7 +216,19 @@ namespace ProyectNettApi.Repositories
                     // Si la empresa tiene IdEmpresa != 0 y IdEstadoRegistro != 2 se debe hacer un update:
                     if (empresa.IdEmpresa != 0 && empresa.IdEstadoRegistro != 2)
                     {
-                        connection.Execute("dbo.ActualizarEmpresa", empresa, transaction, commandType: CommandType.StoredProcedure);
+                        connection.Execute("dbo.ActualizarEmpresa", new
+                        {
+                            IdEmpresa = empresa.IdEmpresa,
+                            NombreEmpresa = empresa.NombreEmpresa,
+                            RNC = empresa.RNC,
+                            Correo = empresa.Correo,
+                            Teléfono1 = empresa.Teléfono1,
+                            Teléfono2 = empresa.Teléfono2,
+                            SitioWeb = empresa.SitioWeb,
+                            Dirección = empresa.Dirección,
+                            IdCiudad = empresa.Dirección,
+                            IdModificadoPor = empresa.IdModificadoPor
+                        }, transaction, commandType: CommandType.StoredProcedure);
                     }
 
                     // Si la empresa tiene IdEmpresa != 0 y IdEstadoRegistro == 2 se debe hacer un delete:
@@ -219,7 +245,19 @@ namespace ProyectNettApi.Repositories
                     else if (empresa.IdEmpresa == 0)
                     {
                         string queryEmpresa = "dbo.InsertarEmpresa";
-                        int IdEmpresa = connection.ExecuteScalar<int>(queryEmpresa, empresa, transaction, commandType: CommandType.StoredProcedure);
+                        int IdEmpresa = connection.ExecuteScalar<int>(queryEmpresa, new
+                        {
+                            IdEmpresa = empresa.IdEmpresa,
+                            NombreEmpresa = empresa.NombreEmpresa,
+                            RNC = empresa.RNC,
+                            Correo = empresa.Correo,
+                            Teléfono1 = empresa.Teléfono1,
+                            Teléfono2 = empresa.Teléfono2,
+                            SitioWeb = empresa.SitioWeb,
+                            Dirección = empresa.Dirección,
+                            IdCiudad = empresa.Dirección,
+                            IdCreadoPor = empresa.IdCreadoPor
+                        }, transaction, commandType: CommandType.StoredProcedure);
 
                         string query_Clientes_Empresas = "dbo.Insertar_Cliente_Empresa";
                         connection.Execute(query_Clientes_Empresas,
@@ -227,11 +265,7 @@ namespace ProyectNettApi.Repositories
                             {
                                 cliente.IdCliente,
                                 IdEmpresa,
-                                cliente.IdCreadoPor,
-                                cliente.FechaCreacion,
-                                cliente.IdModificadoPor,
-                                cliente.FechaModificacion,
-                                cliente.IdEstadoRegistro
+                                empresa.IdCreadoPor,
                             }, transaction, commandType: CommandType.StoredProcedure);
                     }
                 }

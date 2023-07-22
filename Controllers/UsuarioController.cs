@@ -25,6 +25,9 @@ namespace ProyectNettApi.Controllers
             _usuarioRepositorio = new UsuarioRepositorio(_configuration);
         }
 
+
+
+
         [Route("login")]
         [HttpPost]
         public dynamic IniciarSesion([FromBody] Object usuarioData)

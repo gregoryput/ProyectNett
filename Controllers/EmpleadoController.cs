@@ -82,6 +82,31 @@ namespace ProyectNettApi.Controllers
                 return StatusCode(500, _respuesta);
             }
         }
+
+
+        //
+        // .A.C.C.I.O.N -- Para eliminar Empleado: --------------------------------------------
+        [Authorize]
+        [Route("eliminarCliente")]
+        [HttpPost]
+        public IActionResult eliminarCliente(int IdCliente)
+        {
+            try
+            {
+                _empleadoRepositorio.EliminarEmpleado(IdCliente);
+                _respuesta.Result = IdCliente;
+                _respuesta.DisplayMessage = "Empleado eliminado correctamente:";
+            }
+
+            catch (Exception ex)
+            {
+                _respuesta.IsSuccess = false;
+                _respuesta.DisplayMessage = "Error al eliminar al empleado";
+                _respuesta.ErrorMessages = new List<string> { ex.ToString() };
+            }
+
+            return Ok(_respuesta);
+        }
     }
 
 }

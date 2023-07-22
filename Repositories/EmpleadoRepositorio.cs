@@ -116,8 +116,8 @@ namespace ProyectNettApi.Repositories
 
 
         //
-        // REPOSITORIO--A-P-I----P-R-O-Y-E-N-E-T-T ------ (Metodo para ELIMINAR CLIENTES):
-        public void EliminarCliente(int IdEmpleado)
+        // REPOSITORIO--A-P-I----P-R-O-Y-E-N-E-T-T ------ (Metodo para ELIMINAR (desactivar) Empleados):
+        public void EliminarEmpleado(int IdEmpleado)
         {
             var connection = _conexionDB.GetConnection(_configuration);
             connection.Open();
@@ -150,5 +150,80 @@ namespace ProyectNettApi.Repositories
         }
 
 
+        //
+        // REPOSITORIO--A-P-I----P-R-O-Y-E-N-E-T-T ------ (Metodo para ACTUALIZAR Empleados):
+        public void ActualizarEmpleado(Empleado empleado)
+        {
+            var connection = _conexionDB.GetConnection(_configuration);
+            connection.Open();
+            var transaction = connection.BeginTransaction();
+
+            try
+            {
+                // Actualizar en la tabla Persona:
+                connection.Execute("dbo.ActualizarPersona", new
+                {
+                    IdPersona = empleado.Persona.IdPersona,
+                    Nombres = empleado.Persona.Nombres,
+                    Apellidos = empleado.Persona.Apellidos,
+                    Telefono1 = empleado.Persona.Telefono1,
+                    Telefono2 = empleado.Persona.Telefono2,
+                    Direccion = empleado.Persona.Direccion,
+                    Correo = empleado.Persona.Correo,
+                    Edad = empleado.Persona.Edad,
+                    FechaDeNacimiento = empleado.Persona.FechaDeNacimiento,
+                    Cedula = empleado.Persona.Cedula,
+                    IdSexo = empleado.Persona.IdSexo,
+                    IdCiudad = empleado.Persona.IdCiudad,
+                    IdModificadoPor = empleado.IdModificadoPor,
+                }, transaction, commandType: CommandType.StoredProcedure);
+
+                // Actualizar Cargos:
+                foreach (var cargo in empleado.Cargos)
+                {
+                    // Si Cargo tiene IdCargo != 0 y IdEstadoRegistro != 2 se debe hacer un update:
+                    if (cargo.IdCargo != 0 && cargo.IdEstadoRegistro != 2)
+                    {
+                        connection.Execute("dbo.ActualizarCargos", new
+                        {
+                            IdEmpleado = empleado.IdEmpleado,
+                            IdCargo = cargo.IdCargo,
+                            Descripcion = cargo.Descripción,
+                            IdModificadoPor = cargo.IdModificadoPor
+                        }, transaction, commandType: CommandType.StoredProcedure);
+                    }
+
+                    // Si el Cargo tiene IdCargo != 0 y IdEstadoRegistro == 2 se debe hacer un delete:
+                    else if (cargo.IdCargo != 0 && cargo.IdCargo == 2)
+                    {
+                        connection.Execute("dbo.Delete_EmpleadosCargos", new { IdCargo = cargo.IdCargo }, transaction,
+                            commandType: CommandType.StoredProcedure);
+                    }
+
+                    // Si el cargo tiene IdCargo == 0 se debe hacer un insert:
+                    else if (cargo.IdCargo == 0)
+                    {
+                        // -- Inserto en la tabla EmpleadosCargos:
+                        string query_EmpleadosCargos = "dbo.Insertar_EmpleadosCargos";
+                        connection.Execute(query_EmpleadosCargos,
+                            new
+                            {
+                                IdEmpleado = empleado.IdEmpleado,
+                                IdCargo = cargo.IdCargo,
+                                Descripcion = cargo.Descripción,
+                                IdCreadoPor = empleado.IdCreadoPor
+                            }, transaction, commandType: CommandType.StoredProcedure);
+                    }
+                }
+                transaction.Commit();
+            }
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+                connection.Close();
+                throw ex;
+            }
+            connection.Close();
+        }
     }
 }
