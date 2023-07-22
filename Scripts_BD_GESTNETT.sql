@@ -893,7 +893,7 @@ BEGIN
       AND C.RowNumber <= (@Offset + @PageSize);
 END
 /*EJECUCION DE PROCEDIMIENTO:
--- Execute dbo.ListadoEmpleados @PageNumber = 1, @PageSize = 5
+-- Execute dbo.ListadoEmpleados @PageNumber = 2, @PageSize = 5
 */
 
 Select * FROM Empleados
@@ -1127,7 +1127,7 @@ EXEC dbo.Insertar_Proveedor_Empresa
 	@IdModificadoPor = 1, @FechaModificacion = @FechaActual, @IdEstadoRegistro = 1;
 */
 
-
+Select * From EstadosRegistros
 GO 
 --
 --
@@ -1143,21 +1143,17 @@ Create or Alter procedure dbo.ActualizarPersona
   @Edad int,
   @FechaDeNacimiento date,
   @Cedula varchar(13),
-  --
+  -->
   @IdSexo int,
   @IdCiudad int,
-  --
-  @IdCreadoPor int,
-  @FechaCreacion date,
-  @IdModificadoPor int,
-  @FechaModificacion date,
-  @IdEstadoRegistro int
+  -->
+  @IdModificadoPor int
   AS
   BEGIN
       Set nocount On
 	  Update Personas SET Nombres = @Nombres, Apellidos = @Apellidos, Telefono1 = @Telefono1, Telefono2 = @Telefono2, Direccion = @Direccion, 
                     Correo = @Correo, Edad = @Edad, FechaDeNacimiento = @FechaDeNacimiento, Cedula = @Cedula, IdSexo = @IdSexo, 
-	                IdCiudad = @IdCiudad, IdModificadoPor = @IdModificadoPor, FechaModificacion = @FechaModificacion WHERE IdPersona = @IdPersona
+	                IdCiudad = @IdCiudad, IdModificadoPor = @IdModificadoPor, FechaModificacion = GETDATE() WHERE IdPersona = @IdPersona
 END
 /* EJECUCION DEL PROCEDIMIENTO
 DECLARE @FechaActual DATETIME = GETDATE(); -- 'Fecha actual'
@@ -1166,13 +1162,14 @@ EXEC dbo.ActualizarPersona @IdPersona = 3, @Nombres = 'Johncito', @Apellidos = '
                           @Correo = 'johncitodoe@example.com', @Edad = 31, @FechaDeNacimiento = '1993-05-10', @Cedula = '2034668998', @IdSexo = 1, 
 						  @IdCiudad = 2, @IdCreadoPor = 0, @FechaCreacion = @FechaActual, @IdModificadoPor = 1, @FechaModificacion = @FechaActual,
 						  @IdEstadoRegistro = 1;
+						  Select * From Personas
 */
 
 
 GO
 --
 --
---.P.R.O.C.E.D.U.R.E.......U.P.D.A.T.E._._._._._.U.P.D.A.T.E._._._._._._. Procedimiento almacenado (Update) para insertar en la tabla EMPRESAS: --
+--.P.R.O.C.E.D.U.R.E.......U.P.D.A.T.E._._._._._.U.P.D.A.T.E._._._._._._. Procedimiento almacenado (Update) para actualizar en la tabla EMPRESAS: --
 Create or Alter procedure dbo.ActualizarEmpresa
   @IdEmpresa int,
   @NombreEmpresa varchar(60),
@@ -1184,16 +1181,12 @@ Create or Alter procedure dbo.ActualizarEmpresa
   @Dirección varchar(40),
   @IdCiudad int,
   --
-  @IdCreadoPor int,
-  @FechaCreacion Datetime,
-  @IdModificadoPor int,
-  @FechaModificacion Datetime,
-  @IdEstadoRegistro int
+  @IdModificadoPor int
   AS
   BEGIN
       Set nocount On
 	  Update Empresas SET NombreEmpresa = @NombreEmpresa, RNC = @RNC, Correo = @Correo, Teléfono1 = @Teléfono1, Teléfono2 = @Teléfono2, SitioWeb = @SitioWeb, 
-	                       Dirección = @Dirección, IdCiudad = @IdCiudad, IdModificadoPor = @IdModificadoPor, FechaModificacion = @FechaModificacion 
+	                       Dirección = @Dirección, IdCiudad = @IdCiudad, IdModificadoPor = @IdModificadoPor, FechaModificacion = GETDATE() 
 						   WHERE IdEmpresa = @IdEmpresa
 END
 /* EJECUCION DEL PROCEDIMIENTO
@@ -1204,6 +1197,38 @@ EXEC dbo.ActualizarSoloEmpresa_ByIdEmpresa
     @SitioWeb = 'www.empresa.com', @Dirección = 'Calle Principal', @IdCiudad = 1, @IdCreadoPor = 1, @FechaCreacion = @FechaActual,
     @IdModificadoPor = 1, @FechaModificacion = @FechaActual, @IdEstadoRegistro = 1;
 */
+
+
+
+GO
+--
+--
+--.P.R.O.C.E.D.U.R.E.......U.P.D.A.T.E._._._._._.U.P.D.A.T.E._._._._._._. Procedimiento almacenado (Update) para actualizar en la tabla EmpleadosCargos: --
+Create or Alter procedure dbo.ActualizarEmpleadosCargos
+  @IdEmpleado int,
+  @IdCargo int,
+  @Descripcion varchar(100),
+  @IdModificadoPor int
+  AS
+  BEGIN
+      Set nocount On
+	  Update EmpleadosCargos SET IdCargo = @IdCargo, Descripción = @Descripcion, @IdModificadoPor = @IdModificadoPor, FechaModificacion = GETDATE()
+	  WHERE IdEmpleado = @IdEmpleado
+END
+
+
+Select * From EmpleadosCargos
+GO
+--
+--
+--.P.R.O.C.E.D.U.R.E.......U.P.D.A.T.E._._._._._.U.P.D.A.T.E._._._._._._. Procedimiento almacenado (DELETE SoftDelete) para DELETE en la tabla EmpleadosCargos: --
+Create or Alter procedure dbo.Delete_EmpleadosCargos
+  @IdCargo int
+  AS
+  BEGIN
+      Set nocount On
+	  Update EmpleadosCargos SET IdEstadoRegistro = 2 WHERE IdCargo = 2
+END
 
 
 GO
@@ -1252,7 +1277,7 @@ GO
 Create or Alter procedure dbo.Insertar_EmpleadosCargos
   @IdEmpleado int,
   @IdCargo int,
-  @Descripcion varchar(80),
+  @Descripcion varchar(100),
   @IdCreadoPor int
   AS
   BEGIN
@@ -1515,7 +1540,7 @@ INSERT INTO Usuarios (NombreUsuario, Correo, Contraseña, IdRol, IdCreadoPor, Fec
 -- Insertar datos en la tabla Sexos
 INSERT INTO Sexos (SexoNombre, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro) VALUES
 ('Masculino', 1, GETDATE(), 1, GETDATE(), 1),
-('Femenino', 1, GETDATE(), 1, GETDATE(), 1); 
+('Femenino', 1, GETDATE(), 1, GETDATE(), 1);
 -- Select * FROM Sexos
 
 
@@ -1659,11 +1684,12 @@ INSERT INTO Personas (Nombres, Apellidos, Telefono1, Telefono2, Direccion, Corre
 /*18*/('Alvarez', 'Cruz Filip', '809-055-5078', '829-050-5021', 'Calle Secundaria 789', 'pedro.rodriguez@example.com', 35, '1987-12-03', '4567890123456', 1, 1, 1, GETDATE(), 1, GETDATE(), 1),
 /*19*/('Ana Lia', 'Gómez Lopez', '809-555-8765', '829-555-9071', 'Carrera Principal 321', 'ana.gomez@example.com', 42, '1980-07-22', '7890123456789', 2, 3, 1, GETDATE(), 1, GETDATE(), 1),
 /*20*/('Sofia Sael', 'García Moreno', '849-535-1010', '829-515-9292', 'Avenida Norte 789', 'sofia.garcia@example.com', 31, '1991-03-27', '3456789012345', 2, 2, 1, GETDATE(), 1, GETDATE(), 1),
-/*21*/('Joeli', 'Sabino', '829-312-3303', '809-505-1292', 'Calle Oeste 567', 'carlos.martinez@example.com', 29, '1993-08-14', '5678901234567', 1, 3, 1, GETDATE(), 1, GETDATE(), 1);
+/*21*/('Joeli', 'Sabino', '829-312-3303', '809-505-1292', 'Calle Oeste 567', 'carlos.martinez@example.com', 29, '1993-08-14', '5678901234567', 1, 3, 1, GETDATE(), 1, GETDATE(), 1),
+/*22*/('Juan Andrés', 'César Jiménez', '829-836-3523', '809-650-5069', 'Villa 1 Calle Anthurias', 'juancj@gestnett.com', 22, '2001-02-26', '1600000234567', 1, 3, 1, GETDATE(), 1, GETDATE(), 1);
 -- Select * FROM Personas
 
 
-
+ 
 
 -- Insertar datos en la tabla Empresas:
 INSERT INTO Empresas (NombreEmpresa, RNC, Correo, Teléfono1, Teléfono2, SitioWeb, Dirección, IdCiudad, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro) VALUES
@@ -1683,7 +1709,6 @@ INSERT INTO Empresas (NombreEmpresa, RNC, Correo, Teléfono1, Teléfono2, SitioWeb
 /*14*/('Crisencio Baterias', '001340009', 'bateriascris@gmail.com', '829-201-3103', '849-303-1503', 'https://www.bateriascris.com', 'Bo. Los Rulos, Calle 11, #23', 2, 1, GETDATE(), 1, GETDATE(), 1),
 /*15*/('Carmuel Prestamos', '566649912', 'prestamoscarmuel@gmail.com', '849-221-2191', '809-220-1117', 'https://www.prestamoscarmuel.com', 'Bo. Las Raiz, Calle 09, #11', 2, 1, GETDATE(), 1, GETDATE(), 1);
 -- Select * FROM Empresas
-
 
 
 
@@ -1757,7 +1782,9 @@ INSERT INTO Cargos (NombreCargo, IdCreadoPor, FechaCreacion, IdModificadoPor, Fe
 /*3*/('Ingeniero de Redes', 1, GETDATE(), 1, GETDATE(), 1),
 /*4*/('Técnico en Telecomunicaciones', 1, GETDATE(), 1, GETDATE(), 1),
 /*5*/('Administrador de Redes', 1, GETDATE(), 1, GETDATE(), 1),
-/*6*/('Asistente administrativo', 1, GETDATE(), 1, GETDATE(), 1);
+/*6*/('Asistente administrativo', 1, GETDATE(), 1, GETDATE(), 1),
+/*7*/('Ingeniero de software', 1, GETDATE(), 1, GETDATE(), 1),
+/*8*/('Analista de sistemas', 1, GETDATE(), 1, GETDATE(), 1);
 -- Select * FROM Cargos
 GO
 
@@ -1770,10 +1797,10 @@ INSERT INTO Empleados (FechadDeContratación, IdPersona, IdCreadoPor, FechaCreaci
 /*3*/('2020-03-13', 18, 1, GETDATE(), 1, GETDATE(), 1),
 /*4*/('2021-01-11', 19, 1, GETDATE(), 1, GETDATE(), 1),
 /*5*/('2022-04-13', 20, 1, GETDATE(), 1, GETDATE(), 1),
-/*6*/('2020-05-14', 21, 1, GETDATE(), 1, GETDATE(), 1);
+/*6*/('2020-05-14', 21, 1, GETDATE(), 1, GETDATE(), 1),
+/*7*/('2022-05-14', 22, 1, GETDATE(), 1, GETDATE(), 1);
 -- Select * from Empleados
 GO
-
 
 
 --  Insertar datos en la tabla EmpleadosCargos:
@@ -1783,12 +1810,17 @@ INSERT INTO EmpleadosCargos (IdEmpleado, IdCargo, Descripción, IdCreadoPor, Fech
 (3, 3, 'Responsable del diseño, implementación y mantenimiento de infraestructuras de red.', 1, GETDATE(), 1, GETDATE(), 1),
 (4, 4, 'Encargado de la instalación, configuración y mantenimiento de sistemas de telecomunicaciones.', 1, GETDATE(), 1, GETDATE(), 1),
 (5, 5, 'Responsable de la supervisión, gestión y mantenimiento de la infraestructura de red.', 1, GETDATE(), 1, GETDATE(), 1),
-(6, 6, 'Asistente en el ambito de coordinar los trabajos diarios en los proyectos.', 1, GETDATE(), 1, GETDATE(), 1);
+(6, 6, 'Asistente en el ambito de coordinar los trabajos diarios en los proyectos.', 1, GETDATE(), 1, GETDATE(), 1),
+(7, 7, 'Encargado de desarrollar y da soporte al sistema de la empresa y desarrollar nuevas soluciones.', 1, GETDATE(), 1, GETDATE(), 1),
+(7, 8, 'Responsable de analizar el sistema de negocios y desarrollar flujos operativos en el sistema.', 1, GETDATE(), 1, GETDATE(), 1),
+(7, 3, 'Contribuir en el funcionamiento de las redes instaladas a los clientes mediente los proyectos.', 1, GETDATE(), 1, GETDATE(), 1);
 -- Select * from EmpleadosCargos
 GO
 
+-- Asignar usuarios a los empleados:
+Update Usuarios set IdEmpleado = 7 WHERE IdUsuario = 6
 
-
+Select * From Usuarios
 
 GO
 -- Procedimiento para Obtener usuario y loguear:
@@ -1803,11 +1835,9 @@ BEGIN
 	 WHERE NombreUsuario = @NombreUsuario AND Contraseña = @Contraseña
 END
 
-GO
 
-/*
-Exec GetIdEmpresaByIdCliente @NombreUsuario = 'admin', @Contraseña = 'admin123'
-*/
+GO
+-- PROCEDIMIENTO ALMACENADO PARA OBTENER EMPRESAS POR IDCLIENTE:
 Create OR ALTER PROCEDURE dbo.GetEmpresasByClienteId
 (
 @ClienteId int
@@ -1826,47 +1856,44 @@ EXEC dbo.GetEmpresasByClienteId @clienteId = 58
 
 
 
------------------------------------------------------------------------------------------------------------------------------------------------
-Select * FROM Users
-
-
-
-/*
-
-[9:12 p. m., 17/7/2023] Gregory: CREATE OR ALTER PROCEDURE dbo.ListadoEmpleados
+GO
+-- PROCEDIMIENTO ALMACENAD PARA OBTENER LISTADO BASICO DE INFORMACION DE USUARIO (PERFIL) - Por IdUsuario
+Create or alter procedure dbo.InformacionBasicaUsuario_ByIdUsuario
+(@IdUsuario int)
 AS
 BEGIN
-    SET NOCOUNT ON 
-	SELECT C.IdEmpleado, Nombres, Apellidos, Telefono1, Telefono2, Direccion, P.Correo, Edad, FechaDeNacimiento, Cedula, SexoNombre, CiudadNombre, PaisNombre
-    FROM Empleados C INNER JOIN Personas P ON C.IdEmpleado = p.IdPersona
-					INNER JOIN Sexos S ON P.IdSexo = S.IdSexo
-					INNER JOIN Ciudades CU ON P.IdCiudad = CU.IdCiudad
-					INNER JOIN Paises PA ON CU.IdPais = PA.IdPais
-					WHERE C.IdEstadoRegistro = 1
+Select IdUsuario, NombreUsuario, U.Correo, NombreRol, R.IdRol, E.IdEmpleado, Nombres, Apellidos, Cedula, Direccion, Edad, FechaDeNacimiento
+FROM Usuarios U INNER JOIN Empleados E ON U.IdEmpleado = E.IdEmpleado
+                INNER JOIN Personas P ON E.IdPersona = P.IdPersona
+				INNER JOIN Roles R ON U.IdRol = R.IdRol
+				WHERE IdUsuario = 6
 END
-/*EJECUCION DE PROCEDIMIENTO:
-*/ Execute dbo.ListadoEmpleados
-[9:12 p. m., 17/7/2023] Gregory: Create or Alter procedure dbo.InsertarEmpleado
-  @IdPersona int,
-  --
-  @IdCreadoPor int
-  AS
-  BEGIN
-      Set nocount On
-	  Insert Into Empleados(IdPersona, IdCreadoPor, FechaCreacion, IdEstadoRegistro) 
-	                 VALUES(@IdPersona, @IdCreadoPor,  GETDATE(), 1)
-
-	  SELECT SCOPE_IDENTITY();
-END
+-- exec dbo.InformacionBasicaUsuario_ByIdUsuario @IdUsuario = 6
+Select * From Usuarios
+Select * From Personas
 
 GO
-[9:14 p. m., 17/7/2023] Gregory: Create OR Alter Procedure dbo.EliminarEmpleados
-@IdEmpleado int
-AS 
+-- PROCEDIMIENTO ALMACENAD PARA OBTENER LISTADO BASICO DE INFORMACION DE USUARIO (PERFIL) - GetAll
+Create or alter procedure dbo.Lista_InformacionBasicaUsuarios_GetAll
+AS
 BEGIN
-    Set Nocount On
-    Update Empleados set IdEstadoRegistro = 2 WHERE IdEmpleado = @IdEmpleado
+Select IdUsuario NombreUsuario, P.Correo, NombreRol, R.IdRol, E.IdEmpleado, Nombres, Apellidos, Cedula, Direccion, Edad, FechaDeNacimiento
+FROM Usuarios U INNER JOIN Empleados E ON U.IdEmpleado = E.IdEmpleado
+                INNER JOIN Personas P ON E.IdPersona = P.IdPersona
+				INNER JOIN Roles R ON U.IdRol = R.IdRol
 END
+-- exec dbo.Lista_InformacionBasicaUsuarios_GetAll
+
+
 
 GO
---
+-- PROCEDIMIENTO ALMACENAD PARA OBTENER LISTA DE CARGOS POR EmpleadoId
+Create or alter procedure dbo.CargosEmpleado_ByEmpleadoId
+(@IdEmpleado int)
+AS
+BEGIN
+   Select C.IdCargo, NombreCargo FROM Cargos C INNER JOIN EmpleadosCargos EC ON C.IdCargo = EC.IdCargo WHERE EC.IdEmpleado = @IdEmpleado
+END
+-- Exec dbo.CargosEmpleado_ByEmpleadoId @IdEmpleado = 7
+
+Select IdUsuario, NombreUsuario, Correo, Contraseña, Usuarios.IdRol, NombreRol From Usuarios INNER JOIN Roles on Usuarios.IdRol = Roles.IdRol
