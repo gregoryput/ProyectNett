@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import {
   Space,
   Table,
@@ -174,25 +174,31 @@ function Tabla({
           >
             <div>
               <Pagination
-                current={data.currentPage}
-                pageSize={data.pageSize}
-                total={data.totalItems}
+                current={data?.currentPage}
+                pageSize={data?.pageSize}
+                total={data?.totalItems}
                 onChange={handlePageChange}
               />
             </div>
 
             <div>
               <span style={{ fontSize: "15px" }}>Clientes por página: </span>
-              <Select
-                style={{ width: "60px" }}
-                defaultValue={parseInt(data.pageSize || 5)}
-                onChange={handlePageSizeChange}
-              >
-                <Option value={5}>5</Option>
-                <Option value={10}>10</Option>
-                <Option value={20}>20</Option>
-                <Option value={30}>30</Option>
-                <Option value={40}>50</Option>
+              <Select defaultValue={5} style={{ width: "60px" }} onChange={handlePageSizeChange}>
+                <Select.Option key={1} value={5}>
+                  5
+                </Select.Option>
+                <Select.Option key={2} value={10}>
+                  10
+                </Select.Option>
+                <Select.Option key={3} value={20}>
+                  20
+                </Select.Option>
+                <Select.Option key={5} value={30}>
+                  30
+                </Select.Option>
+                <Select.Option key={5} value={40}>
+                  50
+                </Select.Option>
               </Select>
             </div>
           </div>
