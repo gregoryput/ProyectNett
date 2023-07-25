@@ -11,7 +11,8 @@ import { countriesApi } from "./Api/countriesApi";
 import countriesReducer from "./Slice/countriesSlice";
 import { companiesApi } from "./Api/companiesApi";
 import companiesReducer from "./Slice/companiesSlice";
-
+import { ConfigPerfilApi } from "./Api/configPerfilApi";
+import configPerfilReducer from "./Slice/configPerfilSlice";
 
 export const store = configureStore({
   reducer: {
@@ -39,7 +40,9 @@ export const store = configureStore({
     companies: companiesReducer,
     [companiesApi.reducerPath]: companiesApi.reducer,
 
-    
+    //Configuracion de perfil:
+    perfil: configPerfilReducer,
+    [ConfigPerfilApi.reducerPath]: ConfigPerfilApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware()
@@ -48,7 +51,8 @@ export const store = configureStore({
       .concat(citiesApi.middleware)
       .concat(sexesApi.middleware)
       .concat(countriesApi.middleware)
-      .concat(companiesApi.middleware),
+      .concat(companiesApi.middleware)
+      .concat(ConfigPerfilApi.middleware),
 });
 
 export default store;

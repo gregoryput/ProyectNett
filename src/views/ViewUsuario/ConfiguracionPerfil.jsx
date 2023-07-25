@@ -3,39 +3,27 @@ import InformacionPerfil from "./components/InformacionPerfil";
 import InformacionPersonal from "./components/InformacionPersonal";
 import { ViewContainerPages } from "../../components";
 import FormPasword from "./components/FormPasword";
-import { useGetPerfilQuery } from "../../redux/Api/ConfigPerfilApi";
+import { useGetPerfilQuery } from "../../redux/Api/configPerfilApi";
 import { JwtUtils } from "../../utils";
 
-
 function ConfiguracionPerfil() {
-  const [toggle, setToggle] = useState(false)
+  const [toggle, setToggle] = useState(false);
   const token = localStorage.getItem("token");
   const id = JwtUtils.getUserIdByToken(token);
-  const { data , isLoading , isSuccess} = useGetPerfilQuery(id);
-  console.log(data,"hola mundo");
+  const { data, isLoading, isSuccess } = useGetPerfilQuery(id);
+  console.log(data, "hola mundo", id);
   return (
     <ViewContainerPages>
+      <h2 style={{ marginLeft: 15, marginBottom: 40 }}>
+        {" "}
+        Configuración de perfil
+      </h2>
+      <InformacionPerfil toggle={toggle} setToggle={setToggle} />
 
-      <h2 style={{marginLeft:15 ,marginBottom:40}}> Configuración de perfil</h2>
-     <InformacionPerfil toggle={toggle} setToggle={setToggle} />
-
-       {toggle ?
-        <FormPasword toggle={toggle} setToggle={setToggle}/>
-        : null}
-      <InformacionPersonal/>
-     </ViewContainerPages>
-
-)
+      {toggle ? <FormPasword toggle={toggle} setToggle={setToggle} /> : null}
+      <InformacionPersonal />
+    </ViewContainerPages>
+  );
 }
 
-
-
-
-
-
-
-
-
-
-
-export default ConfiguracionPerfil
+export default ConfiguracionPerfil;

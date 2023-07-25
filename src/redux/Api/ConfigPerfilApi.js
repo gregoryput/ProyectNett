@@ -14,11 +14,10 @@ export const ConfigPerfilApi = createApi({
   tagTypes: ["Perfils"],
   endpoints: (builder) => ({
     getPerfil: builder.query({
-      query: (id) =>
-        `Perfil/InfoPerfil?idUsuario=${id}`,
+      query: (idUsuario) => `Perfil/InfoPerfil?idUsuario=${idUsuario}`,
       providesTags: ["Perfils"],
     }),
   }),
 });
 
-export const { useGetPerfilQuery  } = ConfigPerfilApi;
+export const { useGetPerfilQuery } = ConfigPerfilApi;
