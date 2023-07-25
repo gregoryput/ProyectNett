@@ -1,4 +1,3 @@
-import axios from "axios";
 
 export const verifyTokenExpiration = (token) => {
   if (token === null || token === undefined) {

@@ -12,6 +12,7 @@ import countriesReducer from "./Slice/countriesSlice";
 import { companiesApi } from "./Api/companiesApi";
 import companiesReducer from "./Slice/companiesSlice";
 
+
 export const store = configureStore({
   reducer: {
     //Autenticacion y usuarios
@@ -37,6 +38,8 @@ export const store = configureStore({
     //Empresas
     companies: companiesReducer,
     [companiesApi.reducerPath]: companiesApi.reducer,
+
+    
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware()
