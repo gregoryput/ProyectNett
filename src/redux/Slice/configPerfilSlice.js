@@ -14,6 +14,6 @@ export const configPerfilSlice = createSlice({
 
 export const { setConfigPerfil } = configPerfilSlice.actions;
 
-export const selectClients = (state) => state.pefil.pefil;
+export const selectPerfils = (state) => state.pefil.pefil;
 
 export default configPerfilSlice.reducer;

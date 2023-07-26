@@ -1,4 +1,4 @@
-import { PrincipalContainerForm } from "../../../components";
+import { ContainerForm, PrincipalContainerForm } from "../../../components";
 import { FuncUtils } from "../../../utils";
 
 import React from "react";
@@ -36,7 +36,7 @@ export default function FormClientes(props) {
   }, [props.dataClientEdit]);
 
   return (
-    <PrincipalContainerForm display={props.toggle}>
+    <ContainerForm display={props.toggle}>
       <div>
         {posicionActual == 1 && (
           <InformacionPersonal
@@ -55,6 +55,6 @@ export default function FormClientes(props) {
           />
         )}
       </div>
-    </PrincipalContainerForm>
+    </ContainerForm>
   );
 }

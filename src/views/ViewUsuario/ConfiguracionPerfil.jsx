@@ -11,17 +11,17 @@ function ConfiguracionPerfil() {
   const token = localStorage.getItem("token");
   const id = JwtUtils.getUserIdByToken(token);
   const { data, isLoading, isSuccess } = useGetPerfilQuery(id);
-  console.log(data, "hola mundo", id);
+ 
   return (
     <ViewContainerPages>
       <h2 style={{ marginLeft: 15, marginBottom: 40 }}>
         {" "}
         Configuración de perfil
       </h2>
-      <InformacionPerfil toggle={toggle} setToggle={setToggle} />
+      <InformacionPerfil toggle={toggle} setToggle={setToggle} data={data} />
 
       {toggle ? <FormPasword toggle={toggle} setToggle={setToggle} /> : null}
-      <InformacionPersonal />
+      <InformacionPersonal data={data} />
     </ViewContainerPages>
   );
 }

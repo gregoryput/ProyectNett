@@ -5,7 +5,6 @@ import {
   Pagination,
   Spin,
   Skeleton,
-  Select,
   message,
 } from "antd";
 import {
@@ -13,6 +12,7 @@ import {
   DivAnimetor,
   ViewContainerPages,
   ButtonIcon,
+  ContainerForm,
 } from "../../components";
 
 import { Colores } from "../../components/GlobalColor";
@@ -78,8 +78,12 @@ export default function Cliente() {
     <>
       <Spin size="large" style={{ margin: "0 auto" }} />
       <ViewContainerPages>
+      <h2 style={{ marginLeft: 15, marginBottom: 10 }}>
+       
+        Registro de clientes
+      </h2>
         <ContainerButton onClick={() => setToggle(!toggle)}>
-          <h4>Crear nuevo cliente</h4>
+          <p>Crear nuevo cliente</p>
           <DivAnimetor>
             <IoChevronDownSharp style={{ width: 20, height: 20 }} />
           </DivAnimetor>
@@ -119,7 +123,7 @@ function Tabla({
   editarCliente,
 }) {
   return (
-    <div
+    <ContainerForm
       style={{
         margin: 15,
         border: "1px solid #e2e2e2",
@@ -127,13 +131,13 @@ function Tabla({
         borderRadius: 12,
       }}
     >
-      <h3 style={{ marginTop: 5, marginBottom: 20 }}>Registro de clientes</h3>
+    
 
       {isLoadingClients || loadingSave ? (
         <Skeleton />
       ) : (
         <>
-          <Table dataSource={dataClients?.result} pagination={false}>
+          <Table dataSource={dataClients?.result} pagination={false} size="small">
             <Column title="Nombres" dataIndex="nombres" key="nombres" />
             <Column title="Apellidos" dataIndex="apellidos" key="apellidos" />
             <Column title="Teléfono 1" dataIndex="telefono1" key="telefono1" />
@@ -145,7 +149,7 @@ function Tabla({
               title="Acción"
               key="action"
               render={(_, record) => (
-                <Space size="middle">
+                <Space size="small">
                   <ButtonIcon onClick={() => editarCliente(record)}>
                     <FaPencilAlt size={19} color={`${Colores.AzulOscuro}`} />
                   </ButtonIcon>
@@ -172,7 +176,7 @@ function Tabla({
               justifyContent: "space-between",
             }}
           >
-            <div>
+            <div style={{marginTop:15}} >
               <Pagination
                 current={data?.currentPage}
                 pageSize={data?.pageSize}
@@ -181,7 +185,7 @@ function Tabla({
               />
             </div>
 
-            <div>
+            {/* <div>
               <span style={{ fontSize: "15px" }}>Clientes por página: </span>
               <Select defaultValue={5} style={{ width: "60px" }} onChange={handlePageSizeChange}>
                 <Select.Option key={1} value={5}>
@@ -200,10 +204,10 @@ function Tabla({
                   50
                 </Select.Option>
               </Select>
-            </div>
+            </div> */}
           </div>
         </>
       )}
-    </div>
+    </ContainerForm>
   );
 }

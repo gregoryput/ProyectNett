@@ -1,7 +1,8 @@
 import { Avatar, ButtonIcon, ContainerForm } from "../../../components";
 
-export default function InformacionPerfil({toggle, setToggle}){
-
+export default function InformacionPerfil({toggle, setToggle , data}){
+    console.log(data.result.objectInfoPerfil);
+    const perfil = data.result.objectInfoPerfil;
     return(
       <ContainerForm>
   
@@ -9,11 +10,11 @@ export default function InformacionPerfil({toggle, setToggle}){
     
       <div style={{display:"flex",alignItems:"center",flexWrap:"wrap"}}>
       <Avatar>
-         <h3>J</h3>
+      <h3>{perfil.nombreUsuario[0].toUpperCase()}</h3>
       </Avatar>
         <div  style={{marginLeft:20 , marginRight:70}}>
               <h3> Usuario</h3>
-              <p>juan01andres</p>
+              <p>{perfil.nombreUsuario}</p>
         </div>
         <div style={{ marginRight:60}}>
           <h4>Puesto en Gestnett</h4>
@@ -21,11 +22,11 @@ export default function InformacionPerfil({toggle, setToggle}){
         </div>
         <div style={{ marginRight:60}}>
           <h4>Roll de usuario</h4>
-          <p>Administrador</p>
+          <p>{perfil.nombreRol}</p>
         </div>
         <div style={{ marginRight:60}}>
           <h4>Correo electronico</h4>
-          <p>juan01andres@gestnett.com</p>
+          <p>{perfil.correo}</p>
         </div>
        
           

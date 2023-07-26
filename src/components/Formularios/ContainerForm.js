@@ -34,8 +34,6 @@ export  const ContainerFormPrueba = styled.form`
     color: white;
     border-radius: 12px;
     font-size: 14px;
-    padding: 25px;
-    width: 90vw;
     color: ${Colores.AzulOscuro};
 `
 
