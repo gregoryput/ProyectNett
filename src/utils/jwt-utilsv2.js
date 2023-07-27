@@ -7,7 +7,7 @@ export const verifyTokenExpiration = (token) => {
   const decodeTokenVer = token ? JSON.parse(decodeJwt(token)) : "";
   const currentTime = Date.now() / 1000; // Convertir a segundos
 
-  console.log("IdDelUsuario", decodeTokenVer.IdUsuario);
+  // console.log("IdDelUsuario", decodeTokenVer.IdUsuario);
 
   if (decodeTokenVer.exp < currentTime) {
     // El token ha expirado
