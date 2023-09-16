@@ -14,13 +14,14 @@ justify-content: center;
 align-items: center;
 
 &:hover {
-    background-color: ${Colores.Azulclaro};
+    background-color: #61a649;
     cursor: pointer;
     color:${Colores.Blanco}
   }
 
 &:active {
-    transform: scale(0.98);
+    transform: scale(0.93);
+    background-color: #61a649;
 }
 `;
   

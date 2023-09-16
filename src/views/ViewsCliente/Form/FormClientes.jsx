@@ -1,14 +1,20 @@
-import { ContainerForm, PrincipalContainerForm } from "../../../components";
+import { ContainerForm } from "../../../components";
 import { FuncUtils } from "../../../utils";
 
-import React from "react";
-import InformacionPersonal from "./InformacionPersonal";
-import InformacionEmpresas from "./InformacionEmpresas";
+import InformacionPersonal from "../Components/InformacionPersonal";
+import InformacionEmpresas from "../Components/InformacionEmpresas";
+
+import { useState, useEffect } from "react";
+import PropTypes from "prop-types";
+import { OutsideClick } from "outsideclick-react";
+// Importa otros componentes o módulos necesarios
 
 export default function FormClientes(props) {
-  const [posicionActual, setPosicionActual] = React.useState(1);
-  const [datosFormulario, setDatosFormulario] = React.useState({});
-  const [saveIsSucces, setSaveIsSucces] = React.useState(false);
+  const [posicionActual, setPosicionActual] = useState(1);
+  const [datosFormulario, setDatosFormulario] = useState({});
+  const [saveIsSucces, setSaveIsSucces] = useState(false);
+
+  const [animacion, setAnimacion] = useState(false);
 
   const siguiente = (data) => {
     setDatosFormulario({ ...datosFormulario, ...data });
@@ -20,41 +26,76 @@ export default function FormClientes(props) {
     setPosicionActual(posicionActual - 1);
   };
 
-  //Cerrar el formulario si el cliente se guarda correctamente
-  React.useEffect(() => {
+  useEffect(() => {
     if (saveIsSucces) {
       props.setToggle(true);
       setSaveIsSucces(false);
     }
   }, [saveIsSucces]);
 
-  // Llenar los campos con los datos del cliente a editar:
-  React.useEffect(() => {
+  useEffect(() => {
     if (props.dataClientEdit !== null) {
-      setDatosFormulario(FuncUtils.capitalizePropertyKeys(props.dataClientEdit));
+      setDatosFormulario(
+        FuncUtils.capitalizePropertyKeys(props.dataClientEdit)
+      );
     }
-  }, [props.dataClientEdit]);
+    if (props.toggle == false) {
+      setTimeout(() => {
+        setAnimacion(false);
+      }, 200);
+      props.setDataClientEdit(null);
+    }
+
+    if (props.toggle == true) {
+      setAnimacion(true);
+    }
+  }, [
+    props.dataClientEdit,
+    props.setDataClientEdit,
+    props.toggle,
+    setAnimacion,
+  ]);
 
   return (
-    <ContainerForm display={props.toggle}>
-      <div>
-        {posicionActual == 1 && (
-          <InformacionPersonal
-            nextPart={siguiente}
-            dataValues={datosFormulario}
-          />
-        )}
-        {posicionActual == 2 && (
-          <InformacionEmpresas
-            setPosicionActual={setPosicionActual}
-            setLoadingSave={props.setLoadingSave}
-            backPart={atras}
-            dataValues={datosFormulario}
-            setDatosFormulario={setDatosFormulario}
-            setSaveIsSucces={setSaveIsSucces}
-          />
-        )}
-      </div>
+    <ContainerForm animacion={animacion} display={props.toggle}>
+      <OutsideClick>
+        <div>
+          {posicionActual === 1 && (
+            <InformacionPersonal
+              nextPart={siguiente}
+              dataValues={datosFormulario}
+              setDatosFormulario={setDatosFormulario}
+              toggle={props.toggle}
+              setToggle={props.setToggle}
+              dataClientEdit={props.dataClientEdit}
+              setDataClientEdit={props.setDataClientEdit}
+              setLoadingSave={props.setLoadingSave}
+            />
+          )}
+          {posicionActual === 2 && (
+            <InformacionEmpresas
+              setPosicionActual={setPosicionActual}
+              backPart={atras}
+              dataValues={datosFormulario}
+              setDatosFormulario={setDatosFormulario}
+              setSaveIsSucces={setSaveIsSucces}
+              toggle={props.toggle}
+              setToggle={props.setToggle}
+            />
+          )}
+        </div>
+      </OutsideClick>
     </ContainerForm>
   );
 }
+
+// Definir PropTypes para las props del componente
+FormClientes.propTypes = {
+  toggle: PropTypes.bool.isRequired,
+  setToggle: PropTypes.func.isRequired,
+  setLoadingSave: PropTypes.func.isRequired,
+  dataClientEdit: PropTypes.object, // Cambia el tipo según corresponda
+  setDataClientEdit: PropTypes.func.isRequired,
+};
+
+// Importa otros componentes o módulos necesarios

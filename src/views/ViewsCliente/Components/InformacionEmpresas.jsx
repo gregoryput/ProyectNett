@@ -3,10 +3,11 @@ import {
   LabelFor,
   Option,
   Select,
-  Button,
   ButtonSave,
   ContainerFormPrueba,
   ButtonNext as ButtonBack,
+  ButtonAdd,
+  SpinnerTables,
 } from "../../../components";
 
 import {
@@ -22,19 +23,20 @@ import {
 
 import { Spinner } from "../../../components";
 
-import { Button as ButtonAntD, Collapse } from "antd";
+import { Collapse } from "antd";
 
 import { useCreateClientMutation } from "../../../redux/Api/clientsApi";
 import { useSelector } from "react-redux";
 import { useForm, useFieldArray, useWatch } from "react-hook-form";
 import React from "react";
-import { message, Spin } from "antd";
+import { message } from "antd";
 import { useGetCompaniesByIdClienteQuery } from "../../../redux/Api/companiesApi";
 
 import { FuncUtils } from "../../../utils";
 
-import { IoTrashBinSharp } from "react-icons/io5";
-
+import { IoTrashBinSharp, IoArrowBackSharp } from "react-icons/io5";
+import PropTypes from "prop-types"; // Importa PropTypes
+import { Colores } from "../../../components/GlobalColor";
 export default function InformacionEmpresas(props) {
   const {
     register,
@@ -80,8 +82,6 @@ export default function InformacionEmpresas(props) {
       props.dataValues.IdCliente === undefined,
   });
 
-  console.log(companiesClientData);
-
   //Obserar si hay empresas y mapearlas en el fieldArray:
   React.useEffect(() => {
     if (!props?.dataValues?.Empresas) {
@@ -124,13 +124,21 @@ export default function InformacionEmpresas(props) {
     //Armar la data submit:
     const dataClient = { ...dataHead, empresas, persona };
     createClient({ ...dataClient });
-    console.log(dataClient);
+
+    // reset(props.dataValues);
+    if (isCompaniesClientSuccess) {
+      props.setToggle(false);
+      irAtras();
+      reset(props.dataValues);
+      message.success({
+        content: "Guardado correctamente",
+      });
+    }
   };
 
   //Funcion para regresar al paso InformacionPersnal
   const irAtras = () => {
     const dataInformacionEmpresas = getValues();
-    console.log(dataInformacionEmpresas); // Datos del paso paso informacion empresas
     props.backPart(dataInformacionEmpresas); // Regresar al paso Informacion personal y a su vez enviar los datos del paso informacion empresas
   };
 
@@ -159,52 +167,65 @@ export default function InformacionEmpresas(props) {
     remove(index);
   };
 
+  InformacionEmpresas.propTypes = {
+    dataValues: PropTypes.object.isRequired,
+    backPart: PropTypes.func.isRequired,
+    setPosicionActual: PropTypes.func.isRequired,
+    setDatosFormulario: PropTypes.func.isRequired,
+    setSaveIsSucces: PropTypes.func.isRequired,
+    setToggle: PropTypes.bool.required,
+
+  };
+
   return (
     <>
       {isLoadingCreate ? (
         <div style={{ display: "flex", justifyContent: "center" }}>
-          <Spin size="large" tip="Guardando información del cliente" />
+          <SpinnerTables />
         </div>
       ) : (
         <>
           {" "}
           <ContainerFormPrueba onSubmit={handleSubmit(onSubmit)}>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                marginBottom: 50,
-                borderBottom: "1px solid #cecece ",
-              }}
-            >
-              <h3>Información de empresas </h3>
+            <div>
+              <h2 style={{ marginBottom: 40 }}>Datos de empresa </h2>
             </div>
 
             {isLoadingCompaniesClient ? (
               <div style={{ display: "flex", justifyContent: "center" }}>
-                <Spin
-                  tip="Cargando información de empresas"
-                  size="large"
-                  style={{ margin: "0 auto" }}
-                />
+                <SpinnerTables />
               </div>
             ) : (
               <div>
-                <Collapse accordion>
+                <Collapse
+                  accordion
+                  style={{
+                    backgroundColor: `${Colores.Blanco}`,
+                    marginBottom: 40,
+                  }}
+                >
                   {fields?.map((field, index) => (
                     <Collapse.Panel
                       header={
-                        <div style={{ display: "flex" }}>
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                          }}
+                        >
+                          <span style={{ marginLeft: "10px" }}>
+                            Empresa # {index}
+                          </span>
+
                           <IoTrashBinSharp
+                            style={{ marginRight: 4 }}
                             size={20}
                             onClick={(event) => {
                               event.stopPropagation();
                               handleRemoveCompany(index);
                             }}
+                            color={"red"}
                           />
-                          <span style={{ marginLeft: "10px" }}>
-                            Empresa # {index}
-                          </span>
                         </div>
                       }
                       key={field.id}
@@ -407,31 +428,35 @@ export default function InformacionEmpresas(props) {
                   ))}
                 </Collapse>
                 <br />
-                <ButtonAntD
-                  type="dashed"
+                <ButtonAdd
+                  style={{ width: 180 }}
                   htmlType="button"
                   onClick={() => {
                     append({});
                   }}
                 >
                   Agregar nueva empresa
-                </ButtonAntD>
+                </ButtonAdd>
 
                 <div
                   style={{
                     display: "flex",
                     flexDirection: "row",
-                    justifyContent: "space-between",
+                    justifyContent: "flex-end",
                     marginTop: "20px",
-                    width: "310px",
                   }}
                 >
                   <ButtonBack htmlType="button" onClick={irAtras}>
+                    <IoArrowBackSharp size={18} style={{ marginRight: 5 }} />
                     Atras
                   </ButtonBack>
 
                   <ButtonSave type="submit">
-                    {isLoadingCreate ? <Spinner /> : "Guardar"}{" "}
+                    {isLoadingCreate ? (
+                      <Spinner style={{ color: "red" }} />
+                    ) : (
+                      "Guardar"
+                    )}{" "}
                   </ButtonSave>
                 </div>
               </div>

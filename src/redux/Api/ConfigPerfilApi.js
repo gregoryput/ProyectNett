@@ -1,6 +1,9 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/dist/query/react";
+import { JwtUtils } from "../../utils";
 
 const token = localStorage.getItem("token");
+const id = JwtUtils.getUserIdByToken(token);
+console.log(id);
 const baseUrl = "https://localhost:7279/";
 
 export const ConfigPerfilApi = createApi({
@@ -14,7 +17,7 @@ export const ConfigPerfilApi = createApi({
   tagTypes: ["Perfils"],
   endpoints: (builder) => ({
     getPerfil: builder.query({
-      query: (idUsuario) => `Perfil/InfoPerfil?idUsuario=${idUsuario}`,
+      query: () => `Perfil/InfoPerfil?idUsuario=${id}`,
       providesTags: ["Perfils"],
     }),
   }),

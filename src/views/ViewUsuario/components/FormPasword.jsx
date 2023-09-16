@@ -1,5 +1,5 @@
 import { useForm } from "react-hook-form";
-import { ButtonNext, ContainerForm, InputFor, LabelFor, Row } from "../../../components"
+import { ButtonNext, Container, InputFor, LabelFor, Row } from "../../../components"
 
 
 export default function FormPasword(){
@@ -9,7 +9,7 @@ export default function FormPasword(){
     } = useForm();
     return(
       <>
-       <ContainerForm>
+       <Container>
          <h3 style={{marginBottom:25,}}>Editar contraseña </h3>
          
           <Row>
@@ -43,7 +43,7 @@ export default function FormPasword(){
             <ButtonNext style={{marginTop:27, marginLeft:50}} >Confirmar</ButtonNext>
   
           </Row>
-       </ContainerForm>
+       </Container>
       </>
     )
   }

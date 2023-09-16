@@ -120,7 +120,7 @@ export default function Navegation() {
           </ButtonNav>
         )}
 
-        {(userRol === "Administrador," ||
+        {(userRol === "Administrador" ||
           userRol == "Asistente Administrativo") && (
           <ButtonNav
             exact

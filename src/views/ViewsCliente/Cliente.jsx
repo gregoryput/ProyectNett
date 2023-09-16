@@ -1,41 +1,36 @@
 import { useState, useEffect } from "react";
-import {
-  Space,
-  Table,
-  Pagination,
-  Spin,
-  Skeleton,
-  message,
-} from "antd";
+import "animate.css/animate.min.css";
+import { message } from "antd";
 import {
   ContainerButton,
-  DivAnimetor,
   ViewContainerPages,
-  ButtonIcon,
-  ContainerForm,
+  ButtonNext,
 } from "../../components";
 
-import { Colores } from "../../components/GlobalColor";
-
-import { FormClientes } from "./Form";
+import { FormClientes, TablaComponent } from "./Form";
 import { useGetClientsQuery } from "../../redux/Api/clientsApi";
 
-import {
-  IoChevronDownSharp,
-  IoTrashSharp,
-  IoInformationCircle,
-} from "react-icons/io5";
-
-import { FaPencilAlt } from "react-icons/fa";
+//icons
+import { IoTrashOutline } from "react-icons/io5";
+// modal creado por mi
+import ModalStyled from "../../layout/ModalStyled";
 
 export default function Cliente() {
   const [loadingSave, setLoadingSave] = useState(false);
-  const [toggle, setToggle] = useState(true);
+  const [toggle, setToggle] = useState(false);
   const [pageNumber, setPageNumber] = useState(1);
-  const [pageSize, setPageSize] = useState(5);
+  const [pageSize, setPageSize] = useState(20);
   const [dataClientEdit, setDataClientEdit] = useState(null);
   const [isMessageSuccessVisible, setMessageSuccessVisible] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
   //Estado redux api para obtener la lista de clientes con paginacion
   const {
     data: clientesData,
@@ -70,23 +65,25 @@ export default function Cliente() {
 
   //Onclick de editar:
   const editarCliente = (dataClientEdit) => {
-    setToggle(false);
+    setToggle(true);
     setDataClientEdit(dataClientEdit);
   };
 
   return (
     <>
-      <Spin size="large" style={{ margin: "0 auto" }} />
-      <ViewContainerPages>
-      <h2 style={{ marginLeft: 15, marginBottom: 10 }}>
-       
-        Registro de clientes
-      </h2>
-        <ContainerButton onClick={() => setToggle(!toggle)}>
-          <p>Crear nuevo cliente</p>
-          <DivAnimetor>
-            <IoChevronDownSharp style={{ width: 20, height: 20 }} />
-          </DivAnimetor>
+      <ViewContainerPages className="animate__animated animate__fadeIn" > 
+        <h2 style={{ marginLeft: 15, marginBottom: 40 }}>
+          Gestion de clientes
+        </h2>
+        <ContainerButton
+          onClick={() => {
+            setToggle(!toggle);
+          }}
+        >
+          <p>
+            <b>Formulario</b>
+          </p>
+          {/* <IoChevronDownSharp style={{ width: 20, height: 20 }} /> */}
         </ContainerButton>
 
         <FormClientes
@@ -94,9 +91,10 @@ export default function Cliente() {
           toggle={toggle}
           setToggle={setToggle}
           dataClientEdit={dataClientEdit}
+          setDataClientEdit={setDataClientEdit}
         />
 
-        <Tabla
+        <TablaComponent
           data={clientesData}
           dataClients={clientesData}
           handlePageChange={handlePageChange}
@@ -104,110 +102,39 @@ export default function Cliente() {
           isLoadingClients={isLoadingClients}
           loadingSave={loadingSave}
           editarCliente={editarCliente}
+          handleOpenModal={handleOpenModal}
         />
-      </ViewContainerPages>
-    </>
-  );
-}
 
-const { Column } = Table;
-
-function Tabla({
-  data,
-  dataClients,
-  handlePageChange,
-  isLoadingClients,
-  loadingSave,
-  handlePageSizeChange,
-  setToggle,
-  editarCliente,
-}) {
-  return (
-    <ContainerForm
-      style={{
-        margin: 15,
-        border: "1px solid #e2e2e2",
-        padding: 20,
-        borderRadius: 12,
-      }}
-    >
-    
-
-      {isLoadingClients || loadingSave ? (
-        <Skeleton />
-      ) : (
-        <>
-          <Table dataSource={dataClients?.result} pagination={false} size="small">
-            <Column title="Nombres" dataIndex="nombres" key="nombres" />
-            <Column title="Apellidos" dataIndex="apellidos" key="apellidos" />
-            <Column title="Teléfono 1" dataIndex="telefono1" key="telefono1" />
-            <Column title="Ciudad" dataIndex="ciudadNombre" key="ciudad" />
-            <Column title="Correo" dataIndex="correo" key="correo" />
-            <Column title="Celular" dataIndex="telefono1" key="telefono1" />
-
-            <Column
-              title="Acción"
-              key="action"
-              render={(_, record) => (
-                <Space size="small">
-                  <ButtonIcon onClick={() => editarCliente(record)}>
-                    <FaPencilAlt size={19} color={`${Colores.AzulOscuro}`} />
-                  </ButtonIcon>
-
-                  <ButtonIcon>
-                    <IoTrashSharp size={21} color={"#FF7676"} />
-                  </ButtonIcon>
-                  <ButtonIcon>
-                    <IoInformationCircle
-                      size={21}
-                      color={`${Colores.AzulOscuro}`}
-                    />
-                  </ButtonIcon>
-                </Space>
-              )}
-            />
-          </Table>
+        <ModalStyled isOpen={isModalOpen} onClose={handleCloseModal}>
+          <p>Estas seguro de eliminar el cliente?</p>
 
           <div
             style={{
               display: "flex",
-              flexDirection: "row",
-              flexWrap: "wrap",
-              justifyContent: "space-between",
+              justifyContent: "flex-end",
+              marginTop: 20,
             }}
           >
-            <div style={{marginTop:15}} >
-              <Pagination
-                current={data?.currentPage}
-                pageSize={data?.pageSize}
-                total={data?.totalItems}
-                onChange={handlePageChange}
-              />
-            </div>
-
-            {/* <div>
-              <span style={{ fontSize: "15px" }}>Clientes por página: </span>
-              <Select defaultValue={5} style={{ width: "60px" }} onChange={handlePageSizeChange}>
-                <Select.Option key={1} value={5}>
-                  5
-                </Select.Option>
-                <Select.Option key={2} value={10}>
-                  10
-                </Select.Option>
-                <Select.Option key={3} value={20}>
-                  20
-                </Select.Option>
-                <Select.Option key={5} value={30}>
-                  30
-                </Select.Option>
-                <Select.Option key={5} value={40}>
-                  50
-                </Select.Option>
-              </Select>
-            </div> */}
+            <ButtonNext
+              onClick={() => handleCloseModal()}
+              style={{ width:40 }}
+            >
+              No
+            </ButtonNext>
+            <ButtonNext
+              style={{
+                marginLeft: 10,
+                marginRight: 10,
+                backgroundColor: "red",
+                paddingInline: 20,
+                width: 130, 
+              }}
+            >
+              <IoTrashOutline size={20} style={{ marginRight: 5 }} /> Confirmar
+            </ButtonNext>
           </div>
-        </>
-      )}
-    </ContainerForm>
+        </ModalStyled>
+      </ViewContainerPages>
+    </>
   );
 }

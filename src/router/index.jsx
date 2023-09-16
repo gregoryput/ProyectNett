@@ -10,6 +10,7 @@ import {
   Reporte,
   Usuario,
   Home,
+  Detail,
 } from "../views";
 import Login from "../page/Login";
 import ErrorPages from "../page/ErrorPages";
@@ -54,11 +55,22 @@ export const createRouter = () => {
               <Cliente />
             </ProtectedRoute>
           ),
+         
+        },
+        {
+          path: "/cliente/:clienteId",
+          element: (
+            <ProtectedRoute roles={["Administrador"]}>
+              <Detail />
+            </ProtectedRoute>
+          ),
         },
         {
           path: "/cuenta-por-cobrar",
           element: (
-            <ProtectedRoute roles={["Administrador", "Asistente Administrativo"]}>
+            <ProtectedRoute
+              roles={["Administrador", "Asistente Administrativo"]}
+            >
               <CuentaPorCobrar />
             </ProtectedRoute>
           ),
@@ -66,7 +78,9 @@ export const createRouter = () => {
         {
           path: "/cuenta-por-pagar",
           element: (
-            <ProtectedRoute roles={["Administrador", "Asistente Administrativo"]}>
+            <ProtectedRoute
+              roles={["Administrador", "Asistente Administrativo"]}
+            >
               <CuentaPorPagar />
             </ProtectedRoute>
           ),
@@ -74,7 +88,9 @@ export const createRouter = () => {
         {
           path: "/inventario",
           element: (
-            <ProtectedRoute roles={["Administrador", "Asistente Administrativo"]}>
+            <ProtectedRoute
+              roles={["Administrador", "Asistente Administrativo"]}
+            >
               <Inventario />
             </ProtectedRoute>
           ),
@@ -82,7 +98,9 @@ export const createRouter = () => {
         {
           path: "/proveedores",
           element: (
-            <ProtectedRoute roles={["Administrador", "Asistente Administrativo"]}>
+            <ProtectedRoute
+              roles={["Administrador", "Asistente Administrativo"]}
+            >
               <Proveedores />
             </ProtectedRoute>
           ),
@@ -90,7 +108,9 @@ export const createRouter = () => {
         {
           path: "/proyecto",
           element: (
-            <ProtectedRoute roles={["Administrador", "Asistente Administrativo", "asistente"]}>
+            <ProtectedRoute
+              roles={["Administrador", "Asistente Administrativo", "asistente"]}
+            >
               <Proyecto />
             </ProtectedRoute>
           ),
@@ -98,7 +118,9 @@ export const createRouter = () => {
         {
           path: "/reporte",
           element: (
-            <ProtectedRoute roles={["Administrador", "Administrador De Usuario"]}>
+            <ProtectedRoute
+              roles={["Administrador", "Administrador De Usuario"]}
+            >
               <Reporte />
             </ProtectedRoute>
           ),
@@ -107,13 +129,14 @@ export const createRouter = () => {
         {
           path: "/Configuracion",
           element: (
-            <ProtectedRoute roles={["Administrador", "Asistente Administrativo", "asistente"]}>
+            <ProtectedRoute
+              roles={["Administrador", "Asistente Administrativo", "Asistente","Administrador De Usuario"]}
+            >
               <ConfiguracionPerfil />
             </ProtectedRoute>
           ),
         },
       ],
-      
     },
     {
       path: "/login",

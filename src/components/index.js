@@ -24,8 +24,11 @@ import { SpinnerTables } from "./Spinner/Spinner";
 import { ContainerButton } from "./Formularios/ContainerButton";
 import { DivAnimetor } from "./Formularios/divAnimetor";
 import {
+  Container,
+  ContainerDetail,
   ContainerForm,
   ContainerFormPrueba,
+  ContainerList,
   PrincipalContainerForm,
 } from "./Formularios/ContainerForm";
 import { InputFor } from "./Formularios/InputFor";
@@ -34,9 +37,10 @@ import { Option, Select } from "./Formularios/Select";
 import { ContainerTable } from "./Formularios/ContainerTable";
 import { NotificationContainer } from "./notifiaciones/notificaciones";
 import { GradientText } from "./404/GrandientText";
-import { ButtonNext } from "./Formularios/ButtonNext";
-import { ButtonIcon } from "./General/ButtonIcon";
+import { ButtonAdd, ButtonNext, ButtonRemove } from "./Formularios/ButtonNext";
+import { ButtonIcon, ButtonIconBorder, ButtonIconDelete, ButtonIconMenuTalba } from "./General/ButtonIcon";
 import { ButtonSave } from "./Formularios/ButtonSave";
+import { DropdownContenttabla } from "./General/Dropdownmenutabla";
 
 /// importanciones de los componente
 export {
@@ -92,4 +96,15 @@ export {
 
   ///Componentes generales:
   ButtonIcon,
+  DropdownContenttabla,
+  ButtonIconMenuTalba,
+  ButtonRemove,
+  ButtonAdd,
+  ButtonIconDelete,
+  ContainerDetail,
+  Container,
+  ContainerList,
+  ButtonIconBorder,
+  
 };
+

@@ -8,6 +8,7 @@ import Proyecto from "./Proyecto"
 import Reporte from "./Reporte"
 import Usuario from "./ViewUsuario/Usuario"
 import Home from "./Home"
+import { Detail } from "./ViewsCliente/Detail"
 
 ///importaciones de las views de la app system
 
@@ -22,4 +23,5 @@ export {
     CuentaPorPagar,
     Inventario,
     Home,
+    Detail,
 }

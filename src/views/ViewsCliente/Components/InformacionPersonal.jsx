@@ -5,11 +5,12 @@ import {
   Select,
   ContainerFormPrueba,
   ButtonNext,
+  ButtonRemove,
 } from "../../../components";
 
 import { useForm } from "react-hook-form";
-
-import React from "react";
+import { IoArrowForward, IoClose } from "react-icons/io5";
+import React, { useEffect } from "react";
 
 import {
   required,
@@ -28,6 +29,7 @@ import { useGetCountriesQuery } from "../../../redux/Api/countriesApi";
 import { useDispatch } from "react-redux";
 import { setCities } from "../../../redux/Slice/citiesSlice";
 import { setCountries } from "../../../redux/Slice/countriesSlice";
+import PropTypes from "prop-types"; // Importa PropTypes
 
 export default function InformacionPersonal(props) {
   const dispatch = useDispatch();
@@ -44,13 +46,12 @@ export default function InformacionPersonal(props) {
     setValue,
     trigger,
     reset,
-    initialValues,
   } = useForm();
 
   //Traer las ciudades
   const {
     data: citiesData,
-    isSuccess: isCitiesSuccess,
+    //  isSuccess: isCitiesSuccess,
     isLoading: isLoadingCities,
   } = useGetCitiesQuery("");
 
@@ -66,14 +67,14 @@ export default function InformacionPersonal(props) {
   //Traer los sexos
   const {
     data: sexesData,
-    isSuccess: isSexesSuccess,
+    // isSuccess: isSexesSuccess,
     isLoading: isLoadingSexes,
   } = useGetSexesQuery("");
 
   //Traer los paises
   const {
     data: countriesData,
-    isSuccess: isCountriesSuccess,
+    //isSuccess: isCountriesSuccess,
     isLoading: isLoadingCountries,
   } = useGetCountriesQuery("");
 
@@ -114,29 +115,62 @@ export default function InformacionPersonal(props) {
   };
 
   //Llenar los campos(sirve para llenar los campos al cambiar de paso y tambien para el edit)
-  React.useEffect(() => {
+  useEffect(() => {
     reset(props.dataValues);
     setIdPaisSeleccionado(parseInt(props.dataValues.IdPais));
-  }, [props.dataValues]);
+  }, [props.dataValues,reset,setIdPaisSeleccionado]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (citiesData != null && countriesData != null) {
       dispatchCities();
       dispatchCountries();
     }
-  }, [citiesData, countriesData]);
+  }, [citiesData, countriesData,dispatchCountries, dispatchCities]);
+
+  const clearFields = () => {
+    setValue("IdCiudad", 0); 
+    setValue("Nombres", "");
+    setValue("Apellidos", "");
+    setValue("Telefono1", "");
+    setValue("Telefono2", "");
+    setValue("Direccion", "");
+    setValue("Correo", "");
+    setValue("Cedula", "");
+    setValue("IdSexo", 0);
+    setValue("IdPais", 0);
+    setValue("FechaDeNacimiento", "");
+    setIdPaisSeleccionado(0);
+    props.setToggle(false);
+    props.setDatosFormulario({});
+    props.setDataClientEdit({})
+
+  };
+
+  useEffect(() => {
+  if (!props.toggle) {
+    clearFields();
+  }
+  },[props.toggle]);
+
+
+  // Definir PropTypes para las props del componente
+  InformacionPersonal.propTypes = {
+    toggle: PropTypes.bool.isRequired,
+    setToggle: PropTypes.func.isRequired,
+    setLoadingSave: PropTypes.func.isRequired,
+    dataClientEdit: PropTypes.object, // Cambia el tipo según corresponda
+    nextPart: PropTypes.func.isRequired,
+    dataValues: PropTypes.object.isRequired,
+    setDataClientEdit: PropTypes.func.isRequired,
+    setDatosFormulario: PropTypes.func.isRequired,
+    datavalues: PropTypes.object,
+
+  };
 
   return (
     <ContainerFormPrueba onSubmit={handleSubmit(irAdelante)}>
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          marginBottom: 50,
-          borderBottom: "1px solid #cecece ",
-        }}
-      >
-        <h3>Información personal </h3>
+      <div>
+        <h2>Datos personales </h2>
       </div>
 
       <div
@@ -361,7 +395,18 @@ export default function InformacionPersonal(props) {
         </LabelFor>
       </div>
       <br />
-      <ButtonNext htmlType="submit">Siguiente</ButtonNext>
+      <div style={{ display: "flex", justifyContent: "flex-end" }}>
+        <ButtonRemove
+          type="button"
+          onClick={clearFields}
+          style={{ marginLeft: 5 }}
+        >
+          <IoClose size={18} style={{ marginRight: 2 }} /> Cancelar
+        </ButtonRemove>
+        <ButtonNext htmlType="submit">
+          <IoArrowForward size={18} style={{ marginRight: 4 }} /> Siguiente{" "}
+        </ButtonNext>
+      </div>
     </ContainerFormPrueba>
   );
 }

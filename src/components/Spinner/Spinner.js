@@ -1,4 +1,5 @@
 import styled, {keyframes} from 'styled-components';
+import { Colores } from '../GlobalColor';
 
 const spin = keyframes`
   0% { transform: rotate(0deg); }
@@ -16,11 +17,11 @@ export const Spinner = styled.div`
 
 
 export const SpinnerTables = styled.div`
- border: 2px solid blue;
-  border-top: 4px solid transparent;
+ border: 5px solid ${Colores.AzulMar};
+  border-top: 10px solid transparent;
   border-radius: 50%;
-  width: 50px;
-  height: 50px;
+  width: 40px;
+  height: 40px;
   animation: ${spin} 0.8s linear infinite;
   margin: 150px auto;
 `;

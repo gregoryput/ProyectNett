@@ -91,8 +91,8 @@ export default function Login() {
 
   return (
     <>
-      <DivContainerPage>
-        <img style={{ marginBottom: "50px" }} src={logo} />
+      <DivContainerPage className={loadingState === false ? "animate__animated animate__fadeIn animate__bounce animate__delay-1s" : "animate__animated animate__backOutUp"}>
+        <img className="animate__animated animate__pulse animate__delay-2s animate__repeat-2" style={{ marginBottom: "50px" }} src={logo} />
 
         <FormContainer onSubmit={handleSubmit(onSubmit)}>
           <Label> Usuario </Label>
@@ -140,7 +140,11 @@ export default function Login() {
               Verifica tu contraseña
             </span>
           )}
-          <Button type="submit" disabled={isLoading || loadingState}>
+          <Button
+            className="animate__animated animate__zoomIn  animate__bounce animate__delay-1s"
+            type="submit"
+            disabled={isLoading || loadingState}
+          >
             {isLoading || loadingState ? <Spinner /> : "Iniciar sesión"}
           </Button>
         </FormContainer>
