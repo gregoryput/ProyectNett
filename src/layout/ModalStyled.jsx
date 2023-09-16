@@ -1,5 +1,4 @@
 import { OutsideClick } from "outsideclick-react";
-import React, { useState, useEffect } from "react";
 import styled, { keyframes } from "styled-components";
 import { ButtonIcon } from "../components";
 import { IoCloseSharp } from "react-icons/io5";
