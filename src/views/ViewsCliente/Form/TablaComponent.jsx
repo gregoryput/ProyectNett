@@ -20,6 +20,7 @@ import {
 } from "../../../components";
 import { OutsideClick } from "outsideclick-react";
 import { useNavigate } from "react-router-dom";
+
 export default function TablaComponent({
   data,
   dataClients,
@@ -28,7 +29,7 @@ export default function TablaComponent({
   loadingSave,
   editarCliente,
   handleOpenModal,
-  // handlePageSizeChange,
+  goSectionUp,
 }) {
   const [openIndex, setOpenIndex] = useState(-1);
   const handleDrop = (index) => {
@@ -100,7 +101,7 @@ export default function TablaComponent({
             <Column
               key="action"
               render={(_, record) => (
-                <div style={{ width: 90,zIndex:100 }}>
+                <div style={{ width: 90, zIndex: 100 }}>
                   <ButtonIcon
                     onMouseUp={() => {
                       handleDrop(record.idCliente);
@@ -110,6 +111,7 @@ export default function TablaComponent({
                   </ButtonIcon>
                   <DropdownContenttabla open={openIndex === record.idCliente}>
                     <OutsideClick>
+                      {/*----------VIEW BUTTON:----------*/}
                       <ButtonIconMenuTalba
                         onClick={() => {
                           handleDrop(-1);
@@ -120,12 +122,15 @@ export default function TablaComponent({
                           size={18}
                           style={{ marginLeft: 5, marginRight: 5 }}
                         />
-                        <p>ver</p>
+                        <p>Ver</p>
                       </ButtonIconMenuTalba>
+
+                      {/*----------EDIT BUTTON:----------*/}
                       <ButtonIconMenuTalba
                         onClick={() => {
                           handleDrop(-1);
                           editarCliente(record);
+                          goSectionUp();
                         }}
                       >
                         <IoClipboardOutline
@@ -134,6 +139,8 @@ export default function TablaComponent({
                         />
                         <p>Editar</p>
                       </ButtonIconMenuTalba>
+
+                      {/*----------DELETE BUTTON:----------*/}
                       <ButtonIconMenuTalba
                         onClick={() => {
                           handleOpenModal();

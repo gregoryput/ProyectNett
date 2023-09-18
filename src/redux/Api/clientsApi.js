@@ -18,6 +18,7 @@ export const clientsApi = createApi({
         `/Clientes/obtenerClientes?pageNumber=${pag.pageNumber}&pageSize=${pag.pageSize}`,
       providesTags: ["Clients"],
     }),
+
     createClient: builder.mutation({
       query: (newClient) => ({
         url: "/Clientes/insertarClientes",
@@ -26,7 +27,20 @@ export const clientsApi = createApi({
       }),
       invalidatesTags: ["Clients"],
     }),
+
+    updateClient: builder.mutation({
+      query: (newClient) => ({
+        url: "/Clientes/actualizarCliente",
+        method: "POST",
+        body: newClient,
+      }),
+      invalidatesTags: ["Clients"],
+    }),
   }),
 });
 
-export const { useGetClientsQuery, useCreateClientMutation } = clientsApi;
+export const {
+  useGetClientsQuery,
+  useCreateClientMutation,
+  useUpdateClientMutation,
+} = clientsApi;

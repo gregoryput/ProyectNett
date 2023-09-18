@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import "animate.css/animate.min.css";
+//import "animate.css";
 import { message } from "antd";
 import {
   ContainerButton,
@@ -21,7 +21,6 @@ export default function Cliente() {
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(20);
   const [dataClientEdit, setDataClientEdit] = useState(null);
-  const [isMessageSuccessVisible, setMessageSuccessVisible] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleOpenModal = () => {
@@ -42,17 +41,10 @@ export default function Cliente() {
   });
 
   useEffect(() => {
-    if (isClientsSuccess /* && clientesData !== null */) {
-      if (!isMessageSuccessVisible) {
-        message.success("Listado de clientes obtenido correctamente!");
-        setMessageSuccessVisible(true);
-
-        setTimeout(() => {
-          setMessageSuccessVisible(false);
-        }, 1000);
-      }
+    if (isClientsSuccess) {
+      message.success("Listado de clientes obtenido correctamente!");
     }
-  }, [isClientsSuccess, clientesData]);
+  }, [isClientsSuccess]);
 
   const handlePageChange = (page, pageSize) => {
     setPageNumber(page);
@@ -69,10 +61,20 @@ export default function Cliente() {
     setDataClientEdit(dataClientEdit);
   };
 
+  const scrollToSection = () => {
+    // Obtener el titulo de arriba, para cuando se de clic a editar un cliente, si esta muy abajo se desplace hacia arriba automaticamente:
+    const targetSection = document.getElementById("titleTop");
+
+    if (targetSection) {
+      // Con el scrollIntoView se lleva a cabo el desplazamiento a la sección objetivo (titleTop):
+      targetSection.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   return (
     <>
-      <ViewContainerPages className="animate__animated animate__fadeIn" > 
-        <h2 style={{ marginLeft: 15, marginBottom: 40 }}>
+      <ViewContainerPages className="animate__animated animate__fadeIn">
+        <h2 style={{ marginLeft: 15, marginBottom: 40 }} id="titleTop">
           Gestion de clientes
         </h2>
         <ContainerButton
@@ -103,6 +105,7 @@ export default function Cliente() {
           loadingSave={loadingSave}
           editarCliente={editarCliente}
           handleOpenModal={handleOpenModal}
+          goSectionUp={scrollToSection}
         />
 
         <ModalStyled isOpen={isModalOpen} onClose={handleCloseModal}>
@@ -117,7 +120,7 @@ export default function Cliente() {
           >
             <ButtonNext
               onClick={() => handleCloseModal()}
-              style={{ width:40 }}
+              style={{ width: 40 }}
             >
               No
             </ButtonNext>
@@ -127,7 +130,7 @@ export default function Cliente() {
                 marginRight: 10,
                 backgroundColor: "red",
                 paddingInline: 20,
-                width: 130, 
+                width: 130,
               }}
             >
               <IoTrashOutline size={20} style={{ marginRight: 5 }} /> Confirmar

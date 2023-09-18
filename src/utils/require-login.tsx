@@ -11,14 +11,12 @@ const RequireLogin = () => {
   const location = useLocation();
 
   React.useEffect(() => {
-    console.log("pon el de 30")
     const token = localStorage.getItem("token");
 
     if (JwtUtils.verifyTokenExpiration(token)) {
       navigate("/login");
-    }
-    else{
-      console.log("token valido")
+    } else {
+      console.log("token valido");
     }
   }, [navigate, location]);
 

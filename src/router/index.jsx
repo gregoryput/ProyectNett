@@ -18,7 +18,6 @@ import RequireLogin from "../utils/require-login";
 import ProtectedRoute from "./protected-route/protected-route";
 import ConfiguracionPerfil from "../views/ViewUsuario/ConfiguracionPerfil";
 
-
 export const createRouter = () => {
   const router = createBrowserRouter([
     {
@@ -55,7 +54,6 @@ export const createRouter = () => {
               <Cliente />
             </ProtectedRoute>
           ),
-         
         },
         {
           path: "/cliente/:clienteId",
@@ -130,7 +128,12 @@ export const createRouter = () => {
           path: "/Configuracion",
           element: (
             <ProtectedRoute
-              roles={["Administrador", "Asistente Administrativo", "Asistente","Administrador De Usuario"]}
+              roles={[
+                "Administrador",
+                "Asistente Administrativo",
+                "Asistente",
+                "Administrador De Usuario",
+              ]}
             >
               <ConfiguracionPerfil />
             </ProtectedRoute>

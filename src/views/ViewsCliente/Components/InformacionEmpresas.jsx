@@ -8,6 +8,7 @@ import {
   ButtonNext as ButtonBack,
   ButtonAdd,
   SpinnerTables,
+  ButtonRemove,
 } from "../../../components";
 
 import {
@@ -25,7 +26,10 @@ import { Spinner } from "../../../components";
 
 import { Collapse } from "antd";
 
-import { useCreateClientMutation } from "../../../redux/Api/clientsApi";
+const isLoadingCreate = false;
+
+import { IoClose } from "react-icons/io5";
+
 import { useSelector } from "react-redux";
 import { useForm, useFieldArray, useWatch } from "react-hook-form";
 import React from "react";
@@ -37,6 +41,15 @@ import { FuncUtils } from "../../../utils";
 import { IoTrashBinSharp, IoArrowBackSharp } from "react-icons/io5";
 import PropTypes from "prop-types"; // Importa PropTypes
 import { Colores } from "../../../components/GlobalColor";
+import { useEffect } from "react";
+
+import {
+  SavingText,
+  StyledSpinContainer,
+  StyledSpinSubContainer,
+} from "../../../components/StylesCustomLoading/loading-custom.styled";
+import { Spin } from "antd";
+
 export default function InformacionEmpresas(props) {
   const {
     register,
@@ -54,6 +67,9 @@ export default function InformacionEmpresas(props) {
 
   //Observar los valores del FieldArray
   const watchedValues = useWatch({ control });
+
+  const [pressedonSave, setPressedonSave] = React.useState(false);
+  const [activeKeyPanel, setActiveKeyPanel] = React.useState(-1);
 
   //Tomar las ciudades:
   const cities = useSelector((state) => state.cities.cities.cities);
@@ -75,6 +91,7 @@ export default function InformacionEmpresas(props) {
   const {
     data: companiesClientData,
     isSuccess: isCompaniesClientSuccess,
+    isError: isErrorCompanies,
     isLoading: isLoadingCompaniesClient,
   } = useGetCompaniesByIdClienteQuery(props.dataValues.IdCliente, {
     skip:
@@ -82,58 +99,65 @@ export default function InformacionEmpresas(props) {
       props.dataValues.IdCliente === undefined,
   });
 
+  const clearFields = () => {
+    reset();
+    props.setToggle(false);
+    props.setDatosFormulario({});
+    props.setDataClientEdit({});
+    props.setPosicionActual((prevState) => prevState - 1);
+  };
+
   //Obserar si hay empresas y mapearlas en el fieldArray:
   React.useEffect(() => {
-    if (!props?.dataValues?.Empresas) {
-      if (companiesClientData !== null && companiesClientData !== undefined) {
-        message.success({
-          content: "Lista de empresas del cliente cargada correctamente",
-          duration: 3,
-        });
+    if (
+      !props?.dataValues?.Empresas //&& props?.dataValues?.Empresas?.length === 0
+    ) {
+      if (
+        companiesClientData !== null &&
+        companiesClientData !== undefined &&
+        isCompaniesClientSuccess
+      ) {
+        companiesClientData?.result?.length > 0
+          ? message.success({
+              content: "Lista de empresas del cliente cargada correctamente",
+              duration: 3,
+            })
+          : message.info({
+              content:
+                "Información obtenida; el cliente no tiene empresas registradas",
+              duration: 4,
+            });
+
         props.dataValues.Empresas = companiesClientData?.result.map(
           (empresa) => {
             return FuncUtils.capitalizePropertyKeys(empresa);
           }
         );
-
-        reset(props.dataValues);
       }
-    }
-  }, [companiesClientData]);
-
-  //Funcion para el create/insert de Cliente
-  const [
-    createClient,
-    { isLoading: isLoadingCreate, isSuccess: isCreateSuccess },
-  ] = useCreateClientMutation();
-
-  //Funcion para insertar, enviar los datos a  la api:
-  const onSubmit = (data) => {
-    //DataEncabezado de cliente:
-    const dataHead = {
-      idCliente: 0,
-      idCreadoPor: 0,
-    };
-
-    //Armar el objeto persona
-    const persona = { ...props.dataValues, edad: 18 };
-    //Quitar el objeto empresas del objet persona
-    delete persona.Empresas;
-    //Armar el objeto empresas
-    const empresas = data.Empresas;
-    //Armar la data submit:
-    const dataClient = { ...dataHead, empresas, persona };
-    createClient({ ...dataClient });
-
-    // reset(props.dataValues);
-    if (isCompaniesClientSuccess) {
-      props.setToggle(false);
-      irAtras();
       reset(props.dataValues);
-      message.success({
-        content: "Guardado correctamente",
-      });
     }
+  }, [companiesClientData, isCompaniesClientSuccess]);
+
+  //Obserar si hay validaciones disparadas en algun campo de una de las empresas, si es asi, desplegar la ultima empresa con validaciones disparadas:
+  useEffect(() => {
+    let indice = 0;
+    if (errors?.Empresas?.length > 0) {
+      errors?.Empresas?.forEach((element, index) => {
+        indice = index;
+      });
+      setActiveKeyPanel(indice);
+    }
+    setPressedonSave(false);
+  }, [pressedonSave, errors]);
+
+  const handlePanelChange = (keys) => {
+    setActiveKeyPanel(keys); // Actualizar el estado cuando cambian los paneles
+  };
+
+  //Funcion para insertar, enviar los datos a la api:
+  const onSubmit = (data) => {
+    props.dataValues.Empresas = data.Empresas;
+    props.handleSubmit(data);
   };
 
   //Funcion para regresar al paso InformacionPersnal
@@ -142,25 +166,16 @@ export default function InformacionEmpresas(props) {
     props.backPart(dataInformacionEmpresas); // Regresar al paso Informacion personal y a su vez enviar los datos del paso informacion empresas
   };
 
-  //..
-  //..
-  //..
+  //Si hay un error trayendo los datos de las empresas:
   React.useEffect(() => {
-    if (isCreateSuccess === true) {
-      message.success({
-        content: "Información del cliente guardada correctamente",
-        duration: 3,
-      });
-      props.setPosicionActual(1);
-      props.setDatosFormulario({});
-      props.setSaveIsSucces(true);
-    }
-  }, [isCreateSuccess]);
-
-  //llenar campos fieldarray
-  React.useEffect(() => {
-    reset(props?.dataValues);
-  }, [props?.dataValues]);
+    isErrorCompanies
+      ? message.error({
+          content:
+            "Error al consultar la información, recargue la pagina e intente de nuevo",
+          duration: 4,
+        })
+      : null;
+  }, [isErrorCompanies]);
 
   //Funcion para remover empresa:
   const handleRemoveCompany = (index) => {
@@ -174,7 +189,6 @@ export default function InformacionEmpresas(props) {
     setDatosFormulario: PropTypes.func.isRequired,
     setSaveIsSucces: PropTypes.func.isRequired,
     setToggle: PropTypes.bool.required,
-
   };
 
   return (
@@ -192,12 +206,19 @@ export default function InformacionEmpresas(props) {
             </div>
 
             {isLoadingCompaniesClient ? (
-              <div style={{ display: "flex", justifyContent: "center" }}>
-                <SpinnerTables />
-              </div>
+              <StyledSpinContainer>
+                <StyledSpinSubContainer>
+                  <Spin size="large" />
+                  <SavingText isSaving={isLoadingCompaniesClient}>
+                    Cargando información de empresas del cliente
+                  </SavingText>
+                </StyledSpinSubContainer>
+              </StyledSpinContainer>
             ) : (
               <div>
                 <Collapse
+                  activeKey={activeKeyPanel}
+                  onChange={handlePanelChange}
                   accordion
                   style={{
                     backgroundColor: `${Colores.Blanco}`,
@@ -228,7 +249,7 @@ export default function InformacionEmpresas(props) {
                           />
                         </div>
                       }
-                      key={field.id}
+                      key={index}
                     >
                       <div
                         style={{
@@ -269,8 +290,8 @@ export default function InformacionEmpresas(props) {
                           />
                           {errors.Empresas && errors.Empresas[index] && (
                             <span style={{ color: "red", fontSize: 10 }}>
-                              {errors.Empresas[index].RNC &&
-                                errors.Empresas[index].RNC.message}
+                              {errors.Empresas[index].Rnc &&
+                                errors.Empresas[index].Rnc.message}
                             </span>
                           )}
                         </LabelFor>
@@ -430,7 +451,7 @@ export default function InformacionEmpresas(props) {
                 <br />
                 <ButtonAdd
                   style={{ width: 180 }}
-                  htmlType="button"
+                  type="button"
                   onClick={() => {
                     append({});
                   }}
@@ -446,12 +467,23 @@ export default function InformacionEmpresas(props) {
                     marginTop: "20px",
                   }}
                 >
+                  <ButtonRemove
+                    type="button"
+                    onClick={clearFields}
+                    style={{ marginLeft: 5 }}
+                  >
+                    <IoClose size={18} style={{ marginRight: 2 }} /> Cancelar
+                  </ButtonRemove>
+
                   <ButtonBack htmlType="button" onClick={irAtras}>
                     <IoArrowBackSharp size={18} style={{ marginRight: 5 }} />
                     Atras
                   </ButtonBack>
 
-                  <ButtonSave type="submit">
+                  <ButtonSave
+                    type="submit"
+                    onClick={() => setPressedonSave(true)}
+                  >
                     {isLoadingCreate ? (
                       <Spinner style={{ color: "red" }} />
                     ) : (

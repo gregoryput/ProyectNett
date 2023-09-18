@@ -118,40 +118,22 @@ export default function InformacionPersonal(props) {
   useEffect(() => {
     reset(props.dataValues);
     setIdPaisSeleccionado(parseInt(props.dataValues.IdPais));
-  }, [props.dataValues,reset,setIdPaisSeleccionado]);
+  }, [props.dataValues, reset, setIdPaisSeleccionado]);
 
   useEffect(() => {
     if (citiesData != null && countriesData != null) {
       dispatchCities();
       dispatchCountries();
     }
-  }, [citiesData, countriesData,dispatchCountries, dispatchCities]);
+  }, [citiesData, countriesData, dispatchCountries, dispatchCities]);
 
   const clearFields = () => {
-    setValue("IdCiudad", 0); 
-    setValue("Nombres", "");
-    setValue("Apellidos", "");
-    setValue("Telefono1", "");
-    setValue("Telefono2", "");
-    setValue("Direccion", "");
-    setValue("Correo", "");
-    setValue("Cedula", "");
-    setValue("IdSexo", 0);
-    setValue("IdPais", 0);
-    setValue("FechaDeNacimiento", "");
+    reset();
     setIdPaisSeleccionado(0);
     props.setToggle(false);
     props.setDatosFormulario({});
-    props.setDataClientEdit({})
-
+    props.setDataClientEdit({});
   };
-
-  useEffect(() => {
-  if (!props.toggle) {
-    clearFields();
-  }
-  },[props.toggle]);
-
 
   // Definir PropTypes para las props del componente
   InformacionPersonal.propTypes = {
@@ -164,7 +146,6 @@ export default function InformacionPersonal(props) {
     setDataClientEdit: PropTypes.func.isRequired,
     setDatosFormulario: PropTypes.func.isRequired,
     datavalues: PropTypes.object,
-
   };
 
   return (
@@ -327,6 +308,13 @@ export default function InformacionPersonal(props) {
           )}
         </LabelFor>
 
+        {/*-------------INPUT FechaDeNacimiento-------------*/}
+        <LabelFor>
+          {" "}
+          Fecha de nacimiento
+          <InputFor type="date" {...register("FechaDeNacimiento")} />
+        </LabelFor>
+
         {/*---------SELEC OPTION IDPAIS---------*/}
         <LabelFor>
           {" "}
@@ -388,11 +376,6 @@ export default function InformacionPersonal(props) {
             </span>
           )}
         </LabelFor>
-        <LabelFor>
-          {" "}
-          Fecha de nacimiento
-          <InputFor type="date" {...register("FechaDeNacimiento")} />
-        </LabelFor>
       </div>
       <br />
       <div style={{ display: "flex", justifyContent: "flex-end" }}>
@@ -403,6 +386,7 @@ export default function InformacionPersonal(props) {
         >
           <IoClose size={18} style={{ marginRight: 2 }} /> Cancelar
         </ButtonRemove>
+
         <ButtonNext htmlType="submit">
           <IoArrowForward size={18} style={{ marginRight: 4 }} /> Siguiente{" "}
         </ButtonNext>
