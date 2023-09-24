@@ -47,7 +47,6 @@ export default function MenuBar() {
   return (
     <>
       <DivNav>
-       
         <DivRoll>{userRol}</DivRoll>
         <IoCalendarNumberOutline
           style={{
@@ -75,7 +74,9 @@ export default function MenuBar() {
                 {userName}{" "}
               </p>
               <Avatar>
-                <h1>{userName[0].toUpperCase()}</h1>
+                <h1>
+                  {userName !== undefined ? userName[0]?.toUpperCase() : ""}
+                </h1>
               </Avatar>
             </ButtonMenu>
           </div>
@@ -102,9 +103,11 @@ export default function MenuBar() {
               </DivButtonSesion>
             </div>
 
-            <ButtonOption  onClick={()=>{
-               navigate("/Configuracion");
-            }}>
+            <ButtonOption
+              onClick={() => {
+                navigate("/Configuracion");
+              }}
+            >
               <IoPersonCircleOutline
                 style={{ width: 20, height: 20, marginRight: 10 }}
               />

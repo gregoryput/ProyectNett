@@ -8,20 +8,77 @@ import {
 } from "../../components";
 
 import { FormClientes, TablaComponent } from "./Form";
-import { useGetClientsQuery } from "../../redux/Api/clientsApi";
+import {
+  useDeleteClientMutation,
+  useGetClientsQuery,
+  useRestoreClientMutation,
+} from "../../redux/Api/clientsApi";
+
+import {
+  SavingText,
+  StyledSpinContainer,
+  StyledSpinSubContainer,
+} from "../../components/StylesCustomLoading/loading-custom.styled";
+import { Spin } from "antd";
 
 //icons
 import { IoTrashOutline } from "react-icons/io5";
+import { MdRestore } from "react-icons/md";
 // modal creado por mi
 import ModalStyled from "../../layout/ModalStyled";
 
 export default function Cliente() {
   const [loadingSave, setLoadingSave] = useState(false);
   const [toggle, setToggle] = useState(false);
-  const [pageNumber, setPageNumber] = useState(1);
-  const [pageSize, setPageSize] = useState(20);
   const [dataClientEdit, setDataClientEdit] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const [selectedClient, setSelectedClient] = useState();
+  const [actionClient, setActionClient] = useState("");
+
+  const [
+    deleteClient,
+    {
+      isLoading: isLoadinDelete,
+      isSuccess: isDeleteSuccess,
+      isError: isErrorDelete,
+    },
+  ] = useDeleteClientMutation();
+  useEffect(() => {
+    if (isDeleteSuccess) {
+      message.success("Cliente eliminando correctamente");
+      setIsModalOpen(false);
+    }
+  }, [isDeleteSuccess]);
+  //isErrorDelete ----------
+  useEffect(() => {
+    if (isErrorDelete) {
+      message.success("Ha ocurrido un error al intentar eliminar al cliente");
+      setIsModalOpen(false);
+    }
+  }, [isDeleteSuccess]);
+
+  const [
+    restoreClient,
+    {
+      isLoading: isLoadinRestore,
+      isSuccess: isRestoreSuccess,
+      isError: isErrorRestore,
+    },
+  ] = useRestoreClientMutation();
+  useEffect(() => {
+    if (isRestoreSuccess) {
+      message.success("Cliente activado correctamente");
+      setIsModalOpen(false);
+    }
+  }, [isRestoreSuccess]);
+  //isErrorRestore ----------
+  useEffect(() => {
+    if (isErrorRestore) {
+      message.success("Ha ocurrido un error al intentar activar al cliente");
+      setIsModalOpen(false);
+    }
+  }, [isErrorRestore]);
 
   const handleOpenModal = () => {
     setIsModalOpen(true);
@@ -35,25 +92,13 @@ export default function Cliente() {
     data: clientesData,
     isSuccess: isClientsSuccess,
     isLoading: isLoadingClients,
-  } = useGetClientsQuery({
-    pageNumber: pageNumber,
-    pageSize: pageSize,
-  });
+  } = useGetClientsQuery("");
 
   useEffect(() => {
     if (isClientsSuccess) {
       message.success("Listado de clientes obtenido correctamente!");
     }
   }, [isClientsSuccess]);
-
-  const handlePageChange = (page, pageSize) => {
-    setPageNumber(page);
-    setPageSize(pageSize);
-  };
-
-  const handlePageSizeChange = (pageSize) => {
-    setPageSize(pageSize);
-  };
 
   //Onclick de editar:
   const editarCliente = (dataClientEdit) => {
@@ -99,17 +144,36 @@ export default function Cliente() {
         <TablaComponent
           data={clientesData}
           dataClients={clientesData}
-          handlePageChange={handlePageChange}
-          handlePageSizeChange={handlePageSizeChange}
           isLoadingClients={isLoadingClients}
           loadingSave={loadingSave}
           editarCliente={editarCliente}
           handleOpenModal={handleOpenModal}
           goSectionUp={scrollToSection}
+          setSelectedClient={setSelectedClient}
+          setActionClient={setActionClient}
         />
 
         <ModalStyled isOpen={isModalOpen} onClose={handleCloseModal}>
-          <p>Estas seguro de eliminar el cliente?</p>
+          {isLoadinDelete || isLoadinRestore ? (
+            <p>
+              <StyledSpinContainer>
+                <StyledSpinSubContainer>
+                  <Spin size="large" />
+                  <SavingText isSaving={isLoadinDelete || isLoadinRestore}>
+                    {`${
+                      isLoadinDelete
+                        ? "Desactivando"
+                        : isLoadinRestore
+                        ? "Activando"
+                        : ""
+                    } al cliente`}
+                  </SavingText>
+                </StyledSpinSubContainer>
+              </StyledSpinContainer>
+            </p>
+          ) : (
+            <p>{`Estas seguro de eliminar al cliente ${selectedClient?.nombres} ${selectedClient?.apellidos}?`}</p>
+          )}
 
           <div
             style={{
@@ -124,6 +188,7 @@ export default function Cliente() {
             >
               No
             </ButtonNext>
+
             <ButtonNext
               style={{
                 marginLeft: 10,
@@ -132,8 +197,24 @@ export default function Cliente() {
                 paddingInline: 20,
                 width: 130,
               }}
+              onClick={() =>
+                actionClient === "Activar"
+                  ? restoreClient(selectedClient.idCliente)
+                  : deleteClient(selectedClient.idCliente)
+              }
             >
-              <IoTrashOutline size={20} style={{ marginRight: 5 }} /> Confirmar
+              {actionClient === "Desactivar" ? (
+                <IoTrashOutline
+                  size={18}
+                  style={{ marginLeft: 5, marginRight: 5 }}
+                />
+              ) : (
+                <MdRestore
+                  size={18}
+                  style={{ marginLeft: 5, marginRight: 5 }}
+                />
+              )}
+              Confirmar
             </ButtonNext>
           </div>
         </ModalStyled>

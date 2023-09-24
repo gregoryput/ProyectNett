@@ -139,17 +139,8 @@ export default function FormClientes(props) {
     //Armar el objeto empresas
     const empresas = data.Empresas;
     //Armar la data submit (el objeto puede ser de dos formas):
-
-    /*
-    const dataClient = {
-      ...dataHead,
-      Persona,
-      Empresas: empresas, //empresas?.length > 0 ? empresas : null,
-    };
-    */
-
     let dataClient;
-    empresas?.length > 0
+    !empresas?.length > 0
       ? // -- Forma 1 (Cuando no hayan empresas):
         (dataClient = {
           ...dataHead,
@@ -162,19 +153,18 @@ export default function FormClientes(props) {
           Empresas: empresas,
         });
 
-    //Si ClienteId = 0 Ejecuto INSERT de lo contrario UPDATE:
-    console.log("safsafaf", dataClient);
-
-    data?.ClienteId === 0 && data?.IdCliente !== undefined
+    data?.ClienteId === 0 || data?.IdCliente === undefined
       ? createClient({ ...dataClient })
       : updateClient({ ...dataClient });
   };
 
   useEffect(() => {
     if (props.dataClientEdit !== null) {
-      setDatosFormulario(
-        FuncUtils.capitalizePropertyKeys(props.dataClientEdit)
-      );
+      //props.dataClientEdit.InitialCedulaEdit = props.dataClientEdit.Cedula;
+      setDatosFormulario({
+        ...FuncUtils.capitalizePropertyKeys(props.dataClientEdit),
+        InitialCedulaEdit: props.dataClientEdit.cedula, // <-- c minuscula porque esta antes de convertir con el Utils
+      });
     }
     if (props.toggle == false) {
       setTimeout(() => {
@@ -254,5 +244,3 @@ FormClientes.propTypes = {
   dataClientEdit: PropTypes.object, // Cambia el tipo según corresponda
   setDataClientEdit: PropTypes.func.isRequired,
 };
-
-// Importa otros componentes o módulos necesarios

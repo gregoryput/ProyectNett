@@ -14,9 +14,9 @@ export const companiesApi = createApi({
   tagTypes: ["Companies"],
   endpoints: (builder) => ({
     getCompaniesByIdCliente: builder.query({
-      query: (clienteId) => {
-        if (clienteId !== null) {
-          return `/Empresas/EmpresasPorClienteId?clienteId=${clienteId}`;
+      query: (params) => {
+        if (params.clienteId !== null) {
+          return `/Empresas/EmpresasPorClienteId?clienteId=${params.clienteId}&estadoId=${params.estadoId}`;
         } else {
           return { data: null, isLoading: null, isSuccess: null };
         }

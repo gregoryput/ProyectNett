@@ -11,13 +11,32 @@ import {
 import { IoReturnDownBackOutline, IoClipboardOutline } from "react-icons/io5";
 import { useNavigate, useParams } from "react-router-dom";
 import { useGetCompaniesByIdClienteQuery } from "../../redux/Api/companiesApi";
+import { useGetPersonalInfoQuery } from "../../redux/Api/clientsApi";
 import { useEffect } from "react";
 import { useState } from "react";
 
 export function Detail() {
   let navegation = useNavigate();
   const valor = useParams();
-  const { data } = useGetCompaniesByIdClienteQuery(valor.clienteId);
+
+  // Traer las empresas solo cuando se este en modo editar:
+  const {
+    data: companiesClientData,
+    isSuccess: isCompaniesClientSuccess,
+    isError: isErrorCompanies,
+    isLoading: isLoadingCompaniesClient,
+  } = useGetCompaniesByIdClienteQuery({
+    clienteId: parseInt(valor.clienteId, 10),
+    estadoId: 0,
+  });
+
+  const {
+    data: personalInfoData,
+    isSuccess: isPersonalInfoSuccess,
+    isError: isErrorpersonalInfo,
+    isLoading: isLoadingPersonalInfo,
+  } = useGetPersonalInfoQuery(parseInt(valor.clienteId, 10));
+
   const [dataState, setDataState] = useState([]);
 
   const [isExpanded, setIsExpanded] = useState(false);
@@ -35,12 +54,12 @@ export function Detail() {
   };
 
   useEffect(() => {
-    if (data) {
-      if (data.isSuccess) {
-        setDataState(data.result);
+    if (companiesClientData) {
+      if (companiesClientData.isSuccess) {
+        setDataState(companiesClientData.result);
       }
     }
-  }, [data, dataState]);
+  }, [companiesClientData, setDataState]);
 
   return (
     <ViewContainerPages className="animate__animated animate__fadeIn">
@@ -88,52 +107,52 @@ export function Detail() {
           <div style={{ borderRadius: 12, padding: 5 }}>
             <Row style={{ justifyContent: "space-between", margin: 10 }}>
               <p>
-                <b>Nombre:</b>
+                <b>Nombres:</b>
               </p>
-              <p>Gregory sanchez</p>
+              <p>{personalInfoData?.result.nombres}</p>
             </Row>
 
             <Row style={{ justifyContent: "space-between", margin: 10 }}>
               <p>
-                <b>Apellido:</b>
+                <b>Apellidos:</b>
               </p>
-              <p>Gregory sanchez</p>
+              <p>{personalInfoData?.result.nombres}</p>
             </Row>
             <Row style={{ justifyContent: "space-between", margin: 10 }}>
               <p>
-                <b>Cedula:</b>
+                <b>Cédula:</b>
               </p>
-              <p>Gregory sanchez</p>
+              <p>{personalInfoData?.result.cedula}</p>
             </Row>
             <Row style={{ justifyContent: "space-between", margin: 10 }}>
               <p>
                 <b>Edad:</b>
               </p>
-              <p>Gregory sanchez</p>
+              <p>{personalInfoData?.result.edad}</p>
             </Row>
             <Row style={{ justifyContent: "space-between", margin: 10 }}>
               <p>
                 <b>Sexo:</b>
               </p>
-              <p>Gregory sanchez</p>
+              <p>{personalInfoData?.result.sexoNombre}</p>
             </Row>
             <Row style={{ justifyContent: "space-between", margin: 10 }}>
               <p>
                 <b>Pais:</b>
               </p>
-              <p>Gregory sanchez</p>
+              <p>{personalInfoData?.result.paisNombre}</p>
             </Row>
             <Row style={{ justifyContent: "space-between", margin: 10 }}>
               <p>
                 <b>Ciudad:</b>
               </p>
-              <p>Gregory sanchez</p>
+              <p>{personalInfoData?.result.ciudadNombre}</p>
             </Row>
             <Row style={{ justifyContent: "space-between", margin: 10 }}>
               <p>
                 <b>Fecha de nacimiento:</b>
               </p>
-              <p>Gregory sanchez</p>
+              <p>{personalInfoData?.result.fechaDeNacimiento}</p>
             </Row>
           </div>
 
@@ -145,21 +164,21 @@ export function Detail() {
               <p>
                 <b>Correo:</b>
               </p>
-              <p>Gregory sanchez</p>
+              <p>{personalInfoData?.result?.correo}</p>
             </Row>
 
             <Row style={{ justifyContent: "space-between", margin: 10 }}>
               <p>
                 <b>Telefono:</b>
               </p>
-              <p>Gregory sanchez</p>
+              <p>{personalInfoData?.result.telefono1}</p>
             </Row>
 
             <Row style={{ justifyContent: "space-between", margin: 10 }}>
               <p>
                 <b>Telefono 2:</b>
               </p>
-              <p>Gregory sanchez</p>
+              <p>{personalInfoData?.result.telefono2}</p>
             </Row>
           </div>
         </Container>
@@ -172,7 +191,7 @@ export function Detail() {
           }}
         >
           <h3 style={{ marginLeft: 20, marginTop: 15, marginBottom: 20 }}>
-            Datos de la empresa
+            Datos de las empresas
           </h3>
           <ContainerDetail style={{ overflowY: "visible", maxHeight: 500 }}>
             {dataState.length > 0 ? (
@@ -240,7 +259,6 @@ export function Detail() {
               <div style={{ textAlign: "center" }}>
                 <p>Sin registro de empresa</p>
               </div>
-
             )}
           </ContainerDetail>
         </Container>

@@ -1,4 +1,4 @@
-import { Input, Pagination, Table } from "antd";
+import { Input, Table, Tag } from "antd";
 import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 
@@ -19,17 +19,18 @@ import {
   SpinnerTables,
 } from "../../../components";
 import { OutsideClick } from "outsideclick-react";
+import { MdRestore } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 
 export default function TablaComponent({
-  data,
   dataClients,
-  handlePageChange,
   isLoadingClients,
   loadingSave,
   editarCliente,
   handleOpenModal,
   goSectionUp,
+  setSelectedClient,
+  setActionClient,
 }) {
   const [openIndex, setOpenIndex] = useState(-1);
   const handleDrop = (index) => {
@@ -58,13 +59,13 @@ export default function TablaComponent({
   TablaComponent.propTypes = {
     data: PropTypes.object, // Cambia el tipo según lo que corresponda
     dataClients: PropTypes.object, // Cambia el tipo según lo que corresponda
-    handlePageChange: PropTypes.func.isRequired,
     isLoadingClients: PropTypes.bool.isRequired,
     loadingSave: PropTypes.bool.isRequired,
-    handlePageSizeChange: PropTypes.func.isRequired,
     setToggle: PropTypes.func,
     editarCliente: PropTypes.func.isRequired,
     handleOpenModal: PropTypes.func.isRequired,
+    setSelectedClient: PropTypes.func.isRequired,
+    setActionClient: PropTypes.func.isRequired,
   };
   return (
     <Container
@@ -92,18 +93,72 @@ export default function TablaComponent({
               onSearch={handleSearch}
             />
           </div>
-          <Table dataSource={filteredData} pagination={false} size="small">
-            <Column title="Nombre completo" dataIndex="nombres" key="nombres" />
-            <Column title="Apellidos" dataIndex="apellidos" key="apellidos" />
+
+          <Table
+            dataSource={filteredData}
+            size="small"
+            pagination={{
+              defaultPageSize: 5,
+              showSizeChanger: true,
+              pageSizeOptions: [6, 12, 18, 24, 32, 40, 45, 50, 55, 60, 100],
+            }}
+          >
+            <Column
+              title="Nombre completo"
+              dataIndex="nombres"
+              key="nombres"
+              sorter={(a, b) => a.Secuencia.localeCompare(b.nombres)}
+            />
+            <Column
+              title="Apellidos"
+              dataIndex="apellidos"
+              key="apellidos"
+              sorter={(a, b) => a.Secuencia.localeCompare(b.apellidos)}
+            />
             <Column title="Teléfono" dataIndex="telefono1" key="telefono1" />
-            <Column title="Ciudad" dataIndex="ciudadNombre" key="ciudad" />
+            <Column
+              title="Ciudad"
+              dataIndex="ciudadNombre"
+              key="ciudad"
+              sorter={(a, b) => a.Secuencia.localeCompare(b.ciudad)}
+            />
             <Column title="Correo" dataIndex="correo" key="correo" />
+
+            <Column
+              title="Estado"
+              dataIndex="idEstadoRegistro"
+              key="idEstadoRegistro"
+              render={(_, record, index) => (
+                <>
+                  {
+                    <Tag
+                      key={`State ${record.idEstadoRegistro} ${index}`}
+                      color={
+                        record.idEstadoRegistro === 1 ? "#304878" : "#FF4D4D"
+                      }
+                    >
+                      {record.nombreEstado}
+                    </Tag>
+                  }
+                </>
+              )}
+              filters={[
+                { text: "Activo", value: 1 },
+                { text: "Inactivo", value: 2 },
+              ]}
+              onFilter={(value, record) => record.idEstadoRegistro === value}
+            />
+
             <Column
               key="action"
               render={(_, record) => (
                 <div style={{ width: 90, zIndex: 100 }}>
                   <ButtonIcon
                     onMouseUp={() => {
+                      setSelectedClient(record);
+                      setActionClient(
+                        record.idEstadoRegistro === 1 ? "Desactivar" : "Activar"
+                      );
                       handleDrop(record.idCliente);
                     }}
                   >
@@ -147,11 +202,23 @@ export default function TablaComponent({
                           handleDrop(-1);
                         }}
                       >
-                        <IoTrashOutline
-                          size={18}
-                          style={{ marginLeft: 5, marginRight: 5 }}
-                        />
-                        <p>Eliminar</p>
+                        {record.idEstadoRegistro === 1 ? (
+                          <IoTrashOutline
+                            size={18}
+                            style={{ marginLeft: 5, marginRight: 5 }}
+                          />
+                        ) : (
+                          <MdRestore
+                            size={18}
+                            style={{ marginLeft: 5, marginRight: 5 }}
+                          />
+                        )}
+
+                        <p>
+                          {record.idEstadoRegistro === 1
+                            ? "Desactivar"
+                            : "Activar"}
+                        </p>
                       </ButtonIconMenuTalba>
                     </OutsideClick>
                   </DropdownContenttabla>
@@ -159,49 +226,6 @@ export default function TablaComponent({
               )}
             />
           </Table>
-
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              flexWrap: "wrap",
-              justifyContent: "space-between",
-            }}
-          >
-            <div style={{ marginTop: 15 }}>
-              <Pagination
-                current={data?.currentPage}
-                pageSize={data?.pageSize}
-                total={data?.totalItems}
-                onChange={handlePageChange}
-              />
-            </div>
-
-            {/* <div>
-              <span style={{ fontSize: "15px" }}>Clientes por página: </span>
-              <Select
-                defaultValue={20}
-                style={{ width: "60px" }}
-                onChange={handlePageSizeChange}
-              >
-                <Select.Option key={1} value={5}>
-                  5
-                </Select.Option>
-                <Select.Option key={2} value={10}>
-                  10
-                </Select.Option>
-                <Select.Option key={3} value={20}>
-                  20
-                </Select.Option>
-                <Select.Option key={5} value={30}>
-                  30
-                </Select.Option>
-                <Select.Option key={5} value={40}>
-                  50
-                </Select.Option>
-              </Select>
-            </div> */}
-          </div>
         </>
       )}
     </Container>

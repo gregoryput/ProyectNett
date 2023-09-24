@@ -24,7 +24,7 @@ import {
 
 import { Spinner } from "../../../components";
 
-import { Collapse } from "antd";
+import { Collapse, Tooltip } from "antd";
 
 const isLoadingCreate = false;
 
@@ -39,7 +39,12 @@ import { useGetCompaniesByIdClienteQuery } from "../../../redux/Api/companiesApi
 import { FuncUtils } from "../../../utils";
 
 import { IoTrashBinSharp, IoArrowBackSharp } from "react-icons/io5";
-import PropTypes from "prop-types"; // Importa PropTypes
+import { BsFillBuildingsFill } from "react-icons/bs";
+import { TiInfo } from "react-icons/ti";
+import { BsBuildingAdd } from "react-icons/bs";
+import { FiSave } from "react-icons/fi";
+
+import PropTypes from "prop-types";
 import { Colores } from "../../../components/GlobalColor";
 import { useEffect } from "react";
 
@@ -93,15 +98,18 @@ export default function InformacionEmpresas(props) {
     isSuccess: isCompaniesClientSuccess,
     isError: isErrorCompanies,
     isLoading: isLoadingCompaniesClient,
-  } = useGetCompaniesByIdClienteQuery(props.dataValues.IdCliente, {
-    skip:
-      props.dataValues.IdCliente === null ||
-      props.dataValues.IdCliente === undefined,
-  });
+  } = useGetCompaniesByIdClienteQuery(
+    { clienteId: props.dataValues.IdCliente, estadoId: 1 },
+    {
+      skip:
+        props.dataValues.IdCliente === null ||
+        props.dataValues.IdCliente === undefined,
+    }
+  );
 
   const clearFields = () => {
-    reset();
     props.setToggle(false);
+    reset();
     props.setDatosFormulario({});
     props.setDataClientEdit({});
     props.setPosicionActual((prevState) => prevState - 1);
@@ -127,13 +135,14 @@ export default function InformacionEmpresas(props) {
                 "Información obtenida; el cliente no tiene empresas registradas",
               duration: 4,
             });
-
         props.dataValues.Empresas = companiesClientData?.result.map(
           (empresa) => {
             return FuncUtils.capitalizePropertyKeys(empresa);
           }
         );
+        reset(props.dataValues);
       }
+    } else {
       reset(props.dataValues);
     }
   }, [companiesClientData, isCompaniesClientSuccess]);
@@ -235,7 +244,51 @@ export default function InformacionEmpresas(props) {
                           }}
                         >
                           <span style={{ marginLeft: "10px" }}>
-                            Empresa # {index}
+                            <div
+                              style={{
+                                display: "flex",
+                                flexDirection: "row",
+                                alignItems: "center",
+                              }}
+                            >
+                              <BsFillBuildingsFill
+                                size={18}
+                                style={{ marginRight: "4px" }}
+                              />
+                              <span>
+                                <strong>Empresa:</strong>{" "}
+                                {watchedValues?.Empresas ? (
+                                  watchedValues?.Empresas[index]?.NombreEmpresa
+                                    ?.length > 0 ? (
+                                    watchedValues?.Empresas[index]
+                                      ?.NombreEmpresa
+                                  ) : (
+                                    <span
+                                      style={{
+                                        borderBottom: "1px solid #000",
+                                        display: "inline-block",
+                                        width: "100px",
+                                      }}
+                                    >
+                                      {Array(20).fill("\u00A0").join("")}
+                                    </span>
+                                  )
+                                ) : (
+                                  ""
+                                )}
+                              </span>
+
+                              {watchedValues?.Empresas ? (
+                                !watchedValues?.Empresas[index]?.NombreEmpresa
+                                  ?.length > 0 ? (
+                                  <Tooltip title="Debe asignar un nombre a la empresa, despliegue el panel y llene los campos">
+                                    <TiInfo color="orange" size={20} />
+                                  </Tooltip>
+                                ) : null
+                              ) : (
+                                ""
+                              )}
+                            </div>
                           </span>
 
                           <IoTrashBinSharp
@@ -456,7 +509,18 @@ export default function InformacionEmpresas(props) {
                     append({});
                   }}
                 >
-                  Agregar nueva empresa
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                      alignItems: "center",
+                    }}
+                  >
+                    <BsBuildingAdd size={15} />
+                    <span style={{ marginLeft: "3px" }}>
+                      Agregar nueva empresa
+                    </span>
+                  </div>
                 </ButtonAdd>
 
                 <div
@@ -487,7 +551,16 @@ export default function InformacionEmpresas(props) {
                     {isLoadingCreate ? (
                       <Spinner style={{ color: "red" }} />
                     ) : (
-                      "Guardar"
+                      <div
+                        style={{
+                          display: "flex",
+                          flexDirection: "row",
+                          alignItems: "center",
+                        }}
+                      >
+                        <FiSave size={15} />
+                        <span style={{ marginLeft: "3px" }}>Guardar</span>
+                      </div>
                     )}{" "}
                   </ButtonSave>
                 </div>

@@ -14,6 +14,10 @@ import companiesReducer from "./Slice/companiesSlice";
 import { ConfigPerfilApi } from "./Api/configPerfilApi";
 import configPerfilReducer from "./Slice/configPerfilSlice";
 
+//import { uQVerificarApi } from "./Api/uQVerificarApi";
+import { uQVerificarApi } from "./Api/uQVerificarApi";
+import uqVerificarReducer from "./Slice/uqVerificarSlice";
+
 export const store = configureStore({
   reducer: {
     //Autenticacion y usuarios
@@ -43,6 +47,10 @@ export const store = configureStore({
     //Configuracion de perfil:
     perfil: configPerfilReducer,
     [ConfigPerfilApi.reducerPath]: ConfigPerfilApi.reducer,
+
+    //Verificacion de Campos unicos:
+    existe: uqVerificarReducer,
+    [uQVerificarApi.reducerPath]: uQVerificarApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware()
@@ -52,7 +60,8 @@ export const store = configureStore({
       .concat(sexesApi.middleware)
       .concat(countriesApi.middleware)
       .concat(companiesApi.middleware)
-      .concat(ConfigPerfilApi.middleware),
+      .concat(ConfigPerfilApi.middleware)
+      .concat(uQVerificarApi.middleware),
 });
 
 export default store;

@@ -14,11 +14,14 @@ export const clientsApi = createApi({
   tagTypes: ["Clients"],
   endpoints: (builder) => ({
     getClients: builder.query({
-      query: (pag) =>
-        `/Clientes/obtenerClientes?pageNumber=${pag.pageNumber}&pageSize=${pag.pageSize}`,
+      query: () => `/Clientes/obtenerClientes`,
       providesTags: ["Clients"],
     }),
-
+    getPersonalInfo: builder.query({
+      query: (IdCliente) =>
+        `/Clientes/obtenerInfoPersonal?IdCliente=${IdCliente}`,
+      providesTags: ["PersonalInfoClient"],
+    }),
     createClient: builder.mutation({
       query: (newClient) => ({
         url: "/Clientes/insertarClientes",
@@ -27,12 +30,26 @@ export const clientsApi = createApi({
       }),
       invalidatesTags: ["Clients"],
     }),
-
     updateClient: builder.mutation({
-      query: (newClient) => ({
+      query: (dataClient) => ({
         url: "/Clientes/actualizarCliente",
         method: "POST",
-        body: newClient,
+        body: dataClient,
+      }),
+      invalidatesTags: ["Clients"],
+    }),
+
+    deleteClient: builder.mutation({
+      query: (IdCliente) => ({
+        url: `/Clientes/eliminarCliente?IdCliente=${IdCliente}`,
+        method: "POST",
+      }),
+      invalidatesTags: ["Clients"],
+    }),
+    restoreClient: builder.mutation({
+      query: (IdCliente) => ({
+        url: `/Clientes/activarCliente?IdCliente=${IdCliente}`,
+        method: "POST",
       }),
       invalidatesTags: ["Clients"],
     }),
@@ -43,4 +60,7 @@ export const {
   useGetClientsQuery,
   useCreateClientMutation,
   useUpdateClientMutation,
+  useDeleteClientMutation,
+  useRestoreClientMutation,
+  useGetPersonalInfoQuery,
 } = clientsApi;
