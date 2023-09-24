@@ -330,11 +330,9 @@ CREATE TABLE Productos (
   Modelo VARCHAR(50),
   PrecioCosto DECIMAL(10, 2),
   PrecioVenta DECIMAL(10, 2),
-  CantidadDisponible INT,
   ITBIS DECIMAL(5, 2),
   IdUnidad_DeMedida INT,
   IdEstado INT,
-  IdTipoProducto INT,
   CONSTRAINT Fk_IdUnidadDeMedida FOREIGN KEY (IdUnidad_DeMedida) REFERENCES UnidadesDeMedida(IdUnidad_DeMedida),
   CONSTRAINT Fk_ProductosIdEstado FOREIGN KEY (IdEstado) REFERENCES Estados(IdEstado), 
   --
@@ -347,32 +345,18 @@ CREATE TABLE Productos (
 
 GO
 
--- CREACION DE LA TABLA TipoMovimiento:
-CREATE TABLE TipoMovimiento (
-  IdTipoMovimiento INT IDENTITY CONSTRAINT PK_IdTipoMvimiento PRIMARY KEY,
-  NombreMovimiento VARCHAR(20),
-  --
-  IdCreadoPor int constraint Fk_TMIdCreadoPor foreign Key references Usuarios(IdUsuario),
-  FechaCreacion Datetime,
-  IdModificadoPor int constraint Fk_TMIdModificadoPor foreign Key references Usuarios(IdUsuario),
-  FechaModificacion Datetime,
-  IdEstadoRegistro int constraint Fk_TMIdEstadoR foreign Key references EstadosRegistros(IdEstadoRegistro),
-);
+
 
 GO
-
--- CREACION DE LA TABLA INVENTARIO:
-CREATE TABLE Inventario (
+-- CREACION DE LA TABLA INVENTARIOS:
+CREATE TABLE Inventarios (
   IdInventario INT IDENTITY CONSTRAINT PK_IdInventario PRIMARY KEY,
   Descripcion VARCHAR(255),
-  Fecha DATE,
-  Cantidad INT,
+  Codigo VARCHAR(6) CONSTRAINT UQ_CodigoInventario UNIQUE,
+  CantidadDisponible INT,
   --
   IdProducto INT,
   CONSTRAINT Fk_InventarioIdProducto FOREIGN KEY (IdProducto) REFERENCES Productos(IdProducto),
-  IdTipoMovimiento INT,
-  --
-  CONSTRAINT Fk_TipoMovimiento FOREIGN KEY (IdTipoMovimiento) REFERENCES TipoMovimiento(IdTipoMovimiento),
   --
   IdCreadoPor int constraint Fk_InventarioIdCreadoPor foreign Key references Usuarios(IdUsuario),
   FechaCreacion Datetime,
@@ -397,15 +381,15 @@ CREATE TABLE EstadosFacturas (
 
 GO
 
--- CREACION DE LA TABLA FacturaProveedor:
-CREATE TABLE FacturaProveedor (
+-- CREACION DE LA TABLA FacturasProveedores:
+CREATE TABLE FacturasProveedores (
   IdFactura INT IDENTITY CONSTRAINT PK_IdFactura PRIMARY KEY,
   Fecha DATE,
   MontoTotal DECIMAL(10, 2), 
+  MontoRestante DECIMAL(10, 2), 
   NCF VARCHAR(50),
   --
   IdEstadoFactura int constraint Fk_IdEstadoFactura foreign Key references EstadosFacturas(IdEstadoFactura),
-  --
   --
   IdProveedor INT,
   CONSTRAINT Fk_IdProveedor FOREIGN KEY (IdProveedor) REFERENCES TipoMovimiento(IdTipoMovimiento),
@@ -420,13 +404,17 @@ CREATE TABLE FacturaProveedor (
 GO
 
 -- CREACION DE LA TABLA DetalleFacturaProveedor:
-CREATE TABLE DetalleFacturaProveedor (
-  IdDetalleFactura INT IDENTITY CONSTRAINT PK_IdDetalleFactura PRIMARY KEY,
-  Cantidad int,
-  ITBIS decimal (10,2),
+CREATE TABLE Entradas (
+  IdEntrada INT IDENTITY CONSTRAINT PK_IdEntrada PRIMARY KEY,
   --
   IdProducto int constraint Fk_DetalleIdProducto foreign Key references Productos(IdProducto),
-  IdFactura int constraint Fk_IdFactura foreign Key references FacturaProveedor(IdFactura),
+  IdFactura int constraint Fk_IdFactura foreign Key references FacturasProveedores(IdFactura),
+  IdInventario int constraint Fk_IdInventario_Entradas foreign key references Inventarios(IdInventarios),
+  --
+  CodigoDeSeguimiento varchar(9),
+  Fecha Date,
+  Cantidad int,
+  ITBIS decimal (10,2),
   --
   IdCreadoPor int constraint Fk_DFPIdCreadoPor foreign Key references Usuarios(IdUsuario),
   FechaCreacion Datetime,
@@ -437,12 +425,10 @@ CREATE TABLE DetalleFacturaProveedor (
 
 GO
 
--- CREACION DE LA TABLA PagoParaProveedor:
-CREATE TABLE PagoParaProveedor (
+-- CREACION DE LA TABLA PagosProveedores:
+CREATE TABLE PagosProveedores (
   IdPago INT IDENTITY CONSTRAINT PK_IdPagoPP PRIMARY KEY,
-  Fecha DATE,
   MontoPago DECIMAL(10, 2),
-  MontoRestante DECIMAL(10, 2),
   FechaPago DATE,
   --
   IdCreadoPor int constraint Fk_PPPIdCreadoPor foreign Key references Usuarios(IdUsuario),
@@ -455,11 +441,10 @@ CREATE TABLE PagoParaProveedor (
 GO
 
 -- CREACION DE LA TABLA PagosFacturaProveedor:
-CREATE TABLE PagosFacturaProveedor (
+CREATE TABLE PagosFacturasProveedores (
   IdPagoFacPro INT IDENTITY CONSTRAINT PK_IdPagoFacPro PRIMARY KEY,
   IdFactura int constraint Fk_PFPPagoIdFactura foreign Key references FacturaProveedor(IdFactura),
-  IdPago int constraint Fk_PagoIdFactura foreign Key references PagoParaProveedor(IdPago),
-  MontoPagado decimal(10, 2),
+  IdPago int constraint Fk_PagoIdFactura foreign Key references PagosProveedores(IdPago),
     --
   IdCreadoPor int constraint Fk_PFPIdCreadoPor foreign Key references Usuarios(IdUsuario),
   FechaCreacion Datetime,
@@ -765,7 +750,7 @@ GO
 
 -- CREACION DE LA TABLA Tareas:
 CREATE TABLE Tareas (
-  IdTarea INT PRIMARY KEY,
+  IdTarea INT IDENTITY CONSTRAINT PK_IdTarea PRIMARY KEY,
   Nombre VARCHAR(255),
   Descripcion VARCHAR(255),
   FechaInicio DATE,
@@ -792,6 +777,18 @@ CREATE TABLE Tareas (
   IdEstadoRegistro int constraint Fk_TareasIdEstadoR foreign Key references EstadosRegistros(IdEstadoRegistro),
 );
 
+
+GO
+-- CREACION DE LA TABLA Equipos-Tareas:
+CREATE TABLE EquiposTareas(
+IdEquipoTarea INT IDENTITY CONSTRAINT PK_IdEquipoTarea PRIMARY KEY,
+Descripcion Varchar(50),
+IdProducto INT CONSTRAINT FK_IdProductoTarea FOREIGN KEY REFERENCES Productos(IdPrducto)
+Cantidad DECIMAL,
+IdTarea INT IDENTITY CONSTRAINT FK_IdPTareaEquipoTarea FOREIGN KEY REFERENCES Tareas(IdTarea),
+IdInventario INT IDENTITY CONSTRAINT FK_IdInventarioEquiposTareas FOREIGN KEY REFERENCES Inventarios(IdInventario)
+)
+
 GO
 
 -- A CONTINUACIÓN ALGUNOS PROCEDIMIENTOS ALMACENADOS (SECCION --.P.R.O.C.E.D.U.R.E....... P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P):
@@ -802,16 +799,38 @@ CREATE OR ALTER PROCEDURE dbo.ListadoClientes
 AS
 BEGIN
     SET NOCOUNT ON 
-	SELECT C.IdCliente, Nombres, Apellidos, Telefono1, Telefono2, Direccion, P.Correo, Edad, FechaDeNacimiento, Cedula, SexoNombre, CiudadNombre, PaisNombre
-    FROM Clientes C INNER JOIN Personas P ON C.IdPersonaDeContacto = p.IdPersona
-					INNER JOIN Sexos S ON P.IdSexo = S.IdSexo
-					INNER JOIN Ciudades CU ON P.IdCiudad = CU.IdCiudad
-					INNER JOIN Paises PA ON CU.IdPais = PA.IdPais
-					WHERE C.IdEstadoRegistro = 1
+        SELECT C.IdCliente, P.IdPersona, Nombres, Apellidos, Telefono1, Telefono2, Direccion, P.Correo, Edad, FechaDeNacimiento, 
+		       Cedula, P.IdSexo, SexoNombre, P.IdCiudad, CiudadNombre, PA.IdPais, PaisNombre, ER.IdEstadoRegistro, ER.NombreEstado
+        FROM Clientes C
+        INNER JOIN Personas P ON C.IdPersonaDeContacto = P.IdPersona 
+        INNER JOIN Sexos S ON P.IdSexo = S.IdSexo
+        INNER JOIN Ciudades CU ON P.IdCiudad = CU.IdCiudad
+        INNER JOIN Paises PA ON CU.IdPais = PA.IdPais
+		INNER JOIN EstadosRegistros ER ON C.IdEstadoRegistro = ER.IdEstadoRegistro
 END
 /*EJECUCION DE PROCEDIMIENTO:
 -- Execute dbo.ListadoClientes 
 */
+
+
+GO
+CREATE OR ALTER PROCEDURE dbo.GetPersonaInfoByIdCliente
+(@clienteId int)
+AS
+BEGIN
+    SET NOCOUNT ON 
+        SELECT C.IdCliente, P.IdPersona, Nombres, Apellidos, Telefono1, Telefono2, Direccion, P.Correo, Edad, FechaDeNacimiento, 
+		       Cedula, P.IdSexo, SexoNombre, P.IdCiudad, CiudadNombre, PA.IdPais, PaisNombre, ER.IdEstadoRegistro, ER.NombreEstado
+        FROM Clientes C
+        INNER JOIN Personas P ON C.IdPersonaDeContacto = P.IdPersona 
+        INNER JOIN Sexos S ON P.IdSexo = S.IdSexo
+        INNER JOIN Ciudades CU ON P.IdCiudad = CU.IdCiudad
+        INNER JOIN Paises PA ON CU.IdPais = PA.IdPais
+		INNER JOIN EstadosRegistros ER ON C.IdEstadoRegistro = ER.IdEstadoRegistro
+		WHERE C.IdCliente = @clienteId
+END
+-- EXEC dbo.GetPersonaInfoByIdCliente @clienteId = 1
+
 
 
 GO
@@ -824,12 +843,12 @@ BEGIN
 
     DECLARE @Offset INT = (@PageNumber - 1) * @PageSize;
 
-    SELECT C.IdCliente, Nombres, Apellidos, Telefono1, Telefono2, Direccion, Correo, Edad, FechaDeNacimiento, Cedula, IdSexo, SexoNombre, IdCiudad, CiudadNombre, IdPais, PaisNombre
+    SELECT C.IdCliente, IdPersona, Nombres, Apellidos, Telefono1, Telefono2, Direccion, Correo, Edad, FechaDeNacimiento, Cedula, IdSexo, SexoNombre, IdCiudad, CiudadNombre, IdPais, PaisNombre
     FROM (
-        SELECT C.IdCliente, Nombres, Apellidos, Telefono1, Telefono2, Direccion, P.Correo, Edad, FechaDeNacimiento, Cedula, P.IdSexo, SexoNombre, P.IdCiudad, CiudadNombre, PA.IdPais, PaisNombre,
+        SELECT C.IdCliente, P.IdPersona, Nombres, Apellidos, Telefono1, Telefono2, Direccion, P.Correo, Edad, FechaDeNacimiento, Cedula, P.IdSexo, SexoNombre, P.IdCiudad, CiudadNombre, PA.IdPais, PaisNombre,
                ROW_NUMBER() OVER (ORDER BY C.IdCliente) AS RowNumber
         FROM Clientes C
-        INNER JOIN Personas P ON C.IdPersonaDeContacto = P.IdPersona
+        INNER JOIN Personas P ON C.IdPersonaDeContacto = P.IdPersona 
         INNER JOIN Sexos S ON P.IdSexo = S.IdSexo
         INNER JOIN Ciudades CU ON P.IdCiudad = CU.IdCiudad
         INNER JOIN Paises PA ON CU.IdPais = PA.IdPais
@@ -895,8 +914,6 @@ END
 -- Execute dbo.ListadoEmpleados @PageNumber = 2, @PageSize = 5
 */
 
-Select * FROM Empleados
-
 GO
 -- TiPO DE DATO TABLA PARA ALMACENAR UNA LISTA DE EmpresaId Y PODERLO USAR EN UN PROCEDIMIENTO ALMACENADO:
 CREATE TYPE EmpresaIdsTableType AS TABLE
@@ -938,7 +955,7 @@ BEGIN
      SELECT E.IdEmpresa From Empresas E INNER JOIN Clientes_Empresas CE ON E.IdEmpresa = CE.IdEmpresa WHERE IdCliente = @IdCliente
 END
 /*EJECUCION DE PROCEDIMIENTO:
--- Execute dbo.GetIdEmpresaByIdCliente @IdCliente = 4 
+-- Execute dbo.GetIdEmpresaByIdCliente @IdCliente = 5
 */
 
 
@@ -1311,6 +1328,23 @@ EXEC dbo.Eliminar_Clientes_Empresas @IdCliente = 10
 GO
 --
 --
+--.P.R.O.C.E.D.U.R.E.......P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P Procedimiento almacenado para eliminar en la tabla Clientes_Empresas:
+Create OR Alter Procedure dbo.Restaurar_Clientes_Empresas
+@IdCliente int
+AS 
+BEGIN
+    Set Nocount On
+    Update Clientes_Empresas set IdEstadoRegistro = 1 WHERE IdCliente = @IdCliente
+END
+/* EJECUCION DEL PROCEDIMIENTO
+EXEC dbo.Restaurar_Clientes_Empresas @IdCliente = 10
+*/
+
+
+
+GO
+--
+--
 --.P.R.O.C.E.D.U.R.E.......P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P Procedimiento almacenado para eliminar en la tabla EmpleadosCargos:
 Create OR Alter Procedure dbo.Eliminar_EmpleadosCargos
 @IdEmpleado int
@@ -1375,11 +1409,47 @@ EXEC dbo.EliminarClientes_Empresas_ByEmpresaId @IdEmpresa = 7
 */
 
 
+
+GO
+--
+--
+--.P.R.O.C.E.D.U.R.E.......P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P Procedimiento almacenado para eliminar en la tabla Clientes_Empresas:
+Create OR Alter Procedure dbo.EliminarClientes_Empresas_ByEmpresasIds
+@EmpresasIds varchar(MAX)
+AS 
+BEGIN
+    Set Nocount On
+    UPDATE Clientes_Empresas set IdEstadoRegistro = 2 WHERE IdEmpresa IN (SELECT CAST(value AS INT) FROM STRING_SPLIT(@EmpresasIds, ','));
+END
+/* EJECUCION DEL PROCEDIMIENTO
+EXEC dbo.EliminarClientes_Empresas_ByEmpresasIds @EmpresasIds = '7,2,2'
+*/
+
+
+
 GO
 --
 --
 --.P.R.O.C.E.D.U.R.E.......P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P Procedimiento almacenado para eliminar en la tabla Empresas:
-Create OR Alter Procedure dbo.EliminarEmpresas
+Create OR Alter Procedure dbo.EliminarEmpresa_ByEmpresasIds
+@EmpresasIds VARCHAR(MAX)
+AS 
+BEGIN
+    Set Nocount On
+    Update Empresas set IdEstadoRegistro = 2 WHERE IdEmpresa IN (SELECT CAST(value AS INT) FROM STRING_SPLIT(@EmpresasIds, ','));
+END
+/* EJECUCION DEL PROCEDIMIENTO
+EXEC dbo.EliminarEmpresa_ByEmpresasIds @@EmpresasIds = '1,2,3'
+*/
+
+
+
+
+GO
+--
+--
+--.P.R.O.C.E.D.U.R.E.......P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P Procedimiento almacenado para eliminar en la tabla Empresas:
+CREATE OR ALTER PROCEDURE dbo.EliminarEmpresas
 @IdCliente int
 AS 
 BEGIN
@@ -1395,6 +1465,23 @@ EXEC dbo.EliminarEmpresas @IdCliente = 10
 GO
 --
 --
+--.P.R.O.C.E.D.U.R.E.......P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P Procedimiento almacenado para eliminar en la tabla Empresas:
+CREATE OR ALTER PROCEDURE dbo.RestaurarEmpresas
+@IdCliente int
+AS 
+BEGIN
+    Set Nocount On
+    Update Empresas set IdEstadoRegistro = 1 WHERE IdEmpresa 
+    In (Select CE.IdEmpresa From Clientes C INNER JOIN Clientes_Empresas CE ON C.IdCliente = CE.IdCliente WHERE C.IdCliente = @IdCliente)
+END
+/* EJECUCION DEL PROCEDIMIENTO
+EXEC dbo.RestaurarEmpresas @IdCliente = 10
+*/
+
+
+GO
+--
+--
 --.P.R.O.C.E.D.U.R.E.......P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P Procedimiento almacenado para eliminar en la tabla Clientes:
 Create OR Alter Procedure dbo.EliminarClientes
 @IdCliente int
@@ -1402,6 +1489,22 @@ AS
 BEGIN
     Set Nocount On
     Update Clientes set IdEstadoRegistro = 2 WHERE IdCliente = @IdCliente
+END
+/* EJECUCION DEL PROCEDIMIENTO
+EXEC dbo.EliminarClientes @IdCliente = 10
+*/
+
+
+GO
+--
+--
+--.P.R.O.C.E.D.U.R.E.......P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P Procedimiento almacenado para eliminar en la tabla Clientes:
+Create OR Alter Procedure dbo.RestaurarClientes
+@IdCliente int
+AS 
+BEGIN
+    Set Nocount On
+    Update Clientes set IdEstadoRegistro = 1 WHERE IdCliente = @IdCliente
 END
 /* EJECUCION DEL PROCEDIMIENTO
 EXEC dbo.EliminarClientes @IdCliente = 10
@@ -1491,6 +1594,23 @@ END
 /* EJECUCION DEL PROCEDIMIENTO
 EXEC dbo.EliminarPersonas @IdCliente = 10
 */
+
+
+GO
+--
+--
+--.P.R.O.C.E.D.U.R.E.......P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P Procedimiento almacenado para eliminar en la tabla Personas:
+Create OR Alter Procedure dbo.RestaurarPersonas
+@IdCliente int
+AS 
+BEGIN
+    Set Nocount On
+    Update Personas set IdEstadoRegistro =  1 WHERE IdPersona 
+in (Select IdPersona FROM Clientes C INNER JOIN Personas P ON C.IdPersonaDeContacto = P.IdPersona WHERE C.IdCliente = @IdCliente)
+END
+/* EJECUCION DEL PROCEDIMIENTO
+EXEC dbo.EliminarPersonas @IdCliente = 10
+*/ 
 
 
 GO
@@ -1660,7 +1780,7 @@ VALUES ('Miami', 2, 1, GETDATE(), 1, GETDATE(), 1);
 
 
 
-
+GO
 -- Insertar datos en la tabla Personas:
 INSERT INTO Personas (Nombres, Apellidos, Telefono1, Telefono2, Direccion, Correo, Edad, FechaDeNacimiento, Cedula, IdSexo, IdCiudad, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro) VALUES
 /*1*/('Juan José', 'Pérez Melindo', '809-123-4567', '809-987-6543', 'Bo. Santa fé, Calle 1, #26', 'juan@gmail.com', 30, '1993-05-15', '001-1234567-8', 1, 1, 1, GETDATE(), 1, GETDATE(), 1),
@@ -1690,7 +1810,7 @@ INSERT INTO Personas (Nombres, Apellidos, Telefono1, Telefono2, Direccion, Corre
 
 
  
-
+ GO
 -- Insertar datos en la tabla Empresas:
 INSERT INTO Empresas (NombreEmpresa, RNC, Correo, Teléfono1, Teléfono2, SitioWeb, Dirección, IdCiudad, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro) VALUES
 /*1*/('José Inversiones', '123456789', 'joseinv@hotmail.com', '809-111-1111', '809-222-2222', 'https://www.joseinv.com', 'Bo. Villa Cruz, calle 1, #26', 1, 1, GETDATE(), 1, GETDATE(), 1),
@@ -1712,6 +1832,7 @@ INSERT INTO Empresas (NombreEmpresa, RNC, Correo, Teléfono1, Teléfono2, SitioWeb
 
 
 
+GO
 -- Insertar datos en la tabla Clientes:
 INSERT INTO Clientes (IdPersonaDeContacto, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro) VALUES
 /*1*/(1, 1, GETDATE(), 1, GETDATE(), 1),
@@ -1727,6 +1848,7 @@ INSERT INTO Clientes (IdPersonaDeContacto, IdCreadoPor, FechaCreacion, IdModific
 
 
 
+GO
 -- Insertar datos en la tabla Clientes_Empresas:
 INSERT INTO Clientes_Empresas(IdCliente, IdEmpresa, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro) VALUES
 /*1*/(1, 1, 1, GETDATE(), 1, GETDATE(), 1),
@@ -1817,11 +1939,124 @@ INSERT INTO EmpleadosCargos (IdEmpleado, IdCargo, Descripción, IdCreadoPor, Fech
 (8, 7, 'Programador de soluciones tecnologias en ReacJS - Asp.Net - Node-JS.', 1, GETDATE(), 1, GETDATE(), 1);
 -- Select * from EmpleadosCargos
 GO
-
 -- Asignar usuarios a los empleados:
 Update Usuarios set IdEmpleado = 7 WHERE IdUsuario = 6
 GO
 Update Usuarios set IdEmpleado = 8 WHERE IdUsuario = 1
+
+
+
+GO
+-- Insertar datos en la tabla Unidades de Medida:
+INSERT INTO UnidadesDeMedida (UnidadNombre, IdCreadoPor, FechaCreacion, IdEstadoRegistro)VALUES
+/*1*/('Unidades', 1, GETDATE(), 1),
+/*2*/('Piezas', 1, GETDATE(), 1),
+/*3*/('Metros', 1 GETDATE(), 1),
+/*4*/('Rollos', 1, GETDATE(), 1);
+
+
+GO
+-- Insertar datos en la tabla Estados (Estados-Productos):
+INSERT INTO Estados (EstadoNombre, IdCreadoPor, FechaCreacion, IdEstadoRegistro) VALUES
+/*1*/('Sin entradas', 1, GETDATE(), 1),
+/*2*/('Existente', 1, GETDATE(), 1),
+/*3*/('Agotado', 1, GETDATE(), 1);
+
+
+
+GO
+-- INSETAR EN LA TABLA PRODUCTOS
+INSERT INTO Productos (Nombre, Descripción, Modelo, PrecioCosto, PrecioVenta, ITBIS, IdUnidad_DeMedida, IdEstado, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro)
+VALUES 
+/*1*/('Router WiFi AC2000', 'Router inalámbrico de alta velocidad AC2000', 'AC2000', 50.00, 80.00, 18.00, 1, 1, 1, GETDATE(), 1, GETDATE(), 1),
+/*2*/('Switch Gigabit 24 puertos', 'Switch de red con 24 puertos Gigabit', 'SG24', 45.00, 75.00, 18.00, 1, 1, 1, GETDATE(), 1, GETDATE(), 1),
+/*3*/('Access Point Dual Band', 'Punto de acceso inalámbrico dual band', 'AP-DB', 90.00, 100.00, 19.00, 1, 1, 1, GETDATE(), 1, GETDATE(), 1),
+/*4*/('Cable Ethernet Cat 6', 'Cable de red Ethernet categoría 6', 'CAT6-1M', 120.00, 190.00, 10.00, 1, 1, 1, GETDATE(), 1, GETDATE(), 1),
+/*5*/('Enrutador 4G LTE', 'Enrutador con soporte para redes móviles 4G LTE', 'LTE-R1', 140.00, 160.00, 11.00, 1, 1, 1, GETDATE(), 1, GETDATE(), 1),
+/*6*/('Switch PoE 8 puertos', 'Switch con 8 puertos PoE para alimentar dispositivos', 'PoE-S8', 125.00, 140.00, 15.00, 1, 1, 1, GETDATE(), 1, GETDATE(), 1),
+/*7*/('Antena Direccional 2.4GHz', 'Antena direccional para redes inalámbricas 2.4GHz', 'ANT-24D', 185.00, 195.00, 12.00, 1, 1, 1, GETDATE(), 1, GETDATE(), 1),
+/*8*/('Cámara IP HD', 'Cámara de seguridad IP con resolución HD', 'CAM-HD', 145.00, 150.00, 18.00, 1, 1, 1, GETDATE(), 1, GETDATE(), 1),
+/*9*/('Repetidor WiFi', 'Repetidor inalámbrico para extender la señal WiFi', 'REP-WF', 175.00, 180.00, 12.00, 1, 1, 1, GETDATE(), 1, GETDATE(), 1),
+/*10*/('Firewall Empresarial', 'Firewall de seguridad para redes empresariales', 'FIRE-ENT', 115.00, 130.00, 12.00, 1, 1, 1, GETDATE(), 1, GETDATE(), 1);
+/*11*/('Puertos CA', 'Puerts RJ45 con seguridad integrada', 'FIRE-ENT', 115.00, 130.00, 12.00, 1, 1, 1, GETDATE(), 1, GETDATE(), 1);
+
+
+
+GO
+-- Insertar en la tabla Inventarios:
+INSERT INTO Inventarios(Descripcion, Codigo, CantidadDisponible, IdProducto, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro) VALUES
+/*1*/('Routers AC2000 (La mejor calidad)', 'RAC000', 0, 1, 1, GETDATE(), 1, GETDATE(), 1),
+/*2*/('Switches G24P (Regular)', 'SGP000', 0, 2, 1, GETDATE(), 1, GETDATE(), 1),
+/*3*/('Access Point DB (Estable)', 'APD0001', 0, 3, 1, GETDATE(), 1, GETDATE(), 1),
+/*4*/('Cable Ethernet C6 (Reforzado)', 'CEC000', 0, 4, 1, GETDATE(), 1, GETDATE(), 1),
+/*5*/('Enrutador 4G LTE (La mejor calidad)', 'E4G000', 0, 5, 1, GETDATE(), 1, GETDATE(), 1),
+/*6*/('Swich 8P (La mejor calidad)', 'SP8000', 0, 6, 1, GETDATE(), 1, GETDATE(), 1),
+/*7*/('Antena direccional (La mejor calidad)', 'AD000', 0, 7, 1, GETDATE(), 1, GETDATE(), 1),
+/*8*/('Camara IP (La mejor calidad)', 'CIP000', 0, 8, 1, GETDATE(), 1, GETDATE(), 1),
+/*9*/('Repetidor Wifi (Bueno)', 'RW0000', 0, 9, 1, GETDATE(), 1, GETDATE(), 1),
+/*10*/('Firewall Empresarial (La mejor calidad)', 'FE0001', 0, 10, 1, GETDATE(), 1, GETDATE(), 1),
+/*11*/('Puertos CA (La mejor calidad)', 'PC0001', 0, 11, 1, GETDATE(), 1, GETDATE(), 1),
+);
+
+
+
+GO
+-- INSERTAR DATOS EN LA TABLA EstadosFacturas:
+INSERT INTO EstadosFacturas(NombreEstadoFactura, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro) VALUES
+/*1*/('Pagada', 1, GETDATE(), 1, GETDATE(), 1),
+/*2*/('Pagos pendientes', 1, GETDATE(), 1, GETDATE(), 1),
+/*3*/('Sin pagos', 1, GETDATE(), 1, GETDATE(), 1);
+
+
+
+GO
+-- INSERTAR DATOS EN LA TABLA FACTURAS_PROVEEDORES
+-- FACTURA #1:
+INSERT INTO FacturasProveedores (Fecha, MontoTotal, MontoRestante, NCF, IdEstadoFactura, IdProveedor, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro)
+/*1*/VALUES (GETDATE(), 13825, 0, 'NCF123450', 1, 1, 1, GETDATE(), 1, GETDATE(), 1),
+-- FACTURA #2:
+/*2*/VALUES (GETDATE(), 21200, 7.200, 'NCF003450', 2, 2, 1, GETDATE(), 1, GETDATE(), 1),
+-- FACTURA #3:
+/*3*/VALUES (GETDATE(), 16350, 16350, 'NCF103350', 1, 3, 1, GETDATE(), 1, GETDATE(), 1);
+
+
+
+GO
+-- INSERTANDO DATOS EN LA TABLA ENTRADAS:
+INSERT INTO Entradas (IdProducto, IdFactura, IdInventario, CodigoDeSeguimiento, Fecha, Cantidad, ITBIS, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro) VALUES 
+-- TOTAL: 1600 + 1125 + 3500 + 7600 = 13825
+(1, 1, 1, 'ERAC00010', GETDATE, 20, 0.5, 1, GETDATE(), 1, GETDATE(), 1),
+(2, 1, 2, 'ESGP00012', GETDATE, 15, 0.5, 1, GETDATE(), 1, GETDATE(), 1),
+(3, 1, 3, 'APD000112', GETDATE, 35, 0.5, 1, GETDATE(), 1, GETDATE(), 1),
+(4, 1, 4, 'ACEC00012', GETDATE, 40, 0.5, 1, GETDATE(), 1, GETDATE(), 1)
+-- TOTAL: 6400 + 2800 + 9750 + 2250 = 21200
+(5, 2, 5, 'E4G000123', GETDATE, 40, 0.5, 1, GETDATE(), 1, GETDATE(), 1),
+(6, 2, 6, 'ESP800012', GETDATE, 20, 0.5, 1, GETDATE(), 1, GETDATE(), 1),
+(7, 2, 7, 'EAD000A21', GETDATE, 50, 0.5, 1, GETDATE(), 1, GETDATE(), 1), 
+(8, 2, 8, 'ECIP00013', GETDATE, 15, 0.5, 1, GETDATE(), 1, GETDATE(), 1),
+-- TOTAL: 5400 + 4450 + 6500 = 16350
+(9, 3, 9, 'ECIP00013', GETDATE, 30, 0.5, 1, GETDATE(), 1, GETDATE(), 1),
+(10, 3, 10, 'ECIP00013', GETDATE, 35, 0.5, 1, GETDATE(), 1, GETDATE(), 1),
+(11, 3, 11, 'ECIP00013', GETDATE, 50, 0.5, 1, GETDATE(), 1, GETDATE(), 1)
+
+
+
+GO
+-- INSERTANDO DATOS EN LA TABLA PagosProveedores:
+INSERT INTO (MontoPago, FechaPago, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro) VALUES
+/*1*/(13825, GETDATE(), 1, GETDATE(), 1, GETDATE, 1),
+/*2*/(7000, GETDATE(), 1, GETDATE(), 1, GETDATE, 1),
+/*3*/(7000, GETDATE(), 1, GETDATE(), 1, GETDATE, 1)
+
+
+GO
+-- INSERTANDO DATOS EN LA TABLA PagosFacturasProveedores
+INSERT INTO (IdFactura, IdPago, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro) VALUES
+(1, 1, GETDATE(), 1, GETDATE, 1),
+(2, 2, GETDATE(), 1, GETDATE, 1),
+(2, 3, GETDATE(), 1, GETDATE, 1)
+
+
 
 
 GO
@@ -1842,7 +2077,8 @@ GO
 -- PROCEDIMIENTO ALMACENADO PARA OBTENER EMPRESAS POR IDCLIENTE:
 Create OR ALTER PROCEDURE dbo.GetEmpresasByClienteId
 (
-@ClienteId int
+@ClienteId int,
+@estadoId int
 )
 AS
 BEGIN
@@ -1851,12 +2087,11 @@ BEGIN
 	                INNER JOIN Paises P ON C.IdPais = P.IdPais
 					INNER JOIN Clientes_Empresas CE ON E.IdEmpresa = CE.IdEmpresa
 					INNER JOIN Clientes Cli ON CE.IdCliente = Cli.IdCliente
-	WHERE Cli.IdCliente = @clienteId
+	WHERE Cli.IdCliente = @clienteId AND (@estadoId = 0 OR CE.IdEstadoRegistro = @estadoId)
 END
--- EXEC dbo.GetEmpresasByClienteId @clienteId = 58
+-- EXEC dbo.GetEmpresasByClienteId @clienteId = 1, @estadoId = 1
 
-
-
+Select * FROM Empresas
 GO
 -- PROCEDIMIENTO ALMACENAD PARA OBTENER LISTADO BASICO DE INFORMACION DE USUARIO (PERFIL) - Por IdUsuario
 Create or alter procedure dbo.InformacionBasicaUsuario_ByIdUsuario
@@ -1867,7 +2102,7 @@ Select IdUsuario, NombreUsuario, U.Correo, NombreRol, R.IdRol, E.IdEmpleado, Nom
 FROM Usuarios U INNER JOIN Empleados E ON U.IdEmpleado = E.IdEmpleado
                 INNER JOIN Personas P ON E.IdPersona = P.IdPersona
 				INNER JOIN Roles R ON U.IdRol = R.IdRol
-				WHERE IdUsuario = 6
+				WHERE IdUsuario = @IdUsuario
 END
 -- exec dbo.InformacionBasicaUsuario_ByIdUsuario @IdUsuario = 6
 
@@ -1896,3 +2131,56 @@ BEGIN
    Select C.IdCargo, NombreCargo FROM Cargos C INNER JOIN EmpleadosCargos EC ON C.IdCargo = EC.IdCargo WHERE EC.IdEmpleado = @IdEmpleado
 END
 -- Exec dbo.CargosEmpleado_ByEmpleadoId @IdEmpleado = 7
+
+
+SELECT * FROM Empresas E INNER JOIN Clientes_Empresas CE ON E.IdEmpresa = CE.IdEmpresa WHERE CE.IdCliente = 5
+
+
+/*============================ PROCEDIMIENTOS VERIFICACION DE CAMPOS UNIQUE: ===========================================*/
+
+GO
+/*====== PROCEDIMIENTOS VERIFICACION DE CAMPOS UNIQUE: ======*/
+CREATE OR ALTER PROCEDURE dbo.VerificarUniqueCedula
+(@cedula varchar(13))
+AS
+BEGIN
+    Declare @existe bit = 0
+    -- Inicializamos la variable @existe a 0 (falso)
+    
+    -- Verificamos si la cédula existe en la tabla Personas
+    IF EXISTS (SELECT 1 FROM Personas WHERE Cedula = @cedula)
+    BEGIN
+        -- Si existe, establecemos @existe a 1 (verdadero)
+        SET @existe = 1
+    END
+
+	Select @existe AS Existe
+END
+GO
+-- EXEC dbo.VerificarUniqueCedula @cedula = '111-1234560-0'
+
+
+
+GO
+/*====== PROCEDIMIENTOS VERIFICACION DE CAMPOS UNIQUE: ======*/
+CREATE OR ALTER PROCEDURE dbo.VerificarUniqueRnc
+(@rnc varchar(13))
+AS
+BEGIN
+    Declare @existe bit = 0
+    -- Inicializamos la variable @existe a 0 (falso)
+    
+    -- Verificamos si la cédula existe en la tabla Personas
+    IF EXISTS (SELECT 1 FROM Empresas WHERE RNC = @rnc)
+    BEGIN
+        -- Si existe, establecemos @existe a 1 (verdadero)
+        SET @existe = 1
+    END
+
+	Select @existe AS Existe
+END
+GO
+-- EXEC dbo.VerificarUniqueRnc @rnc = '123456789'
+
+SELECT * FROM Personas
+
