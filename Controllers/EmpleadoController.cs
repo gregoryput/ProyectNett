@@ -40,10 +40,6 @@ namespace ProyectNettApi.Controllers
                 int totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
 
                 _respuesta.Result = listaEmpleados;
-                _respuesta.TotalItems = totalCount;
-                _respuesta.TotalPages = totalPages;
-                _respuesta.CurrentPage = pageNumber;
-                _respuesta.PageSize = pageSize;
                 _respuesta.DisplayMessage = "Listado de empleados obtenido con éxito:";
                 return Ok(_respuesta);
             }

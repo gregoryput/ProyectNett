@@ -17,11 +17,12 @@ namespace ProyectNettApi.Repositories
             _conexionDB = new ConexionDB();
         }
 
-        public IEnumerable<EmpresaDTO> GetEmpresasByIdCliente(int ClienteId)
+        // Lista de empresas por cliente
+        public IEnumerable<EmpresaDTO> GetEmpresasByIdCliente(int ClienteId, int EstadoId)
         {
             string query = "dbo.GetEmpresasByClienteId";
 
-            var resultSet = _conexionDB.GetConnection(_configuration).Query< EmpresaDTO>(query, new { ClienteId = ClienteId }, commandType: CommandType.StoredProcedure);
+            var resultSet = _conexionDB.GetConnection(_configuration).Query< EmpresaDTO>(query, new { ClienteId = ClienteId, EstadoId = EstadoId }, commandType: CommandType.StoredProcedure);
             return resultSet.ToList();
         }
     }

@@ -33,10 +33,6 @@ namespace ProyectNettApi.Controllers
             {
                 var objectInfoPerfil = _usuarioRepositorio.GetInfoPerfil(idUsuario);
                 _respuesta.Result = new { objectInfoPerfil, objectInfoPerfil.Cargos };
-                _respuesta.TotalItems = 1;
-                _respuesta.TotalPages = 1;
-                _respuesta.CurrentPage = 1;
-                _respuesta.PageSize = 1;
                 _respuesta.DisplayMessage = "Información de perfíl obtenida con éxito:";
                 return Ok(_respuesta);
             }

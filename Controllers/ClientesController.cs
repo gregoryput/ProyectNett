@@ -25,25 +25,73 @@ namespace ProyectNettApi.Controllers
         }
 
 
+
+
         //
         // .A.C.C.I.O.N -- Para obtener la lista basica de Clientes: --------------------------------------------
         [Authorize]
         [Route("obtenerClientes")]
         [HttpGet]
-        public IActionResult getClientes(int pageNumber, int pageSize)
+        public IActionResult getClientes()
         {
             try
             {
-                var (listaClientes, totalCount) = _clienteRepositorio.GetClientes(pageNumber, pageSize);
+                var listaClientes = _clienteRepositorio.GetClientes();
+                _respuesta.Result = listaClientes;
+                _respuesta.DisplayMessage = "Listado de clientes obtenido con exito:";
+                return Ok(_respuesta);
+            }
+            catch (Exception ex)
+            {
+                _respuesta.IsSuccess = false;
+                _respuesta.DisplayMessage = "Error al solicitar la lista de clientes";
+                _respuesta.ErrorMessages = new List<string> { ex.ToString() };
+                return StatusCode(500, _respuesta);
+            }
+        }
+
+
+
+        //
+        // .A.C.C.I.O.N -- Para obtener la informacion del cliente: --------------------------------------------
+        [Authorize]
+        [Route("obtenerInfoPersonal")]
+        [HttpGet]
+        public IActionResult getInfoPersonal(int IdCliente)
+        {
+            try
+            {
+                var infoCliente = _clienteRepositorio.GetInfoPersonalCliente(IdCliente);
+                _respuesta.Result = infoCliente;
+                _respuesta.DisplayMessage = "Info del cliente obtenida con exito:";
+                return Ok(_respuesta);
+            }
+            catch (Exception ex)
+            {
+                _respuesta.IsSuccess = false;
+                _respuesta.DisplayMessage = "Error al solicitar la info del cliente";
+                _respuesta.ErrorMessages = new List<string> { ex.ToString() };
+                return StatusCode(500, _respuesta);
+            }
+        }
+
+
+
+
+        //
+        // .A.C.C.I.O.N -- Para obtener la lista basica PAGINADA (DEPRECATED) de Clientes: --------------------------------------------
+        [Authorize]
+        [Route("obtenerClientesPag")]
+        [HttpGet]
+        public IActionResult getClientesPag(int pageNumber, int pageSize)
+        {
+            try
+            {
+                var (listaClientes, totalCount) = _clienteRepositorio.GetClientesPag(pageNumber, pageSize);
 
                 // Calcular el número total de páginas
                 int totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
-
                 _respuesta.Result = listaClientes;
-                _respuesta.TotalItems = totalCount;
-                _respuesta.TotalPages = totalPages;
-                _respuesta.CurrentPage = pageNumber;
-                _respuesta.PageSize = pageSize;
                 _respuesta.DisplayMessage = "Listado de clientes obtenido con éxito:";
                 return Ok(_respuesta);
             }
@@ -110,6 +158,31 @@ namespace ProyectNettApi.Controllers
 
 
         //
+        // .A.C.C.I.O.N -- Para Activar Cliente: --------------------------------------------
+        [Authorize]
+        [Route("activarCliente")]
+        [HttpPost]
+        public IActionResult activarCliente(int IdCliente)
+        {
+            try
+            {
+                _clienteRepositorio.ActivarCliente(IdCliente);
+                _respuesta.Result = IdCliente;
+                _respuesta.DisplayMessage = "Cliente activado correctamente:";
+            }
+
+            catch (Exception ex)
+            {
+                _respuesta.IsSuccess = false;
+                _respuesta.DisplayMessage = "Error al eliminar el cliente";
+                _respuesta.ErrorMessages = new List<string> { ex.ToString() };
+            }
+
+            return Ok(_respuesta);
+        }
+
+
+        //
         // .A.C.C.I.O.N -- Para Actualizar Cliente: --------------------------------------------
         [Authorize]
         [Route("actualizarCliente")]
@@ -121,13 +194,15 @@ namespace ProyectNettApi.Controllers
                 _clienteRepositorio.ActualizarCliente(cliente);
                 _respuesta.Result = cliente;
                 _respuesta.DisplayMessage = "Cliente editado correctamente:";
+                return Ok(_respuesta);
             }
 
             catch (Exception ex)
             {
                 _respuesta.IsSuccess = false;
-                _respuesta.DisplayMessage = "Error al editars el cliente";
+                _respuesta.DisplayMessage = "Error al actualizar el cliente";
                 _respuesta.ErrorMessages = new List<string> { ex.ToString() };
+                return StatusCode(500, _respuesta);
             }
 
             return Ok(_respuesta);

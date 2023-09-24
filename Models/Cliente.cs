@@ -20,7 +20,7 @@ namespace ProyectNettApi.Models
         [Required(ErrorMessage = "Este campo es requerido")]
         public Persona Persona { get; set; }
 
-
-        public List<Empresa> Empresas { get; set; }
+        public List<Empresa>? Empresas { get; set; }
     }
 }
+

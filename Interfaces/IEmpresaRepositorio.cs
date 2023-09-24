@@ -4,6 +4,6 @@ namespace ProyectNettApi.Interfaces
 {
     public interface IEmpresaRepositorio
     {
-        public IEnumerable<EmpresaDTO> GetEmpresasByIdCliente(int ClienteId);
+        public IEnumerable<EmpresaDTO> GetEmpresasByIdCliente(int ClienteId, int EstadoId);
     }
 }

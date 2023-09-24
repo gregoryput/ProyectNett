@@ -27,16 +27,12 @@ namespace ProyectNettApi.Controllers
         [Authorize]
         [Route("EmpresasPorClienteId")]
         [HttpGet]
-        public IActionResult getClientes(int clienteId)
+        public IActionResult getClientes(int clienteId, int estadoId)
         {
             try
             {
-                var empresas = _empresaRepositorio.GetEmpresasByIdCliente(clienteId);
+                var empresas = _empresaRepositorio.GetEmpresasByIdCliente(clienteId, estadoId);
                 _respuesta.Result = empresas;
-                _respuesta.TotalItems = empresas.ToList().Count();
-                _respuesta.TotalPages = 0;
-                _respuesta.CurrentPage = 0;
-                _respuesta.PageSize = 0;
                 _respuesta.DisplayMessage = "Empresas del cliente obtenidas correctamente:";
                 return Ok(_respuesta);
             }
