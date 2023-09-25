@@ -6,7 +6,7 @@ import { store } from "./redux/store";
 import { createRouter } from "./router/index";
 
 import "./index.css";
-//import 'animate.css';
+import 'animate.css';
 const router = createRouter();
 
 ReactDOM.createRoot(document.getElementById("root")).render(
