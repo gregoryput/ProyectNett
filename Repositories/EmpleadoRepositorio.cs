@@ -18,6 +18,22 @@ namespace ProyectNettApi.Repositories
             _conexionDB = new ConexionDB();
         }
 
+        // REPOSITORIO--A-P-I----P-R-O-Y-E-N-E-T-T ------ (Metodo para DEVOLVER una LISTA de Empleados) y FILTRA EMPLEADO gregoryput
+
+        public IEnumerable<EmpleadoDTO> GetEmpleado()
+        {
+            string query = "Execute dbo.ListadoEmpleadoV2";
+            var resultSet = _conexionDB.GetConnection(_configuration).Query<EmpleadoDTO>(query);
+            return resultSet.ToList();
+        }
+
+        public EmpleadoDTO GetInfoPersonalEmpleado(int Id)
+        {
+            string query = "dbo.GetPersonaInfoByIdEmpleado";
+            var resultSet = _conexionDB.GetConnection(_configuration).Query<EmpleadoDTO>(query, new { Id = Id }, commandType: CommandType.StoredProcedure);
+            return resultSet.ToList()[0];
+        }
+
 
 
         // REPOSITORIO--A-P-I----P-R-O-Y-E-N-E-T-T ------ (Metodo para DEVOLVER una LISTA de Empleados) METODO PAGINADO:

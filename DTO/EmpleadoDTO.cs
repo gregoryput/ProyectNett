@@ -2,7 +2,7 @@
 {
     public class EmpleadoDTO
     {
-        public int IdCliente { get; set; }
+        public int IdEmpleado { get; set; }
         public string Nombres { get; set; }
         public string Apellidos { get; set; }
         public string Telefono1 { get; set; }
@@ -16,5 +16,9 @@
         public string SexoNombre { get; set; }
         public string CiudadNombre { get; set; }
         public string PaisNombre { get; set; }
+        public string NombreEstado { get; set; }
+        public int IdEstadoRegistro { get; set; }
+
+
     }
 }

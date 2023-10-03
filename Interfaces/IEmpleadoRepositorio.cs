@@ -9,5 +9,7 @@ namespace ProyectNettApi.Interfaces
         public void ActualizarEmpleado(Empleado empleado);
         public (IEnumerable<EmpleadoDTO> empleados, int totalCount) GetEmpleados(int pageNumber, int pageSize);
         public void InsertarEmpleado(Empleado empleado);
+        public IEnumerable<EmpleadoDTO> GetEmpleado();
+        public EmpleadoDTO GetInfoPersonalEmpleado(int Id);
     }
 }
