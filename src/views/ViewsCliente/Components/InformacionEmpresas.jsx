@@ -115,6 +115,8 @@ export default function InformacionEmpresas(props) {
     props.setPosicionActual((prevState) => prevState - 1);
   };
 
+
+  
   //Obserar si hay empresas y mapearlas en el fieldArray:
   React.useEffect(() => {
     if (

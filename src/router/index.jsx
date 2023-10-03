@@ -17,6 +17,7 @@ import ErrorPages from "../page/ErrorPages";
 import RequireLogin from "../utils/require-login";
 import ProtectedRoute from "./protected-route/protected-route";
 import ConfiguracionPerfil from "../views/ViewUsuario/ConfiguracionPerfil";
+import Empleado from "../views/ViewsEmpleado/Empleado";
 
 export const createRouter = () => {
   const router = createBrowserRouter([
@@ -38,12 +39,22 @@ export const createRouter = () => {
           ),
         },
         {
-          path: "/control-usuarios",
+          path: "/Usuarios",
           element: (
             <ProtectedRoute
               roles={["Administrador De Usuario", "Administrador"]}
             >
               <Usuario />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "/Empleado",
+          element: (
+            <ProtectedRoute
+              roles={["Administrador De Usuario", "Administrador"]}
+            >
+              <Empleado />
             </ProtectedRoute>
           ),
         },

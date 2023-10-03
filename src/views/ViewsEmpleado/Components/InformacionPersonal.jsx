@@ -4,13 +4,13 @@ import {
   Option,
   Select,
   ContainerFormPrueba,
-  ButtonNext,
   ButtonRemove,
+  ButtonSave,
 } from "../../../components";
 
 import { useForm } from "react-hook-form";
-import { IoArrowForward, IoClose } from "react-icons/io5";
-import React, { useEffect } from "react";
+import { IoClose } from "react-icons/io5";
+import React, { useEffect, useState } from "react";
 import { SavingText } from "../../../components/StylesCustomLoading/loading-custom.styled";
 
 import {
@@ -21,6 +21,7 @@ import {
   email,
   cedualaDominicana,
   minValue,
+  numberOnly,
 } from "../../../utils/validations";
 
 //Consultas de datos (para los select)
@@ -32,14 +33,14 @@ import { useDispatch } from "react-redux";
 import { setCities } from "../../../redux/Slice/citiesSlice";
 import { setCountries } from "../../../redux/Slice/countriesSlice";
 import PropTypes from "prop-types"; // Importa PropTypes
+import { useGetCargoQuery } from "../../../redux/Api/cargoApi";
+
 
 export default function InformacionPersonal(props) {
-
   const {
     register,
     formState: { errors },
     handleSubmit,
-    getValues,
     setValue,
     trigger,
     reset,
@@ -47,6 +48,7 @@ export default function InformacionPersonal(props) {
   } = useForm();
 
   const dispatch = useDispatch();
+  const [data, setDato] = useState("");
 
   const [IdPaisSeleccionado, setIdPaisSeleccionado] = React.useState(
     props?.datavalues?.IdPais ? parseInt(props?.datavalues?.IdPais) : 0
@@ -55,14 +57,7 @@ export default function InformacionPersonal(props) {
   const [verificarCedula, { data: dataVerify, isLoading: isLoadingVerify }] =
     useUqVerificarCedulaUQMutation();
 
-  //Funcion para navegar al paso Informacion Empresas
-  const irAdelante = () => {
-    const dataInformacionPersnal = getValues();
-    props.nextPart(dataInformacionPersnal); // Pasar al siguiente paso enviandole los datos del paso actual
-  };
-
   const controlVerify = (dataPersonal) => {
-    console.log("----- DESDE EL CONTROL");
     trigger().then((isValid) => {
       if (isValid) {
         let requiereVerificacionCedula = false;
@@ -74,11 +69,12 @@ export default function InformacionPersonal(props) {
         ) {
           verificarCedula(dataPersonal.Cedula);
           requiereVerificacionCedula = true;
+          setDato(dataPersonal);
         } else {
           requiereVerificacionCedula = false;
         }
         if (!requiereVerificacionCedula) {
-          irAdelante();
+          console.log("datos validos");
         }
       } else {
         return;
@@ -88,7 +84,6 @@ export default function InformacionPersonal(props) {
 
   // Con este useEffect observo si la cedula existe y si existe no lo dejo avanzar al paso de empresas
   React.useEffect(() => {
-    console.log("----- VER DESPUES DE PETICION");
     if (dataVerify !== null && dataVerify !== undefined) {
       let cedulaDuplicate = false;
       //
@@ -98,7 +93,7 @@ export default function InformacionPersonal(props) {
         // Si el código existe se dispara una validacion React-Hook-Form
         setError("Cedula", {
           type: "manual",
-          message: "Ya hay un cliente con esta cédula en la base de datos",
+          message: "Ya hay un registro con esta cédula en la base de datos",
         });
       } else {
         cedulaDuplicate = false;
@@ -106,10 +101,10 @@ export default function InformacionPersonal(props) {
 
       //Si la cedula no esta duplicada lo dejo pasar al siguiente paso:
       if (!cedulaDuplicate) {
-        irAdelante();
+        props.handleSubmit(data);
       }
     }
-  }, [dataVerify, setError]);
+  }, [dataVerify, setError, props.handleSubmit]);
 
   //Traer las ciudades
   const {
@@ -117,6 +112,15 @@ export default function InformacionPersonal(props) {
     //  isSuccess: isCitiesSuccess,
     isLoading: isLoadingCities,
   } = useGetCitiesQuery("");
+
+
+  //Traer las Cargo de empleado
+  const {
+    data: cargoData,
+    //  isSuccess: isCitiesSuccess,
+    isLoading: isLoadingData,
+  } = useGetCargoQuery("");
+
 
   const optionsSelectCities = citiesData?.result
     ?.filter((ct) => ct.idPais === IdPaisSeleccionado)
@@ -178,11 +182,16 @@ export default function InformacionPersonal(props) {
   }, [props.dataValues, reset, setIdPaisSeleccionado]);
 
   useEffect(() => {
+    if (cargoData != null && cargoData != null) {
+        console.log(cargoData,"holaaaa");
+    }
+
+
     if (citiesData != null && countriesData != null) {
       dispatchCities();
       dispatchCountries();
     }
-  }, [citiesData, countriesData, dispatchCountries, dispatchCities]);
+  }, [citiesData, countriesData, dispatchCountries, dispatchCities, cargoData]);
 
   const clearFields = () => {
     reset();
@@ -192,23 +201,21 @@ export default function InformacionPersonal(props) {
     props.setToggle(false);
   };
 
-  useEffect(()=>{
+  useEffect(() => {
     reset();
-  },[props.toggle]);
-
-
-
+  }, [props.toggle]);
 
   // Definir PropTypes para las props del componente
   InformacionPersonal.propTypes = {
     toggle: PropTypes.bool.isRequired,
     setToggle: PropTypes.func.isRequired,
     setLoadingSave: PropTypes.func.isRequired,
-    dataClientEdit: PropTypes.object, // Cambia el tipo según corresponda
-    nextPart: PropTypes.func.isRequired,
+    dataClientEdit: PropTypes.func, // Cambia el tipo según corresponda
     dataValues: PropTypes.object.isRequired,
     setDataClientEdit: PropTypes.func.isRequired,
     setDatosFormulario: PropTypes.func.isRequired,
+    handleSubmit: PropTypes.func.isRequired,
+    datavalues: PropTypes.object.isRequired,
   };
 
   return (
@@ -252,7 +259,7 @@ export default function InformacionPersonal(props) {
               ...minLength(2),
               ...maxLength(40),
             })}
-            placeholder="Ingrese los apellids"
+            placeholder="Ingrese los apellidos"
           />
           {errors.Apellidos && (
             <span style={{ color: "red", fontSize: 10 }}>
@@ -376,6 +383,23 @@ export default function InformacionPersonal(props) {
           )}
         </LabelFor>
 
+        <LabelFor>
+          Edad
+          <InputFor
+            {...register("Edad", {
+              ...numberOnly(),
+              ...minLength(1, "debe tener una edad"),
+              ...maxLength(2, "no es noel"),
+            })}
+            placeholder="Ingrese el edad"
+          />
+          {errors.Edad && (
+            <span style={{ color: "red", fontSize: 10 }}>
+              {errors.Edad.message}
+            </span>
+          )}
+        </LabelFor>
+
         {/*-------------INPUT FechaDeNacimiento-------------*/}
         <LabelFor>
           {" "}
@@ -444,21 +468,79 @@ export default function InformacionPersonal(props) {
             </span>
           )}
         </LabelFor>
+
+        {/* <LabelFor>
+          {" "}
+          Cargo del Empleado
+          <Select
+            defaultValue={0}
+            isLoading={isLoadingData}
+            {...register("idCargo", {
+              ...minValue(1, "Debe seleccionar el cargo"),
+            })}
+            s
+            option
+          >
+            <Option disabled value={0}>
+              -- Seleccione el cargo --
+            </Option>
+           {cargoData.result?.map((option, index) => (
+              <Option key={index} value={parseInt(option.idCargo)}>
+                {option.nombreCargo}
+              </Option>
+            ))} 
+          </Select>
+          {errors.idCargo && (
+            <span style={{ color: "red", fontSize: 10 }}>
+              {errors.idCargo.message}
+            </span>
+          )}
+        </LabelFor> */}
+
+        <LabelFor>
+          {" "}
+          Descripción
+          <InputFor
+            {...register("descripción", {
+              ...required("Este campo es requerido"),
+              ...minLength(3),
+              ...maxLength(60),
+            })}
+            placeholder="Ingrese la descripción"
+          />
+          {errors.descripción && (
+            <span style={{ color: "red", fontSize: 10 }}>
+              {errors.descripción.message}
+            </span>
+          )}
+        </LabelFor>
+
+
       </div>
       <br />
+     
+
       <div style={{ display: "flex", justifyContent: "flex-end" }}>
         <ButtonRemove
           type="button"
-          onClick={()=> clearFields() }
+          onClick={() => clearFields()}
           style={{ marginLeft: 5 }}
           disabled={isLoadingVerify}
         >
           <IoClose size={18} style={{ marginRight: 2 }} /> Cancelar
         </ButtonRemove>
 
-        <ButtonNext htmlType="submit" disabled={isLoadingVerify}>
-          <IoArrowForward size={18} style={{ marginRight: 4 }} /> Siguiente{" "}
-        </ButtonNext>
+        <ButtonSave type="submit">
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+            }}
+          >
+            <span style={{ marginLeft: "3px" }}>Guardar</span>
+          </div>
+        </ButtonSave>
       </div>
     </ContainerFormPrueba>
   );

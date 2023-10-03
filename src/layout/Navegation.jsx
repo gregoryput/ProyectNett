@@ -13,6 +13,7 @@ import {
   BiUser,
   BiPieChartAlt,
   BiPackage,
+  BiDumbbell,
 } from "react-icons/bi";
 import { JwtUtils } from "../utils";
 
@@ -150,17 +151,32 @@ export default function Navegation() {
           userRol === "Administrador De Usuario") && (
           <ButtonNav
             exact
-            to="control-usuarios"
+            to="Usuarios"
             style={({ isActive }) => {
               return { color: isActive ? "#365583" : "" };
             }}
           >
             <BiUser style={style} />
-            <LabelNav>Control-usuarios</LabelNav>
+            <LabelNav>Usuarios</LabelNav>
           </ButtonNav>
         )}
 
-        {(userRol === "Administrador De Usuario" || userRol == "Administrador") && (
+        {(userRol === "Administrador" ||
+          userRol === "Administrador De Usuario") && (
+          <ButtonNav
+            exact
+            to="Empleado"
+            style={({ isActive }) => {
+              return { color: isActive ? "#365583" : "" };
+            }}
+          >
+            <BiDumbbell style={style} />
+            <LabelNav>Empleado</LabelNav>
+          </ButtonNav>
+        )}
+
+        {(userRol === "Administrador De Usuario" ||
+          userRol == "Administrador") && (
           <ButtonNav
             exact
             to="reporte"
