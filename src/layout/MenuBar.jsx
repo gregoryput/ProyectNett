@@ -3,7 +3,6 @@ import { OutsideClick } from "outsideclick-react";
 import {
   IoMoonOutline,
   IoChevronDownSharp,
-  IoCalendarNumberOutline,
   IoSunnyOutline,
   IoExitOutline,
   IoPersonCircleOutline,
@@ -19,9 +18,10 @@ import {
   DivRoll,
   DivRotate,
   DropdownContent,
+  TitleNav,
 } from "../components";
 
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { logOut } from "../redux/Slice/authSlice";
 import { JwtUtils } from "../utils";
@@ -35,7 +35,30 @@ export default function MenuBar() {
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const location = useLocation();
 
+
+  const Titulo = (location) => {
+    // Mapea las rutas a los títulos
+    const titleMap = {
+      "/": "Home",
+      "/proyecto": "Proyectos",
+      "/proveedores": "Proveedores",
+      "/cliente": "Clientes",
+      "/inventario": "Inventario",
+      "/cuenta-por-cobrar": "Cuenta por cobrar",
+      "/cuenta-por-pagar": "Cuenta por pagar",
+      "/usuarios": "Usuarios",
+      "/empleado": "Empleados",
+      "/reporte": "Reportes",
+    };
+  
+    const title = titleMap[location] || null; // Título por defecto si no se encuentra la ruta
+  
+    // Devuelve la etiqueta TitleNav si hay un título definido, de lo contrario, solo el título
+    return title ? <TitleNav>{title}</TitleNav> : title;
+  };
+  
   //const [logOut] = useSelector((state) => state.users);
   const handleClick = () => {
     //  var token = localStorage.getItem("token");
@@ -47,18 +70,13 @@ export default function MenuBar() {
   return (
     <>
       <DivNav>
-        <DivRoll>{userRol}</DivRoll>
-        <IoCalendarNumberOutline
-          style={{
-            width: 30,
-            height: 30,
-            marginRight: 50,
-            color: "#C3C3C3",
-          }}
-        />
+        <div>
+          {Titulo(location.pathname)}
+        </div>
 
         <OutsideClick onOutsideClick={() => setActivo(false)}>
-          <div>
+          <div style={{ display: "flex", flexDirection: "row" }}>
+            <DivRoll>{userRol}</DivRoll>
             <ButtonMenu onMouseUp={() => setActivo(!activo)}>
               <DivRotate activo={activo}>
                 <IoChevronDownSharp />

@@ -2,12 +2,14 @@ import { configureStore } from "@reduxjs/toolkit";
 import { authApi } from "./Api/AuthApi";
 import authReducer from "./Slice/authSlice";
 import { clientsApi } from "./Api/clientsApi";
+import clientsReducer from "./Slice/clientsSlice";
+import proveedoresReducer from "./Slice/ProveedorSlice";
+import { proveedorApi } from "./Api/proveedorApi";
 import employeReducer from "./Slice/employeSlice";
 import { cargoApi } from "./Api/cargoApi";
 import cargoReducer from "./Slice/cargoSlice";
 
 import { employeeApi } from "./Api/employeeApi";
-import clientsReducer from "./Slice/clientsSlice";
 import { citiesApi } from "./Api/citiesApi";
 import citiesReducer from "./Slice/citiesSlice";
 import { sexesApi } from "./Api/sexesApi";
@@ -33,6 +35,10 @@ export const store = configureStore({
     //Clientes
     clients: clientsReducer,
     [clientsApi.reducerPath]: clientsApi.reducer,
+
+     //Proveedores
+     proveedores: proveedoresReducer,
+     [proveedorApi.reducerPath]: proveedorApi.reducer,
 
     cargos: cargoReducer,
     [cargoApi.reducerPath]: cargoApi.reducer,
@@ -69,6 +75,7 @@ export const store = configureStore({
     getDefaultMiddleware()
       .concat(authApi.middleware)
       .concat(clientsApi.middleware)
+      .concat(proveedorApi.middleware)
       .concat(employeeApi.middleware)
       .concat(citiesApi.middleware)
       .concat(cargoApi.middleware)

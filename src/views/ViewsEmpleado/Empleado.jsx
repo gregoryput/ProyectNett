@@ -1,43 +1,32 @@
 import { useState, useEffect } from "react";
 //import "animate.css";
-import { message } from "antd";
+import { Modal, message } from "antd";
 import {
   ContainerButton,
   ViewContainerPages,
   ButtonNext,
 } from "../../components";
 
-import { FormEmpleado, TablaComponent } from "./Form";
+import { FormComponent, TablaComponent } from "./Form";
 
-import {
-  SavingText,
-  StyledSpinContainer,
-  StyledSpinSubContainer,
-} from "../../components/StylesCustomLoading/loading-custom.styled";
-import { Spin } from "antd";
 
 //icons
 import { IoTrashOutline } from "react-icons/io5";
 import { MdRestore } from "react-icons/md";
 // modal creado por mi
-import ModalStyled from "../../layout/ModalStyled";
-import {
-  useDeleteEmployeMutation,
-  useGetEmployeQuery,
-  useRestoreEmployeMutation,
-} from "../../redux/Api/employeeApi";
+import { useDeleteEmployeMutation, useGetEmployeQuery, useRestoreEmployeMutation } from "../../redux/Api/employeeApi";
 
-export default function Empleado() {
+export default function Cliente() {
   const [loadingSave, setLoadingSave] = useState(false);
   const [toggle, setToggle] = useState(false);
-  const [dataClientEdit, setDataClientEdit] = useState(null);
+  const [dataEdit, setDataEdit] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const [selectedClient, setSelectedClient] = useState();
-  const [actionClient, setActionClient] = useState("");
+  const [selected, setSelected] = useState();
+  const [action, setAction] = useState("");
 
   const [
-    deleteClient,
+    deleteEmploye,
     {
       isLoading: isLoadinDelete,
       isSuccess: isDeleteSuccess,
@@ -45,29 +34,28 @@ export default function Empleado() {
     },
   ] = useDeleteEmployeMutation();
 
-  const [
-    restoreClient,
-    {
-      isLoading: isLoadinRestore,
-      isSuccess: isRestoreSuccess,
-      isError: isErrorRestore,
-    },
-  ] = useRestoreEmployeMutation();
-
   useEffect(() => {
     if (isDeleteSuccess) {
-      message.success("Cliente eliminando correctamente");
+      message.success("Empleado eliminando correctamente");
       setIsModalOpen(false);
     }
   }, [isDeleteSuccess]);
   //isErrorDelete ----------
   useEffect(() => {
     if (isErrorDelete) {
-      message.success("Ha ocurrido un error al intentar eliminar al empleado");
+      message.success("Ha ocurrido un error al intentar eliminar al Empleado");
       setIsModalOpen(false);
     }
   }, [isDeleteSuccess]);
 
+  const [
+    restoreEmploye,
+    {
+      isLoading: isLoadinRestore,
+      isSuccess: isRestoreSuccess,
+      isError: isErrorRestore,
+    },
+  ] = useRestoreEmployeMutation();
   useEffect(() => {
     if (isRestoreSuccess) {
       message.success("Empleado activado correctamente");
@@ -91,39 +79,38 @@ export default function Empleado() {
   };
   //Estado redux api para obtener la lista de clientes con paginacion
   const {
-    data: Data,
-    isSuccess: isClientsSuccess,
-    isLoading: isLoadingClients,
+    data: dataEmpleado,
+    isSuccess: isSuccess,
+    isLoading: isLoading,
   } = useGetEmployeQuery("");
 
   useEffect(() => {
-    if (isClientsSuccess) {
+    if (isSuccess) {
       message.success("Listado de Empleado obtenido correctamente!");
     }
-  }, [isClientsSuccess]);
+  }, [isSuccess]);
 
   //Onclick de editar:
-  const editarCliente = (dataClientEdit) => {
+  const editar = (data) => {
     setToggle(true);
-    setDataClientEdit(dataClientEdit);
+    setDataEdit(data);
   };
 
-  const scrollToSection = () => {
-    // Obtener el titulo de arriba, para cuando se de clic a editar un cliente, si esta muy abajo se desplace hacia arriba automaticamente:
-    const targetSection = document.getElementById("titleTop");
+  const scrollToTop = ()=> {
+    // Scroll suave hacia la parte superior de la página
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+  }
 
-    if (targetSection) {
-      // Con el scrollIntoView se lleva a cabo el desplazamiento a la sección objetivo (titleTop):
-      targetSection.scrollIntoView({ behavior: "smooth" });
-    }
-  };
 
   return (
     <>
       <ViewContainerPages className="animate__animated animate__fadeIn">
-        <h2 style={{ marginLeft: 15, marginBottom: 40 }} id="titleTop">
+        {/* <h2 style={{ marginLeft: 15, marginBottom: 40 }} id="titleTop">
           Gestion de Empleado
-        </h2>
+        </h2> */}
         <ContainerButton
           onClick={() => {
             setToggle(!toggle);
@@ -132,49 +119,47 @@ export default function Empleado() {
           <p>
             <b>Formulario</b>
           </p>
+          {/* <IoChevronDownSharp style={{ width: 20, height: 20 }} /> */}
         </ContainerButton>
 
-        <FormEmpleado
+        <FormComponent
           setLoadingSave={setLoadingSave}
           toggle={toggle}
           setToggle={setToggle}
-          dataClientEdit={dataClientEdit}
-          setDataClientEdit={setDataClientEdit}
+          dataEdit={dataEdit}
+          setDataEdit={setDataEdit}
         />
 
         <TablaComponent
-          Data={Data}
-          isLoadingClients={isLoadingClients}
+          data={dataEmpleado}
+          isLoading={isLoading}
           loadingSave={loadingSave}
-          editarCliente={editarCliente}
+          editar={editar}
           handleOpenModal={handleOpenModal}
-          goSectionUp={scrollToSection}
-          setSelectedClient={setSelectedClient}
-          setActionClient={setActionClient}
+          goSectionUp={scrollToTop}
+          setSelected={setSelected}
+          setAction={setAction}
         />
 
-        <ModalStyled isOpen={isModalOpen} onClose={handleCloseModal}>
-          {isLoadinDelete || isLoadinRestore ? (
-            <p>
-              <StyledSpinContainer>
-                <StyledSpinSubContainer>
-                  <Spin size="large" />
-                  <SavingText isSaving={isLoadinDelete || isLoadinRestore}>
-                    {`${
-                      isLoadinDelete
-                        ? "Desactivando"
-                        : isLoadinRestore
-                        ? "Activando"
-                        : ""
-                    } este registro `}
-                  </SavingText>
-                </StyledSpinSubContainer>
-              </StyledSpinContainer>
-            </p>
-          ) : (
-            <p>{`Estas seguro de eliminar  ${selectedClient?.nombres} ${selectedClient?.apellidos}?`}</p>
-          )}
+        <Modal open={isModalOpen}
+          footer={null}
+          onCancel={handleCloseModal}
+          title={"Confirma la accion"}
+          centered
 
+        >
+          {isLoadinDelete || isLoadinRestore ? (
+            <></>
+          ) : (
+            <p>
+
+              {selected != undefined && selected.nombreEstado === "Activo" ? (
+                "Esta seguro de desactivar a este Empleado"
+              ) :
+                ("Esta seguro de activar a este Empleado")
+              }
+            </p>
+          )}
           <div
             style={{
               display: "flex",
@@ -198,12 +183,12 @@ export default function Empleado() {
                 width: 130,
               }}
               onClick={() =>
-                actionClient === "Activar"
-                  ? restoreClient(selectedClient.idCliente)
-                  : deleteClient(selectedClient.idCliente)
+                action === "Activar"
+                  ? restoreEmploye(selected.idEmpleado)
+                  : deleteEmploye(selected.idEmpleado)
               }
             >
-              {actionClient === "Desactivar" ? (
+              {action === "Desactivar" ? (
                 <IoTrashOutline
                   size={18}
                   style={{ marginLeft: 5, marginRight: 5 }}
@@ -217,7 +202,7 @@ export default function Empleado() {
               Confirmar
             </ButtonNext>
           </div>
-        </ModalStyled>
+        </Modal>
       </ViewContainerPages>
     </>
   );

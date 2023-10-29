@@ -23,14 +23,14 @@ import { MdRestore } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 
 export default function TablaComponent({
-  Data,
-  isLoadingClients,
+  data,
+  isLoading,
   loadingSave,
-  goSectionUp,
-  editarCliente,
+  editar,
   handleOpenModal,
-  setSelectedClient,
-  setActionClient,
+  goSectionUp,
+  setSelected,
+  setAction,
 }) {
   const [openIndex, setOpenIndex] = useState(-1);
   const handleDrop = (index) => {
@@ -39,34 +39,33 @@ export default function TablaComponent({
 
   const navegation = useNavigate();
 
-  const [filteredData, setFilteredData] = useState(Data?.result);
+  const [filteredData, setFilteredData] = useState(data?.result);
 
   const handleSearch = (value) => {
     const searchTerm = value.toLowerCase();
 
-    const filter = Data?.result.filter((item) =>
+    const filter = data?.result.filter((item) =>
       item.nombres.toLowerCase().includes(searchTerm)
     );
 
     setFilteredData(filter);
   };
   useEffect(() => {
-    if (Data?.result !== undefined) {
-      setFilteredData(Data?.result);
-      console.log(Data?.result);
+    if (data?.result !== undefined) {
+      setFilteredData(data?.result);
     }
-  }, [Data?.result, setFilteredData]);
+  }, [data?.result, setFilteredData]);
 
   TablaComponent.propTypes = {
-    Data: PropTypes.object, // Cambia el tipo según lo que corresponda
-    isLoadingClients: PropTypes.bool.isRequired,
+    data: PropTypes.object, // Cambia el tipo según lo que corresponda
+    goSectionUp: PropTypes.func, 
+    isLoading: PropTypes.bool.isRequired,
     loadingSave: PropTypes.bool.isRequired,
     setToggle: PropTypes.func,
-    editarCliente: PropTypes.func.isRequired,
+    editar: PropTypes.func.isRequired,
     handleOpenModal: PropTypes.func.isRequired,
-    setSelectedClient: PropTypes.func.isRequired,
-    setActionClient: PropTypes.func.isRequired,
-    goSectionUp: PropTypes.func.isRequired,
+    setSelected: PropTypes.func.isRequired,
+    setAction: PropTypes.func.isRequired,
   };
   return (
     <Container
@@ -77,7 +76,7 @@ export default function TablaComponent({
         borderRadius: 12,
       }}
     >
-      {isLoadingClients || loadingSave ? (
+      {isLoading || loadingSave ? (
         <>
           <SpinnerTables />
         </>
@@ -99,9 +98,11 @@ export default function TablaComponent({
             dataSource={filteredData}
             size="small"
             pagination={{
+             
               defaultPageSize: 5,
               showSizeChanger: true,
               pageSizeOptions: [6, 12, 18, 24, 32, 40, 45, 50, 55, 60, 100],
+              showTotal: (total) => ` ${total} Total`,
             }}
           >
             <Column
@@ -135,7 +136,7 @@ export default function TablaComponent({
                     <Tag
                       key={`State ${record.idEstadoRegistro} ${index}`}
                       color={
-                        record.idEstadoRegistro == 1 ? "green" : "red"
+                        record.idEstadoRegistro === 1 ? "#304878" : "#FF4D4D"
                       }
                     >
                       {record.nombreEstado}
@@ -156,8 +157,8 @@ export default function TablaComponent({
                 <div style={{ width: 90, zIndex: 100 }}>
                   <ButtonIcon
                     onMouseUp={() => {
-                      setSelectedClient(record);
-                      setActionClient(
+                      setSelected(record);
+                      setAction(
                         record.idEstadoRegistro === 1 ? "Desactivar" : "Activar"
                       );
                       handleDrop(record.idEmpleado);
@@ -171,7 +172,8 @@ export default function TablaComponent({
                       <ButtonIconMenuTalba
                         onClick={() => {
                           handleDrop(-1);
-                          navegation(`/cliente/${record.idEmpleado}`);
+                          navegation(`/empleado/${record.idEmpleado}`);
+                          
                         }}
                       >
                         <IoEyeOutline
@@ -185,7 +187,7 @@ export default function TablaComponent({
                       <ButtonIconMenuTalba
                         onClick={() => {
                           handleDrop(-1);
-                          editarCliente(record);
+                          editar(record);
                           goSectionUp();
                         }}
                       >

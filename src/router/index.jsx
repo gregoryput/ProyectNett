@@ -5,12 +5,15 @@ import {
   CuentaPorPagar,
   DashBoard,
   Inventario,
-  Proveedores,
   Proyecto,
   Reporte,
   Usuario,
   Home,
-  Detail,
+  Proveedores,
+  DetailCliente,
+  DetailProveedor,
+  DetailEmpleado,
+
 } from "../views";
 import Login from "../page/Login";
 import ErrorPages from "../page/ErrorPages";
@@ -39,7 +42,7 @@ export const createRouter = () => {
           ),
         },
         {
-          path: "/Usuarios",
+          path: "/usuarios",
           element: (
             <ProtectedRoute
               roles={["Administrador De Usuario", "Administrador"]}
@@ -49,12 +52,20 @@ export const createRouter = () => {
           ),
         },
         {
-          path: "/Empleado",
+          path: "/empleado",
           element: (
             <ProtectedRoute
               roles={["Administrador De Usuario", "Administrador"]}
             >
               <Empleado />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "/empleado/:IdEmpleado",
+          element: (
+            <ProtectedRoute roles={["Administrador"]}>
+              <DetailEmpleado />
             </ProtectedRoute>
           ),
         },
@@ -70,10 +81,11 @@ export const createRouter = () => {
           path: "/cliente/:clienteId",
           element: (
             <ProtectedRoute roles={["Administrador"]}>
-              <Detail />
+              <DetailCliente />
             </ProtectedRoute>
           ),
         },
+     
         {
           path: "/cuenta-por-cobrar",
           element: (
@@ -110,7 +122,15 @@ export const createRouter = () => {
             <ProtectedRoute
               roles={["Administrador", "Asistente Administrativo"]}
             >
-              <Proveedores />
+              <Proveedores/>
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "/proveedores/:IdProveedor",
+          element: (
+            <ProtectedRoute roles={["Administrador"]}>
+              <DetailProveedor />
             </ProtectedRoute>
           ),
         },

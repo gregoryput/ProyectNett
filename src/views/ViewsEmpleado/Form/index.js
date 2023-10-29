@@ -1,10 +1,12 @@
 import InformacionPersonal from "../Components/InformacionPersonal";
-import FormEmpleado from "./FormEmpleado";
 import TablaComponent from "./TablaComponent";
+import FormComponent from "./FormComponent";
+import CargoEmpleado from "../Components/CargoEmpleado";
 
 
 export {
     InformacionPersonal,
-    FormEmpleado,
+    FormComponent,
+    CargoEmpleado,
     TablaComponent,
 }

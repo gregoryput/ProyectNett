@@ -62,7 +62,6 @@ export default function InformacionPersonal(props) {
   };
 
   const controlVerify = (dataPersonal) => {
-   
     trigger().then((isValid) => {
       if (isValid) {
         let requiereVerificacionCedula = false;
@@ -88,7 +87,6 @@ export default function InformacionPersonal(props) {
 
   // Con este useEffect observo si la cedula existe y si existe no lo dejo avanzar al paso de empresas
   React.useEffect(() => {
-   
     if (dataVerify !== null && dataVerify !== undefined) {
       let cedulaDuplicate = false;
       //
@@ -98,7 +96,7 @@ export default function InformacionPersonal(props) {
         // Si el código existe se dispara una validacion React-Hook-Form
         setError("Cedula", {
           type: "manual",
-          message: "Ya hay un cliente con esta cédula en la base de datos",
+          message: "Ya hay un registro con esta cédula en la base de datos",
         });
       } else {
         cedulaDuplicate = false;
@@ -188,7 +186,7 @@ export default function InformacionPersonal(props) {
     reset();
     setIdPaisSeleccionado(0);
     props.setDatosFormulario([]);
-    props.setDataClientEdit([]);
+    props.setDataEdit([]);
     props.setToggle(false);
   };
 
@@ -204,11 +202,12 @@ export default function InformacionPersonal(props) {
     toggle: PropTypes.bool.isRequired,
     setToggle: PropTypes.func.isRequired,
     setLoadingSave: PropTypes.func.isRequired,
-    dataClientEdit: PropTypes.object, // Cambia el tipo según corresponda
+    dataEdit: PropTypes.object, // Cambia el tipo según corresponda
     nextPart: PropTypes.func.isRequired,
     dataValues: PropTypes.object.isRequired,
-    setDataClientEdit: PropTypes.func.isRequired,
+    setDataEdit: PropTypes.func.isRequired,
     setDatosFormulario: PropTypes.func.isRequired,
+    datavalues: PropTypes.object,
   };
 
   return (

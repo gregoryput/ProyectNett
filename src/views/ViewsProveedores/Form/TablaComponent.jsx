@@ -23,50 +23,48 @@ import { MdRestore } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 
 export default function TablaComponent({
-  dataClients,
-  isLoadingClients,
+  data,
+  isLoading,
   loadingSave,
-  editarCliente,
+  editar,
   handleOpenModal,
   goSectionUp,
-  setSelectedClient,
-  setActionClient,
+  setSelected,
+  setAction,
 }) {
   const [openIndex, setOpenIndex] = useState(-1);
   const handleDrop = (index) => {
     setOpenIndex((prevIndex) => (prevIndex === index ? -1 : index));
   };
-
   const navegation = useNavigate();
 
-  const [filteredData, setFilteredData] = useState(dataClients?.result);
+  const [filteredData, setFilteredData] = useState(data?.result);
 
   const handleSearch = (value) => {
     const searchTerm = value.toLowerCase();
 
-    const filter = dataClients?.result.filter((item) =>
+    const filter = data?.result.filter((item) =>
       item.nombres.toLowerCase().includes(searchTerm)
     );
-
 
     setFilteredData(filter);
   };
   useEffect(() => {
-    if (dataClients?.result !== undefined) {
-      setFilteredData(dataClients?.result);
+    if (data?.result !== undefined) {
+      setFilteredData(data?.result);
     }
-  }, [dataClients?.result, setFilteredData]);
+  }, [data?.result, setFilteredData]);
 
   TablaComponent.propTypes = {
     data: PropTypes.object, // Cambia el tipo según lo que corresponda
-    dataClients: PropTypes.object, // Cambia el tipo según lo que corresponda
-    isLoadingClients: PropTypes.bool.isRequired,
+    isLoading: PropTypes.bool.isRequired,
     loadingSave: PropTypes.bool.isRequired,
     setToggle: PropTypes.func,
-    editarCliente: PropTypes.func.isRequired,
+    editar: PropTypes.func.isRequired,
     handleOpenModal: PropTypes.func.isRequired,
-    setSelectedClient: PropTypes.func.isRequired,
-    setActionClient: PropTypes.func.isRequired,
+    setSelected: PropTypes.func.isRequired,
+    setAction: PropTypes.func.isRequired,
+    goSectionUp: PropTypes.func.isRequired,
   };
   return (
     <Container
@@ -77,7 +75,7 @@ export default function TablaComponent({
         borderRadius: 12,
       }}
     >
-      {isLoadingClients || loadingSave ? (
+      {isLoading || loadingSave ? (
         <>
           <SpinnerTables />
         </>
@@ -85,7 +83,7 @@ export default function TablaComponent({
         <>
           <div>
             <Search
-              placeholder="Buscar cliente"
+              placeholder="Buscar Proveedor"
               style={{
                 width: 304,
                 marginTop: 10,
@@ -106,7 +104,7 @@ export default function TablaComponent({
             }}
           >
             <Column
-              title="Nombre completo"
+              title="Nombres"
               dataIndex="nombres"
               key="nombres"
               sorter={(a, b) => a.Secuencia.localeCompare(b.nombres)}
@@ -157,22 +155,22 @@ export default function TablaComponent({
                 <div style={{ width: 90, zIndex: 100 }}>
                   <ButtonIcon
                     onMouseUp={() => {
-                      setSelectedClient(record);
-                      setActionClient(
+                      setSelected(record);
+                      setAction(
                         record.idEstadoRegistro === 1 ? "Desactivar" : "Activar"
                       );
-                      handleDrop(record.idCliente);
+                      handleDrop(record.idProveedor);
                     }}
                   >
                     <IoEllipsisVerticalSharp size={22} />
                   </ButtonIcon>
-                  <DropdownContenttabla open={openIndex === record.idCliente}>
+                  <DropdownContenttabla open={openIndex === record.idProveedor}>
                     <OutsideClick>
                       {/*----------VIEW BUTTON:----------*/}
                       <ButtonIconMenuTalba
                         onClick={() => {
                           handleDrop(-1);
-                          navegation(`/cliente/${record.idCliente}`);
+                          navegation(`/Proveedores/${record.idProveedor}`);
                         }}
                       >
                         <IoEyeOutline
@@ -186,7 +184,7 @@ export default function TablaComponent({
                       <ButtonIconMenuTalba
                         onClick={() => {
                           handleDrop(-1);
-                          editarCliente(record);
+                          editar(record);
                           goSectionUp();
                         }}
                       >
@@ -230,6 +228,7 @@ export default function TablaComponent({
           </Table>
         </>
       )}
+       
     </Container>
   );
 }

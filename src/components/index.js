@@ -41,6 +41,7 @@ import { ButtonAdd, ButtonNext, ButtonRemove } from "./Formularios/ButtonNext";
 import { ButtonIcon, ButtonIconBorder, ButtonIconDelete, ButtonIconMenuTalba } from "./General/ButtonIcon";
 import { ButtonSave } from "./Formularios/ButtonSave";
 import { DropdownContenttabla } from "./General/Dropdownmenutabla";
+import { TitleNav } from "./General/TitleNav";
 
 /// importanciones de los componente
 export {
@@ -105,6 +106,8 @@ export {
   Container,
   ContainerList,
   ButtonIconBorder,
+  TitleNav,
   
 };
+
 

@@ -19,36 +19,36 @@ export const employeeApi = createApi({
     }),
     getPersonalInfo: builder.query({
       query: (Id) =>
-        `/Empleados/obtenerInfoPersonal?Id=${Id}`,
+        `/Empleados/obtenerInfoPersonal?IdEmpleado=${Id}`,
       providesTags: ["PersonalInfoEmpleado"],
     }),
     createEmploye: builder.mutation({
-      query: (newEmpleado) => ({
+      query: (data) => ({
         url: "/Empleados/insertarEmpleado",
         method: "POST",
-        body: newEmpleado,
+        body: data,
       }),
-      invalidatesTags: ["Clients"],
+      invalidatesTags: ["Employees"],
     }),
     updateEmploye: builder.mutation({
-      query: (dataClient) => ({
-        url: "/Clientes/actualizarCliente",
+      query: (data) => ({
+        url: "/Empleados/actualizarEmpleado",
         method: "POST",
-        body: dataClient,
+        body: data,
       }),
       invalidatesTags: ["Employees"],
     }),
 
     deleteEmploye: builder.mutation({
-      query: (Id) => ({
-        url: `/Empleados/eliminarEmpleado?IdCliente=${Id}`,
+      query: (IdEmpleado) => ({
+        url: `/Empleados/eliminarEmpleado?IdEmpleado=${IdEmpleado}`,
         method: "POST",
       }),
       invalidatesTags: ["Employees"],
     }),
     restoreEmploye: builder.mutation({
-      query: (IdCliente) => ({
-        url: `/Clientes/activarCliente?IdCliente=${IdCliente}`,
+      query: (IdEmpleado) => ({
+        url: `/Empleados/activarEmpleado?IdEmpleado=${IdEmpleado}`,
         method: "POST",
       }),
       invalidatesTags: ["Employees"],

@@ -12,6 +12,7 @@ export const clientsApi = createApi({
     },
   }),
   tagTypes: ["Clients"],
+
   endpoints: (builder) => ({
     getClients: builder.query({
       query: () => `/Clientes/obtenerClientes`,

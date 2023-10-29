@@ -34,7 +34,7 @@ import { useSelector } from "react-redux";
 import { useForm, useFieldArray, useWatch } from "react-hook-form";
 import React from "react";
 import { message } from "antd";
-import { useGetCompaniesByIdClienteQuery } from "../../../redux/Api/companiesApi";
+import { useGetCompaniesByIdProveedorQuery } from "../../../redux/Api/companiesApi";
 
 import { FuncUtils } from "../../../utils";
 
@@ -79,6 +79,7 @@ export default function InformacionEmpresas(props) {
   const cities = useSelector((state) => state.cities.cities.cities);
   const countries = useSelector((state) => state.countries.countries.countries);
 
+
   //Funcion para filtrar select ciudad:
   const filterSelectCiudad = (IdPais) => {
     return cities
@@ -93,24 +94,24 @@ export default function InformacionEmpresas(props) {
 
   // Traer las empresas solo cuando se este en modo editar:
   const {
-    data: companiesClientData,
-    isSuccess: isCompaniesClientSuccess,
+    data: companiesData,
+    isSuccess: isCompaniesSuccess,
     isError: isErrorCompanies,
-    isLoading: isLoadingCompaniesClient,
-  } = useGetCompaniesByIdClienteQuery(
-    { clienteId: props.dataValues.IdCliente, estadoId: 1 },
+    isLoading: isLoadingCompanies,
+  } = useGetCompaniesByIdProveedorQuery(
+    { IdProveedor: props.dataValues.IdProveedor, estadoId: 1 },
     {
       skip:
-        props.dataValues.IdCliente === null ||
-        props.dataValues.IdCliente === undefined,
-    },
+        props.dataValues.IdProveedor === null ||
+        props.dataValues.IdProveedor === undefined,
+    }
   );
 
   const clearFields = () => {
     props.setToggle(false);
     reset();
     props.setDatosFormulario({});
-    props.setDataClientEdit({});
+    props.setDataEdit({});
     props.setPosicionActual((prevState) => prevState - 1);
   };
 
@@ -122,21 +123,21 @@ export default function InformacionEmpresas(props) {
       !props?.dataValues?.Empresas //&& props?.dataValues?.Empresas?.length === 0
     ) {
       if (
-        companiesClientData !== null &&
-        companiesClientData !== undefined &&
-        isCompaniesClientSuccess
+        companiesData !== null &&
+        companiesData !== undefined &&
+        isCompaniesSuccess
       ) {
-        companiesClientData?.result?.length > 0
+        companiesData?.result?.length > 0
           ? message.success({
-              content: "Lista de empresas del cliente cargada correctamente",
+              content: "Lista de empresas del Proveedor cargada correctamente",
               duration: 3,
             })
           : message.info({
               content:
-                "Información obtenida; el cliente no tiene empresas registradas",
+                "Información obtenida  el Proveedor no tiene empresas registradas",
               duration: 4,
             });
-        props.dataValues.Empresas = companiesClientData?.result.map(
+        props.dataValues.Empresas = companiesData?.result.map(
           (empresa) => {
             return FuncUtils.capitalizePropertyKeys(empresa);
           }
@@ -146,7 +147,7 @@ export default function InformacionEmpresas(props) {
     } else {
       reset(props.dataValues);
     }
-  }, [companiesClientData, isCompaniesClientSuccess]);
+  }, [companiesData, isCompaniesSuccess]);
 
   //Obserar si hay validaciones disparadas en algun campo de una de las empresas, si es asi, desplegar la ultima empresa con validaciones disparadas:
   useEffect(() => {
@@ -199,15 +200,14 @@ export default function InformacionEmpresas(props) {
     setDatosFormulario: PropTypes.func.isRequired,
     setSaveIsSucces: PropTypes.func.isRequired,
     setToggle: PropTypes.bool.required,
-    setDataClientEdit: PropTypes.func.isRequired,
-    handleSubmit : PropTypes.func.isRequired
+    setDataEdit: PropTypes.func.required,
+    handleSubmit: PropTypes.func.isRequired,
   };
 
   return (
     <>
       {isLoadingCreate ? (
         <div style={{ display: "flex", justifyContent: "center" }}>
-          {/* <SpinnerTables /> */}
           <SpinnerTables />
         </div>
       ) : (
@@ -218,12 +218,12 @@ export default function InformacionEmpresas(props) {
               <h2 style={{ marginBottom: 40 }}>Datos de empresa </h2>
             </div>
 
-            {isLoadingCompaniesClient ? (
+            {isLoadingCompanies ? (
               <StyledSpinContainer>
                 <StyledSpinSubContainer>
-                  <SpinnerTables />
-                  <SavingText isSaving={isLoadingCompaniesClient}>
-                    Cargando información de empresas del cliente
+                <SpinnerTables />
+                  <SavingText isSaving={isLoadingCompanies}>
+                    Cargando información de empresas del Proveedor
                   </SavingText>
                 </StyledSpinSubContainer>
               </StyledSpinContainer>

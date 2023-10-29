@@ -17,9 +17,19 @@ export const cargoApi = createApi({
             query: () => "/Cargos/ObtenerCargo",
             providesTags: ["cargo"],
         }),
+        getCargoIdEmpleado: builder.query({
+            query: (params) => {
+                if (params.IdEmpleado !== null) {
+                    return `/Cargos/CargoPorEmpleadoId?IdEmpleado=${params.IdEmpleado}&estadoId=${params.estadoId}`;
+                } else {
+                    return { data: null, isLoading: null, isSuccess: null };
+                }
+            },
+        }),
     }),
 });
 
 export const {
     useGetCargoQuery,
+    useGetCargoIdEmpleadoQuery,
 } = cargoApi;

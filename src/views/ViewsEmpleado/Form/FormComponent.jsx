@@ -21,14 +21,26 @@ import {
   useCreateEmployeMutation,
   useUpdateEmployeMutation,
 } from "../../../redux/Api/employeeApi";
+import CargoEmpleado from "../Components/CargoEmpleado";
 
-export default function FormEmpleado(props) {
+export default function FormComponent(props) {
   const token = localStorage.getItem("token");
   const userId = parseInt(JwtUtils.getUserIdByToken(token), 10);
 
   const navigate = useNavigate();
+  const [posicionActual, setPosicionActual] = useState(1);
   const [datosFormulario, setDatosFormulario] = useState({});
   const [animacion, setAnimacion] = useState(false);
+
+  const siguiente = (data) => {
+    setDatosFormulario({ ...datosFormulario, ...data });
+    setPosicionActual(posicionActual + 1);
+  };
+
+  const atras = (data) => {
+    setDatosFormulario({ ...datosFormulario, ...data });
+    setPosicionActual(posicionActual - 1);
+  };
 
   //Funcion peticion para el create/insert de Cliente:
   const [
@@ -56,12 +68,13 @@ export default function FormEmpleado(props) {
   React.useEffect(() => {
     if (isCreateSuccess === true) {
       message.success({
-        content: "Información del cliente guardada correctamente",
+        content: "Información del Empleado guardada correctamente",
         duration: 3,
       });
+      setPosicionActual(1);
       setDatosFormulario({});
       props.setToggle(false);
-      navigate("/Cliente");
+      navigate("/empleado");
     }
   }, [isCreateSuccess]);
   //.. CUANDO EL INSERT TENGA UN ERROR:
@@ -84,9 +97,10 @@ export default function FormEmpleado(props) {
         content: "Información del Empleado actualizada correctamente",
         duration: 3,
       });
+      setPosicionActual(1);
       setDatosFormulario({});
       props.setToggle(false);
-      navigate("/Cliente");
+      navigate("/empleado");
     }
   }, [isUpdateSuccess]);
   //.. CUANDO EL UPDATE TENGA UN ERROR:
@@ -94,7 +108,7 @@ export default function FormEmpleado(props) {
     if (isErrorUpdate === true) {
       message.error({
         content:
-          "Ha ocurrido un error al intentar actualizar los datos del empleado",
+          "Ha ocurrido un error al intentar actualizar los datos del cliente",
         duration: 4,
       });
     }
@@ -102,62 +116,99 @@ export default function FormEmpleado(props) {
 
   //Funcion para insertar, enviar los datos a la api:
   const handleSubmit = (data) => {
-    console.log(data);
     let dataHead;
-    // DataEncabezado de empleado:
-    data?.Idempleado !== 0 && data?.Idempleado !== undefined
+    const fecha = new Date(); // Obtén la fecha actual
+
+    // Formatea la fecha en el formato deseado
+    const fechaFormateada = fecha.toISOString();
+    //DataEncabezado de cliente:
+    data?.IdEmpleado !== 0 && data?.IdEmpleado !== undefined
       ? (dataHead = {
-        Idempleado: data?.Idempleado,
-        IdModificadoPor: userId,
-        FechaModificacion: new Date(),
-      })
+          idEmpleado: data?.IdEmpleado,
+          IdModificadoPor: userId,
+          FechaModificacion: fechaFormateada,
+        })
       : (dataHead = {
-        Idempleado: 0,
-        IdCreadoPor: userId,
-        FechaCreacion: new Date(),
-      });
+          idEmpleado: 0,
+          idCreadoPor: userId,
+          fechadDeContratación: fechaFormateada,
+          fechaCreacion: fechaFormateada,
+          idModificadoPor: 1,
+          fechaModificacion: fechaFormateada,
+          idEstadoRegistro: 1,
+        });
 
+        let dataExtra = {
+          idCreadoPor: userId,
+          fechaCreacion: fechaFormateada,
+          idModificadoPor: 1,
+          fechaModificacion: fechaFormateada,
+          idEstadoRegistro: 1,
+        };
+ 
     //Armar el objeto persona
-    const Persona = { ...datosFormulario, IdPersona: data.IdPersona, Edad: 18 };
-    //Quitar el objeto empresas del objet persona y clienteId
-    delete Persona.Idempleado;
+    const persona = { ...datosFormulario, IdPersona: !data.IdPersona === true ? 0 :  data.IdPersona, ...dataExtra };
+    //Quitar el objeto empresas del objet persona
+    delete persona.cargos;
+    delete persona.CargoEmpleadoDTOs;
+    delete persona.InitialCedulaEdit;
+    delete persona.IdEmpleado;
+    
 
+    //Armar el objeto 
+    const Cargo = data.cargos.map((compo) => {
+    
+      return {
+        ...compo,
+        idCreadoPor: userId,
+        fechaCreacion: fechaFormateada,
+        idModificadoPor: 1,
+        fechaModificacion: fechaFormateada,
+        idEstadoRegistro: 1,
+      };
+    });
     //Armar la data submit (el objeto puede ser de dos formas):
-    let dataEmpleado;
+    let dataJson;
+    !Cargo?.length > 0
+      ? // -- Forma 1 (Cuando no hayan cargos):
+        (dataJson = {
+          ...dataHead,
+          persona,
+        })
+      : // -- Forma 2 (Cuando hayan cargos):
+        (dataJson = {
+          ...dataHead,
+          persona,
+          Cargos: Cargo,
+        });
+      data?.IdEmpleado === 0 || data?.IdEmpleado === undefined
+        ? createEmploye({ ...dataJson })
+        : updateEmploye({ ...dataJson });
 
-    dataEmpleado = {
-      ...dataHead,
-      Persona,
-    };
-    data?.Idempleado === 0 || data?.Idempleado === undefined
-      ? createEmploye({ ...dataEmpleado })
-      : updateEmploye({ ...dataEmpleado });
+      console.log(dataJson)
+
   };
+ 
 
   useEffect(() => {
-    if (props.dataClientEdit !== null) {
-     
+    if (props.dataEdit !== null) {
+      //props.dataClientEdit.InitialCedulaEdit = props.dataClientEdit.Cedula;
       setDatosFormulario({
-        ...FuncUtils.capitalizePropertyKeys(props.dataClientEdit),
-        InitialCedulaEdit: props.dataClientEdit.cedula, // <-- c minuscula porque esta antes de convertir con el Utils
+        ...FuncUtils.capitalizePropertyKeys(props.dataEdit),
+        InitialCedulaEdit: props.dataEdit.cedula, // <-- c minuscula porque esta antes de convertir con el Utils
       });
     }
     if (props.toggle == false) {
       setTimeout(() => {
         setAnimacion(false);
       }, 200);
-      props.setDataClientEdit(null);
+      props.setDataEdit(null);
     }
 
     if (props.toggle == true) {
       setAnimacion(true);
     }
-  }, [
-    props.dataClientEdit,
-    props.setDataClientEdit,
-    props.toggle,
-    setAnimacion,
-  ]);
+  }, [props.dataEdit, props.setDataEdit, props.toggle, setAnimacion]);
 
   useEffect(() => {
     isLoadingCreate
@@ -170,16 +221,30 @@ export default function FormEmpleado(props) {
       <OutsideClick>
         {isLoadingCreate === false && isLoadingUpdate === false ? (
           <div>
-            <InformacionPersonal
-              dataValues={datosFormulario}
-              setDatosFormulario={setDatosFormulario}
-              toggle={props.toggle}
-              setToggle={props.setToggle}
-              dataClientEdit={props.dataClientEdit}
-              setDataClientEdit={props.setDataClientEdit}
-              setLoadingSave={props.setLoadingSave}
-              handleSubmit={handleSubmit}
-            />
+            {posicionActual === 1 && (
+              <InformacionPersonal
+                nextPart={siguiente}
+                dataValues={datosFormulario}
+                setDatosFormulario={setDatosFormulario}
+                toggle={props.toggle}
+                setToggle={props.setToggle}
+                dataEdit={props.dataEdit}
+                setDataEdit={props.setDataEdit}
+                setLoadingSave={props.setLoadingSave}
+              />
+            )}
+            {posicionActual === 2 && (
+              <CargoEmpleado
+                backPart={atras}
+                dataValues={datosFormulario}
+                setDatosFormulario={setDatosFormulario}
+                toggle={props.toggle}
+                setToggle={props.setToggle}
+                handleSubmit={handleSubmit}
+                setDataEdit={props.setDataEdit}
+                setPosicionActual={setPosicionActual}
+              />
+            )}
           </div>
         ) : (
           <StyledSpinContainer>
@@ -199,10 +264,10 @@ export default function FormEmpleado(props) {
 }
 
 // Definir PropTypes para las props del componente
-FormEmpleado.propTypes = {
+FormComponent.propTypes = {
   toggle: PropTypes.bool.isRequired,
   setToggle: PropTypes.func.isRequired,
   setLoadingSave: PropTypes.func.isRequired,
-  dataClientEdit: PropTypes.array, // Cambia el tipo según corresponda
-  setDataClientEdit: PropTypes.func.isRequired,
+  dataEdit: PropTypes.object, // Cambia el tipo según corresponda
+  setDataEdit: PropTypes.func.isRequired,
 };

@@ -4,13 +4,13 @@ import {
   Option,
   Select,
   ContainerFormPrueba,
+  ButtonNext,
   ButtonRemove,
-  ButtonSave,
 } from "../../../components";
 
 import { useForm } from "react-hook-form";
-import { IoClose } from "react-icons/io5";
-import React, { useEffect, useState } from "react";
+import { IoArrowForward, IoClose } from "react-icons/io5";
+import React, { useEffect } from "react";
 import { SavingText } from "../../../components/StylesCustomLoading/loading-custom.styled";
 
 import {
@@ -21,7 +21,7 @@ import {
   email,
   cedualaDominicana,
   minValue,
-  numberOnly,
+  numberOnly
 } from "../../../utils/validations";
 
 //Consultas de datos (para los select)
@@ -33,14 +33,14 @@ import { useDispatch } from "react-redux";
 import { setCities } from "../../../redux/Slice/citiesSlice";
 import { setCountries } from "../../../redux/Slice/countriesSlice";
 import PropTypes from "prop-types"; // Importa PropTypes
-import { useGetCargoQuery } from "../../../redux/Api/cargoApi";
-
 
 export default function InformacionPersonal(props) {
+
   const {
     register,
     formState: { errors },
     handleSubmit,
+    getValues,
     setValue,
     trigger,
     reset,
@@ -48,7 +48,6 @@ export default function InformacionPersonal(props) {
   } = useForm();
 
   const dispatch = useDispatch();
-  const [data, setDato] = useState("");
 
   const [IdPaisSeleccionado, setIdPaisSeleccionado] = React.useState(
     props?.datavalues?.IdPais ? parseInt(props?.datavalues?.IdPais) : 0
@@ -56,6 +55,12 @@ export default function InformacionPersonal(props) {
 
   const [verificarCedula, { data: dataVerify, isLoading: isLoadingVerify }] =
     useUqVerificarCedulaUQMutation();
+
+  //Funcion para navegar al paso Informacion Empresas
+  const irAdelante = () => {
+    const dataInformacionPersnal = getValues();
+    props.nextPart(dataInformacionPersnal); // Pasar al siguiente paso enviandole los datos del paso actual
+  };
 
   const controlVerify = (dataPersonal) => {
     trigger().then((isValid) => {
@@ -69,12 +74,11 @@ export default function InformacionPersonal(props) {
         ) {
           verificarCedula(dataPersonal.Cedula);
           requiereVerificacionCedula = true;
-          setDato(dataPersonal);
         } else {
           requiereVerificacionCedula = false;
         }
         if (!requiereVerificacionCedula) {
-          console.log("datos validos");
+          irAdelante();
         }
       } else {
         return;
@@ -101,10 +105,10 @@ export default function InformacionPersonal(props) {
 
       //Si la cedula no esta duplicada lo dejo pasar al siguiente paso:
       if (!cedulaDuplicate) {
-        props.handleSubmit(data);
+        irAdelante();
       }
     }
-  }, [dataVerify, setError, props.handleSubmit]);
+  }, [dataVerify, setError]);
 
   //Traer las ciudades
   const {
@@ -112,15 +116,6 @@ export default function InformacionPersonal(props) {
     //  isSuccess: isCitiesSuccess,
     isLoading: isLoadingCities,
   } = useGetCitiesQuery("");
-
-
-  //Traer las Cargo de empleado
-  const {
-    data: cargoData,
-    //  isSuccess: isCitiesSuccess,
-    isLoading: isLoadingData,
-  } = useGetCargoQuery("");
-
 
   const optionsSelectCities = citiesData?.result
     ?.filter((ct) => ct.idPais === IdPaisSeleccionado)
@@ -182,40 +177,38 @@ export default function InformacionPersonal(props) {
   }, [props.dataValues, reset, setIdPaisSeleccionado]);
 
   useEffect(() => {
-    if (cargoData != null && cargoData != null) {
-        console.log(cargoData,"holaaaa");
-    }
-
-
     if (citiesData != null && countriesData != null) {
       dispatchCities();
       dispatchCountries();
     }
-  }, [citiesData, countriesData, dispatchCountries, dispatchCities, cargoData]);
+  }, [citiesData, countriesData, dispatchCountries, dispatchCities]);
 
   const clearFields = () => {
     reset();
     setIdPaisSeleccionado(0);
     props.setDatosFormulario([]);
-    props.setDataClientEdit([]);
+    props.setDataEdit([]);
     props.setToggle(false);
   };
 
-  useEffect(() => {
+  useEffect(()=>{
     reset();
-  }, [props.toggle]);
+  },[props.toggle]);
+
+ 
+
 
   // Definir PropTypes para las props del componente
   InformacionPersonal.propTypes = {
     toggle: PropTypes.bool.isRequired,
     setToggle: PropTypes.func.isRequired,
     setLoadingSave: PropTypes.func.isRequired,
-    dataClientEdit: PropTypes.func, // Cambia el tipo según corresponda
+    dataEdit: PropTypes.object, // Cambia el tipo según corresponda
+    nextPart: PropTypes.func.isRequired,
     dataValues: PropTypes.object.isRequired,
-    setDataClientEdit: PropTypes.func.isRequired,
+    setDataEdit: PropTypes.func.isRequired,
     setDatosFormulario: PropTypes.func.isRequired,
-    handleSubmit: PropTypes.func.isRequired,
-    datavalues: PropTypes.object.isRequired,
+    datavalues: PropTypes.array,
   };
 
   return (
@@ -319,6 +312,25 @@ export default function InformacionPersonal(props) {
 
         <LabelFor>
           {" "}
+          Edad
+          <InputFor
+            {...register("Edad", {
+              ...required("Este campo es requerido"),
+              ...maxLength(2,"Edad real"),
+              ...minLength(2,"Edad real"),
+              ...numberOnly("Solo numero"),
+            })}
+            placeholder="Ingrese la edad"
+          />
+          {errors.Edad && (
+            <span style={{ color: "red", fontSize: 10 }}>
+              {errors.Edad.message}
+            </span>
+          )}
+        </LabelFor>
+
+        <LabelFor>
+          {" "}
           Correo
           <InputFor
             {...register("Correo", {
@@ -327,9 +339,9 @@ export default function InformacionPersonal(props) {
             })}
             placeholder="Ingrese el correo"
           />
-          {errors.Correo && (
+          {errors.correo && (
             <span style={{ color: "red", fontSize: 10 }}>
-              {errors.Correo.message}
+              {errors.correo.message}
             </span>
           )}
         </LabelFor>
@@ -341,6 +353,7 @@ export default function InformacionPersonal(props) {
             {...register("Cedula", {
               ...required("Este campo es requerido"),
               ...cedualaDominicana(),
+             
             })}
             placeholder="Ingrese la cédula"
           />
@@ -383,28 +396,16 @@ export default function InformacionPersonal(props) {
           )}
         </LabelFor>
 
-        <LabelFor>
-          Edad
-          <InputFor
-            {...register("Edad", {
-              ...numberOnly(),
-              ...minLength(1, "debe tener una edad"),
-              ...maxLength(2, "no es noel"),
-            })}
-            placeholder="Ingrese el edad"
-          />
-          {errors.Edad && (
-            <span style={{ color: "red", fontSize: 10 }}>
-              {errors.Edad.message}
-            </span>
-          )}
-        </LabelFor>
-
         {/*-------------INPUT FechaDeNacimiento-------------*/}
         <LabelFor>
           {" "}
           Fecha de nacimiento
-          <InputFor type="date" {...register("FechaDeNacimiento")} />
+          <InputFor type="date" {...register("fechaDeNacimiento",{...required("Este campo es requerido")})} />
+          {errors.fechaDeNacimiento && (
+            <span style={{ color: "red", fontSize: 10 }}>
+              {errors.fechaDeNacimiento.message}
+            </span>
+          )}
         </LabelFor>
 
         {/*---------SELEC OPTION IDPAIS---------*/}
@@ -450,7 +451,7 @@ export default function InformacionPersonal(props) {
             {...register("IdCiudad", {
               ...minValue(1, "Debe seleccionar la ciudad"),
             })}
-            s
+
             option
           >
             <Option disabled value={0}>
@@ -468,79 +469,21 @@ export default function InformacionPersonal(props) {
             </span>
           )}
         </LabelFor>
-
-        {/* <LabelFor>
-          {" "}
-          Cargo del Empleado
-          <Select
-            defaultValue={0}
-            isLoading={isLoadingData}
-            {...register("idCargo", {
-              ...minValue(1, "Debe seleccionar el cargo"),
-            })}
-            s
-            option
-          >
-            <Option disabled value={0}>
-              -- Seleccione el cargo --
-            </Option>
-           {cargoData.result?.map((option, index) => (
-              <Option key={index} value={parseInt(option.idCargo)}>
-                {option.nombreCargo}
-              </Option>
-            ))} 
-          </Select>
-          {errors.idCargo && (
-            <span style={{ color: "red", fontSize: 10 }}>
-              {errors.idCargo.message}
-            </span>
-          )}
-        </LabelFor> */}
-
-        <LabelFor>
-          {" "}
-          Descripción
-          <InputFor
-            {...register("descripción", {
-              ...required("Este campo es requerido"),
-              ...minLength(3),
-              ...maxLength(60),
-            })}
-            placeholder="Ingrese la descripción"
-          />
-          {errors.descripción && (
-            <span style={{ color: "red", fontSize: 10 }}>
-              {errors.descripción.message}
-            </span>
-          )}
-        </LabelFor>
-
-
       </div>
       <br />
-     
-
       <div style={{ display: "flex", justifyContent: "flex-end" }}>
         <ButtonRemove
           type="button"
-          onClick={() => clearFields()}
+          onClick={()=> clearFields() }
           style={{ marginLeft: 5 }}
           disabled={isLoadingVerify}
         >
           <IoClose size={18} style={{ marginRight: 2 }} /> Cancelar
         </ButtonRemove>
 
-        <ButtonSave type="submit">
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              alignItems: "center",
-            }}
-          >
-            <span style={{ marginLeft: "3px" }}>Guardar</span>
-          </div>
-        </ButtonSave>
+        <ButtonNext htmlType="submit" disabled={isLoadingVerify}>
+          <IoArrowForward size={18} style={{ marginRight: 4 }} /> Siguiente{" "}
+        </ButtonNext>
       </div>
     </ContainerFormPrueba>
   );

@@ -13,31 +13,26 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useGetCompaniesByIdClienteQuery } from "../../redux/Api/companiesApi";
 import { useGetPersonalInfoQuery } from "../../redux/Api/clientsApi";
 import { useEffect } from "react";
-import { useState } from "react";
+import {  useState } from "react";
 
-export function Detail() {
+export  default function DetailCliente() {
   let navegation = useNavigate();
   const valor = useParams();
 
   // Traer las empresas solo cuando se este en modo editar:
   const {
     data: companiesClientData,
-    isSuccess: isCompaniesClientSuccess,
-    isError: isErrorCompanies,
-    isLoading: isLoadingCompaniesClient,
   } = useGetCompaniesByIdClienteQuery({
     clienteId: parseInt(valor.clienteId, 10),
     estadoId: 0,
-  });
+  },{refetchOnMountOrArgChange: true});
 
   const {
     data: personalInfoData,
-    isSuccess: isPersonalInfoSuccess,
-    isError: isErrorpersonalInfo,
-    isLoading: isLoadingPersonalInfo,
-  } = useGetPersonalInfoQuery(parseInt(valor.clienteId, 10));
 
-  const [dataState, setDataState] = useState([]);
+  } = useGetPersonalInfoQuery(parseInt(valor.clienteId, 10),{refetchOnMountOrArgChange: true, pollingInterval:3000});
+
+  const [dataState, setDataState] = useState([]); 
 
   const [isExpanded, setIsExpanded] = useState(false);
   const maxCharacters = 30;
@@ -195,9 +190,9 @@ export function Detail() {
           </h3>
           <ContainerDetail style={{ overflowY: "visible", maxHeight: 500 }}>
             {dataState.length > 0 ? (
-              dataState.map((item, index) => (
+              dataState.map((item) => (
                 <ContainerList key={item.idEmpresa}>
-                  <h3 style={{ marginBottom: 10 }}>Empresa {index + 1} </h3>
+                  {/* <h3 style={{ marginBottom: 10 }}>Empresa  </h3> */}
                   <div style={{ display: "flex", flexFlow: "wrap" }}>
                     <div style={{ marginInline: 15 }}>
                       <Row style={{ marginBlock: 10 }}>
@@ -240,12 +235,12 @@ export function Detail() {
                     <div style={{ marginLeft: 15 }}>
                       <Row style={{ marginBlock: 10 }}>
                         <b style={{ marginRight: 3 }}>Ciudad: </b>
-                        <p>{item.idCiudad}</p>
+                        <p>{item.ciudadNombre}</p>
                       </Row>
 
                       <Row style={{ marginBlock: 10 }}>
                         <b style={{ marginRight: 5 }}>Pais: </b>
-                        <p>{item.idPais}</p>
+                        <p>{item.paisNombre}</p>
                       </Row>
                       <Row style={{ marginBlock: 10 }}>
                         <b style={{ marginRight: 5 }}>Sitio web: </b>
