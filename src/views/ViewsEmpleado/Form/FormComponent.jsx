@@ -185,7 +185,7 @@ export default function FormComponent(props) {
         ? createEmploye({ ...dataJson })
         : updateEmploye({ ...dataJson });
 
-      console.log(dataJson)
+
 
   };
  
