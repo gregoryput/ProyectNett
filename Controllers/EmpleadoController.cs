@@ -27,7 +27,7 @@ namespace ProyectNettApi.Controllers
 
 
         // .A.C.C.I.O.N -- Para obtener la lista basica de Emepleado: --------------------------------------------
-       // [Authorize]
+        [Authorize]
         [Route("obtenerEmpleado")]
         [HttpGet]
         public IActionResult getEmpleado()
@@ -53,12 +53,12 @@ namespace ProyectNettApi.Controllers
         [Authorize]
         [Route("obtenerInfoPersonal")]
         [HttpGet]
-        public IActionResult getInfoPersonal(int Id)
+        public IActionResult getInfoPersonal(int IdEmpleado)
         {
             try
             {
-                var infoCliente = _empleadoRepositorio.GetInfoPersonalEmpleado(Id);
-                _respuesta.Result = infoCliente;
+                var info = _empleadoRepositorio.GetInfoPersonalEmpleado(IdEmpleado);
+                _respuesta.Result = info;
                 _respuesta.DisplayMessage = "Info del empleado obtenida con exito:";
                 return Ok(_respuesta);
             }
@@ -77,31 +77,31 @@ namespace ProyectNettApi.Controllers
 
 
         //
-        // .A.C.C.I.O.N -- Para obtener la lista basica de Empleados:Con paginacion --------------------------------------------
-        [Authorize]
-        [Route("obtenerEmpleadosPag")]
-        [HttpGet]
-        public IActionResult getEmpleados(int pageNumber, int pageSize)
-        {
-            try
-            {
-                var (listaEmpleados, totalCount) = _empleadoRepositorio.GetEmpleados(pageNumber, pageSize);
+        //// .A.C.C.I.O.N -- Para obtener la lista basica de Empleados:Con paginacion --------------------------------------------
+        //[Authorize]
+        //[Route("obtenerEmpleadosPag")]
+        //[HttpGet]
+        //public IActionResult getEmpleados(int pageNumber, int pageSize)
+        //{
+        //    try
+        //    {
+        //        var (listaEmpleados, totalCount) = _empleadoRepositorio.GetEmpleados(pageNumber, pageSize);
 
-                // Calcular el número total de páginas
-                int totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
+        //        // Calcular el número total de páginas
+        //        int totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
 
-                _respuesta.Result = listaEmpleados;
-                _respuesta.DisplayMessage = "Listado de empleados obtenido con éxito:";
-                return Ok(_respuesta);
-            }
-            catch (Exception ex)
-            {
-                _respuesta.IsSuccess = false;
-                _respuesta.DisplayMessage = "Error al solicitar la lista de empleados";
-                _respuesta.ErrorMessages = new List<string> { ex.ToString() };
-                return StatusCode(500, _respuesta);
-            }
-        }
+        //        _respuesta.Result = listaEmpleados;
+        //        _respuesta.DisplayMessage = "Listado de empleados obtenido con éxito:";
+        //        return Ok(_respuesta);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _respuesta.IsSuccess = false;
+        //        _respuesta.DisplayMessage = "Error al solicitar la lista de empleados";
+        //        _respuesta.ErrorMessages = new List<string> { ex.ToString() };
+        //        return StatusCode(500, _respuesta);
+        //    }
+        //}
 
 
         //
@@ -130,18 +130,41 @@ namespace ProyectNettApi.Controllers
             }
         }
 
+        //
+        // .A.C.C.I.O.N -- Para Activar Cliente: --------------------------------------------
+        [Authorize]
+        [Route("activarEmpleado")]
+        [HttpPost]
+        public IActionResult activarEmpleado(int IdEmpleado)
+        {
+            try
+            {
+                _empleadoRepositorio.ActivarEmpleado(IdEmpleado);
+                _respuesta.Result = IdEmpleado;
+                _respuesta.DisplayMessage = "Empleado activado correctamente:";
+            }
+
+            catch (Exception ex)
+            {
+                _respuesta.IsSuccess = false;
+                _respuesta.DisplayMessage = "Error al Activar el Empleado";
+                _respuesta.ErrorMessages = new List<string> { ex.ToString() };
+            }
+
+            return Ok(_respuesta);
+        }
 
         //
         // .A.C.C.I.O.N -- Para eliminar Empleado: --------------------------------------------
         [Authorize]
         [Route("eliminarEmpleado")]
         [HttpPost]
-        public IActionResult eliminarCliente(int id)
+        public IActionResult eliminarEmpleado(int IdEmpleado)
         {
             try
             {
-                _empleadoRepositorio.EliminarEmpleado(id);
-                _respuesta.Result = id;
+                _empleadoRepositorio.EliminarEmpleado(IdEmpleado);
+                _respuesta.Result = IdEmpleado;
                 _respuesta.DisplayMessage = "Empleado eliminado correctamente:";
             }
 

@@ -6,24 +6,35 @@ using System.Data;
 
 namespace ProyectNettApi.Repositories
 {
-    public class EmpresaRepositorio : IEmpresaRepositorio
+
+    public class CargoEmpleadoRepositorio : ICargoEmpleado
     {
         private readonly IConfiguration _configuration;
         private readonly ConexionDB _conexionDB;
 
-        public EmpresaRepositorio(IConfiguration configuration)
+        public CargoEmpleadoRepositorio(IConfiguration configuration)
         {
             _configuration = configuration;
             _conexionDB = new ConexionDB();
         }
 
-        // Lista de empresas por cliente
-        public IEnumerable<EmpresaDTO> GetEmpresasByIdCliente(int ClienteId, int EstadoId)
+        // Lista 
+        public IEnumerable<CargoDTO> GetCargo()
         {
-            string query = "dbo.GetEmpresasByClienteId";
+            string query = "dbo.CargoEmpleadoVer";
 
-            var resultSet = _conexionDB.GetConnection(_configuration).Query< EmpresaDTO>(query, new { ClienteId = ClienteId, EstadoId = EstadoId }, commandType: CommandType.StoredProcedure);
+            var resultSet = _conexionDB.GetConnection(_configuration).Query<CargoDTO>(query, commandType: CommandType.StoredProcedure);
+            return resultSet.ToList();
+        }
+
+        // Lista de cargo por empleado
+        public IEnumerable<CargoEmpleadoDTO> GetCargoByIdEmpleado(int IdEmpleado, int EstadoId)
+        {
+            string query = "dbo.GetCargoEmpleados";
+
+            var resultSet = _conexionDB.GetConnection(_configuration).Query<CargoEmpleadoDTO>(query, new { IdEmpleado = IdEmpleado, EstadoId = EstadoId }, commandType: CommandType.StoredProcedure);
             return resultSet.ToList();
         }
     }
+   
 }

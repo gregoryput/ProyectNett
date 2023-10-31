@@ -47,7 +47,6 @@ namespace ProyectNettApi.Models
         //<--
         //<--
 
-        [Required(ErrorMessage = "Este campo es requerido")]
         public DateTime FechaDeNacimiento { get; set; }
         //<--
         //<--

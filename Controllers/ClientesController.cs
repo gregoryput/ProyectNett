@@ -174,7 +174,7 @@ namespace ProyectNettApi.Controllers
             catch (Exception ex)
             {
                 _respuesta.IsSuccess = false;
-                _respuesta.DisplayMessage = "Error al eliminar el cliente";
+                _respuesta.DisplayMessage = "Error al activar el cliente";
                 _respuesta.ErrorMessages = new List<string> { ex.ToString() };
             }
 

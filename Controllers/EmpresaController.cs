@@ -8,7 +8,7 @@ namespace ProyectNettApi.Controllers
 {
     [Route("Empresas")]
     [ApiController]
-    [Authorize]
+    //[Authorize]
     public class EmpresaController : Controller
     {
         protected Respuesta _respuesta;
@@ -24,7 +24,7 @@ namespace ProyectNettApi.Controllers
 
         //
         // .A.C.C.I.O.N -- Para obtener la lista de Empresas por ClienteId: --------------------------------------------
-        [Authorize]
+        //[Authorize]
         [Route("EmpresasPorClienteId")]
         [HttpGet]
         public IActionResult getClientes(int clienteId, int estadoId)
@@ -34,6 +34,29 @@ namespace ProyectNettApi.Controllers
                 var empresas = _empresaRepositorio.GetEmpresasByIdCliente(clienteId, estadoId);
                 _respuesta.Result = empresas;
                 _respuesta.DisplayMessage = "Empresas del cliente obtenidas correctamente:";
+                return Ok(_respuesta);
+            }
+            catch (Exception ex)
+            {
+                _respuesta.IsSuccess = false;
+                _respuesta.DisplayMessage = "Error al solicitar la lista de empresas";
+                _respuesta.ErrorMessages = new List<string> { ex.ToString() };
+                return StatusCode(500, _respuesta);
+            }
+        }
+
+        //
+        // .A.C.C.I.O.N -- Para obtener la lista de Empresas por ClienteId: --------------------------------------------
+        //[Authorize]
+        [Route("EmpresasPorProveedorId")]
+        [HttpGet]
+        public IActionResult getProveedor(int IdProveedor, int estadoId)
+        {
+            try
+            {
+                var empresas = _empresaRepositorio.GetEmpresasByIdProveedor(IdProveedor, estadoId);
+                _respuesta.Result = empresas;
+                _respuesta.DisplayMessage = "Empresas del Proveedor obtenidas correctamente:";
                 return Ok(_respuesta);
             }
             catch (Exception ex)

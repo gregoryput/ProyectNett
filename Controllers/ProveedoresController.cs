@@ -14,7 +14,7 @@ namespace ProyectNettApi.Controllers
         protected Respuesta _respuesta;
         private readonly IConfiguration _configuration;
         private readonly IProveedorRepositorio _proveedorRepositorio;
-
+        private readonly InfoUserByToken _infoUser;
         public ProveedoresController(IConfiguration configuration)
         {
             _respuesta = new Respuesta();
@@ -25,6 +25,7 @@ namespace ProyectNettApi.Controllers
 
         //
         // .A.C.C.I.O.N -- Para obtener la lista basica de Proveedores: --------------------------------------------
+        [Authorize]
         [Route("obtenerProveedores")]
         [HttpGet]
         public IActionResult getProveedores()
@@ -44,14 +45,38 @@ namespace ProyectNettApi.Controllers
 
             return Ok(_respuesta);
         }
+        // .A.C.C.I.O.N -- Para obtener la informacion del proveedor: --------------------------------------------
+        [Authorize]
+        [Route("obtenerInfoPersonalProveedor")]
+        [HttpGet]
+        public IActionResult getInfoPersonal(int IdProveedor)
+        {
+            try
+            {
+                var info = _proveedorRepositorio.GetInfoPersonalProveedor(IdProveedor);
+                _respuesta.Result = info;
+                _respuesta.DisplayMessage = "Info del proveedor obtenida con exito:";
+                return Ok(_respuesta);
+            }
+            catch (Exception ex)
+            {
+                _respuesta.IsSuccess = false;
+                _respuesta.DisplayMessage = "Error al solicitar la info del proveedor";
+                _respuesta.ErrorMessages = new List<string> { ex.ToString() };
+                return StatusCode(500, _respuesta);
+            }
+        }
 
 
         //
         // .A.C.C.I.O.N -- Para insertar Proveedor: --------------------------------------------
         [Route("insertarProveedores")]
         [HttpPost]
-        public IActionResult insertarCliente(Proveedor proveedor)
+        [Authorize]
+        public IActionResult insertarProveedor(Proveedor proveedor)
         {
+
+            string token = HttpContext.Request.Headers["Authorization"];
             try
             {
                 _proveedorRepositorio.InsertarProveedor(proveedor);
@@ -75,6 +100,7 @@ namespace ProyectNettApi.Controllers
         // .A.C.C.I.O.N -- Para eliminar Proveedor: --------------------------------------------
         [Route("eliminarProveedores")]
         [HttpPost]
+        [Authorize]
         public IActionResult eliminarProveedor(int IdProveedor)
         {
             try
@@ -93,5 +119,62 @@ namespace ProyectNettApi.Controllers
 
             return Ok(_respuesta);
         }
+
+
+        // .A.C.C.I.O.N -- Para Activar proveedor: --------------------------------------------
+        [Authorize]
+        [Route("activarProveedor")]
+        [HttpPost]
+        public IActionResult activarProveedor(int IdProveedor)
+        {
+            try
+            {
+
+                _proveedorRepositorio.ActivarProveedor(IdProveedor);
+                _respuesta.Result = IdProveedor;
+                _respuesta.DisplayMessage = "Proveedor activado correctamente:";
+            }
+
+            catch (Exception ex)
+            {
+                _respuesta.IsSuccess = false;
+                _respuesta.DisplayMessage = "Error al activar el Proveedor";
+                _respuesta.ErrorMessages = new List<string> { ex.ToString() };
+            }
+
+            return Ok(_respuesta);
+        }
+
+        // .A.C.C.I.O.N -- Para Actualizar proveedor: --------------------------------------------
+        [Authorize]
+        [Route("actualizarProveedor")]
+        [HttpPost]
+        public IActionResult actualizarProveedor(Proveedor proveedor)
+        {
+            try
+            {
+                _proveedorRepositorio.ActualizarProveedor(proveedor);
+                _respuesta.Result = proveedor;
+                _respuesta.DisplayMessage = "Proveedor editado correctamente:";
+                return Ok(_respuesta);
+            }
+
+            catch (Exception ex)
+            {
+                _respuesta.IsSuccess = false;
+                _respuesta.DisplayMessage = "Error al actualizar el Proveedor";
+                _respuesta.ErrorMessages = new List<string> { ex.ToString() };
+                return StatusCode(500, _respuesta);
+            }
+
+            return Ok(_respuesta);
+        }
+
+
     }
+
+   
+
+
+   
 }

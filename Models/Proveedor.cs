@@ -12,8 +12,8 @@ namespace ProyectNettApi.Models
         //<--
         //<--
 
-        [Required(ErrorMessage = "Este campo es requerido")]
-        public int IdEstadoProveedor { get; set; }
+        //[Required(ErrorMessage = "Este campo es requerido")]
+        //public int IdEstadoProveedor { get; set; }
         //<--
         //<--
 

@@ -4,6 +4,7 @@ using Microsoft.Data.SqlClient;
 using ProyectNettApi.DTO;
 using ProyectNettApi.Models;
 using System.Data;
+using Newtonsoft.Json;
 
 namespace ProyectNettApi.Repositories
 {
@@ -19,12 +20,20 @@ namespace ProyectNettApi.Repositories
         }
 
         // REPOSITORIO--A-P-I----P-R-O-Y-E-N-E-T-T ------ (Metodo para DEVOLVER una LISTA de Empleados) y FILTRA EMPLEADO gregoryput
-
         public IEnumerable<EmpleadoDTO> GetEmpleado()
         {
-            string query = "Execute dbo.ListadoEmpleadoV2";
-            var resultSet = _conexionDB.GetConnection(_configuration).Query<EmpleadoDTO>(query);
-            return resultSet.ToList();
+            string query = "dbo.ListadoEmpleadoV2";
+            using (var connection = _conexionDB.GetConnection(_configuration))
+            {
+                var resultSet = connection.Query<EmpleadoDTO>(query, commandType: CommandType.StoredProcedure);
+
+                foreach (var empleado in resultSet)
+                {
+                    empleado.CargoEmpleadoDTOs = JsonConvert.DeserializeObject<List<CargoEmpleadoDTO2>>(empleado.CargoEmpleadoDTOsJson);
+                }
+
+                return resultSet.ToList();
+            }
         }
 
         public EmpleadoDTO GetInfoPersonalEmpleado(int Id)
@@ -112,7 +121,7 @@ namespace ProyectNettApi.Repositories
                         {
                             IdEmpleado = IdEmpleado,
                             IdCargo = cargo.IdCargo,
-                            Descripcion = cargo.Descripción,
+                            Descripcion = cargo.Descripcion,
                             IdCreadoPor = empleado.IdCreadoPor
                         }, transaction, commandType: CommandType.StoredProcedure);
                 }
@@ -150,7 +159,7 @@ namespace ProyectNettApi.Repositories
                     commandType: CommandType.StoredProcedure);
 
                 // - Eliminando en la tabla Personas:
-                connection.Execute("dbo.EliminarPersonas", new { IdEmpleado }, transaction,
+                connection.Execute("dbo.EliminarPersonasEmpleado", new { IdEmpleado }, transaction,
                     commandType: CommandType.StoredProcedure);
 
                 transaction.Commit();
@@ -164,6 +173,43 @@ namespace ProyectNettApi.Repositories
             }
             connection.Close();
         }
+
+
+        //
+        // REPOSITORIO--A-P-I----P-R-O-Y-E-N-E-T-T ------ (Metodo para ACTIVAR/ELIMINAR ):
+        public void ActivarEmpleado(int IdEmpleado)
+        {
+            var connection = _conexionDB.GetConnection(_configuration);
+            connection.Open();
+            var transaction = connection.BeginTransaction();
+
+            try
+            {
+                // - ACTIVANDO/RESTAURANDO en la tabla Empleado_Cargo:
+                connection.Execute("dbo.Restaurar_Cargo_Empleado", new { IdEmpleado }, transaction,
+                    commandType: CommandType.StoredProcedure);
+
+                // - Eliminando en la tabla Empleado:
+                connection.Execute("dbo.RestaurarEmpleado", new { IdEmpleado }, transaction,
+                    commandType: CommandType.StoredProcedure);
+
+                // - Eliminando en la tabla Personas:
+                connection.Execute("dbo.RestaurarPersonasEmpleado", new { IdEmpleado }, transaction,
+                    commandType: CommandType.StoredProcedure);
+
+                transaction.Commit();
+            }
+
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+                connection.Close();
+                throw ex;
+            }
+            connection.Close();
+        }
+
+
 
 
         //
@@ -200,11 +246,11 @@ namespace ProyectNettApi.Repositories
                     // Si Cargo tiene IdCargo != 0 y IdEstadoRegistro != 2 se debe hacer un update:
                     if (cargo.IdCargo != 0 && cargo.IdEstadoRegistro != 2)
                     {
-                        connection.Execute("dbo.ActualizarCargos", new
+                        connection.Execute("dbo.ActualizarEmpleadosCargos", new
                         {
                             IdEmpleado = empleado.IdEmpleado,
                             IdCargo = cargo.IdCargo,
-                            Descripcion = cargo.Descripción,
+                            Descripcion = cargo.Descripcion,
                             IdModificadoPor = cargo.IdModificadoPor
                         }, transaction, commandType: CommandType.StoredProcedure);
                     }
@@ -226,7 +272,7 @@ namespace ProyectNettApi.Repositories
                             {
                                 IdEmpleado = empleado.IdEmpleado,
                                 IdCargo = cargo.IdCargo,
-                                Descripcion = cargo.Descripción,
+                                Descripcion = cargo.Descripcion,
                                 IdCreadoPor = empleado.IdCreadoPor
                             }, transaction, commandType: CommandType.StoredProcedure);
                     }
