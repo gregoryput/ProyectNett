@@ -11,18 +11,25 @@ import {
   Usuario,
   Home,
   Detail,
+  FormFacturacion,
 } from "../views";
 import Login from "../page/Login";
 import ErrorPages from "../page/ErrorPages";
 import RequireLogin from "../utils/require-login";
 import ProtectedRoute from "./protected-route/protected-route";
 import ConfiguracionPerfil from "../views/ViewUsuario/ConfiguracionPerfil";
+import { Toaster } from "react-hot-toast";
 
 export const createRouter = () => {
   const router = createBrowserRouter([
     {
       path: "/",
-      element: <RequireLogin />,
+      element: (
+        <>
+          <RequireLogin />
+          <Toaster position="top-center" />
+        </>
+      ),
       errorElement: <ErrorPages />,
       children: [
         {
@@ -70,6 +77,16 @@ export const createRouter = () => {
               roles={["Administrador", "Asistente Administrativo"]}
             >
               <CuentaPorCobrar />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "/cuenta-por-cobrar/form-facturacion",
+          element: (
+            <ProtectedRoute
+              roles={["Administrador", "Asistente Administrativo"]}
+            >
+              <FormFacturacion />
             </ProtectedRoute>
           ),
         },

@@ -29,6 +29,7 @@ export function Detail() {
     clienteId: parseInt(valor.clienteId, 10),
     estadoId: 0,
   });
+  console.log(isCompaniesClientSuccess, isErrorCompanies, isLoadingCompaniesClient);
 
   const {
     data: personalInfoData,
@@ -36,6 +37,8 @@ export function Detail() {
     isError: isErrorpersonalInfo,
     isLoading: isLoadingPersonalInfo,
   } = useGetPersonalInfoQuery(parseInt(valor.clienteId, 10));
+
+  console.log(isPersonalInfoSuccess, isPersonalInfoSuccess, isErrorpersonalInfo, isLoadingPersonalInfo);
 
   const [dataState, setDataState] = useState([]);
 

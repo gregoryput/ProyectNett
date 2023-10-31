@@ -56,7 +56,7 @@ export default function Cliente() {
       message.success("Ha ocurrido un error al intentar eliminar al cliente");
       setIsModalOpen(false);
     }
-  }, [isDeleteSuccess]);
+  }, [isErrorDelete]);
 
   const [
     restoreClient,
@@ -120,7 +120,7 @@ export default function Cliente() {
     <>
       <ViewContainerPages className="animate__animated animate__fadeIn">
         <h2 style={{ marginLeft: 15, marginBottom: 40 }} id="titleTop">
-          Gestion de clientes
+          Gestión de clientes
         </h2>
         <ContainerButton
           onClick={() => {

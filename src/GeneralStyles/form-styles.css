@@ -1,0 +1,4 @@
+/* Cambiar el tamaño del mensaje de error */
+.ant-form-item-explain-error {
+    font-size: 12px;
+  }

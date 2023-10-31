@@ -13,8 +13,12 @@ import { companiesApi } from "./Api/companiesApi";
 import companiesReducer from "./Slice/companiesSlice";
 import { ConfigPerfilApi } from "./Api/configPerfilApi";
 import configPerfilReducer from "./Slice/configPerfilSlice";
+import { unitsOfMeasurementsApi } from "./Api/unitsOfMeasurementsApi";
+import unitsOfMeasurementsReducer from "./Slice/unitsOfMeasurementsSlice";
+// ---
+import { productsApi } from "./Api/productsApi";
+import productsReducer from "./Slice/productsSlice";
 
-//import { uQVerificarApi } from "./Api/uQVerificarApi";
 import { uQVerificarApi } from "./Api/uQVerificarApi";
 import uqVerificarReducer from "./Slice/uqVerificarSlice";
 
@@ -51,6 +55,14 @@ export const store = configureStore({
     //Verificacion de Campos unicos:
     existe: uqVerificarReducer,
     [uQVerificarApi.reducerPath]: uQVerificarApi.reducer,
+
+    //Productos
+    products: productsReducer,
+    [productsApi.reducerPath]: productsApi.reducer,
+
+    //Unidades de medidas
+    unitsOfMeasurements: unitsOfMeasurementsReducer,
+    [unitsOfMeasurementsApi.reducerPath]: unitsOfMeasurementsApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware()
@@ -61,7 +73,9 @@ export const store = configureStore({
       .concat(countriesApi.middleware)
       .concat(companiesApi.middleware)
       .concat(ConfigPerfilApi.middleware)
-      .concat(uQVerificarApi.middleware),
+      .concat(uQVerificarApi.middleware)
+      .concat(productsApi.middleware)
+      .concat(unitsOfMeasurementsApi.middleware),
 });
 
 export default store;
