@@ -207,6 +207,7 @@ export default function InformacionPersonal(props) {
     dataClientEdit: PropTypes.object, // Cambia el tipo según corresponda
     nextPart: PropTypes.func.isRequired,
     dataValues: PropTypes.object.isRequired,
+    datavalues: PropTypes.object.isRequired,
     setDataClientEdit: PropTypes.func.isRequired,
     setDatosFormulario: PropTypes.func.isRequired,
   };
@@ -377,11 +378,11 @@ export default function InformacionPersonal(props) {
         </LabelFor>
 
         {/*-------------INPUT FechaDeNacimiento-------------*/}
-        <LabelFor>
+        {/* <LabelFor>
           {" "}
           Fecha de nacimiento
           <InputFor type="date" {...register("FechaDeNacimiento")} />
-        </LabelFor>
+        </LabelFor> */}
 
         {/*---------SELEC OPTION IDPAIS---------*/}
         <LabelFor>

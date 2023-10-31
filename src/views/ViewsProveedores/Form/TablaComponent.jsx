@@ -103,24 +103,30 @@ export default function TablaComponent({
               pageSizeOptions: [6, 12, 18, 24, 32, 40, 45, 50, 55, 60, 100],
             }}
           >
+             <Column
+              title="Id Proveedor"
+              dataIndex="idProveedor"
+              key="idProveedor"
+              
+            />
             <Column
               title="Nombres"
               dataIndex="nombres"
               key="nombres"
-              sorter={(a, b) => a.Secuencia.localeCompare(b.nombres)}
+             
             />
             <Column
               title="Apellidos"
               dataIndex="apellidos"
               key="apellidos"
-              sorter={(a, b) => a.Secuencia.localeCompare(b.apellidos)}
+              
             />
             <Column title="Teléfono" dataIndex="telefono1" key="telefono1" />
             <Column
               title="Ciudad"
               dataIndex="ciudadNombre"
               key="ciudad"
-              sorter={(a, b) => a.Secuencia.localeCompare(b.ciudad)}
+              
             />
             <Column title="Correo" dataIndex="correo" key="correo" />
 

@@ -108,25 +108,25 @@ export default function TablaComponent({
               title="Id Cliente"
               dataIndex="idCliente"
               key="idCliente"
-              sorter={(a, b) => a.idCliente.localeCompare(b.idCliente)}
+             
             />
             <Column
               title="Nombre completo"
               dataIndex="nombres"
               key="nombres"
-              sorter={(a, b) => a.nombres.localeCompare(b.nombres)}
+           
             />
             <Column
               title="Apellidos"
               dataIndex="apellidos"
               key="apellidos"
-              sorter={(a, b) => a.apellidos.localeCompare(b.apellidos)}
+              
             />
             <Column
               title="Sexo"
               dataIndex="sexoNombre"
               key="sexoNombre"
-              sorter={(a, b) => a.sexoNombre.localeCompare(b.sexoNombre)}
+             
             />
             <Column title="Teléfono" dataIndex="telefono1" key="telefono1" />
             <Column

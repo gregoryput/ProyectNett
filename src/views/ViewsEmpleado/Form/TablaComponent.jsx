@@ -105,24 +105,28 @@ export default function TablaComponent({
               showTotal: (total) => ` ${total} Total`,
             }}
           >
+             <Column
+              title="Id Empleado"
+              dataIndex="idEmpleado"
+              key="idEmpleado"
+            />
             <Column
               title="Nombre completo"
               dataIndex="nombres"
               key="nombres"
-              sorter={(a, b) => a.Secuencia.localeCompare(b.nombres)}
+            
             />
             <Column
               title="Apellidos"
               dataIndex="apellidos"
               key="apellidos"
-              sorter={(a, b) => a.Secuencia.localeCompare(b.apellidos)}
+           
             />
             <Column title="Teléfono" dataIndex="telefono1" key="telefono1" />
             <Column
               title="Ciudad"
               dataIndex="ciudadNombre"
               key="ciudad"
-              sorter={(a, b) => a.Secuencia.localeCompare(b.ciudad)}
             />
             <Column title="Correo" dataIndex="correo" key="correo" />
 

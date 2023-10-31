@@ -376,11 +376,11 @@ export default function InformacionPersonal(props) {
         </LabelFor>
 
         {/*-------------INPUT FechaDeNacimiento-------------*/}
-        <LabelFor>
+        {/* <LabelFor>
           {" "}
           Fecha de nacimiento
           <InputFor type="date" {...register("FechaDeNacimiento")} />
-        </LabelFor>
+        </LabelFor> */}
 
         {/*---------SELEC OPTION IDPAIS---------*/}
         <LabelFor>
