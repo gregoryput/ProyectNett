@@ -6,40 +6,40 @@ using ProyectNettApi.Repositories;
 
 namespace ProyectNettApi.Controllers
 {
-    [Route("Empresas")]
+    [Route("Cargos")]
     [ApiController]
     //[Authorize]
-    public class EmpresaController : Controller
+    public class CargoEmpleadoController : Controller
     {
         protected Respuesta _respuesta;
         private readonly IConfiguration _configuration;
-        private readonly IEmpresaRepositorio _empresaRepositorio;
+        private readonly ICargoEmpleado _cargoEmpleadoRepositorio;
 
-        public EmpresaController(IConfiguration configuration)
+        public CargoEmpleadoController(IConfiguration configuration)
         {
             _respuesta = new Respuesta();
             _configuration = configuration;
-            _empresaRepositorio = new EmpresaRepositorio(_configuration);
+            _cargoEmpleadoRepositorio = new CargoEmpleadoRepositorio(_configuration);
         }
 
         //
-        // .A.C.C.I.O.N -- Para obtener la lista de Empresas por ClienteId: --------------------------------------------
-        //[Authorize]
-        [Route("EmpresasPorClienteId")]
+        // .A.C.C.I.O.N -- Para obtener la lista de Cargo: --------------------------------------------
+        [Authorize]
+        [Route("ObtenerCargo")]
         [HttpGet]
-        public IActionResult getClientes(int clienteId, int estadoId)
+        public IActionResult getCargo()
         {
             try
             {
-                var empresas = _empresaRepositorio.GetEmpresasByIdCliente(clienteId, estadoId);
-                _respuesta.Result = empresas;
-                _respuesta.DisplayMessage = "Empresas del cliente obtenidas correctamente:";
+                var cargo = _cargoEmpleadoRepositorio.GetCargo();
+                _respuesta.Result = cargo;
+                _respuesta.DisplayMessage = "Cargos  obtenidas correctamente:";
                 return Ok(_respuesta);
             }
             catch (Exception ex)
             {
                 _respuesta.IsSuccess = false;
-                _respuesta.DisplayMessage = "Error al solicitar la lista de empresas";
+                _respuesta.DisplayMessage = "Error al solicitar la lista de cargo";
                 _respuesta.ErrorMessages = new List<string> { ex.ToString() };
                 return StatusCode(500, _respuesta);
             }
@@ -47,22 +47,22 @@ namespace ProyectNettApi.Controllers
 
         //
         // .A.C.C.I.O.N -- Para obtener la lista de Empresas por ClienteId: --------------------------------------------
-        //[Authorize]
-        [Route("EmpresasPorProveedorId")]
+        [Authorize]
+        [Route("CargoPorEmpleadoId")]
         [HttpGet]
-        public IActionResult getProveedor(int IdProveedor, int estadoId)
+        public IActionResult getEmpleadoId(int IdEmpleado, int estadoId)
         {
             try
             {
-                var empresas = _empresaRepositorio.GetEmpresasByIdProveedor(IdProveedor, estadoId);
+                var empresas = _cargoEmpleadoRepositorio.GetCargoByIdEmpleado(IdEmpleado, estadoId);
                 _respuesta.Result = empresas;
-                _respuesta.DisplayMessage = "Empresas del Proveedor obtenidas correctamente:";
+                _respuesta.DisplayMessage = "Cargo del Empleado obtenidas correctamente:";
                 return Ok(_respuesta);
             }
             catch (Exception ex)
             {
                 _respuesta.IsSuccess = false;
-                _respuesta.DisplayMessage = "Error al solicitar la lista de empresas";
+                _respuesta.DisplayMessage = "Error al solicitar la lista de Cargo";
                 _respuesta.ErrorMessages = new List<string> { ex.ToString() };
                 return StatusCode(500, _respuesta);
             }

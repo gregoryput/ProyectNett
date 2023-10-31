@@ -7,7 +7,7 @@ namespace ProyectNettApi.Models
         [Key]
         [Required(ErrorMessage = "Este campo es requerido")]
         public int IdCargo { get; set; }
-        public string Descripción { get; set; }
+        public string Descripcion { get; set; }
         public int IdCreadoPor { get; set; }
         public DateTime FechaCreacion { get; set; }
         public int IdModificadoPor { get; set; }

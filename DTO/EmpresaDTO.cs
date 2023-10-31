@@ -1,4 +1,6 @@
-﻿namespace ProyectNettApi.DTO
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace ProyectNettApi.DTO
 {
     public class EmpresaDTO
     {
@@ -12,5 +14,7 @@
         public string Dirección { get; set; }
         public int IdCiudad { get; set; }
         public int IdPais { get; set; }
+        public string PaisNombre { get; set; }
+        public string CiudadNombre { get; set; }
     }
 }

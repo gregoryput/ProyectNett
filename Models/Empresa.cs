@@ -56,7 +56,17 @@ namespace ProyectNettApi.Models
         public int IdCiudad { get; set; }
         //<--
         //<--
+        [Required(ErrorMessage = "Este campo es requerido")]
+        public int IdPais { get; set; }
 
+        [Required(ErrorMessage = "Este campo es requerido")]
+        public string PaisNombre { get; set; }
+        //<--
+        //<--
+        [Required(ErrorMessage = "Este campo es requerido")]
+        public string CiudadNombre { get; set; }
+        //<--
+        //<--
         [Required(ErrorMessage = "Este campo es requerido")]
         public int IdCreadoPor { get; set; }
         //<--

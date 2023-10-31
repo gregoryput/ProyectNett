@@ -22,8 +22,19 @@ namespace ProyectNettApi.Repositories
         {
             string query = "dbo.GetEmpresasByClienteId";
 
-            var resultSet = _conexionDB.GetConnection(_configuration).Query< EmpresaDTO>(query, new { ClienteId = ClienteId, EstadoId = EstadoId }, commandType: CommandType.StoredProcedure);
+            var resultSet = _conexionDB.GetConnection(_configuration).Query<EmpresaDTO>(query, new { ClienteId = ClienteId, EstadoId = EstadoId }, commandType: CommandType.StoredProcedure);
+            return resultSet.ToList();
+        }
+
+        // Lista de empresas por cliente
+        public IEnumerable<EmpresaDTO> GetEmpresasByIdProveedor(int IdProveedor, int EstadoId)
+        {
+            string query = "dbo.GetEmpresasByIdProveedor";
+
+            var resultSet = _conexionDB.GetConnection(_configuration).Query<EmpresaDTO>(query, new { IdProveedor = IdProveedor, EstadoId = EstadoId }, commandType: CommandType.StoredProcedure);
             return resultSet.ToList();
         }
     }
+
+
 }

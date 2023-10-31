@@ -25,32 +25,83 @@ namespace ProyectNettApi.Controllers
             _infoUser = new InfoUserByToken();
         }
 
-        //
-        // .A.C.C.I.O.N -- Para obtener la lista basica de Empleados: --------------------------------------------
+
+        // .A.C.C.I.O.N -- Para obtener la lista basica de Emepleado: --------------------------------------------
         [Authorize]
-        [Route("obtenerEmpleados")]
+        [Route("obtenerEmpleado")]
         [HttpGet]
-        public IActionResult getEmpleados(int pageNumber, int pageSize)
+        public IActionResult getEmpleado()
         {
             try
             {
-                var (listaEmpleados, totalCount) = _empleadoRepositorio.GetEmpleados(pageNumber, pageSize);
-
-                // Calcular el número total de páginas
-                int totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
-
-                _respuesta.Result = listaEmpleados;
-                _respuesta.DisplayMessage = "Listado de empleados obtenido con éxito:";
+                var listaEmpleado = _empleadoRepositorio.GetEmpleado();
+                _respuesta.Result = listaEmpleado;
+                _respuesta.DisplayMessage = "Listado de empleado obtenido con exito:";
                 return Ok(_respuesta);
             }
             catch (Exception ex)
             {
                 _respuesta.IsSuccess = false;
-                _respuesta.DisplayMessage = "Error al solicitar la lista de empleados";
+                _respuesta.DisplayMessage = "Error al solicitar la lista de Empleado";
                 _respuesta.ErrorMessages = new List<string> { ex.ToString() };
                 return StatusCode(500, _respuesta);
             }
         }
+
+        //
+        // .A.C.C.I.O.N -- Para obtener la informacion del empleado: --------------------------------------------
+        [Authorize]
+        [Route("obtenerInfoPersonal")]
+        [HttpGet]
+        public IActionResult getInfoPersonal(int IdEmpleado)
+        {
+            try
+            {
+                var info = _empleadoRepositorio.GetInfoPersonalEmpleado(IdEmpleado);
+                _respuesta.Result = info;
+                _respuesta.DisplayMessage = "Info del empleado obtenida con exito:";
+                return Ok(_respuesta);
+            }
+            catch (Exception ex)
+            {
+                _respuesta.IsSuccess = false;
+                _respuesta.DisplayMessage = "Error al solicitar la info del empleado";
+                _respuesta.ErrorMessages = new List<string> { ex.ToString() };
+                return StatusCode(500, _respuesta);
+            }
+        }
+
+
+
+
+
+
+        //
+        //// .A.C.C.I.O.N -- Para obtener la lista basica de Empleados:Con paginacion --------------------------------------------
+        //[Authorize]
+        //[Route("obtenerEmpleadosPag")]
+        //[HttpGet]
+        //public IActionResult getEmpleados(int pageNumber, int pageSize)
+        //{
+        //    try
+        //    {
+        //        var (listaEmpleados, totalCount) = _empleadoRepositorio.GetEmpleados(pageNumber, pageSize);
+
+        //        // Calcular el número total de páginas
+        //        int totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
+
+        //        _respuesta.Result = listaEmpleados;
+        //        _respuesta.DisplayMessage = "Listado de empleados obtenido con éxito:";
+        //        return Ok(_respuesta);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _respuesta.IsSuccess = false;
+        //        _respuesta.DisplayMessage = "Error al solicitar la lista de empleados";
+        //        _respuesta.ErrorMessages = new List<string> { ex.ToString() };
+        //        return StatusCode(500, _respuesta);
+        //    }
+        //}
 
 
         //
@@ -79,18 +130,41 @@ namespace ProyectNettApi.Controllers
             }
         }
 
+        //
+        // .A.C.C.I.O.N -- Para Activar Cliente: --------------------------------------------
+        [Authorize]
+        [Route("activarEmpleado")]
+        [HttpPost]
+        public IActionResult activarEmpleado(int IdEmpleado)
+        {
+            try
+            {
+                _empleadoRepositorio.ActivarEmpleado(IdEmpleado);
+                _respuesta.Result = IdEmpleado;
+                _respuesta.DisplayMessage = "Empleado activado correctamente:";
+            }
+
+            catch (Exception ex)
+            {
+                _respuesta.IsSuccess = false;
+                _respuesta.DisplayMessage = "Error al Activar el Empleado";
+                _respuesta.ErrorMessages = new List<string> { ex.ToString() };
+            }
+
+            return Ok(_respuesta);
+        }
 
         //
         // .A.C.C.I.O.N -- Para eliminar Empleado: --------------------------------------------
         [Authorize]
-        [Route("eliminarCliente")]
+        [Route("eliminarEmpleado")]
         [HttpPost]
-        public IActionResult eliminarCliente(int IdCliente)
+        public IActionResult eliminarEmpleado(int IdEmpleado)
         {
             try
             {
-                _empleadoRepositorio.EliminarEmpleado(IdCliente);
-                _respuesta.Result = IdCliente;
+                _empleadoRepositorio.EliminarEmpleado(IdEmpleado);
+                _respuesta.Result = IdEmpleado;
                 _respuesta.DisplayMessage = "Empleado eliminado correctamente:";
             }
 
@@ -99,6 +173,32 @@ namespace ProyectNettApi.Controllers
                 _respuesta.IsSuccess = false;
                 _respuesta.DisplayMessage = "Error al eliminar al empleado";
                 _respuesta.ErrorMessages = new List<string> { ex.ToString() };
+            }
+
+            return Ok(_respuesta);
+        }
+
+        //
+        // .A.C.C.I.O.N -- Para Actualizar Cliente: --------------------------------------------
+        [Authorize]
+        [Route("actualizarEmpleado")]
+        [HttpPost]
+        public IActionResult actualizar(Empleado c)
+        {
+            try
+            {
+                _empleadoRepositorio.ActualizarEmpleado(c);
+                _respuesta.Result = c;
+                _respuesta.DisplayMessage = "Empleado editado correctamente:";
+                return Ok(_respuesta);
+            }
+
+            catch (Exception ex)
+            {
+                _respuesta.IsSuccess = false;
+                _respuesta.DisplayMessage = "Error al actualizar el Empleado";
+                _respuesta.ErrorMessages = new List<string> { ex.ToString() };
+                return StatusCode(500, _respuesta);
             }
 
             return Ok(_respuesta);
