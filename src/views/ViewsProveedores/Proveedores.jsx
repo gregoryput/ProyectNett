@@ -8,69 +8,68 @@ import {
 } from "../../components";
 
 import { FormComponent, TablaComponent } from "./Form";
-import {
-  useDeleteClientMutation,
-  useGetClientsQuery,
-  useRestoreClientMutation,
-} from "../../redux/Api/clientsApi";
 
 //icons
 import { IoTrashOutline } from "react-icons/io5";
 import { MdRestore } from "react-icons/md";
 // modal creado por mi
+import { useDesactivarMutation, useGetQuery, useRestoreMutation } from "../../redux/Api/ProveedorApi";
 
-export default function Cliente() {
+export default function Proveedores() {
   const [loadingSave, setLoadingSave] = useState(false);
   const [toggle, setToggle] = useState(false);
-  const [dataClientEdit, setDataClientEdit] = useState(null);
+  const [dataEdit, setDataEdit] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const [selectedClient, setSelectedClient] = useState();
-  const [actionClient, setActionClient] = useState("");
+  const [selected, setSelected] = useState();
+  const [action, setAction] = useState("");
 
   const [
-    deleteClient,
+    Desactivar,
     {
       isLoading: isLoadinDelete,
       isSuccess: isDeleteSuccess,
       isError: isErrorDelete,
     },
-  ] = useDeleteClientMutation();
-  useEffect(() => {
-    if (isDeleteSuccess) {
-      message.success("Cliente eliminando correctamente");
-      setIsModalOpen(false);
-    }
-  }, [isDeleteSuccess]);
-  //isErrorDelete ----------
-  useEffect(() => {
-    if (isErrorDelete) {
-      message.success("Ha ocurrido un error al intentar eliminar al cliente");
-      setIsModalOpen(false);
-    }
-  }, [isDeleteSuccess, isErrorDelete]);
+  ] = useDesactivarMutation();
+
 
   const [
-    restoreClient,
+    restore,
     {
       isLoading: isLoadinRestore,
       isSuccess: isRestoreSuccess,
       isError: isErrorRestore,
     },
-  ] = useRestoreClientMutation();
+  ] = useRestoreMutation();
+
   useEffect(() => {
     if (isRestoreSuccess) {
-      message.success("Cliente activado correctamente");
+      message.success("Proveedor activado correctamente");
       setIsModalOpen(false);
     }
   }, [isRestoreSuccess]);
   //isErrorRestore ----------
   useEffect(() => {
     if (isErrorRestore) {
-      message.success("Ha ocurrido un error al intentar activar al cliente");
+      message.success("Ha ocurrido un error al intentar activar al Proveedor");
       setIsModalOpen(false);
     }
   }, [isErrorRestore]);
+
+  useEffect(() => {
+    if (isDeleteSuccess) {
+      message.success("Proveedor eliminando correctamente");
+      setIsModalOpen(false);
+    }
+  }, [isDeleteSuccess]);
+  //isErrorDelete ----------
+  useEffect(() => {
+    if (isErrorDelete) {
+      message.success("Ha ocurrido un error al intentar eliminar al Proveedor");
+      setIsModalOpen(false);
+    }
+  }, [isDeleteSuccess]);
 
   const handleOpenModal = () => {
     setIsModalOpen(true);
@@ -79,38 +78,39 @@ export default function Cliente() {
   const handleCloseModal = () => {
     setIsModalOpen(false);
   };
-  //Estado redux api para obtener la lista de clientes con paginacion
+  //Estado redux api para obtener la lista 
   const {
-    data: clientesData,
+    data: getData,
     isSuccess: isClientsSuccess,
-    isLoading: isLoadingClients,
-  } = useGetClientsQuery("");
+    isLoading: isLoading,
+  } = useGetQuery("");
+
 
   useEffect(() => {
     if (isClientsSuccess) {
-      message.success("Listado de clientes obtenido correctamente!");
+      message.success("Listado de Proveedores obtenido correctamente!");
     }
   }, [isClientsSuccess]);
 
   //Onclick de editar:
-  const editarCliente = (dataClientEdit) => {
+  const editar = (data) => {
     setToggle(true);
-    setDataClientEdit(dataClientEdit);
+    setDataEdit(data);
   };
 
-  const scrollToTop = () => {
+  const scrollToTop = ()=> {
     // Scroll suave hacia la parte superior de la página
     window.scrollTo({
       top: 0,
-      behavior: "smooth",
+      behavior: "smooth"
     });
-  };
+  }
 
   return (
     <>
       <ViewContainerPages className="animate__animated animate__fadeIn">
         {/* <h2 style={{ marginLeft: 15, marginBottom: 40 }} id="titleTop">
-          Gestion de clientes
+          Gestion de proveedores
         </h2> */}
         <ContainerButton
           onClick={() => {
@@ -127,39 +127,41 @@ export default function Cliente() {
           setLoadingSave={setLoadingSave}
           toggle={toggle}
           setToggle={setToggle}
-          dataClientEdit={dataClientEdit}
-          setDataClientEdit={setDataClientEdit}
+          dataEdit={dataEdit}
+          setDataEdit={setDataEdit}
         />
 
         <TablaComponent
-          data={clientesData}
-          dataClients={clientesData}
-          isLoadingClients={isLoadingClients}
+          data={getData}
+          isLoading={isLoading}
           loadingSave={loadingSave}
-          editarCliente={editarCliente}
+          editar={editar}
           handleOpenModal={handleOpenModal}
           goSectionUp={scrollToTop}
-          setSelectedClient={setSelectedClient}
-          setActionClient={setActionClient}
+          setSelected={setSelected}
+          setAction={setAction}
         />
 
-        <Modal
-          open={isModalOpen}
+        <Modal open={isModalOpen}
           footer={null}
           onCancel={handleCloseModal}
           title={"Confirma la accion"}
           centered
-        >
+          
+          >
           {isLoadinDelete || isLoadinRestore ? (
-            <></>
+           <></>
           ) : (
             <p>
-              {selectedClient != undefined &&
-              selectedClient.nombreEstado === "Activo"
-                ? "Esta seguro de desactivar a este Cliente"
-                : "Esta seguro de activar a este Cliente"}
+             
+              { selected !=undefined &&  selected.nombreEstado === "Activo" ? (
+                "Esta seguro de desactivar a este proveedor"
+              ):
+              ("Esta seguro de activar a este proveedor")
+              }
             </p>
           )}
+
           <div
             style={{
               display: "flex",
@@ -183,12 +185,12 @@ export default function Cliente() {
                 width: 130,
               }}
               onClick={() =>
-                actionClient === "Activar"
-                  ? restoreClient(selectedClient.idCliente)
-                  : deleteClient(selectedClient.idCliente)
+                action === "Activar"
+                  ? restore(selected.idProveedor)
+                  : Desactivar(selected.idProveedor)
               }
             >
-              {actionClient === "Desactivar" ? (
+              {action === "Desactivar" ? (
                 <IoTrashOutline
                   size={18}
                   style={{ marginLeft: 5, marginRight: 5 }}

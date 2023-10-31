@@ -23,50 +23,47 @@ import { MdRestore } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 
 export default function TablaComponent({
-  dataClients,
-  isLoadingClients,
+  data,
+  isLoading,
   loadingSave,
-  editarCliente,
+  editar,
   handleOpenModal,
   goSectionUp,
-  setSelectedClient,
-  setActionClient,
+  setSelected,
+  setAction,
 }) {
   const [openIndex, setOpenIndex] = useState(-1);
   const handleDrop = (index) => {
     setOpenIndex((prevIndex) => (prevIndex === index ? -1 : index));
   };
-
   const navegation = useNavigate();
 
-  const [filteredData, setFilteredData] = useState(dataClients?.result);
+  const [filteredData, setFilteredData] = useState(data?.result);
 
   const handleSearch = (value) => {
     const searchTerm = value.toLowerCase();
 
-    const filter = dataClients?.result.filter((item) =>
+    const filter = data?.result.filter((item) =>
       item.nombres.toLowerCase().includes(searchTerm)
     );
-
 
     setFilteredData(filter);
   };
   useEffect(() => {
-    if (dataClients?.result !== undefined) {
-      setFilteredData(dataClients?.result);
+    if (data?.result !== undefined) {
+      setFilteredData(data?.result);
     }
-  }, [dataClients?.result, setFilteredData]);
+  }, [data?.result, setFilteredData]);
 
   TablaComponent.propTypes = {
     data: PropTypes.object, // Cambia el tipo según lo que corresponda
-    dataClients: PropTypes.object, // Cambia el tipo según lo que corresponda
-    isLoadingClients: PropTypes.bool.isRequired,
+    isLoading: PropTypes.bool.isRequired,
     loadingSave: PropTypes.bool.isRequired,
     setToggle: PropTypes.func,
-    editarCliente: PropTypes.func.isRequired,
+    editar: PropTypes.func.isRequired,
     handleOpenModal: PropTypes.func.isRequired,
-    setSelectedClient: PropTypes.func.isRequired,
-    setActionClient: PropTypes.func.isRequired,
+    setSelected: PropTypes.func.isRequired,
+    setAction: PropTypes.func.isRequired,
     goSectionUp: PropTypes.func.isRequired,
   };
   return (
@@ -76,8 +73,9 @@ export default function TablaComponent({
         border: "1px solid #e2e2e2",
         padding: 20,
         borderRadius: 12,
-      }}>
-      {isLoadingClients || loadingSave ? (
+      }}
+    >
+      {isLoading || loadingSave ? (
         <>
           <SpinnerTables />
         </>
@@ -85,7 +83,7 @@ export default function TablaComponent({
         <>
           <div>
             <Search
-              placeholder="Buscar cliente"
+              placeholder="Buscar Proveedor"
               style={{
                 width: 304,
                 marginTop: 10,
@@ -103,39 +101,27 @@ export default function TablaComponent({
               defaultPageSize: 5,
               showSizeChanger: true,
               pageSizeOptions: [6, 12, 18, 24, 32, 40, 45, 50, 55, 60, 100],
-            }}>
+            }}
+          >
             <Column
-              title="Id Cliente"
-              dataIndex="idCliente"
-              key="idCliente"
-              sorter={(a, b) => a.idCliente.localeCompare(b.idCliente)}
-            />
-            <Column
-              title="Nombre completo"
+              title="Nombres"
               dataIndex="nombres"
               key="nombres"
-              sorter={(a, b) => a.nombres.localeCompare(b.nombres)}
+              sorter={(a, b) => a.Secuencia.localeCompare(b.nombres)}
             />
             <Column
               title="Apellidos"
               dataIndex="apellidos"
               key="apellidos"
-              sorter={(a, b) => a.apellidos.localeCompare(b.apellidos)}
-            />
-            <Column
-              title="Sexo"
-              dataIndex="sexoNombre"
-              key="sexoNombre"
-              sorter={(a, b) => a.sexoNombre.localeCompare(b.sexoNombre)}
+              sorter={(a, b) => a.Secuencia.localeCompare(b.apellidos)}
             />
             <Column title="Teléfono" dataIndex="telefono1" key="telefono1" />
             <Column
               title="Ciudad"
               dataIndex="ciudadNombre"
               key="ciudad"
-              sorter={(a, b) => a.ciudad.localeCompare(b.ciudad)}
+              sorter={(a, b) => a.Secuencia.localeCompare(b.ciudad)}
             />
-            <Column title="Correo" dataIndex="correo" key="correo" />
             <Column title="Correo" dataIndex="correo" key="correo" />
 
             <Column
@@ -149,7 +135,8 @@ export default function TablaComponent({
                       key={`State ${record.idEstadoRegistro} ${index}`}
                       color={
                         record.idEstadoRegistro === 1 ? "#304878" : "#FF4D4D"
-                      }>
+                      }
+                    >
                       {record.nombreEstado}
                     </Tag>
                   }
@@ -165,25 +152,27 @@ export default function TablaComponent({
             <Column
               key="action"
               render={(_, record) => (
-                <div style={{ width: 90, zIndex: 200 }}>
+                <div style={{ width: 90, zIndex: 100 }}>
                   <ButtonIcon
                     onMouseUp={() => {
-                      setSelectedClient(record);
-                      setActionClient(
+                      setSelected(record);
+                      setAction(
                         record.idEstadoRegistro === 1 ? "Desactivar" : "Activar"
                       );
-                      handleDrop(record.idCliente);
-                    }}>
+                      handleDrop(record.idProveedor);
+                    }}
+                  >
                     <IoEllipsisVerticalSharp size={22} />
                   </ButtonIcon>
-                  <DropdownContenttabla open={openIndex === record.idCliente}>
+                  <DropdownContenttabla open={openIndex === record.idProveedor}>
                     <OutsideClick>
                       {/*----------VIEW BUTTON:----------*/}
                       <ButtonIconMenuTalba
                         onClick={() => {
                           handleDrop(-1);
-                          navegation(`/cliente/${record.idCliente}`);
-                        }}>
+                          navegation(`/Proveedores/${record.idProveedor}`);
+                        }}
+                      >
                         <IoEyeOutline
                           size={18}
                           style={{ marginLeft: 5, marginRight: 5 }}
@@ -195,9 +184,10 @@ export default function TablaComponent({
                       <ButtonIconMenuTalba
                         onClick={() => {
                           handleDrop(-1);
-                          editarCliente(record);
+                          editar(record);
                           goSectionUp();
-                        }}>
+                        }}
+                      >
                         <IoClipboardOutline
                           size={18}
                           style={{ marginLeft: 5, marginRight: 5 }}
@@ -210,7 +200,8 @@ export default function TablaComponent({
                         onClick={() => {
                           handleOpenModal();
                           handleDrop(-1);
-                        }}>
+                        }}
+                      >
                         {record.idEstadoRegistro === 1 ? (
                           <IoTrashOutline
                             size={18}
@@ -237,6 +228,7 @@ export default function TablaComponent({
           </Table>
         </>
       )}
+       
     </Container>
   );
 }

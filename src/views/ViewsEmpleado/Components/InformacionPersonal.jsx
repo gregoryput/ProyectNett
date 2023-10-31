@@ -21,6 +21,7 @@ import {
   email,
   cedualaDominicana,
   minValue,
+  numberOnly
 } from "../../../utils/validations";
 
 //Consultas de datos (para los select)
@@ -62,7 +63,6 @@ export default function InformacionPersonal(props) {
   };
 
   const controlVerify = (dataPersonal) => {
-   
     trigger().then((isValid) => {
       if (isValid) {
         let requiereVerificacionCedula = false;
@@ -88,7 +88,6 @@ export default function InformacionPersonal(props) {
 
   // Con este useEffect observo si la cedula existe y si existe no lo dejo avanzar al paso de empresas
   React.useEffect(() => {
-   
     if (dataVerify !== null && dataVerify !== undefined) {
       let cedulaDuplicate = false;
       //
@@ -98,7 +97,7 @@ export default function InformacionPersonal(props) {
         // Si el código existe se dispara una validacion React-Hook-Form
         setError("Cedula", {
           type: "manual",
-          message: "Ya hay un cliente con esta cédula en la base de datos",
+          message: "Ya hay un registro con esta cédula en la base de datos",
         });
       } else {
         cedulaDuplicate = false;
@@ -188,7 +187,7 @@ export default function InformacionPersonal(props) {
     reset();
     setIdPaisSeleccionado(0);
     props.setDatosFormulario([]);
-    props.setDataClientEdit([]);
+    props.setDataEdit([]);
     props.setToggle(false);
   };
 
@@ -196,7 +195,7 @@ export default function InformacionPersonal(props) {
     reset();
   },[props.toggle]);
 
-
+ 
 
 
   // Definir PropTypes para las props del componente
@@ -204,11 +203,12 @@ export default function InformacionPersonal(props) {
     toggle: PropTypes.bool.isRequired,
     setToggle: PropTypes.func.isRequired,
     setLoadingSave: PropTypes.func.isRequired,
-    dataClientEdit: PropTypes.object, // Cambia el tipo según corresponda
+    dataEdit: PropTypes.object, // Cambia el tipo según corresponda
     nextPart: PropTypes.func.isRequired,
     dataValues: PropTypes.object.isRequired,
-    setDataClientEdit: PropTypes.func.isRequired,
+    setDataEdit: PropTypes.func.isRequired,
     setDatosFormulario: PropTypes.func.isRequired,
+    datavalues: PropTypes.array,
   };
 
   return (
@@ -252,7 +252,7 @@ export default function InformacionPersonal(props) {
               ...minLength(2),
               ...maxLength(40),
             })}
-            placeholder="Ingrese los apellids"
+            placeholder="Ingrese los apellidos"
           />
           {errors.Apellidos && (
             <span style={{ color: "red", fontSize: 10 }}>
@@ -312,6 +312,25 @@ export default function InformacionPersonal(props) {
 
         <LabelFor>
           {" "}
+          Edad
+          <InputFor
+            {...register("Edad", {
+              ...required("Este campo es requerido"),
+              ...maxLength(2,"Edad real"),
+              ...minLength(2,"Edad real"),
+              ...numberOnly("Solo numero"),
+            })}
+            placeholder="Ingrese la edad"
+          />
+          {errors.Edad && (
+            <span style={{ color: "red", fontSize: 10 }}>
+              {errors.Edad.message}
+            </span>
+          )}
+        </LabelFor>
+
+        <LabelFor>
+          {" "}
           Correo
           <InputFor
             {...register("Correo", {
@@ -320,9 +339,9 @@ export default function InformacionPersonal(props) {
             })}
             placeholder="Ingrese el correo"
           />
-          {errors.Correo && (
+          {errors.correo && (
             <span style={{ color: "red", fontSize: 10 }}>
-              {errors.Correo.message}
+              {errors.correo.message}
             </span>
           )}
         </LabelFor>
@@ -334,6 +353,7 @@ export default function InformacionPersonal(props) {
             {...register("Cedula", {
               ...required("Este campo es requerido"),
               ...cedualaDominicana(),
+             
             })}
             placeholder="Ingrese la cédula"
           />
@@ -380,7 +400,12 @@ export default function InformacionPersonal(props) {
         <LabelFor>
           {" "}
           Fecha de nacimiento
-          <InputFor type="date" {...register("FechaDeNacimiento")} />
+          <InputFor type="date" {...register("fechaDeNacimiento",{...required("Este campo es requerido")})} />
+          {errors.fechaDeNacimiento && (
+            <span style={{ color: "red", fontSize: 10 }}>
+              {errors.fechaDeNacimiento.message}
+            </span>
+          )}
         </LabelFor>
 
         {/*---------SELEC OPTION IDPAIS---------*/}
@@ -426,7 +451,7 @@ export default function InformacionPersonal(props) {
             {...register("IdCiudad", {
               ...minValue(1, "Debe seleccionar la ciudad"),
             })}
-            s
+
             option
           >
             <Option disabled value={0}>

@@ -5,12 +5,15 @@ import {
   CuentaPorPagar,
   DashBoard,
   Inventario,
-  Proveedores,
   Proyecto,
   Reporte,
   Usuario,
   Home,
-  Detail,
+  Proveedores,
+  DetailCliente,
+  DetailProveedor,
+  DetailEmpleado,
+
   FormFacturacion,
 } from "../views";
 import Login from "../page/Login";
@@ -19,6 +22,7 @@ import RequireLogin from "../utils/require-login";
 import ProtectedRoute from "./protected-route/protected-route";
 import ConfiguracionPerfil from "../views/ViewUsuario/ConfiguracionPerfil";
 import { Toaster } from "react-hot-toast";
+import Empleado from "../views/ViewsEmpleado/Empleado";
 
 export const createRouter = () => {
   const router = createBrowserRouter([
@@ -45,12 +49,30 @@ export const createRouter = () => {
           ),
         },
         {
-          path: "/control-usuarios",
+          path: "/usuarios",
           element: (
             <ProtectedRoute
               roles={["Administrador De Usuario", "Administrador"]}
             >
               <Usuario />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "/empleado",
+          element: (
+            <ProtectedRoute
+              roles={["Administrador De Usuario", "Administrador"]}
+            >
+              <Empleado />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "/empleado/:IdEmpleado",
+          element: (
+            <ProtectedRoute roles={["Administrador"]}>
+              <DetailEmpleado />
             </ProtectedRoute>
           ),
         },
@@ -66,10 +88,11 @@ export const createRouter = () => {
           path: "/cliente/:clienteId",
           element: (
             <ProtectedRoute roles={["Administrador"]}>
-              <Detail />
+              <DetailCliente />
             </ProtectedRoute>
           ),
         },
+     
         {
           path: "/cuenta-por-cobrar",
           element: (
@@ -116,7 +139,15 @@ export const createRouter = () => {
             <ProtectedRoute
               roles={["Administrador", "Asistente Administrativo"]}
             >
-              <Proveedores />
+              <Proveedores/>
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "/proveedores/:IdProveedor",
+          element: (
+            <ProtectedRoute roles={["Administrador"]}>
+              <DetailProveedor />
             </ProtectedRoute>
           ),
         },

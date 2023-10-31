@@ -22,7 +22,7 @@ import { useNavigate } from "react-router-dom";
 
 import { JwtUtils } from "../../../utils";
 
-export default function FormClientes(props) {
+export default function FormComponent(props) {
   const token = localStorage.getItem("token");
   const userId = parseInt(JwtUtils.getUserIdByToken(token), 10);
 
@@ -30,6 +30,10 @@ export default function FormClientes(props) {
   const [posicionActual, setPosicionActual] = useState(1);
   const [datosFormulario, setDatosFormulario] = useState({});
   const [animacion, setAnimacion] = useState(false);
+
+
+
+
 
   const siguiente = (data) => {
     setDatosFormulario({ ...datosFormulario, ...data });
@@ -99,7 +103,7 @@ export default function FormClientes(props) {
       setPosicionActual(1);
       setDatosFormulario({});
       props.setToggle(false);
-      navigate("/Cliente");
+      navigate("/cliente");
     }
   }, [isUpdateSuccess]);
   //.. CUANDO EL UPDATE TENGA UN ERROR:
@@ -113,10 +117,17 @@ export default function FormClientes(props) {
     }
   }, [isErrorUpdate]);
 
+  const clearFields = () => {
+    props.setToggle(false);
+    setDatosFormulario({});
+    props.setDataClientEdit({});
+    setPosicionActual((prevState) => prevState - 1);
+  };
+
   //Funcion para insertar, enviar los datos a la api:
   const handleSubmit = (data) => {
     let dataHead;
-
+  
     //DataEncabezado de cliente:
     data?.IdCliente !== 0 && data?.IdCliente !== undefined
       ? (dataHead = {
@@ -153,9 +164,10 @@ export default function FormClientes(props) {
           Empresas: empresas,
         });
 
+
     data?.ClienteId === 0 || data?.IdCliente === undefined
-      ? createClient({ ...dataClient })
-      : updateClient({ ...dataClient });
+      ? (createClient({ ...dataClient }), clearFields())
+      : (updateClient({ ...dataClient }), clearFields());
   };
 
   useEffect(() => {
@@ -189,6 +201,8 @@ export default function FormClientes(props) {
       ? props.setLoadingSave(isLoadingCreate)
       : props.setLoadingSave(isLoadingUpdate);
   }, [isLoadingCreate, isLoadingUpdate, props]);
+
+
 
   return (
     <ContainerForm animacion={animacion} display={props.toggle}>
@@ -238,7 +252,7 @@ export default function FormClientes(props) {
 }
 
 // Definir PropTypes para las props del componente
-FormClientes.propTypes = {
+FormComponent.propTypes = {
   toggle: PropTypes.bool.isRequired,
   setToggle: PropTypes.func.isRequired,
   setLoadingSave: PropTypes.func.isRequired,

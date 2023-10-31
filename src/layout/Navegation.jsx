@@ -13,8 +13,10 @@ import {
   BiUser,
   BiPieChartAlt,
   BiPackage,
+  BiDumbbell,
 } from "react-icons/bi";
 import { JwtUtils } from "../utils";
+import { useState } from "react";
 
 ///estilo de los iconos
 const style = { minWidth: 22, height: 22, margin: 2 };
@@ -23,6 +25,12 @@ export default function Navegation() {
   const token = localStorage.getItem("token");
   const userRol = JwtUtils.getRolesByToken(token);
 
+  const color = "#1c3c6d";
+  const divStyle = {
+    background: 'rgb(113, 106, 249)',
+    background: 'radial-gradient(circle, rgba(113, 106, 249, 1) 0%, rgba(54, 85, 131, 0) 35%, rgba(0, 212, 255, 0) 100%)',
+  };
+  const [ruta, setRuta] = useState("/");
   return (
     <>
       <DivContainerNav>
@@ -57,12 +65,26 @@ export default function Navegation() {
           <ButtonNav
             exact
             to="/"
-            style={({ isActive }) => {
-              return { color: isActive ? "#365583" : "" };
+            onClick={() => {
+              setRuta("/");
             }}
+           
           >
-            <BiHomeAlt2 style={style} />
-            <LabelNav>Dashboard</LabelNav>
+            <BiHomeAlt2
+              className={`${
+                ruta === "/" ? "animate__animated animate__heartBeat" : ""
+              }`}
+              style={{ color: `${ruta === "/" ? color : ""}`, ...style}}
+            />
+
+            <LabelNav
+              style={{
+                color: `${ruta === "/" ? color : ""}`,
+                fontWeight: `${ruta === "/" ? "600" : ""}`,
+              }}
+            >
+              Dashboard
+            </LabelNav>
           </ButtonNav>
         )}
 
@@ -70,12 +92,29 @@ export default function Navegation() {
           <ButtonNav
             exact
             to="proyecto"
-            style={({ isActive }) => {
-              return { color: isActive ? "#365583" : "" };
+            onClick={() => {
+              setRuta("/proyecto");
             }}
           >
-            <BiBulb style={style} />
-            <LabelNav>Proyecto</LabelNav>
+            <BiBulb
+              className={`${
+                ruta === "/proyecto"
+                  ? "animate__animated animate__heartBeat"
+                  : ""
+              }`}
+              style={{
+                color: `${ruta === "/proyecto" ? color : ""}`,
+                ...style,
+              }}
+            />
+            <LabelNav
+              style={{
+                color: `${ruta === "/proyecto" ? color : ""}`,
+                fontWeight: `${ruta === "/proyecto" ? "600" : ""}`,
+              }}
+            >
+              Proyectos
+            </LabelNav>
           </ButtonNav>
         )}
 
@@ -83,12 +122,26 @@ export default function Navegation() {
           <ButtonNav
             exact
             to="cliente"
-            style={({ isActive }) => {
-              return { color: isActive ? "#365583" : "" };
+            onClick={() => {
+              setRuta("/cliente");
             }}
           >
-            <BiBriefcaseAlt style={style} />
-            <LabelNav>Cliente</LabelNav>
+            <BiBriefcaseAlt
+              className={`${
+                ruta === "/cliente"
+                  ? "animate__animated animate__heartBeat"
+                  : ""
+              }`}
+              style={{ color: `${ruta === "/cliente" ? color : ""}`, ...style  }}
+            />
+            <LabelNav
+              style={{
+                color: `${ruta === "/cliente" ? color : ""}`,
+                fontWeight: `${ruta === "/cliente" ? "600" : ""}`,
+              }}
+            >
+              Clientes
+            </LabelNav>
           </ButtonNav>
         )}
 
@@ -97,12 +150,29 @@ export default function Navegation() {
           <ButtonNav
             exact
             to="proveedores"
-            style={({ isActive }) => {
-              return { color: isActive ? "#365583" : "" };
+            onClick={() => {
+              setRuta("/proveedores");
             }}
           >
-            <BiPackage style={style} />
-            <LabelNav>Proveedores</LabelNav>
+            <BiPackage
+              className={`${
+                ruta === "/proveedores"
+                  ? "animate__animated animate__heartBeat"
+                  : ""
+              }`}
+              style={{
+                color: `${ruta === "/proveedores" ? color : ""}`,
+                ...style,
+              }}
+            />
+            <LabelNav
+              style={{
+                color: `${ruta === "/proveedores" ? color : ""}`,
+                fontWeight: `${ruta === "/proveedores" ? "600" : ""}`,
+              }}
+            >
+              Proveedores
+            </LabelNav>
           </ButtonNav>
         )}
 
@@ -111,12 +181,29 @@ export default function Navegation() {
           <ButtonNav
             exact
             to="inventario"
-            style={({ isActive }) => {
-              return { color: isActive ? "#365583" : "" };
+            onClick={() => {
+              setRuta("/inventario");
             }}
           >
-            <BiBox style={style} />
-            <LabelNav>Inventario</LabelNav>
+            <BiBox
+              className={`${
+                ruta === "/inventario"
+                  ? "animate__animated animate__heartBeat"
+                  : ""
+              }`}
+              style={{
+                color: `${ruta === "/inventario" ? color : ""}`,
+                ...style,
+              }}
+            />
+            <LabelNav
+              style={{
+                color: `${ruta === "/inventario" ? color : ""}`,
+                fontWeight: `${ruta === "/inventario" ? "600" : ""}`,
+              }}
+            >
+              Inventario
+            </LabelNav>
           </ButtonNav>
         )}
 
@@ -125,24 +212,58 @@ export default function Navegation() {
           <ButtonNav
             exact
             to="cuenta-por-cobrar"
-            style={({ isActive }) => {
-              return { color: isActive ? "#365583" : "" };
+            onClick={() => {
+              setRuta("/cuenta-por-cobrar");
             }}
           >
-            <BiWallet style={style} />
-            <LabelNav>Cuenta por cobrar</LabelNav>
+            <BiWallet
+              className={`${
+                ruta === "/cuenta-por-cobrar"
+                  ? "animate__animated animate__heartBeat"
+                  : ""
+              }`}
+              style={{
+                color: `${ruta === "/cuenta-por-cobrar" ? color : ""}`,
+                ...style,
+              }}
+            />
+            <LabelNav
+              style={{
+                color: `${ruta === "/cuenta-por-cobrar" ? color : ""}`,
+                fontWeight: `${ruta === "/cuenta-por-cobrar" ? "600" : ""}`,
+              }}
+            >
+              Cuenta por cobrar
+            </LabelNav>
           </ButtonNav>
         )}
 
         {userRol === "Administrador" && (
           <ButtonNav
             to="cuenta-por-pagar"
-            style={({ isActive }) => {
-              return { color: isActive ? "#365583" : "" };
+            onClick={() => {
+              setRuta("/cuenta-por-pagar");
             }}
           >
-            <BiWalletAlt style={style} />
-            <LabelNav>Cuenta por pagar</LabelNav>
+            <BiWalletAlt
+              className={`${
+                ruta === "/cuenta-por-pagar"
+                  ? "animate__animated animate__heartBeat"
+                  : ""
+              }`}
+              style={{
+                color: `${ruta === "/cuenta-por-pagar" ? color : ""}`,
+                ...style,
+              }}
+            />
+            <LabelNav
+              style={{
+                color: `${ruta === "/cuenta-por-pagar" ? color : ""}`,
+                fontWeight: `${ruta === "/cuenta-por-pagar" ? "600" : ""}`,
+              }}
+            >
+              Cuenta por pagar
+            </LabelNav>
           </ButtonNav>
         )}
 
@@ -150,26 +271,89 @@ export default function Navegation() {
           userRol === "Administrador De Usuario") && (
           <ButtonNav
             exact
-            to="control-usuarios"
-            style={({ isActive }) => {
-              return { color: isActive ? "#365583" : "" };
+            to="usuarios"
+            onClick={() => {
+              setRuta("/usuarios");
             }}
           >
-            <BiUser style={style} />
-            <LabelNav>Control-usuarios</LabelNav>
+            <BiUser
+              className={`${
+                ruta === "/usuarios"
+                  ? "animate__animated animate__heartBeat"
+                  : ""
+              }`}
+              style={{
+                color: `${ruta === "/usuarios" ? color : ""}`,
+                ...style,
+              }}
+            />
+            <LabelNav
+              style={{
+                color: `${ruta === "/usuarios" ? color : ""}`,
+                fontWeight: `${ruta === "/usuarios" ? "600" : ""}`,
+              }}
+            >
+              Usuarios
+            </LabelNav>
           </ButtonNav>
         )}
 
-        {(userRol === "Administrador De Usuario" || userRol == "Administrador") && (
+        {(userRol === "Administrador" ||
+          userRol === "Administrador De Usuario") && (
+          <ButtonNav
+            exact
+            to="empleado"
+            onClick={() => {
+              setRuta("/empleado");
+            }}
+          >
+            <BiDumbbell
+              className={`${
+                ruta === "/empleado"
+                  ? "animate__animated animate__heartBeat"
+                  : ""
+              }`}
+              style={{
+                color: `${ruta === "/empleado" ? color : ""}`,
+                ...style,
+              }}
+            />
+            <LabelNav
+              style={{
+                color: `${ruta === "/empleado" ? color : ""}`,
+                fontWeight: `${ruta === "/empleado" ? "600" : ""}`,
+              }}
+            >
+              Empleados
+            </LabelNav>
+          </ButtonNav>
+        )}
+
+        {(userRol === "Administrador De Usuario" ||
+          userRol == "Administrador") && (
           <ButtonNav
             exact
             to="reporte"
-            style={({ isActive }) => {
-              return { color: isActive ? "#365583" : "" };
+            onClick={() => {
+              setRuta("/reporte");
             }}
           >
-            <BiPieChartAlt style={style} />
-            <LabelNav>Reporte</LabelNav>
+            <BiPieChartAlt
+              className={`${
+                ruta === "/reporte"
+                  ? "animate__animated animate__heartBeat"
+                  : ""
+              }`}
+              style={{ color: `${ruta === "/reporte" ? color : ""}`, ...style }}
+            />
+            <LabelNav
+              style={{
+                color: `${ruta === "/reporte" ? color : ""}`,
+                fontWeight: `${ruta === "/reporte" ? "600" : ""}`,
+              }}
+            >
+              Reportes
+            </LabelNav>
           </ButtonNav>
         )}
       </DivContainerNav>

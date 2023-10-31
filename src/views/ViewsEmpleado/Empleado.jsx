@@ -8,66 +8,64 @@ import {
 } from "../../components";
 
 import { FormComponent, TablaComponent } from "./Form";
-import {
-  useDeleteClientMutation,
-  useGetClientsQuery,
-  useRestoreClientMutation,
-} from "../../redux/Api/clientsApi";
+
 
 //icons
 import { IoTrashOutline } from "react-icons/io5";
 import { MdRestore } from "react-icons/md";
 // modal creado por mi
+import { useDeleteEmployeMutation, useGetEmployeQuery, useRestoreEmployeMutation } from "../../redux/Api/employeeApi";
 
 export default function Cliente() {
   const [loadingSave, setLoadingSave] = useState(false);
   const [toggle, setToggle] = useState(false);
-  const [dataClientEdit, setDataClientEdit] = useState(null);
+  const [dataEdit, setDataEdit] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const [selectedClient, setSelectedClient] = useState();
-  const [actionClient, setActionClient] = useState("");
+  const [selected, setSelected] = useState();
+  const [action, setAction] = useState("");
 
   const [
-    deleteClient,
+    deleteEmploye,
     {
       isLoading: isLoadinDelete,
       isSuccess: isDeleteSuccess,
       isError: isErrorDelete,
     },
-  ] = useDeleteClientMutation();
+  ] = useDeleteEmployeMutation();
+
   useEffect(() => {
     if (isDeleteSuccess) {
-      message.success("Cliente eliminando correctamente");
+      message.success("Empleado eliminando correctamente");
       setIsModalOpen(false);
     }
   }, [isDeleteSuccess]);
   //isErrorDelete ----------
   useEffect(() => {
     if (isErrorDelete) {
-      message.success("Ha ocurrido un error al intentar eliminar al cliente");
+      message.success("Ha ocurrido un error al intentar eliminar al Empleado");
       setIsModalOpen(false);
     }
-  }, [isDeleteSuccess, isErrorDelete]);
+  }, [isDeleteSuccess]);
 
   const [
-    restoreClient,
+    restoreEmploye,
     {
       isLoading: isLoadinRestore,
       isSuccess: isRestoreSuccess,
       isError: isErrorRestore,
     },
-  ] = useRestoreClientMutation();
+  ] = useRestoreEmployeMutation();
   useEffect(() => {
     if (isRestoreSuccess) {
-      message.success("Cliente activado correctamente");
+      message.success("Empleado activado correctamente");
       setIsModalOpen(false);
     }
   }, [isRestoreSuccess]);
   //isErrorRestore ----------
   useEffect(() => {
     if (isErrorRestore) {
-      message.success("Ha ocurrido un error al intentar activar al cliente");
+      message.success("Ha ocurrido un error al intentar activar al Empleado");
       setIsModalOpen(false);
     }
   }, [isErrorRestore]);
@@ -81,36 +79,37 @@ export default function Cliente() {
   };
   //Estado redux api para obtener la lista de clientes con paginacion
   const {
-    data: clientesData,
-    isSuccess: isClientsSuccess,
-    isLoading: isLoadingClients,
-  } = useGetClientsQuery("");
+    data: dataEmpleado,
+    isSuccess: isSuccess,
+    isLoading: isLoading,
+  } = useGetEmployeQuery("");
 
   useEffect(() => {
-    if (isClientsSuccess) {
-      message.success("Listado de clientes obtenido correctamente!");
+    if (isSuccess) {
+      message.success("Listado de Empleado obtenido correctamente!");
     }
-  }, [isClientsSuccess]);
+  }, [isSuccess]);
 
   //Onclick de editar:
-  const editarCliente = (dataClientEdit) => {
+  const editar = (data) => {
     setToggle(true);
-    setDataClientEdit(dataClientEdit);
+    setDataEdit(data);
   };
 
-  const scrollToTop = () => {
+  const scrollToTop = ()=> {
     // Scroll suave hacia la parte superior de la página
     window.scrollTo({
       top: 0,
-      behavior: "smooth",
+      behavior: "smooth"
     });
-  };
+  }
+
 
   return (
     <>
       <ViewContainerPages className="animate__animated animate__fadeIn">
         {/* <h2 style={{ marginLeft: 15, marginBottom: 40 }} id="titleTop">
-          Gestion de clientes
+          Gestion de Empleado
         </h2> */}
         <ContainerButton
           onClick={() => {
@@ -127,37 +126,38 @@ export default function Cliente() {
           setLoadingSave={setLoadingSave}
           toggle={toggle}
           setToggle={setToggle}
-          dataClientEdit={dataClientEdit}
-          setDataClientEdit={setDataClientEdit}
+          dataEdit={dataEdit}
+          setDataEdit={setDataEdit}
         />
 
         <TablaComponent
-          data={clientesData}
-          dataClients={clientesData}
-          isLoadingClients={isLoadingClients}
+          data={dataEmpleado}
+          isLoading={isLoading}
           loadingSave={loadingSave}
-          editarCliente={editarCliente}
+          editar={editar}
           handleOpenModal={handleOpenModal}
           goSectionUp={scrollToTop}
-          setSelectedClient={setSelectedClient}
-          setActionClient={setActionClient}
+          setSelected={setSelected}
+          setAction={setAction}
         />
 
-        <Modal
-          open={isModalOpen}
+        <Modal open={isModalOpen}
           footer={null}
           onCancel={handleCloseModal}
           title={"Confirma la accion"}
           centered
+
         >
           {isLoadinDelete || isLoadinRestore ? (
             <></>
           ) : (
             <p>
-              {selectedClient != undefined &&
-              selectedClient.nombreEstado === "Activo"
-                ? "Esta seguro de desactivar a este Cliente"
-                : "Esta seguro de activar a este Cliente"}
+
+              {selected != undefined && selected.nombreEstado === "Activo" ? (
+                "Esta seguro de desactivar a este Empleado"
+              ) :
+                ("Esta seguro de activar a este Empleado")
+              }
             </p>
           )}
           <div
@@ -183,12 +183,12 @@ export default function Cliente() {
                 width: 130,
               }}
               onClick={() =>
-                actionClient === "Activar"
-                  ? restoreClient(selectedClient.idCliente)
-                  : deleteClient(selectedClient.idCliente)
+                action === "Activar"
+                  ? restoreEmploye(selected.idEmpleado)
+                  : deleteEmploye(selected.idEmpleado)
               }
             >
-              {actionClient === "Desactivar" ? (
+              {action === "Desactivar" ? (
                 <IoTrashOutline
                   size={18}
                   style={{ marginLeft: 5, marginRight: 5 }}

@@ -11,7 +11,7 @@ export const companiesApi = createApi({
       Authorization: `Bearer ${token}`,
     },
   }),
-  tagTypes: ["Companies"],
+  keepUnusedDataFor: true,
   endpoints: (builder) => ({
     getCompaniesByIdCliente: builder.query({
       query: (params) => {
@@ -21,9 +21,19 @@ export const companiesApi = createApi({
           return { data: null, isLoading: null, isSuccess: null };
         }
       },
-      providesTags: ["Companies"],
+
+    }),
+    getCompaniesByIdProveedor: builder.query({
+      query: (params) => {
+        if (params.IdProveedor !== null) {
+          return `/Empresas/EmpresasPorProveedorId?IdProveedor=${params.IdProveedor}&estadoId=${params.estadoId}`;
+        } else {
+          return { data: null, isLoading: null, isSuccess: null };
+        }
+      },
+      
     }),
   }),
 });
 
-export const { useGetCompaniesByIdClienteQuery } = companiesApi;
+export const { useGetCompaniesByIdClienteQuery, useGetCompaniesByIdProveedorQuery} = companiesApi;
