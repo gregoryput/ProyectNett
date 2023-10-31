@@ -1,6 +1,6 @@
 import { ViewContainerPages } from '../../components'
 
-export default function CuentaPorCobrar()
+export default function CuentaPorPagar()
  {
   return (
     <ViewContainerPages >

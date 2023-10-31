@@ -1,5 +1,5 @@
 import Cliente from "./ViewsCliente/Cliente"
-import CuentaPorCobrar from "./CuentaPorCobrar"
+//import CuentaPorCobrar from "./CuentaPorCobrar"
 import CuentaPorPagar from "./CuentaPorPagar"
 import DashBoard from "./ViewsDashBoard/DashBoard"
 import Inventario from "./Inventario"
@@ -23,7 +23,7 @@ export {
     Proyecto,
     Reporte,
     DashBoard,
-    CuentaPorCobrar,
+    //CuentaPorCobrar,
     CuentaPorPagar,
     Inventario,
     Home,
