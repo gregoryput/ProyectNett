@@ -1,4 +1,4 @@
-import { ViewContainerPages } from '../components'
+import { ViewContainerPages } from '../../components'
 
 export default function Home()
  {
