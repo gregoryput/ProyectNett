@@ -36,6 +36,8 @@ namespace ProyectNettApi.Repositories
             }
         }
 
+        // REPOSITORIO--A-P-I----P-R-O-Y-E-N-E-T-T ------ (Metodo para DEVOLVER una LISTA de Empleados) y FILTRA EMPLEADO gregoryput
+
         public EmpleadoDTO GetInfoPersonalEmpleado(int Id)
         {
             string query = "dbo.GetPersonaInfoByIdEmpleado";

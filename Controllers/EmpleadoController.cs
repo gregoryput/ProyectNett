@@ -46,6 +46,7 @@ namespace ProyectNettApi.Controllers
                 _respuesta.ErrorMessages = new List<string> { ex.ToString() };
                 return StatusCode(500, _respuesta);
             }
+   
         }
 
         //
