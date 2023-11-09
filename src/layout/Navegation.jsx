@@ -26,10 +26,7 @@ export default function Navegation() {
   const userRol = JwtUtils.getRolesByToken(token);
 
   const color = "#1c3c6d";
-  const divStyle = {
-    background: 'rgb(113, 106, 249)',
-    background: 'radial-gradient(circle, rgba(113, 106, 249, 1) 0%, rgba(54, 85, 131, 0) 35%, rgba(0, 212, 255, 0) 100%)',
-  };
+ 
   const [ruta, setRuta] = useState("/");
   return (
     <>

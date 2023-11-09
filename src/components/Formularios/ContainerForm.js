@@ -23,6 +23,27 @@ const slideUp = keyframes`
   }
 `;
 
+const slideDown2 = keyframes`
+  0% {
+    height:0;
+    transform-origin: top;
+  }
+  100% {
+    height:320px;
+    transform-origin: top;
+  }
+`;
+const slideUp2 = keyframes`
+  0% {
+    height: 320px;
+    transform-origin: top;
+  }
+  100% {
+    height: 0;
+    transform-origin: top;
+  }
+`;
+
 export const ContainerForm = styled.div`
   border: 1px solid ${Colores.BlancoHueso};
   color: white;
@@ -36,6 +57,22 @@ export const ContainerForm = styled.div`
   overflow: hidden;
   display: ${(props) => (props.animacion ? "block" : "none")};
 `;
+
+export const ContainerForm2 = styled.div`
+  border: 1px solid ${Colores.BlancoHueso};
+  color: white;
+  border-radius: 12px;
+  font-size: 14px;
+  padding: 25px;
+  width: 98%;
+  margin: 10px auto;
+  color: ${Colores.AzulOscuro};
+  animation: ${(props) => (props.display ? slideDown2 : slideUp2)} 0.3s ease-out;
+  overflow: hidden;
+  display: ${(props) => (props.animacion ? "block" : "none")};
+`;
+
+
 
 export const Container = styled.div`
   border: 1px solid ${Colores.BlancoHueso};

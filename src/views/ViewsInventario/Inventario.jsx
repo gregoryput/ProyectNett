@@ -38,7 +38,6 @@ export default function Inventario() {
   ] = useCreateProductMutation();
 
   const units = useGetUnistOfMeasurementsQuery("");
-  console.log("1121412412", units);
   const opstionsUnits = units?.data?.result?.map((op) => ({
     label: op?.unidadNombre,
     value: op?.idUnidad_DeMedida,
@@ -93,9 +92,9 @@ export default function Inventario() {
   return (
     <>
       <ViewContainerPages className="animate__animated animate__fadeIn">
-        <h2 style={{ marginLeft: 15, marginBottom: 40 }} id="titleTop">
+        {/* <h2 style={{ marginLeft: 15, marginBottom: 40 }} id="titleTop">
           Gestión de inventario
-        </h2>
+        </h2> */}
         <div style={{ marginLeft: "20px" }}>
           <Button
             style={{ marginRight: "10px" }}

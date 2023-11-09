@@ -2,6 +2,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import { authApi } from "./Api/AuthApi";
 import authReducer from "./Slice/authSlice";
 import { clientsApi } from "./Api/clientsApi";
+import { usersApi } from "./Api/usersApi";
 import clientsReducer from "./Slice/clientsSlice";
 import proveedoresReducer from "./Slice/ProveedorSlice";
 import { proveedorApi } from "./Api/proveedorApi";
@@ -39,6 +40,10 @@ export const store = configureStore({
     //Clientes
     clients: clientsReducer,
     [clientsApi.reducerPath]: clientsApi.reducer,
+
+  //User
+  [usersApi.reducerPath]: usersApi.reducer,
+    
 
      //Proveedores
      proveedores: proveedoresReducer,
@@ -87,6 +92,7 @@ export const store = configureStore({
     getDefaultMiddleware()
       .concat(authApi.middleware)
       .concat(clientsApi.middleware)
+      .concat(usersApi.middleware)
       .concat(proveedorApi.middleware)
       .concat(employeeApi.middleware)
       .concat(citiesApi.middleware)

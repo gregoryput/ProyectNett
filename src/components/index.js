@@ -27,6 +27,7 @@ import {
   Container,
   ContainerDetail,
   ContainerForm,
+  ContainerForm2,
   ContainerFormPrueba,
   ContainerList,
   PrincipalContainerForm,
@@ -47,6 +48,7 @@ import { TitleNav } from "./General/TitleNav";
 export {
   /// componente de login
   FormContainer,
+  ContainerForm2,
   Input,
   Label,
   Button,
@@ -107,7 +109,6 @@ export {
   ContainerList,
   ButtonIconBorder,
   TitleNav,
-  
-};
 
+};
 

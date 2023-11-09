@@ -56,7 +56,7 @@ export default function CargoEmpleado(props) {
   });
   const [pressedonSave, setPressedonSave] = React.useState(false);
 
- const [cargoState, setCargoState] = useState(null)
+//  const [cargoState, setCargoState] = useState(null)
  const [select, setSelect] = useState(null)
   //Traer las Cargos
   const {
@@ -78,15 +78,15 @@ export default function CargoEmpleado(props) {
   const [activeKeyPanel, setActiveKeyPanel] = React.useState(-1);
 
   useEffect(()=>{
-    if(!isLoadingCompaniesClient && dataCargo != undefined) {
-      setCargoState(dataCargo?.result);
+    // if(!isLoadingCompaniesClient && dataCargo != undefined) {
+    //   setCargoState(dataCargo?.result);
 
-    }
+    // }
     if(!CargoLoding && CargoSelect != undefined) {
       setSelect(CargoSelect?.result);
     }
 
-  },[isLoadingCompaniesClient, setCargoState])
+  },[isLoadingCompaniesClient])
 
   const clearFields = () => {
     props.setToggle(false);
