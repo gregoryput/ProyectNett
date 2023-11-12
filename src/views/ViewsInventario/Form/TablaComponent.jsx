@@ -125,7 +125,6 @@ export default function TablaComponent({
     <Container
       style={{
         margin: 15,
-        border: "1px solid #e2e2e2",
         padding: 20,
         borderRadius: 12,
       }}

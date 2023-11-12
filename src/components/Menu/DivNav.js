@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { Colores } from "../GlobalColor";
 
 export const DivNav = styled.nav`
   display: flex;
@@ -11,4 +12,5 @@ export const DivNav = styled.nav`
   z-index: 1;
   justify-content: space-between;
   padding:  0 25px 0 100px;
+  background-color: ${Colores.fondo}
 `;

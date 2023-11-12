@@ -45,7 +45,8 @@ const slideUp2 = keyframes`
 `;
 
 export const ContainerForm = styled.div`
-  border: 1px solid ${Colores.BlancoHueso};
+  background-color: ${Colores.Blanco};
+
   color: white;
   border-radius: 12px;
   font-size: 14px;
@@ -59,7 +60,8 @@ export const ContainerForm = styled.div`
 `;
 
 export const ContainerForm2 = styled.div`
-  border: 1px solid ${Colores.BlancoHueso};
+  background-color: ${Colores.Blanco};
+
   color: white;
   border-radius: 12px;
   font-size: 14px;
@@ -75,7 +77,6 @@ export const ContainerForm2 = styled.div`
 
 
 export const Container = styled.div`
-  border: 1px solid ${Colores.BlancoHueso};
   color: white;
   border-radius: 12px;
   font-size: 14px;
@@ -84,6 +85,7 @@ export const Container = styled.div`
   margin: 10px auto;
   color: ${Colores.AzulOscuro};
   overflow: hidden;
+  background-color: ${Colores.Blanco};
 `;
 
 export const ContainerDetail = styled.div`

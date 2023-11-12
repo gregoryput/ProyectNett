@@ -17,6 +17,7 @@ import {
 } from "react-icons/bi";
 import { JwtUtils } from "../utils";
 import { useState } from "react";
+import { useLocation } from "react-router-dom";
 
 ///estilo de los iconos
 const style = { minWidth: 22, height: 22, margin: 2 };
@@ -26,8 +27,9 @@ export default function Navegation() {
   const userRol = JwtUtils.getRolesByToken(token);
 
   const color = "#1c3c6d";
- 
-  const [ruta, setRuta] = useState("/");
+
+  const location = useLocation();
+  const [ruta, setRuta] = useState(location.pathname);
   return (
     <>
       <DivContainerNav>

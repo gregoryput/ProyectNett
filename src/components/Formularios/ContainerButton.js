@@ -14,7 +14,6 @@ export const ContainerButton = styled.button`
   justify-content: space-between;
   padding: 15px;
   background-color: ${Colores.Blanco};
-  border: 1px solid ${Colores.BlancoHueso};
   transition: all 0.1s ease-in-out;
   color: #000;
   &:hover {

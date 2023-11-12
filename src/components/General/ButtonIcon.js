@@ -36,6 +36,26 @@ export const ButtonIconBorder = styled.button`
 
 `;
 
+export const ButtonSelect = styled.button`
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color:${Colores.AzulMar};
+  display: flex;
+  
+
+  &:hover {
+    background-color: ${Colores.Grispastel};
+    border-radius:5px;
+  }
+  &:active {
+    background-color: ${Colores.AzulMar};
+    border-radius:5px;
+    color:${Colores.Grispastel};
+  }
+
+
+`;
 
 
 

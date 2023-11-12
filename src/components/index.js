@@ -39,7 +39,7 @@ import { ContainerTable } from "./Formularios/ContainerTable";
 import { NotificationContainer } from "./notifiaciones/notificaciones";
 import { GradientText } from "./404/GrandientText";
 import { ButtonAdd, ButtonNext, ButtonRemove } from "./Formularios/ButtonNext";
-import { ButtonIcon, ButtonIconBorder, ButtonIconDelete, ButtonIconMenuTalba } from "./General/ButtonIcon";
+import { ButtonIcon, ButtonIconBorder, ButtonIconDelete, ButtonIconMenuTalba, ButtonSelect } from "./General/ButtonIcon";
 import { ButtonSave } from "./Formularios/ButtonSave";
 import { DropdownContenttabla } from "./General/Dropdownmenutabla";
 import { TitleNav } from "./General/TitleNav";
@@ -109,6 +109,6 @@ export {
   ContainerList,
   ButtonIconBorder,
   TitleNav,
+  ButtonSelect,
 
 };
-

@@ -9,18 +9,11 @@
 } 
 
 
-
 html{
     
-    color:#365583;
-    color:#F9F9F9;
-    color:#C3C3C3;
-    color:#E4E4E4;
-    color: #e0e0e0;
-    color:#0D192B;
-    color:#9c9c9c;
-    color:#e2e2e2;
+    background-color: #f2F2F7;
     color:#1C3C6D;
+    
 
 }  
 
@@ -54,7 +47,29 @@ html::-webkit-scrollbar-track {
 }
 */
 
+.scroll-container {
+  width: 360px;
+  min-height: 50vh;
+  overflow-y: scroll;
+}
 
+.scroll-container::-webkit-scrollbar {
+  width: 10px;
+}
+
+.scroll-container::-webkit-scrollbar-thumb {
+  background-color: #C3C3C3;
+  border-radius: 5px;
+}
+
+.scroll-container::-webkit-scrollbar-thumb:hover {
+  background-color: #1C3C6D;
+  border-radius: 12px;
+}
+
+.scroll-container::-webkit-scrollbar-track {
+  background-color: #E4E4E4;
+}
 
 .fondo{
 

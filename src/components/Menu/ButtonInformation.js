@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import { DivRotate } from "./DivRotate";
+import { Colores } from "../GlobalColor";
 
 export const ButtonInformation = styled.button`
   outline: none;
@@ -10,7 +11,7 @@ export const ButtonInformation = styled.button`
   float: right;
   cursor: pointer;
   padding: 0 0 0 20px;
-  background-color: #f9f9f9;
+  background-color: ${Colores.fondo};
   transition: background-color 0.3s ease;
   &:hover {
     background-color: #e0e0e0;

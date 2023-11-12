@@ -7,6 +7,7 @@ export const Colores = {
    Gris:"#C3C3C3",
    BlancoHueso:"#E4E4E4",
    Blanco: "#ffff",
+   fondo:"#F0F0F5"
 
 };
 

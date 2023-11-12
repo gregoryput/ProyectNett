@@ -1,10 +1,12 @@
 import styled from "styled-components";
+import { Colores } from "../GlobalColor";
 
 export const ViewContainerPages = styled.div`
   margin-left:80px;
   margin-top: 70px;
-  width: 92vw;
-  height: 100%;
+  width: 95.8vw;
+  height:100vh;
   diisplay: flex;
   justify-content: center;
+  background-color:${Colores.fondo};
 `;
