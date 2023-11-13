@@ -3,6 +3,7 @@ import {
   ButtonIconBorder,
 
   ButtonSelect,
+  Div,
 } from "../../../components";
 import Search from "antd/es/transfer/search";
 import { useState } from "react";
@@ -51,7 +52,7 @@ export default function ViewsList() {
   };
 
   return (
-    <div style={{ width: 350 }}>
+    <Div style={{backgroundColor:"white", borderRadius:12, marginLeft:10,marginRight:5,padding:10}}>
       <div
         style={{
           width: 380,
@@ -73,7 +74,7 @@ export default function ViewsList() {
         <Search
           placeholder="Buscar Proyecto"
           allowClear
-          style={{ width: 180 }}
+          style={{ color:"red"}}
         />
         <div
           style={{
@@ -91,7 +92,7 @@ export default function ViewsList() {
         </div>
       </div>
       <List
-        style={{ height: "80vh", overflow: "auto" }}
+        style={{ height: "77vh", overflow: "auto"  }}
         className="scroll-container"
         dataSource={currentData}
         renderItem={() => (
@@ -127,7 +128,6 @@ export default function ViewsList() {
         style={{
           display: "flex",
           flexDirection: "row",
-          backgroundColor: "white",
           justifyContent: "space-between",
           margin: 5,
         }}
@@ -145,6 +145,6 @@ export default function ViewsList() {
           Siguiente
         </ButtonIconBorder>
       </div>
-    </div>
+    </Div>
   );
 }

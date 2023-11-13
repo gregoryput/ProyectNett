@@ -43,6 +43,8 @@ import { ButtonIcon, ButtonIconBorder, ButtonIconDelete, ButtonIconMenuTalba, Bu
 import { ButtonSave } from "./Formularios/ButtonSave";
 import { DropdownContenttabla } from "./General/Dropdownmenutabla";
 import { TitleNav } from "./General/TitleNav";
+import { Div } from "./General/Div";
+import { BtnSelect } from "./proyecto/SelectElement";
 
 /// importanciones de los componente
 export {
@@ -110,5 +112,7 @@ export {
   ButtonIconBorder,
   TitleNav,
   ButtonSelect,
-
+  Div,
+  BtnSelect,
+  
 };

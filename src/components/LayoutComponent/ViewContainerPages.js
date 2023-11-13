@@ -4,9 +4,13 @@ import { Colores } from "../GlobalColor";
 export const ViewContainerPages = styled.div`
   margin-left:80px;
   margin-top: 70px;
-  width: 95.8vw;
+  width: 95vw;
   height:100vh;
   diisplay: flex;
   justify-content: center;
   background-color:${Colores.fondo};
 `;
+
+
+
+

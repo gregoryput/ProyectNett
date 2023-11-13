@@ -1,14 +1,13 @@
-import { Progress, Statistic } from "antd";
 import CountUp from "react-countup";
 import {
+  Avatar,
+  BtnSelect,
   ButtonIconBorder,
+  Container,
   ContainerDetail,
-  ContainerList,
 } from "../../../components";
+import { AiOutlineUser,AiOutlineEdit } from "react-icons/ai";
 const data = [
-  "Juan andres santana",
-  "Juan andres santana",
-  "Juan andres santana",
   "Juan andres santana",
   "Juan andres santana",
   "Juan andres santana",
@@ -19,77 +18,78 @@ const data = [
 
 export default function PersonalAsignado() {
   const formatter = (value) => <CountUp end={value} separator="," />;
-  return (
-    <div style={{ border: "none", margin: 0, padding: 0 ,width:"auto"}}>
-      <ContainerList>
-        <h4>Personal asignado</h4>
 
-        <ContainerDetail style={{ overflow: "auto", height: 200, padding: 0 }}>
+  return (
+    <>
+      <Container style={{ height: 400 }}>
+        <div style={{display:"flex", justifyContent:"space-between",alignItems:"center"}}>
+          <div style={{ display: "flex" }}>
+            <AiOutlineUser size={20} style={{ marginRight: 5 }} />
+            <h4>Personal asignado</h4>
+          </div>
+          <ButtonIconBorder>
+            <AiOutlineEdit size={22} />
+          </ButtonIconBorder>
+        </div>
+        <ContainerDetail style={{ overflow: "auto", height: 280, padding: 0 }}>
           {data.map((item, key) => (
-            <ButtonIconBorder
+            <BtnSelect
               style={{
-                width: "100%",
-                textAlign: "justify",
-                justifyContent: "normal",
+                width: "98%",
+                display: "flex",
+                flexDirection: "row",
+                height: 60,
+                justifyContent: "space-between",
               }}
               key={key}
             >
-              {item}
-            </ButtonIconBorder>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  margin: 5,
+                }}
+              >
+                <Avatar style={{ margin: 0 }}>
+                  <h3>J</h3>
+                </Avatar>
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  width: "100%",
+                  textAlign: "justify",
+                }}
+              >
+                <h3>Usuario</h3>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    color: "gray",
+                  }}
+                >
+                  <p>Responsabilidad</p>
+                  <p>Supervisor</p>
+                </div>
+              </div>
+            </BtnSelect>
           ))}
         </ContainerDetail>
-      </ContainerList>
-      <ContainerList>
-        <h3>Presupuesto</h3>
-
-        <div style={{ display: "flex", justifyContent: "flex-end" }}>
-          <Statistic title="Total" value={4500000} formatter={formatter} />
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            paddingTop: 10,
+            paddingInline: 10,
+          }}
+        >
+          <p>Participantes:</p>
+          <span> {formatter(data.length)}</span>
         </div>
-
-        <div style={{ fontSize: 12 }}>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              paddingTop: 15,
-            }}
-          >
-            <p>Costo en productos:</p>
-            <span>RD$  {formatter(150000)}</span>
-          </div>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              paddingTop: 10,
-            }}
-          >
-            <p>Costo en tareas:</p>
-            <span>RD$ {formatter(250000)}</span>
-          </div>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              paddingTop: 10,
-            }}
-          >
-            <p>Costo adicional :</p>
-            <span>RD$ {formatter(50000)}</span>
-          </div>
-
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              paddingTop: 10,
-            }}
-          >
-            <b>Pagos :</b>
-            <Progress percent={50} steps={10} strokeColor={"green"} />
-          </div>
-        </div>
-      </ContainerList>
-    </div>
+      </Container>
+    </>
   );
 }

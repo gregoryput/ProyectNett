@@ -48,9 +48,7 @@ html::-webkit-scrollbar-track {
 */
 
 .scroll-container {
-  width: 360px;
-  min-height: 50vh;
-  overflow-y: scroll;
+
 }
 
 .scroll-container::-webkit-scrollbar {

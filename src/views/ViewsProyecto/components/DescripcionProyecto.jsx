@@ -1,11 +1,11 @@
 import {  Tag, } from "antd";
-import { ContainerList } from "../../../components";
+import { Container } from "../../../components";
 
 
 export default function DescripcionProyecto() {
   return (
-    <div style={{ display: "flex", flexDirection: "column", width: "auto" }}>
-      <ContainerList style={{ marginInline: 5,marginBottom:0 }}>
+    <div style={{ display: "flex", flexDirection: "column" }}>
+      <Container style={{ marginInline: 5,marginBlock:5 }}>
         <h4>Informacion del proyecto</h4>
         <br />
         <p>
@@ -33,7 +33,7 @@ export default function DescripcionProyecto() {
           </p>
           <Tag color="#108ee9">En proceso</Tag>
         </div>
-      </ContainerList>
+      </Container>
     
 
       
