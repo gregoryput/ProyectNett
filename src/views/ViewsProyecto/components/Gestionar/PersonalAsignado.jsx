@@ -2,11 +2,10 @@ import CountUp from "react-countup";
 import {
   Avatar,
   BtnSelect,
-  ButtonIconBorder,
   Container,
   ContainerDetail,
-} from "../../../components";
-import { AiOutlineUser,AiOutlineEdit } from "react-icons/ai";
+} from "../../../../components";
+import { AiOutlineUser } from "react-icons/ai";
 const data = [
   "Juan andres santana",
   "Juan andres santana",
@@ -27,9 +26,7 @@ export default function PersonalAsignado() {
             <AiOutlineUser size={20} style={{ marginRight: 5 }} />
             <h4>Personal asignado</h4>
           </div>
-          <ButtonIconBorder>
-            <AiOutlineEdit size={22} />
-          </ButtonIconBorder>
+         
         </div>
         <ContainerDetail style={{ overflow: "auto", height: 280, padding: 0 }}>
           {data.map((item, key) => (

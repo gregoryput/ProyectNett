@@ -1,17 +1,15 @@
-import {  Container } from "../../../components";
+import {  BtnPago } from "../../../../components";
 import { AiOutlineDollarCircle, AiOutlineArrowRight } from "react-icons/ai";
-import { Colores } from "../../../components/GlobalColor";
 
 export default function Pagos() {
   return (
-    <Container
+    <BtnPago
       style={{
         height: 90,
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
-        backgroundColor:"#87d068",
-        color:`${Colores.Blanco}`
+        marginTop:0
       }}
     >
       <div style={{display:"flex",alignItems:"center",padding:5}}>
@@ -19,6 +17,6 @@ export default function Pagos() {
       <h4> Realizar pago</h4>
       </div>
       <AiOutlineArrowRight size={35}/>
-    </Container>
+    </BtnPago>
   );
 }

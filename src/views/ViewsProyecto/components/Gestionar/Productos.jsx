@@ -1,5 +1,5 @@
 import CountUp from "react-countup";
-import { BtnSelect, Container, ContainerDetail } from "../../../components";
+import { BtnSelect, Container, ContainerDetail } from "../../../../components";
 import { AiOutlineInbox } from "react-icons/ai";
 
 const data2 = [
@@ -31,12 +31,12 @@ export default function Productos() {
       }}
     >
       <div style={{ display: "flex" }}>
-        <AiOutlineInbox size={20} style={{ marginRight: 5 }} />
+        <AiOutlineInbox size={22} style={{ marginRight: 5 }} />
         <h4>Productos</h4>
       </div>
     
     </div>
-    <ContainerDetail style={{ overflow: "auto", height: 290, padding: 0 }}>
+    <ContainerDetail style={{ overflow: "auto", height: 280, padding: 0 }}>
       {data2.map((item, key) => (
         <BtnSelect
           style={{

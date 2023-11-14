@@ -1,5 +1,5 @@
-import { Container } from "../../../components";
-import { Colores } from "../../../components/GlobalColor";
+import { Container } from "../../../../components";
+import { Colores } from "../../../../components/GlobalColor";
 
 
 export default function Servicio() {

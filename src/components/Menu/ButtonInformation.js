@@ -11,7 +11,7 @@ export const ButtonInformation = styled.button`
   float: right;
   cursor: pointer;
   padding: 0 0 0 20px;
-  background-color: ${Colores.fondo};
+  background-color: ${Colores.Blanco};
   transition: background-color 0.3s ease;
   &:hover {
     background-color: #e0e0e0;

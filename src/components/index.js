@@ -45,6 +45,7 @@ import { DropdownContenttabla } from "./General/Dropdownmenutabla";
 import { TitleNav } from "./General/TitleNav";
 import { Div } from "./General/Div";
 import { BtnSelect } from "./proyecto/SelectElement";
+import { BtnNavPro, BtnPago, BtnPro } from "./proyecto/BtnPro";
 
 /// importanciones de los componente
 export {
@@ -114,5 +115,8 @@ export {
   ButtonSelect,
   Div,
   BtnSelect,
+  BtnPago,
+  BtnPro,
+  BtnNavPro,
   
 };

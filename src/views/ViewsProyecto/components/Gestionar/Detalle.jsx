@@ -1,16 +1,14 @@
-import {  Container } from "../../../components";
-import { Colores } from "../../../components/GlobalColor";
+import {  BtnPro } from "../../../../components";
 import { IoEyeOutline ,IoCashOutline} from "react-icons/io5";
 export default function Detalle() {
   return (
-    <Container
+    <BtnPro
       style={{
         height: 90,
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
-        backgroundColor:`${Colores.AzulMar}`,
-        color:`${Colores.Blanco}`
+        marginTop:0
       }}
     >
       <div style={{display:"flex",alignItems:"center",padding:5}}>
@@ -18,6 +16,6 @@ export default function Detalle() {
       <h4>  Ver completo</h4>
       </div>
       < IoEyeOutline size={35}/>
-    </Container>
+    </BtnPro>
   );
 }

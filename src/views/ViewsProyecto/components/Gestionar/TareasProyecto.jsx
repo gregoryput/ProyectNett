@@ -3,7 +3,7 @@ import {
   BtnSelect,
   Container,
   ContainerDetail,
-} from "../../../components";
+} from "../../../../components";
 
 import { IoClipboardOutline, IoRadioButtonOff } from "react-icons/io5";
 const data = [
@@ -44,7 +44,7 @@ export default function TareasProyecto() {
         </div>
         <div style={{ display: "flex", fontSize: 12, padding: 5 }}>
           <p style={{ marginInline: 5 }}>Prioridad</p>
-          <p style={{ marginRight: 90 }}>Titulo</p>
+          <p style={{ marginRight: 90 }}>Tareas</p>
           <p style={{ marginInline: 15 }}>Tiempo estimado</p>
           <p style={{ marginInline: 25 }}>Estado</p>
         </div>
@@ -76,8 +76,8 @@ export default function TareasProyecto() {
                   flexDirection: "column",
                 }}
               >
-                <p>Tarea</p>
                 <h4>Cableado edificio 1</h4>
+                <span>llevar acabo la...</span>
               </div>
 
               <div
@@ -106,6 +106,7 @@ export default function TareasProyecto() {
             </BtnSelect>
           ))}
         </ContainerDetail>
+  
       </Container>
     </>
   );

@@ -1,11 +1,11 @@
 import CountUp from "react-countup";
-import { Container } from "../../../components";
+import { Container } from "../../../../components";
 
 export default function Tiempo() {
   const formatter = (value) => <CountUp end={value} separator="," />;
 
   return (
-    <Container style={{ marginInline: 5 }}>
+    <Container style={{ marginInline: 5 ,marginTop:0}}>
       <h3>Tiempo</h3>
 
       <div

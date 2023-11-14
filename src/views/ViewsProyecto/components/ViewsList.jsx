@@ -7,7 +7,7 @@ import {
 } from "../../../components";
 import Search from "antd/es/transfer/search";
 import { useState } from "react";
-import { IoAddSharp } from "react-icons/io5";
+import { IoAddSharp,IoChevronForwardSharp,IoChevronBackOutline } from "react-icons/io5";
 export default function ViewsList() {
   const allData = [
     "R",
@@ -52,10 +52,10 @@ export default function ViewsList() {
   };
 
   return (
-    <Div style={{backgroundColor:"white", borderRadius:12, marginLeft:10,marginRight:5,padding:10}}>
+    <Div style={{backgroundColor:"white", borderRadius:12, marginLeft:10,padding:10, height:"auto"}}>
       <div
         style={{
-          width: 380,
+          width: 360,
           marginTop: 5,
           marginBottom: 10,
           marginLeft: 10,
@@ -92,7 +92,7 @@ export default function ViewsList() {
         </div>
       </div>
       <List
-        style={{ height: "77vh", overflow: "auto"  }}
+        style={{ height: 680, overflow: "auto"  }}
         className="scroll-container"
         dataSource={currentData}
         renderItem={() => (
@@ -136,6 +136,7 @@ export default function ViewsList() {
           onClick={() => paginate(currentPage - 1)}
           disabled={currentPage === 1}
         >
+          <IoChevronBackOutline />
           Anterior
         </ButtonIconBorder>
         <ButtonIconBorder
@@ -143,6 +144,7 @@ export default function ViewsList() {
           disabled={indexOfLastItem >= allData.length}
         >
           Siguiente
+          <IoChevronForwardSharp />
         </ButtonIconBorder>
       </div>
     </Div>

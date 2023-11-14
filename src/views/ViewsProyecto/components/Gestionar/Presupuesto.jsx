@@ -1,5 +1,5 @@
 import { Progress, Statistic } from "antd";
-import { Container } from "../../../components";
+import { Container } from "../../../../components";
 import CountUp from "react-countup"
 
 export default function Presupuesto() {

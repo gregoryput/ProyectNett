@@ -1,5 +1,5 @@
 import { Progress } from "antd";
-import { Container } from "../../../components";
+import { Container } from "../../../../components";
 
 export default function ProgressTarea() {
   return (

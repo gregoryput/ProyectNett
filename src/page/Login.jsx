@@ -141,7 +141,6 @@ export default function Login() {
             </span>
           )}
           <Button
-            className="animate__animated animate__zoomIn  animate__bounce animate__delay-1s"
             type="submit"
             disabled={isLoading || loadingState}
           >
