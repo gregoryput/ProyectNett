@@ -15,22 +15,28 @@ import { AiOutlineDollarCircle } from "react-icons/ai";
 import { IoGameControllerOutline } from "react-icons/io5";
 import PropTypes from "prop-types";
 import TareasComponent from "./components/Operar/TareasComponent";
+import FormularioProyecto from "./components/FormularioProyecto";
 
 /// tama;o de la ventada
 // const anchoPantalla = window.innerWidth;
 // const altoPantalla = window.innerHeight;
 
 export default function Proyecto() {
-  const [seeState, setSee] = useState(true);
+  const [seeState, setSee] = useState(false);
+  const [formSee, setFormSee] = useState(true);
 
   return (
     <ViewContainerPages>
       <div style={{ width: "100%", display: "flex" }}>
         <div style={{ flexDirection: "column", marginRight: 5 }}>
-          <Seccion seeState={seeState} setSee={setSee} />
-          <ViewsList />
+          <Seccion seeState={seeState} setSee={setSee}  setFormSee={setFormSee} />
+          <ViewsList  seeState={seeState} setSee={setSee} setFormSee={setFormSee} formSee={formSee} />
         </div>
-        {seeState === true ? (
+        {formSee == true ? (
+          <>
+          <FormularioProyecto/> 
+          </>
+        ) : seeState == true ? (
           <>
             <div
               style={{
@@ -75,7 +81,7 @@ export default function Proyecto() {
           </>
         ) : (
           <>
-          {/* aqui va control  */}
+            {/* aqui va control  */}
             <div
               style={{
                 display: "flex",
@@ -101,10 +107,11 @@ export default function Proyecto() {
   );
 }
 
-function Seccion({ setSee, seeState }) {
+function Seccion({ setSee, seeState,setFormSee }) {
   Seccion.propTypes = {
     setSee: PropTypes.func.isRequired,
     seeState: PropTypes.func.isRequired,
+    setFormSee: PropTypes.func.isRequired,
   };
 
   return (
@@ -123,6 +130,7 @@ function Seccion({ setSee, seeState }) {
           style={{ width: "50%", margin: 0 }}
           onClick={() => {
             setSee(true);
+            setFormSee(false);
           }}
         >
           <div
@@ -141,6 +149,7 @@ function Seccion({ setSee, seeState }) {
           style={{ width: "50%", margin: 0 }}
           onClick={() => {
             setSee(false);
+            setFormSee(false);
           }}
         >
           <div

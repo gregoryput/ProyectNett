@@ -7,13 +7,11 @@ const { Column } = Table;
 //icons
 import {
   IoTrashOutline,
-  IoEyeOutline,
   IoClipboardOutline,
   IoEllipsisVerticalSharp,
 } from "react-icons/io5";
 import { ButtonIcon, Container, SpinnerTables } from "../../../components";
 import { MdRestore } from "react-icons/md";
-import { useNavigate } from "react-router-dom";
 
 export default function TablaComponent({
   dataProducts,
@@ -24,7 +22,6 @@ export default function TablaComponent({
   setSelectedItem,
   setOpenDrawerForm,
 }) {
-  const navegation = useNavigate();
 
   const [filteredData, setFilteredData] = useState(dataProducts?.result);
 
@@ -98,24 +95,6 @@ export default function TablaComponent({
             style={{ marginLeft: 5, marginRight: 5 }}
           />
           <p>Editar</p>
-        </a>
-      ),
-    },
-    {
-      key: "3",
-      label: (
-        <a
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            alignItems: "center",
-          }}
-          onClick={() => {
-            navegation(`/cliente/${selectedItem.idCliente}`);
-          }}
-        >
-          <IoEyeOutline size={18} style={{ marginLeft: 5, marginRight: 5 }} />
-          <p>Ver</p>
         </a>
       ),
     },
