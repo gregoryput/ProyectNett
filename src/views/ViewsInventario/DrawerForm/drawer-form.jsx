@@ -19,10 +19,10 @@ import { RxInput } from "react-icons/rx";
 import { FiSave } from "react-icons/fi";
 import { FaEdit } from "react-icons/fa";
 import { BiHelpCircle } from "react-icons/bi";
-import imagen1 from "./pics/imagen1.jpg";
-import imagen2 from "./pics/imagen2.jpg";
-import imagen3 from "./pics/imagen3.jpg";
-import imagen4 from "./pics/imagen4.jpg";
+//import imagen1 from "./pics/imagen1.jpg";
+//import imagen2 from "./pics/imagen2.jpg";
+//import imagen3 from "./pics/imagen3.jpg";
+//import imagen4 from "./pics/imagen4.jpg";
 import "../../../GeneralStyles/form-styles.css";
 import React, { useState, useEffect } from "react";
 
@@ -63,13 +63,14 @@ export default function DrawerForm({
   };
 
   const [fileList, setFileList] = useState([]);
-  console.log(fileList);
+  console.log("fileListfileListfileList", fileList);
+
+  // Función para manejar la vista previa de la imagen si es necesario
   const handlePreview = async (file) => {
     if (!file.url && !file.preview) {
       file.preview = await getBase64(file.originFileObj);
     }
   };
-  console.log(handlePreview);
 
   const getBase64 = (file) => {
     return new Promise((resolve, reject) => {
@@ -377,12 +378,18 @@ export default function DrawerForm({
                     multiple={false}
                     maxCount={1}
                     showUploadList={false}
-                    onChange={(infoFiles) =>
+                    onChange={(infoFiles) => {
+                      const selectedFiles = infoFiles.fileList;
+                      const uniqueNewFiles = selectedFiles.filter(
+                        (file) => !fileList.some((f) => f.uid === file.uid)
+                      );
+
+                      // Combinar archivos anteriores con nuevos archivos únicos
                       setFileList((prevState) => [
                         ...prevState,
-                        ...infoFiles.fileList,
-                      ])
-                    }
+                        ...uniqueNewFiles,
+                      ]);
+                    }}
                   >
                     <div
                       style={{
@@ -428,6 +435,8 @@ export default function DrawerForm({
                       </Tooltip>
                     </div>
                   </div>
+
+                  {/*CAROUSEL*/}
                   <Carousel
                     slidesToShow={3}
                     autoplay
@@ -438,7 +447,42 @@ export default function DrawerForm({
                       borderRadius: "10px",
                     }}
                   >
-                    <div style={{ width: "100px", height: "100px" }}>
+                    {fileList.map((file) => (
+                      <div
+                        key={file.uid}
+                        style={{ width: "100px", height: "100px" }}
+                      >
+                        {handlePreview(file) ? (
+                          <Image
+                            //src={file.preview}
+                            src={handlePreview(file)}
+                            alt={`Imagen-${file.uid}`}
+                            style={{
+                              maxWidth: "100px",
+                              borderRadius: "70%",
+                              border: "2px solid #4096FF",
+                            }}
+                          />
+                        ) : (
+                          // Si no hay vista previa, puedes mostrar un indicador de carga o algo similar
+                          <p>Cargando...</p>
+                        )}
+                      </div>
+                    ))}
+                  </Carousel>
+                </div>
+              </div>
+            </Form.Item>
+          </Form>
+        )}
+      </Drawer>
+    </>
+  );
+}
+
+{
+  /*
+                      <div style={{ width: "100px", height: "100px" }}>
                       <Image
                         src={imagen1}
                         style={{
@@ -478,13 +522,5 @@ export default function DrawerForm({
                         }}
                       />
                     </div>
-                  </Carousel>
-                </div>
-              </div>
-            </Form.Item>
-          </Form>
-        )}
-      </Drawer>
-    </>
-  );
+  */
 }
