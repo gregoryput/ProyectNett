@@ -9,7 +9,7 @@ import {
   IoChevronForwardSharp,
   IoChevronBackOutline,
 } from "react-icons/io5";
-export default function ViewsList({ setFormSee,formSee,seeState,setSee  }) {
+export default function ViewsList({ setFormSee,seeState,setSee  }) {
   const allData = [
     "R",
     "R",

@@ -20,15 +20,14 @@ import FormularioProyecto from "./components/FormularioProyecto";
 /// tama;o de la ventada
 // const anchoPantalla = window.innerWidth;
 // const altoPantalla = window.innerHeight;
-
 export default function Proyecto() {
-  const [seeState, setSee] = useState(false);
+  const [seeState, setSee] = useState(true);
   const [formSee, setFormSee] = useState(true);
 
   return (
     <ViewContainerPages>
       <div style={{ width: "100%", display: "flex" }}>
-        <div style={{ flexDirection: "column", marginRight: 5 }}>
+        <div style={{flexDirection: "column", marginRight: 5, }}>
           <Seccion seeState={seeState} setSee={setSee}  setFormSee={setFormSee} />
           <ViewsList  seeState={seeState} setSee={setSee} setFormSee={setFormSee} formSee={formSee} />
         </div>
