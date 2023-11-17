@@ -22,8 +22,6 @@ import ProtectedRoute from "./protected-route/protected-route";
 import ConfiguracionPerfil from "../views/ViewUsuario/ConfiguracionPerfil";
 import { Toaster } from "react-hot-toast";
 import Empleado from "../views/ViewsEmpleado/Empleado";
-// import FormComponet from "../views/ViewsProyecto/components/Form/FormComponet";
-
 
 export const createRouter = () => {
   const router = createBrowserRouter([
@@ -172,7 +170,6 @@ export const createRouter = () => {
             </ProtectedRoute>
           ),
         },
-       
         {
           path: "/reporte",
           element: (

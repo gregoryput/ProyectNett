@@ -7,6 +7,7 @@ const { Column } = Table;
 //icons
 import {
   IoTrashOutline,
+  IoEyeOutline,
   IoClipboardOutline,
   IoEllipsisVerticalSharp,
 } from "react-icons/io5";
@@ -19,6 +20,7 @@ import {
 } from "../../../components";
 import { OutsideClick } from "outsideclick-react";
 import { MdRestore } from "react-icons/md";
+import { useNavigate } from "react-router-dom";
 
 export default function TablaComponent({
   data,
@@ -34,6 +36,7 @@ export default function TablaComponent({
   const handleDrop = (index) => {
     setOpenIndex((prevIndex) => (prevIndex === index ? -1 : index));
   };
+  const navegation = useNavigate();
 
   const [filteredData, setFilteredData] = useState(data?.result);
 
@@ -168,7 +171,19 @@ export default function TablaComponent({
                   <DropdownContenttabla open={openIndex === record.idUsuario}>
                     <OutsideClick>
                       {/*----------VIEW BUTTON:----------*/}
-                   
+                      <ButtonIconMenuTalba
+                        onClick={() => {
+                          handleDrop(-1);
+                          navegation(`/Proveedores/${record.idUsuario}`);
+                        }}
+                      >
+                        <IoEyeOutline
+                          size={18}
+                          style={{ marginLeft: 5, marginRight: 5 }}
+                        />
+                        <p>Ver</p>
+                      </ButtonIconMenuTalba>
+
                       {/*----------EDIT BUTTON:----------*/}
                       <ButtonIconMenuTalba
                         onClick={() => {
