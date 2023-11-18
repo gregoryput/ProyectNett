@@ -42,6 +42,8 @@ export default function InformacionUsuario(props) {
     reset,
   } = useForm();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [filteredData, setFilteredData] = useState({});
+  const [selectState, setSelectState] = useState({});
 
   const {
     data: dataEmpleado,
@@ -49,8 +51,6 @@ export default function InformacionUsuario(props) {
     // isLoading: isLoading,
   } = useGetEmpleadoNotUserQuery("");
 
-  const [filteredData, setFilteredData] = useState({});
-  const [selectState, setSelectState] = useState({});
 
   const handleSearch = (value) => {
     const searchTerm = value.toLowerCase();

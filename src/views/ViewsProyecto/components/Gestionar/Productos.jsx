@@ -22,7 +22,7 @@ export default function Productos() {
   const formatter = (value) => <CountUp end={value} separator="," />;
 
   return (
-    <Container style={{ height: 400, marginBottom: 0 }}>
+    <Container style={{ height: 400 }}>
     <div
       style={{
         display: "flex",

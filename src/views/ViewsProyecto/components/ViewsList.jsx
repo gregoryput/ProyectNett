@@ -1,5 +1,5 @@
 import { List, Progress, Tooltip } from "antd";
-import { ButtonIconBorder, ButtonSelect, Div } from "../../../components";
+import { ButtonIconBorder, ButtonSelect, Container } from "../../../components";
 import PropTypes from "prop-types";
 
 import Search from "antd/es/transfer/search";
@@ -9,7 +9,7 @@ import {
   IoChevronForwardSharp,
   IoChevronBackOutline,
 } from "react-icons/io5";
-export default function ViewsList({ setFormSee,seeState,setSee  }) {
+export default function ViewsList({ setFormSee, seeState, setSee }) {
   const allData = [
     "R",
     "R",
@@ -48,7 +48,6 @@ export default function ViewsList({ setFormSee,seeState,setSee  }) {
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentData = allData.slice(indexOfFirstItem, indexOfLastItem);
 
-
   const paginate = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
@@ -61,13 +60,11 @@ export default function ViewsList({ setFormSee,seeState,setSee  }) {
   };
 
   return (
-    <Div
+    <Container
       style={{
         backgroundColor: "white",
         borderRadius: 12,
-        marginLeft: 10,
         padding: 10,
-        height: "auto",
       }}
     >
       <div
@@ -99,12 +96,17 @@ export default function ViewsList({ setFormSee,seeState,setSee  }) {
             justifyContent: "center",
             alignItems: "center",
             width: "auto",
-            height: 35
+            height: 35,
           }}
         >
           {seeState && (
             <Tooltip title="Crear proyecto" color={"blue"}>
-              <ButtonIconBorder onClick={()=> {setFormSee(true); setSee(true)}} >
+              <ButtonIconBorder
+                onClick={() => {
+                  setFormSee(true);
+                  setSee(true);
+                }}
+              >
                 <IoAddSharp size={27} />
               </ButtonIconBorder>
             </Tooltip>
@@ -167,6 +169,6 @@ export default function ViewsList({ setFormSee,seeState,setSee  }) {
           <IoChevronForwardSharp />
         </ButtonIconBorder>
       </div>
-    </Div>
+    </Container>
   );
 }

@@ -28,7 +28,7 @@ const data = [
 export default function TareasProyecto() {
   return (
     <>
-      <Container style={{ marginInline: 5, marginBlock: 5, height: 490 }}>
+      <Container style={{ marginInline: 5, marginBlock: 5, height: 490 ,}}>
         <div
           style={{
             display: "flex",
