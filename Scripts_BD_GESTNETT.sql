@@ -177,7 +177,7 @@ Create Table Empresas
 GO
 
 
--- CREACION DE LA TABLA CLIENTES
+-- CREACION DE LA TABLA CLIENTES ((((((((((CORRECCION: Poner Campos: EsPersonaFisica, FechaInicioDeRepresentante))))))))))
 Create Table Clientes
 (
   IdCliente int identity constraint PK_IdCliente primary key,
@@ -563,8 +563,8 @@ CREATE TABLE Proyectos
   FechaModificacion Datetime,
   IdEstadoRegistro int constraint Fk_ProyectoIdEstadoR foreign Key references EstadosRegistros(IdEstadoRegistro),
 );
-
 GO
+
 
 -- CREACION DE LA TABLA GESTIONA:
 CREATE TABLE Gestiona
@@ -2097,16 +2097,16 @@ GO
 
 --  Insertar datos en la tabla Cargos:
 INSERT INTO Cargos
-  (NombreCargo, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro)
+  (NombreCargo, IdCreadoPor, FechaCreacion, IdEstadoRegistro)
 VALUES
-  /*1*/('Coordinador de Recursos Humanos', 1, GETDATE(), 1, GETDATE(), 1),
-  /*2*/('Jefe Coordinador', 1, GETDATE(), 1, GETDATE(), 1),
-  /*3*/('Ingeniero de Redes', 1, GETDATE(), 1, GETDATE(), 1),
-  /*4*/('Técnico en Telecomunicaciones', 1, GETDATE(), 1, GETDATE(), 1),
-  /*5*/('Administrador de Redes', 1, GETDATE(), 1, GETDATE(), 1),
-  /*6*/('Asistente administrativo', 1, GETDATE(), 1, GETDATE(), 1),
-  /*7*/('Ingeniero de software', 1, GETDATE(), 1, GETDATE(), 1),
-  /*8*/('Analista de sistemas', 1, GETDATE(), 1, GETDATE(), 1);
+  /*1*/('Coordinador de Recursos Humanos', 1, GETDATE(), 1),
+  /*2*/('Jefe Coordinador', 1, GETDATE(), 1),
+  /*3*/('Ingeniero de Redes', 1, GETDATE(), 1),
+  /*4*/('Técnico en Telecomunicaciones', 1, GETDATE(), 1),
+  /*5*/('Administrador de Redes', 1, GETDATE(), 1),
+  /*6*/('Asistente administrativo', 1, GETDATE(), 1),
+  /*7*/('Ingeniero de software', 1, GETDATE(), 1),
+  /*8*/('Analista de sistemas', 1, GETDATE(), 1);
 -- Select * FROM Cargos
 GO
 
@@ -2122,7 +2122,7 @@ VALUES
   /*5*/('2022-04-13', 20, 1, GETDATE(), 1, GETDATE(), 1),
   /*6*/('2020-05-14', 21, 1, GETDATE(), 1, GETDATE(), 1),
   /*7*/('2022-05-14', 22, 1, GETDATE(), 1, GETDATE(), 1),
-  /*8*/('2023-01-14', 22, 1, GETDATE(), 1, GETDATE(), 1);
+  /*8*/('2023-01-14', 23, 1, GETDATE(), 1, GETDATE(), 1);
 -- Select * from Empleados
 GO
 
