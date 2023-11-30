@@ -1,6 +1,6 @@
-CREATE DATABASE BD_PROYENETT_MV
+CREATE DATABASE BD_PROYENETT_MV8
 GO
-USE BD_PROYENETT_MV
+USE BD_PROYENETT_MV8
 GO
 
 
@@ -32,7 +32,8 @@ Create table Usuarios
     IdUsuario int identity constraint PK_IdUsuario primary key,
     NombreUsuario varchar(30),
     Correo varchar(60),
-    Contraseña varchar(30),
+    Contraseña varchar(MAX),
+    IdRol int constraint Fk_UsuarioIdRol foreign Key references Roles(IdRol),
     --
     IdCreadoPor int constraint Fk_Usuario_IdCreadoPor foreign Key references Usuarios(IdUsuario),
     FechaCreacion Datetime,
@@ -635,11 +636,15 @@ GO
 
 -- Tabla para la relación entre Productos y UnidadesDeMedida
 CREATE TABLE ProductosUnidadesDeMedida (
-    IdProducto INT,
-    IdUnidadDeMedida INT,
-    PRIMARY KEY (IdProducto, IdUnidadDeMedida),
-    FOREIGN KEY (IdProducto) REFERENCES Productos(IdProducto),
-    FOREIGN KEY (IdUnidadDeMedida) REFERENCES UnidadesDeMedida(IdUnidadDeMedida)
+    IdProductoUnidadDeMedida INT IDENTITY CONSTRAINT PK_IdProductoUM PRIMARY KEY,
+    IdProducto INT CONSTRAINT FK_IdUnidadDeMedida_UNDM FOREIGN KEY REFERENCES UnidadesDeMedida(IdUnidadDeMedida),
+    IdUnidadDeMedida INT CONSTRAINT FK_IdProducto_UNDM FOREIGN KEY REFERENCES Productos(IdProducto),
+
+    IdCreadoPor int constraint Fk_PUDM1 foreign Key references Usuarios(IdUsuario),
+    FechaCreacion Datetime,
+    IdModificadoPor int constraint Fk_PUDM2 foreign Key references Usuarios(IdUsuario),
+    FechaModificacion Datetime,
+    IdEstadoRegistro int constraint Fk_PUDM3 foreign Key references EstadosRegistros(IdEstadoRegistro),
 );
 GO
 
@@ -652,8 +657,13 @@ CREATE TABLE DetallesProductosUnidadesDeMedida (
     PrecioVenta DECIMAL(10, 2),
     ITBIS DECIMAL(5, 2),
     -- Otras columnas de detalle si es necesario
-    PRIMARY KEY (IdProducto, IdUnidadDeMedida),
-    FOREIGN KEY (IdProducto, IdUnidadDeMedida) REFERENCES ProductosUnidadesDeMedida(IdProducto, IdUnidadDeMedida)
+    IdProductoUnidadDeMedida INT CONSTRAINT FK_DPUDM_ foreign Key references ProductosUnidadesDeMedida(IdProductoUnidadDeMedida),
+    -- 
+    IdCreadoPor int constraint FK_DPUDM1 foreign Key references Usuarios(IdUsuario),
+    FechaCreacion Datetime,
+    IdModificadoPor int constraint FK_DPUDM2 foreign Key references Usuarios(IdUsuario),
+    FechaModificacion Datetime,
+    IdEstadoRegistro int constraint FK_DPUDM3 foreign Key references EstadosRegistros(IdEstadoRegistro),
 );
 GO
 

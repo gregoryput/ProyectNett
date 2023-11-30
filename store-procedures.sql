@@ -1,4 +1,4 @@
-USE BD_PROYENETT_MV
+USE BD_PROYENETT_MV4
 
 GO
 ----------- /*1--*/ Procedimiento almcenado para obtener una lista general de clientes (empresas y personas fisicas):
@@ -25,6 +25,19 @@ BEGIN
 					 INNER JOIN Ciudades Ci ON EM.IdCiudad = Ci.IdCiudad
 					 INNER JOIN Paises Pa ON Ci.IdPais = Pa.IdPais
 END
+-- EXEC dbo.GetListaCenerallientes
+
 
 GO
-EXEC dbo.GetListaCenerallientes
+-- Procedimiento para Obtener usuario y loguear:
+CREATE OR ALTER PROCEDURE dbo.GetUsuarioLogin
+  @NombreUsuario varchar(30),
+  @Contraseña varchar(MAX)
+AS
+BEGIN
+  SET NOCOUNT ON
+  SELECT IdUsuario, NombreUsuario, Correo, Contraseña, NombreRol
+  FROM Usuarios U INNER JOIN Roles R ON U.IdRol = R.IdRol
+  WHERE NombreUsuario = @NombreUsuario AND Contraseña = @Contraseña
+END
+--- EXEC dbo.GetUsuarioLogin 

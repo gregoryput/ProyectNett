@@ -1,4 +1,4 @@
-USE BD_PROYENETT_MV
+USE BD_PROYENETT_MV8
 GO
 
 
@@ -34,20 +34,20 @@ VALUES
 GO
 -- Insertar datos en la tabla Usuarios
 INSERT INTO Usuarios
-  (NombreUsuario, Correo, Contraseña, IdCreadoPor, FechaCreacion)
+  (NombreUsuario, Correo, IdRol, Contraseña, IdCreadoPor, FechaCreacion)
 VALUES
   /*1*/
-  ('juan01andres', 'juan@gestnett.com', '123', 1, GETDATE()),
+  ('juan01andres', 'juan@gestnett.com', 1, 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3', 1, GETDATE()),
   /*2*/
-  ('carlos01', 'carlos@gestnett.com', '123', 1, GETDATE()),
+  ('carlos01', 'carlos@gestnett.com', 2, 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3', 1, GETDATE()),
   /*3*/
-  ('joselo01', 'joselo@gestnett.com', '123', 1, GETDATE()),
+  ('joselo01', 'joselo@gestnett.com', 1, 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3', 1, GETDATE()),
   /*4*/
-  ('cristian01', 'cristiano@gestnett.com', '123', 1, GETDATE()),
+  ('cristian01', 'cristiano@gestnett.com', 4, 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3', 1, GETDATE()),
   /*5*/
-  ('pedro01', 'pedro@gestnett.com', '123', 1, GETDATE()),
+  ('pedro01', 'pedro@gestnett.com', 3, 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3', 1, GETDATE()),
   /*6*/
-  ('gregory01', 'greg@gestnett.com', '123', 1, GETDATE());
+  ('gregory01', 'greg@gestnett.com', 1, 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3', 1, GETDATE());
 -- Select * FROM Usuarios
 
 
@@ -840,3 +840,10 @@ VALUES
   /*11*/('Puertos CA', 'PCAAE', 'Puerts RJ45 con seguridad integrada', 'FIRE-ENT', 0, 1, 1, GETDATE(), 1),
   /*12*/('Cable Par trenzado CA', 'CPT-A1', 'Cable de red par trenzado grosor A', 'CPT-CA', 1, 1, 1, GETDATE(), 1);
 -- Select * FROM Productos
+
+
+GO
+INSERT INTO ProductosUnidadesDeMedida(IdProducto, IdUnidadDeMedida, IdCreadoPor, FechaCreacion, IdEstadoRegistro)
+VALUES 
+(1, 1, 1, GETDATE(), 1),
+(2, 1, 1, GETDATE(), 1);
