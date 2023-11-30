@@ -1,16 +1,4 @@
-import {
-  Box1,
-  ColumnItem,
-  ColumnItem2,
-  ColumnItem3,
-  Container,
-  ContainerDetail,
-  FlexContainer,
-  FlexibleBox,
-  MainContainer,
-  RowItem,
-  ViewContainerPages,
-} from "../../components";
+
 
 
 
@@ -28,10 +16,11 @@ import Tiempo from "./components/Gestionar/Tiempo";
 import ViewsList from "./components/ViewsList";
 
 import TareasComponent from "./components/Operar/TareasComponent";
-import FormularioProyecto from "./components/FormularioProyecto";
 
 import { useState } from "react";
 import { Colores } from "../../components/GlobalColor";
+import FormularioProyecto from "./components/Operar/FormularioProyecto";
+import { Box1, ColumnItem, ColumnItem2, ColumnItem3, Container, ContainerDetail, FlexContainer, FlexibleBox, MainContainer, RowItem, ViewContainerPages } from "../../components";
 
 
 export default function Proyecto() {

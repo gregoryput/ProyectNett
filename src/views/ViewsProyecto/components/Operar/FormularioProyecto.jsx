@@ -1,5 +1,4 @@
 import { DatePicker, Form, Input } from "antd";
-import { ButtonIcon, Container, ContainerDetail } from "../../../components";
 
 import { IoPersonAddOutline } from "react-icons/io5";
 
@@ -8,10 +7,11 @@ import { useEffect } from "react";
 import TextArea from "antd/es/input/TextArea";
 import { useState } from "react";
 import { TreeSelect } from "antd";
-import ComponentTarea from "./FormProyecto/TareaComponent";
-import ProductoComponent from "./FormProyecto/ProductoComponent";
-import { useGetClientsQuery } from "../../../redux/Api/clientsApi";
-import ModalCliente from "./Modales/ModalCliente";
+import ModalCliente from "../Modales/ModalCliente";
+import { ButtonIcon, Container, ContainerDetail } from "../../../../components";
+import ComponentTarea from "../FormProyecto/TareaComponent";
+import ProductoComponent from "../FormProyecto/ProductoComponent";
+import { useGetClientsQuery } from "../../../../redux/Api/clientsApi";
 const { SHOW_PARENT } = TreeSelect;
 
 const treeData = [
@@ -81,7 +81,6 @@ export default function FormularioProyecto() {
     isSuccess: isClientsSuccess,
     // isLoading: isLoadingClients,
   } = useGetClientsQuery("");
-
   const handleSearch = (value) => {
     const searchTerm = value.toLowerCase();
 
@@ -251,7 +250,7 @@ export default function FormularioProyecto() {
               selectStateProducto={selectStateProducto}
             />
           </Container>
-
+                ProductoComponent
           <Container style={{ marginBlock: 5, marginInline: 5, width: "100%" }}>
             <ComponentTarea setTarea={setTarea} tarea={tarea} value={value} />
           </Container>
