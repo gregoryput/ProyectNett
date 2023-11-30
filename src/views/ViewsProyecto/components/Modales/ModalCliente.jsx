@@ -18,6 +18,8 @@ export default function ModalCliente({
   CloseModalCliente,
   handleSearch,
 }) {
+
+  console.log(filteredData);
   return (
     <>
       {" "}
@@ -45,6 +47,7 @@ export default function ModalCliente({
           style={{ overflow: "auto", height: 400, padding: 0, margin: 0 }}
         >
           <List
+            locale={{ emptyText: "No hay datos" }}
             dataSource={filteredData}
             renderItem={(item) => (
               <>

@@ -35,8 +35,8 @@ import { Colores } from "../../components/GlobalColor";
 
 
 export default function Proyecto() {
-  const [seeState, setSee] = useState(true);
-  const [formSee, setFormSee] = useState(false);
+  const [seeState, setSee] = useState(false);
+  const [formSee, setFormSee] = useState(true);
 
   return (
     <ViewContainerPages>

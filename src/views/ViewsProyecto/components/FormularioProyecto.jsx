@@ -1,5 +1,5 @@
 import { DatePicker, Form, Input } from "antd";
-import { ButtonAdd, Container, ContainerDetail } from "../../../components";
+import { ButtonIcon, Container, ContainerDetail } from "../../../components";
 
 import { IoPersonAddOutline } from "react-icons/io5";
 
@@ -49,8 +49,8 @@ const treeData = [
 
 export default function FormularioProyecto() {
   const [form] = Form.useForm();
-  
-  //esto es de treeselect de tipo de servicio 
+
+  //esto es de treeselect de tipo de servicio
   const [value, setValue] = useState([]);
   const onChange = (newValue) => {
     setValue(newValue);
@@ -61,17 +61,21 @@ export default function FormularioProyecto() {
     onChange,
     treeCheckable: true,
     showCheckedStrategy: SHOW_PARENT,
-    placeholder: "Please select",
+    placeholder: "Selecionar los servicios",
     style: {
       width: "100%",
     },
   };
-  
+
   /// codigo para agregar cliente
-  
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [filteredData, setFilteredData] = useState({});
-    const [selectState, setSelectState] = useState({});
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [filteredData, setFilteredData] = useState({});
+  const [selectState, setSelectState] = useState({});
+  const [selectStateProducto, setSelectStateProducto] = useState([]);
+
+  const [tarea, setTarea] = useState([]);
+
   const {
     data: clientesData,
     isSuccess: isClientsSuccess,
@@ -94,7 +98,7 @@ export default function FormularioProyecto() {
     }
   }, [clientesData, setFilteredData, isClientsSuccess]);
 
-  const llenarCampo = (item) => {
+  const ClienteInput = (item) => {
     CloseModalCliente();
     setSelectState(item.idCliente);
     form.setFieldsValue({
@@ -111,7 +115,7 @@ export default function FormularioProyecto() {
     setIsModalOpen(false);
   };
 
-  //guardar formulario 
+  //guardar formulario
   const onFinish = (values) => {
     // Manejar el envío del formulario aquí
     console.log("Valores del formulario:", values);
@@ -147,7 +151,7 @@ export default function FormularioProyecto() {
               padding: 20,
             }}
           >
-            <h3>Tipo de servicio</h3>
+            <h3>Servicios</h3>
             <div style={{ width: 400 }}>
               <TreeSelect {...tProps} />
             </div>
@@ -179,7 +183,7 @@ export default function FormularioProyecto() {
 
               <div style={{ display: "flex", alignItems: "center" }}>
                 <Form.Item
-                  label={<strong>Seleccionar cliente:</strong>}
+                  label={<strong>Cliente:</strong>}
                   style={{ width: 200, marginTop: 30 }}
                   name={"cliente"}
                   rules={[
@@ -190,18 +194,18 @@ export default function FormularioProyecto() {
                   ]}
                 >
                   <Input
-                    disabled
+                    readOnly
                     style={{ backgroundColor: "white" }}
-                    placeholder="Cliente"
+                    placeholder="Seleccionar cliente"
                   />
                 </Form.Item>
-                <ButtonAdd
+                <ButtonIcon
                   onClick={() => OpenModalCliente()}
                   style={{ width: 40, marginLeft: 10, marginTop: 37 }}
                   type="button"
                 >
-                  <IoPersonAddOutline size={18} />
-                </ButtonAdd>
+                  <IoPersonAddOutline size={18} color="black" />
+                </ButtonIcon>
               </div>
 
               <Form.Item
@@ -242,10 +246,14 @@ export default function FormularioProyecto() {
             </Form.Item>
           </Container>
           <Container style={{ marginBlock: 5, marginInline: 5, width: "100%" }}>
-            <ProductoComponent />
+            <ProductoComponent
+              setSelectStateProducto={setSelectStateProducto}
+              selectStateProducto={selectStateProducto}
+            />
           </Container>
+
           <Container style={{ marginBlock: 5, marginInline: 5, width: "100%" }}>
-            <ComponentTarea />
+            <ComponentTarea setTarea={setTarea} tarea={tarea} value={value} />
           </Container>
           <Container style={{ marginBlock: 5, marginInline: 5, width: "100%" }}>
             <h3>Equipo</h3>
@@ -256,7 +264,7 @@ export default function FormularioProyecto() {
       <ModalCliente
         CloseModalCliente={CloseModalCliente}
         OpenModalCliente={OpenModalCliente}
-        llenarCampo={llenarCampo}
+        llenarCampo={ClienteInput}
         handleSearch={handleSearch}
         isModalOpen={isModalOpen}
         filteredData={filteredData}
