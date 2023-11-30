@@ -34,7 +34,6 @@ import { setCountries } from "../../../redux/Slice/countriesSlice";
 import PropTypes from "prop-types"; // Importa PropTypes
 
 export default function InformacionPersonal(props) {
-
   const {
     register,
     formState: { errors },
@@ -62,7 +61,6 @@ export default function InformacionPersonal(props) {
   };
 
   const controlVerify = (dataPersonal) => {
-   
     trigger().then((isValid) => {
       if (isValid) {
         let requiereVerificacionCedula = false;
@@ -88,7 +86,6 @@ export default function InformacionPersonal(props) {
 
   // Con este useEffect observo si la cedula existe y si existe no lo dejo avanzar al paso de empresas
   React.useEffect(() => {
-   
     if (dataVerify !== null && dataVerify !== undefined) {
       let cedulaDuplicate = false;
       //
@@ -109,7 +106,7 @@ export default function InformacionPersonal(props) {
         irAdelante();
       }
     }
-  }, [dataVerify, setError]);
+  }, [dataVerify, setError, irAdelante]);
 
   //Traer las ciudades
   const {
@@ -169,7 +166,7 @@ export default function InformacionPersonal(props) {
         })
       );
     }
-  }, [dispatch, isLoadingCities, citiesData]);
+  }, [dispatch, countriesData?.result, isLoadingCountries]);
 
   //Llenar los campos(sirve para llenar los campos al cambiar de paso y tambien para el edit)
   useEffect(() => {
@@ -192,12 +189,9 @@ export default function InformacionPersonal(props) {
     props.setToggle(false);
   };
 
-  useEffect(()=>{
+  useEffect(() => {
     reset();
-  },[props.toggle]);
-
-
-
+  }, [props.toggle, reset]);
 
   // Definir PropTypes para las props del componente
   InformacionPersonal.propTypes = {
@@ -450,7 +444,7 @@ export default function InformacionPersonal(props) {
       <div style={{ display: "flex", justifyContent: "flex-end" }}>
         <ButtonRemove
           type="button"
-          onClick={()=> clearFields() }
+          onClick={() => clearFields()}
           style={{ marginLeft: 5 }}
           disabled={isLoadingVerify}
         >

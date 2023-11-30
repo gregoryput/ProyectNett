@@ -79,7 +79,7 @@ export default function FormComponent(props) {
       props.setToggle(false);
       navigate("/Cliente");
     }
-  }, [isCreateSuccess]);
+  }, [isCreateSuccess, navigate, props]);
   //.. CUANDO EL INSERT TENGA UN ERROR:
   React.useEffect(() => {
     if (isErrorCreate === true) {
@@ -105,7 +105,7 @@ export default function FormComponent(props) {
       props.setToggle(false);
       navigate("/cliente");
     }
-  }, [isUpdateSuccess]);
+  }, [isUpdateSuccess, navigate, props]);
   //.. CUANDO EL UPDATE TENGA UN ERROR:
   React.useEffect(() => {
     if (isErrorUpdate === true) {
