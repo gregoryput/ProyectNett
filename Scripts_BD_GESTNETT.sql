@@ -24,7 +24,7 @@ Create table Usuarios
   IdUsuario int identity constraint PK_IdUsuario primary key,
   NombreUsuario varchar(30),
   Correo varchar(60),
-  Contraseña varchar(30),
+  Contraseña varchar(max),
   IdRol int constraint Fk_IdRol foreign Key references Roles(IdRol),
   --
   IdCreadoPor int constraint Fk_UsuarioIdCreadoPor foreign Key references Usuarios(IdUsuario),
@@ -2301,7 +2301,7 @@ GO
 -- Procedimiento para Obtener usuario y loguear:
 CREATE OR ALTER PROCEDURE dbo.GetUsuarioLogin
   @NombreUsuario varchar(30),
-  @Contraseña varchar(30)
+  @Contraseña varchar(max)
 AS
 BEGIN
   SET NOCOUNT ON
