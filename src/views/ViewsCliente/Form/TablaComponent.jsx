@@ -135,7 +135,6 @@ export default function TablaComponent({
               sorter={(a, b) => a.ciudad.localeCompare(b.ciudad)}
             />
             <Column title="Correo" dataIndex="correo" key="correo" />
-            <Column title="Correo" dataIndex="correo" key="correo" />
 
             <Column
               title="Estado"

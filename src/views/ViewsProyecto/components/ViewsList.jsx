@@ -1,14 +1,15 @@
 import { List, Progress, Tooltip } from "antd";
-import {
-  ButtonIconBorder,
+import { ButtonIconBorder, ButtonSelect, Container } from "../../../components";
+import PropTypes from "prop-types";
 
-  ButtonSelect,
-  Div,
-} from "../../../components";
 import Search from "antd/es/transfer/search";
 import { useState } from "react";
-import { IoAddSharp,IoChevronForwardSharp,IoChevronBackOutline } from "react-icons/io5";
-export default function ViewsList() {
+import {
+  IoAddSharp,
+  IoChevronForwardSharp,
+  IoChevronBackOutline,
+} from "react-icons/io5";
+export default function ViewsList({ setFormSee, seeState, setSee }) {
   const allData = [
     "R",
     "R",
@@ -51,8 +52,21 @@ export default function ViewsList() {
     setCurrentPage(pageNumber);
   };
 
+  ViewsList.propTypes = {
+    setSee: PropTypes.func.isRequired,
+    seeState: PropTypes.func.isRequired,
+    setFormSee: PropTypes.func.isRequired,
+    formSee: PropTypes.func.isRequired,
+  };
+
   return (
-    <Div style={{backgroundColor:"white", borderRadius:12, marginLeft:10,padding:10, height:"auto"}}>
+    <Container
+      style={{
+        backgroundColor: "white",
+        borderRadius: 12,
+        padding: 10,
+      }}
+    >
       <div
         style={{
           width: 360,
@@ -74,7 +88,7 @@ export default function ViewsList() {
         <Search
           placeholder="Buscar Proyecto"
           allowClear
-          style={{ color:"red"}}
+          style={{ color: "red" }}
         />
         <div
           style={{
@@ -82,17 +96,25 @@ export default function ViewsList() {
             justifyContent: "center",
             alignItems: "center",
             width: "auto",
+            height: 35,
           }}
         >
-          <Tooltip title="Crear proyecto" color={"blue"}>
-            <ButtonIconBorder style={{ width: 50, height: 35 }}>
-              <IoAddSharp size={22} />
-            </ButtonIconBorder>
-          </Tooltip>
+          {seeState && (
+            <Tooltip title="Crear proyecto" color={"blue"}>
+              <ButtonIconBorder
+                onClick={() => {
+                  setFormSee(true);
+                  setSee(true);
+                }}
+              >
+                <IoAddSharp size={27} />
+              </ButtonIconBorder>
+            </Tooltip>
+          )}
         </div>
       </div>
       <List
-        style={{ height: 680, overflow: "auto"  }}
+        style={{ height: 680, overflow: "auto" }}
         className="scroll-container"
         dataSource={currentData}
         renderItem={() => (
@@ -147,6 +169,6 @@ export default function ViewsList() {
           <IoChevronForwardSharp />
         </ButtonIconBorder>
       </div>
-    </Div>
+    </Container>
   );
 }

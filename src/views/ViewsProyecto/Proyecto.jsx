@@ -1,5 +1,20 @@
-import { useState } from "react";
-import { BtnNavPro, Container, ViewContainerPages } from "../../components";
+import {
+  Box1,
+  ColumnItem,
+  ColumnItem2,
+  ColumnItem3,
+  Container,
+  ContainerDetail,
+  FlexContainer,
+  FlexibleBox,
+  MainContainer,
+  RowItem,
+  ViewContainerPages,
+} from "../../components";
+
+
+
+import Seccion from "./components/Seccion";
 import DescripcionProyecto from "./components/Gestionar/DescripcionProyecto";
 import Detalle from "./components/Gestionar/Detalle";
 import Pagos from "./components/Gestionar/Pagos";
@@ -11,150 +26,111 @@ import Servicio from "./components/Gestionar/Servicio";
 import TareasProyecto from "./components/Gestionar/TareasProyecto";
 import Tiempo from "./components/Gestionar/Tiempo";
 import ViewsList from "./components/ViewsList";
-import { AiOutlineDollarCircle } from "react-icons/ai";
-import { IoGameControllerOutline } from "react-icons/io5";
-import PropTypes from "prop-types";
-import TareasComponent from "./components/Operar/TareasComponent";
 
-/// tama;o de la ventada
-// const anchoPantalla = window.innerWidth;
-// const altoPantalla = window.innerHeight;
+import TareasComponent from "./components/Operar/TareasComponent";
+import FormularioProyecto from "./components/FormularioProyecto";
+
+import { useState } from "react";
+import { Colores } from "../../components/GlobalColor";
+
 
 export default function Proyecto() {
-  const [seeState, setSee] = useState(true);
+  const [seeState, setSee] = useState(false);
+  const [formSee, setFormSee] = useState(true);
 
   return (
     <ViewContainerPages>
-      <div style={{ width: "100%", display: "flex" }}>
-        <div style={{ flexDirection: "column", marginRight: 5 }}>
-          <Seccion seeState={seeState} setSee={setSee} />
-          <ViewsList />
-        </div>
-        {seeState === true ? (
-          <>
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                marginRight: 5,
-                width: "85%",
-              }}
-            >
-              <ProgressTarea />
-
-              <div style={{ display: "flex", flexDirection: "row" }}>
-                <div>
-                  <Servicio />
-                  <DescripcionProyecto />
-                  <TareasProyecto />
-                </div>
-                <div
+      <FlexContainer>
+        <Box1>
+          <Seccion
+            seeState={seeState}
+            setSee={setSee}
+            setFormSee={setFormSee}
+          />
+          <ViewsList
+            seeState={seeState}
+            setSee={setSee}
+            setFormSee={setFormSee}
+            formSee={formSee}
+          />
+        </Box1>
+        <FlexibleBox>
+          <ContainerDetail
+            style={{
+              margin: "0",
+              padding: 0,
+              overflow: `${formSee == true ? "auto" : "none"}`,
+              height: 900,
+            }}
+          >
+            {formSee == false ? (
+              <>
+                {" "}
+                <RowItem>
+                  <ProgressTarea />
+                </RowItem>
+              </>
+            ) : (
+              <>
+                <Container
                   style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    width: "35%",
+                    marginInline: 5,
+                    marginTop: 0,
+                    marginBottom: 5,
+                    height: 70,
+                    padding: 20,
+                    alignItems: "center",
+                    backgroundColor: `${Colores.AzulMar}`,
+                    color: `${Colores.Blanco}`,
                   }}
                 >
-                  <PersonalAsignado />
-                  <Tiempo />
-                  <Detalle />
-                </div>
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    width: "35%",
-                  }}
-                >
-                  <Productos />
-                  <Presupuesto />
-                  <Pagos />
-                </div>
-              </div>
-            </div>
-          </>
-        ) : (
-          <>
-          {/* aqui va control  */}
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                marginRight: 5,
-                width: "85%",
-              }}
-            >
-              <ProgressTarea />
+                  <h2>Creacion de proyecto</h2>
+                </Container>
+              </>
+            )}
+            <MainContainer>
+              {formSee == true ? (
+                <>
+                  <FormularioProyecto />
+                </>
+              ) : seeState == true ? (
+                <>
+                  <ColumnItem2>
+                    <Servicio />
+                    <DescripcionProyecto />
+                    <TareasProyecto />
+                  </ColumnItem2>
 
-              <div style={{ display: "flex", flexDirection: "row" }}>
-                <TareasComponent />
-                <div style={{ width: "40%" }}>
-                  <PersonalAsignado />
-                  <Tiempo />
-                </div>
-              </div>
-            </div>
-          </>
-        )}
-      </div>
+                  <ColumnItem>
+                    <PersonalAsignado />
+                    <Tiempo />
+                    <Detalle />
+                  </ColumnItem>
+                  <ColumnItem>
+                    <Productos />
+                    <Presupuesto />
+                    <Pagos />
+                  </ColumnItem>
+                </>
+              ) : (
+                <>
+                  <ColumnItem3>
+                    <TareasComponent />
+                  </ColumnItem3>
+                  <ColumnItem>
+                    <PersonalAsignado />
+                    <Tiempo />
+                  </ColumnItem>
+                </>
+              )}
+            </MainContainer>
+          </ContainerDetail>
+        </FlexibleBox>
+      </FlexContainer>
+
+
+     
+
     </ViewContainerPages>
-  );
-}
-
-function Seccion({ setSee, seeState }) {
-  Seccion.propTypes = {
-    setSee: PropTypes.func.isRequired,
-    seeState: PropTypes.func.isRequired,
-  };
-
-  return (
-    <Container
-      style={{
-        marginTop: 0,
-        marginLeft: 10,
-        marginRight: 5,
-        padding: 0,
-        height: 70,
-      }}
-    >
-      <div>
-        <BtnNavPro
-          color={seeState == true ? true : false}
-          style={{ width: "50%", margin: 0 }}
-          onClick={() => {
-            setSee(true);
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-            }}
-          >
-            <span>Presupuesto</span>
-            <AiOutlineDollarCircle size={25} />
-          </div>
-        </BtnNavPro>
-        <BtnNavPro
-          color={seeState == false ? true : false}
-          style={{ width: "50%", margin: 0 }}
-          onClick={() => {
-            setSee(false);
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-            }}
-          >
-            <span>Control</span>
-            <IoGameControllerOutline size={25} />
-          </div>
-        </BtnNavPro>
-      </div>
-    </Container>
   );
 }

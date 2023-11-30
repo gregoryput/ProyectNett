@@ -74,3 +74,21 @@ export const BtnNavPro = styled.button`
   }
 `;
 
+export const Btnbox = styled.button`
+  border: none;
+  font-size: 14px;
+  padding: 15px;
+  margin: 10px auto;
+  color:${(props) => (props.color ? "white" : `${Colores.AzulOscuro}`)}; ;
+  overflow: hidden;
+  background-color: ${(props) => (props.color ? `${Colores.AzulOscuro}` : `${Colores.fondo}`)};
+  outline: none;
+  cursor: pointer;
+
+  &:hover {
+
+    background-color:  orange  ;
+    color: ${Colores.Blanco};
+  }
+`;
+

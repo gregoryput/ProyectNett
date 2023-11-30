@@ -52,7 +52,8 @@ import { DropdownContenttabla } from "./General/Dropdownmenutabla";
 import { TitleNav } from "./General/TitleNav";
 import { Div } from "./General/Div";
 import { BtnSelect } from "./proyecto/SelectElement";
-import { BtnNavPro, BtnPago, BtnPro } from "./proyecto/BtnPro";
+import { BtnNavPro, BtnPago, BtnPro, Btnbox } from "./proyecto/BtnPro";
+import { Box1, ColumnItem, ColumnItem2, ColumnItem3, FlexContainer, FlexibleBox, MainContainer, RowItem } from "./proyecto/ColumnAndRow";
 
 /// importanciones de los componente
 export {
@@ -126,4 +127,17 @@ export {
   BtnPago,
   BtnPro,
   BtnNavPro,
+
+  ///proyecto 
+  FlexibleBox,
+  FlexContainer,
+  Box1,
+  MainContainer,
+  RowItem,
+  ColumnItem2,
+  ColumnItem3,
+  ColumnItem,
+  Btnbox,
+
+  
 };
