@@ -1,4 +1,4 @@
-USE BD_PROYENETT_MV4
+USE BD_PROYENETT_MV8
 
 GO
 ----------- /*1--*/ Procedimiento almcenado para obtener una lista general de clientes (empresas y personas fisicas):
