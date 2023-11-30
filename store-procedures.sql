@@ -1,7 +1,8 @@
 USE BD_PROYENETT_MV
 
+GO
 ----------- /*1--*/ Procedimiento almcenado para obtener una lista general de clientes (empresas y personas fisicas):
-CREATE PROCEDURE dbo.GetListaClientesPersonasFisicas
+CREATE PROCEDURE dbo.GetListaCenerallientes
 AS
 BEGIN
     SELECT C.IdCliente, NombreEntidad, C.Codigo, NombreTipoEntidad, P.Cedula AS Identificacion, 
@@ -24,3 +25,6 @@ BEGIN
 					 INNER JOIN Ciudades Ci ON EM.IdCiudad = Ci.IdCiudad
 					 INNER JOIN Paises Pa ON Ci.IdPais = Pa.IdPais
 END
+
+GO
+EXEC dbo.GetListaCenerallientes
