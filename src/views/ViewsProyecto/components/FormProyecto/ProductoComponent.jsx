@@ -4,20 +4,26 @@ import { useGetProductsForFCQuery } from "../../../../redux/Api/productsApi";
 import { ButtonNext } from "../../../../components";
 import ModalProducto from "../Modales/ModalProducto";
 import PropTypes from "prop-types";
-
+import { Statistic } from "antd";
+import CountUp from "react-countup";
 
 ProductoComponent.propTypes = {
   selectStateProducto: PropTypes.func.isRequired,
   setSelectStateProducto: PropTypes.func.isRequired,
- 
+  setTotalProducto: PropTypes.func.isRequired,
 };
-export default function ProductoComponent({selectStateProducto,setSelectStateProducto}) {
+export default function ProductoComponent({
+  selectStateProducto,
+  setSelectStateProducto,
+  setTotalProducto,
+}) {
   //api para obtener la lista de productos
   const {
     data: productsData,
     // isLoading: isLoadingProducts,
     isSuccess: isSuccessProducts,
   } = useGetProductsForFCQuery("");
+  const formatter = (value) => <CountUp end={value} separator="," />;
 
   const [producto, setProducto] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -36,7 +42,19 @@ export default function ProductoComponent({selectStateProducto,setSelectStatePro
   const CloseModalProducto = () => {
     setIsModalOpen(false);
   };
+  const totalSubtotal =
+    selectStateProducto != null
+      ? selectStateProducto?.reduce(
+          (total, item) =>
+            total + (item.cantidad * item.precioVenta + item.itbis),
+          0
+        )
+      : "0";
 
+  useEffect(() => {
+    setTotalProducto(totalSubtotal);
+  }, [totalSubtotal]);
+  
   const handleSearch = (value) => {
     const searchTerm = value.toLowerCase();
 
@@ -46,8 +64,6 @@ export default function ProductoComponent({selectStateProducto,setSelectStatePro
 
     setFilteredData(filter);
   };
-
- 
 
   /*Arreglo de productos disponible*/
   const columns = [
@@ -96,9 +112,7 @@ export default function ProductoComponent({selectStateProducto,setSelectStatePro
       dataIndex: "subtotal",
 
       render: (text, record) => (
-        <span>
-          {record.cantidad * record.precioVenta + record.itbis}
-        </span>
+        <span>{record.cantidad * record.precioVenta + record.itbis}</span>
       ),
       key: "sub-total",
       width: "120px",
@@ -116,7 +130,7 @@ export default function ProductoComponent({selectStateProducto,setSelectStatePro
     //   ),
     // },
   ];
-  const totalSubtotal = selectStateProducto != null ? selectStateProducto?.reduce((total, item) => total + (item.cantidad * item.precioVenta + item.itbis), 0) : "0";
+
   return (
     <div>
       <>
@@ -145,9 +159,14 @@ export default function ProductoComponent({selectStateProducto,setSelectStatePro
           // scroll={{ x: "max-content", y: 400 }}
           locale={{ emptyText: "No hay productos agregados" }}
         />
-        <div style={{float:"right", marginRight:30,marginTop:20}}>
-          <h3>Total</h3>
-           <p>RD$ {totalSubtotal}</p>
+        <div
+          style={{ display: "flex", justifyContent: "flex-end", marginTop: 20 }}
+        >
+          <Statistic
+            title="Total"
+            value={totalSubtotal}
+            formatter={formatter}
+          />
         </div>
         <ModalProducto
           isModalOpen={isModalOpen}

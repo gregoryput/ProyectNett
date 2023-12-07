@@ -60,11 +60,12 @@ export default function ModalProducto({
       title: "Cantidad",
       dataIndex: "cantidad",
       key: "cantidad",
-      align: "center",
+      align: "right",
       render: (text, record) => (
         <InputNumber
+          min={0}
           value={text == " " || text == null ? 0 : text}
-          onChange={(value) => handleCantidadChange(value, record.idProducto)} // Reemplaza 'key' con la propiedad única de tu registro
+          onChange={(value) => handleCantidadChange(value, record.idProducto)} 
         />
       ),
     },
@@ -167,7 +168,7 @@ export default function ModalProducto({
             alignItems: "center",
           }}
         >
-          <h3>Productos en inventario</h3>
+          <h3>Productos en el inventario</h3>
           <Search
             placeholder="Buscar proudcto..."
             allowClear

@@ -54,6 +54,7 @@ import { Div } from "./General/Div";
 import { BtnSelect } from "./proyecto/SelectElement";
 import { BtnNavPro, BtnPago, BtnPro, Btnbox } from "./proyecto/BtnPro";
 import { Box1, ColumnItem, ColumnItem2, ColumnItem3, FlexContainer, FlexibleBox, MainContainer, RowItem } from "./proyecto/ColumnAndRow";
+import { Barra, TablaStyled, Td, Tda, Th, Tha } from "./proyecto/Diagrama";
 
 /// importanciones de los componente
 export {
@@ -138,6 +139,13 @@ export {
   ColumnItem3,
   ColumnItem,
   Btnbox,
-
+  /// digrama de gantt 
+  Barra,
+  Tha,
+  Th,
+  Td,
+  Tda,
+  TablaStyled
+  
   
 };
