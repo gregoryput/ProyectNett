@@ -406,25 +406,28 @@ export default function FormularioProyecto() {
               style={{
                 display: "flex",
                 alignSelf: "flex-end",
+                maxWidth: 400,
+                width: 300,
               }}
             >
               <BtnPro
                 style={{
-                  height: 70,
+                  height: 60,
                   display: "flex",
                   justifyContent: "space-between",
                   alignItems: "center",
                   margin: 0,
-                  width: 400,
+                  padding: 5,
+                  
                 }}
               >
                 <div
                   style={{ display: "flex", alignItems: "center", padding: 5 }}
                 >
-                  <AiOutlineDollarCircle size={35} style={{ margin: 10 }} />
+                  <AiOutlineDollarCircle size={30} style={{ margin: 10 }} />
                   <h4> Realizar cotización</h4>
                 </div>
-                <AiOutlineArrowRight size={35} />
+                <AiOutlineArrowRight size={30} />
               </BtnPro>
             </div>
           </ContainerDetail>
