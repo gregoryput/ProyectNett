@@ -27,11 +27,11 @@ namespace ProyectNettApi.Controllers
         // .A.C.C.I.O.N -- Para obtener la lista de Ciudades: --------------------------------------------
         [Route("obtenerCiudades")]
         [HttpGet]
-        public IActionResult getCiudades()
+        public IActionResult getCiudades(int idPais)
         {
             try
             {
-                var listaCiudades = _ciudadRepositorio.getCities();
+                var listaCiudades = _ciudadRepositorio.getCities(idPais);
                 _respuesta.Result = listaCiudades;
                 _respuesta.DisplayMessage = "Listado de ciudades obtenido con exito:";
             }

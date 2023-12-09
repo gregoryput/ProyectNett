@@ -20,13 +20,13 @@ namespace ProyectNettApi.Models
         public string Apellidos { get; set; }
         //<--
         //<--
-        [RegularExpression(@"^\d{3}-\d{3}-\d{4}$", ErrorMessage = "El formato del número de teléfono no es válido.")]
+        [RegularExpression(@"^\d{3}-\d{3}-\d{4}$|^\d{10}$", ErrorMessage = "El formato del número de teléfono no es válido.")]
         [Required(ErrorMessage = "Este campo es requerido")]
         public string Telefono1 { get; set; }
         //<--
         //<--
 
-        [RegularExpression(@"^\d{3}-\d{3}-\d{4}$", ErrorMessage = "El formato del número de teléfono no es válido.")]
+        [RegularExpression(@"^\d{3}-\d{3}-\d{4}$|^\d{10}$", ErrorMessage = "El formato del número de teléfono no es válido.")]
         public string Telefono2 { get; set; }
         //<--
         //<--
@@ -42,16 +42,12 @@ namespace ProyectNettApi.Models
         //<--
         //<--
 
-        [Required(ErrorMessage = "Este campo es requerido")]
-        public int Edad { get; set; }
-        //<--
-        //<--
 
         public DateTime FechaDeNacimiento { get; set; }
         //<--
         //<--
 
-        [RegularExpression(@"^\d{3}-\d{7}-\d{1}$", ErrorMessage = "El formato de la cédula no es válido.")]
+        [RegularExpression(@"^\d{3}-\d{7}-\d{1}$|^\d{11}$", ErrorMessage = "El formato de la cédula no es válido.")]
         public string Cedula { get; set; }
         //<--
         //<--
@@ -63,26 +59,15 @@ namespace ProyectNettApi.Models
 
         [Required(ErrorMessage = "Este campo es requerido")]
         public int IdCiudad { get; set; }
-        //<--
-        //<--
 
-        [Required(ErrorMessage = "Este campo es requerido")]
-        public int IdCreadoPor { get; set; }
-        //<--
-        //<--
+        public int? IdCreadoPor { get; set; }
+        public DateTime? FechaCreacion { get; set; }
+        public int? IdModificadoPor { get; set; }
+        public DateTime? FechaModificacion { get; set; }
+        public int? IdEstadoRegistro { get; set; }
 
-        [Required(ErrorMessage = "Este campo es requerido")]
-        public DateTime FechaCreacion { get; set; }
-        public int IdModificadoPor { get; set; }
-        //<--
-        //<--
 
-        [Required(ErrorMessage = "Este campo es requerido")]
-        public DateTime FechaModificacion { get; set; }
-        //<--
-        //<--
-
-        [Required(ErrorMessage = "Este campo es requerido")]
-        public int IdEstadoRegistro { get; set; }
+        // Relaciones -------- :
+        public PersonaTipoPersona PersonaTiposPersona { get; set; }
     }
 }

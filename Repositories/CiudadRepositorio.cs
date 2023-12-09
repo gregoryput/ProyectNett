@@ -15,9 +15,9 @@ namespace ProyectNettApi.Repositories
             _conexionDB = new ConexionDB();
         }
 
-        public IEnumerable<Ciudad> getCities()
+        public IEnumerable<Ciudad> getCities(int idPais)
         {
-            string queryExecute = "Select * From Ciudades";
+            string queryExecute = $"Select * From Ciudades WHERE IdPais = {idPais}";
             var resultSet = _conexionDB.GetConnection(_configuration).Query<Ciudad>(queryExecute);
             return resultSet.ToList();
         }

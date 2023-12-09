@@ -41,7 +41,6 @@ namespace ProyectNettApi.Repositories
                     Telefono2 = cliente.Persona.Telefono2,
                     Direccion = cliente.Persona.Direccion,
                     Correo = cliente.Persona.Correo,
-                    Edad = cliente.Persona.Edad,
                     FechaDeNacimiento = cliente.Persona.FechaDeNacimiento,
                     Cedula = cliente.Persona.Cedula,
                     IdSexo = cliente.Persona.IdSexo,
@@ -58,6 +57,7 @@ namespace ProyectNettApi.Repositories
                         IdPersona,
                         cliente.IdCreadoPor,
                     }, transaction, commandType: CommandType.StoredProcedure);
+
                 // -
                 // -
                 // - ..I.N.S.E.R.T.. Insertando en las tablas Empresas y Clientes_Empresas: ........................................
@@ -212,7 +212,6 @@ namespace ProyectNettApi.Repositories
                     Telefono2 = cliente.Persona.Telefono2,
                     Direccion = cliente.Persona.Direccion,
                     Correo = cliente.Persona.Correo,
-                    Edad = cliente.Persona.Edad,
                     FechaDeNacimiento = cliente.Persona.FechaDeNacimiento,
                     Cedula = cliente.Persona.Cedula,
                     IdSexo = cliente.Persona.IdSexo,
@@ -346,7 +345,7 @@ namespace ProyectNettApi.Repositories
 
         public IEnumerable<ClienteDTO> GetClientes()
         {
-            string query = "Execute dbo.ListadoClientes";
+            string query = "Execute dbo.GetListaCenerallientes";
             var resultSet = _conexionDB.GetConnection(_configuration).Query<ClienteDTO>(query);
             return resultSet.ToList();
         }
