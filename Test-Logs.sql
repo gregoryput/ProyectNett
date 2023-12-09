@@ -1,4 +1,4 @@
-USE BD_PROYENETT_MV8
+USE BD_PROYENETT_MV14
 GO
 
 
@@ -840,7 +840,6 @@ VALUES
   /*11*/('Puertos CA', 'PCAAE', 'Puerts RJ45 con seguridad integrada', 'FIRE-ENT', 0, 1, 1, GETDATE(), 1),
   /*12*/('Cable Par trenzado CA', 'CPT-A1', 'Cable de red par trenzado grosor A', 'CPT-CA', 1, 1, 1, GETDATE(), 1);
 -- Select * FROM Productos
-
 
 GO
 INSERT INTO ProductosUnidadesDeMedida(IdProducto, IdUnidadDeMedida, IdCreadoPor, FechaCreacion, IdEstadoRegistro)

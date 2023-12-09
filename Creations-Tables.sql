@@ -1,6 +1,6 @@
-CREATE DATABASE BD_PROYENETT_MV8
+CREATE DATABASE BD_PROYENETT_MV14
 GO
-USE BD_PROYENETT_MV8
+USE BD_PROYENETT_MV14
 GO
 
 
@@ -668,27 +668,6 @@ CREATE TABLE DetallesProductosUnidadesDeMedida (
 GO
 
 
--- CREACION DE LA TABLA PrductosFotos:
-CREATE TABLE ProductosFotos
-(
-    IdFoto INT IDENTITY CONSTRAINT PK_IdProducto_Foto PRIMARY KEY,
-    FileName VARCHAR(MAX),
-    ContentType VARCHAR(60),
-    FileSize INT,
-    DATA VARBINARY(MAX),
-    CheckSum VARCHAR(100),
-    IdProducto INT,
-    CONSTRAINT FK_IdProducto_Foto FOREIGN KEY (IdProducto) REFERENCES Productos(IdProducto),
-    --
-    IdCreadoPor int constraint Fk_Fotos_IdCreadoPor foreign Key references Usuarios(IdUsuario),
-    FechaCreacion Datetime,
-    IdModificadoPor int constraint Fk_Fotos_IdModificadoPor foreign Key references Usuarios(IdUsuario),
-    FechaModificacion Datetime,
-    IdEstadoRegistro int constraint Fk_Fotos_IdEstadoR foreign Key references EstadosRegistros(IdEstadoRegistro),
-);
-GO
-
-
 -- CREACION DE LA TABLA EXISTENCIAS:
 -- POR CADA UNIDAD DE MEDIDA DE CADA PRODUCTO HABRÁ UNA EXISTENCIA:
 CREATE TABLE Existencias
@@ -1273,5 +1252,90 @@ CREATE TABLE PagoDocumentos
     IdModificadoPor int constraint Fk_PDocIdModificadoPor foreign Key references Usuarios(IdUsuario),
     FechaModificacion Datetime,
     IdEstadoRegistro int constraint Fk_PDocIdEstadoR foreign Key references EstadosRegistros(IdEstadoRegistro),
+);
+GO
+
+
+GO
+-- CREACION DE LA TABLA Imagenes:
+CREATE TABLE Imagenes
+(
+    IdImagen INT IDENTITY CONSTRAINT PK_IdImagen PRIMARY KEY,
+    FileName VARCHAR(MAX),
+    ContentType VARCHAR(60),
+    FileSize INT,
+    DATA VARBINARY(MAX),
+    --
+    IdCreadoPor int constraint Fk_Imagenes_IdCreadoPor foreign Key references Usuarios(IdUsuario),
+    FechaCreacion Datetime,
+    IdModificadoPor int constraint Fk_Imagenes_IdModificadoPor foreign Key references Usuarios(IdUsuario),
+    FechaModificacion Datetime,
+    IdEstadoRegistro int constraint Fk_Imagenes_IdEstadoR foreign Key references EstadosRegistros(IdEstadoRegistro),
+);
+GO
+
+
+GO
+-- CREACION DE LA TABLA ProductosImagenes:
+CREATE TABLE ProductosImagenes
+(
+    IdProductoImagen INT IDENTITY CONSTRAINT PK_IdProductoImagen PRIMARY KEY,
+    IdImagen int constraint Fk_PImg_IdImagen foreign Key references Imagenes(IdImagen),
+    IdProducto int constraint Fk_PImg_IdProducto foreign Key references Productos(IdProducto),
+    EsLaPrincipal bit,
+    --
+    IdCreadoPor int constraint Fk_PImg_IdCreadoPor foreign Key references Usuarios(IdUsuario),
+    FechaCreacion Datetime,
+    IdModificadoPor int constraint Fk_PImg_IdModificadoPor foreign Key references Usuarios(IdUsuario),
+    FechaModificacion Datetime,
+    IdEstadoRegistro int constraint Fk_PImg_IdEstadoR foreign Key references EstadosRegistros(IdEstadoRegistro),
+);
+GO
+
+
+-- CREACION DE LA TABLA IdPersona:
+CREATE TABLE EntidadesImagenes
+(
+    IdEntdadImagen INT IDENTITY CONSTRAINT PK_IdEntidadImagen PRIMARY KEY,
+    IdImagen int constraint Fk_EImg_IdImagen foreign Key references Imagenes(IdImagen),
+    IdEntidad int constraint Fk_EImg_IdProducto foreign Key references Entidades(IdEntidad),
+    --
+    IdCreadoPor int constraint Fk_EImg_IdCreadoPor foreign Key references Usuarios(IdUsuario),
+    FechaCreacion Datetime,
+    IdModificadoPor int constraint Fk_EImg_IdModificadoPor foreign Key references Usuarios(IdUsuario),
+    FechaModificacion Datetime,
+    IdEstadoRegistro int constraint Fk_EImg_IdEstadoR foreign Key references EstadosRegistros(IdEstadoRegistro),
+);
+GO
+
+
+-- CREACION DE LA TABLA PersonasImagenes:
+CREATE TABLE PersonasImagenes
+(
+    IdPersonaImagen INT IDENTITY CONSTRAINT PK_IdPersonaImagen PRIMARY KEY,
+    IdImagen int constraint Fk_CImg_IdImagen foreign Key references Imagenes(IdImagen),
+    IdPersona int constraint Fk_CImg_IdProducto foreign Key references Personas(IdPersona),
+    --
+    IdCreadoPor int constraint Fk_CImg_IdCreadoPor foreign Key references Usuarios(IdUsuario),
+    FechaCreacion Datetime,
+    IdModificadoPor int constraint Fk_CImg_IdModificadoPor foreign Key references Usuarios(IdUsuario),
+    FechaModificacion Datetime,
+    IdEstadoRegistro int constraint Fk_CImg_IdEstadoR foreign Key references EstadosRegistros(IdEstadoRegistro),
+);
+GO
+
+
+-- CREACION DE LA TABLA ProyectosImagenes:
+CREATE TABLE ProyectosImagenes
+(
+    IdProyectoImagen INT IDENTITY CONSTRAINT PK_IdProyectoImagen PRIMARY KEY,
+    IdImagen int constraint Fk_PYImg_IdImagen foreign Key references Imagenes(IdImagen),
+    IdProyecto int constraint Fk_PYImg_IdProducto foreign Key references Proyectos(IdProyecto),
+    --
+    IdCreadoPor int constraint Fk_PYImg_IdCreadoPor foreign Key references Usuarios(IdUsuario),
+    FechaCreacion Datetime,
+    IdModificadoPor int constraint Fk_PYImg_IdModificadoPor foreign Key references Usuarios(IdUsuario),
+    FechaModificacion Datetime,
+    IdEstadoRegistro int constraint Fk_PYImg_IdEstadoR foreign Key references EstadosRegistros(IdEstadoRegistro),
 );
 GO
