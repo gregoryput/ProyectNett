@@ -53,7 +53,23 @@ import { TitleNav } from "./General/TitleNav";
 import { Div } from "./General/Div";
 import { BtnSelect } from "./proyecto/SelectElement";
 import { BtnNavPro, BtnPago, BtnPro, Btnbox } from "./proyecto/BtnPro";
-import { Box1, ColumnItem, ColumnItem2, ColumnItem3, FlexContainer, FlexibleBox, MainContainer, RowItem } from "./proyecto/ColumnAndRow";
+import {
+  Box1,
+  ColumnItem,
+  ColumnItem2,
+  ColumnItem3,
+  FlexContainer,
+  FlexibleBox,
+  MainContainer,
+  RowItem,
+} from "./proyecto/ColumnAndRow";
+
+import { DropdownActionsNew } from "./DropDownActionsNew";
+import { DropdownActionsLists } from "./DropDownActionsLists";
+
+import { ModalFormPerson } from "./FormPerson";
+
+import { CustomUploadImage } from "./CustomUploadImage";
 
 /// importanciones de los componente
 export {
@@ -128,7 +144,7 @@ export {
   BtnPro,
   BtnNavPro,
 
-  ///proyecto 
+  ///proyecto
   FlexibleBox,
   FlexContainer,
   Box1,
@@ -139,5 +155,11 @@ export {
   ColumnItem,
   Btnbox,
 
+  ///Actiones para las tablas
+  DropdownActionsLists,
+  DropdownActionsNew,
+  ModalFormPerson,
   
+  //
+  CustomUploadImage,
 };

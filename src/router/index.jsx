@@ -1,6 +1,5 @@
 import { createBrowserRouter } from "react-router-dom";
 import {
-  //Cliente,
   CuentaPorCobrar,
   DashBoard,
   Inventario,
@@ -13,7 +12,9 @@ import {
   DetailProveedor,
   DetailEmpleado,
   FormFacturacion,
-  ClienteV2
+  //Cliente,
+  Clientes,
+  //ClienteV2
 } from "../views";
 import CuentaPorPagar from "../views/ViewsCuentasPorPagar/CuentaPorPagar";
 import Login from "../page/Login";
@@ -80,7 +81,7 @@ export const createRouter = () => {
           path: "/cliente",
           element: (
             <ProtectedRoute roles={["Administrador"]}>
-              <ClienteV2 />
+              <Clientes />
             </ProtectedRoute>
           ),
         },

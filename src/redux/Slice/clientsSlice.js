@@ -18,7 +18,6 @@ export const clientsSlice = createSlice({
 
 export const { setClients, setClient } = clientsSlice.actions;
 
-export const selectClients = (state) =>
-  state.clients.clients;
+export const selectClients = (state) => state.clients.clients;
 
 export default clientsSlice.reducer;

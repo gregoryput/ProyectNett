@@ -1,5 +1,6 @@
 import Cliente from "./ViewsCliente/Cliente";
 import ClienteV2 from "./ViewsCliente/ClienteV2";
+import Clientes from "./ViewsClientes/clientes";
 import DashBoard from "./ViewsDashBoard/DashBoard";
 import Usuario from "./ViewUsuario/Usuario";
 import Proveedores from "./ViewsProveedores/Proveedores";
@@ -18,6 +19,7 @@ import Home from "./ViewsHome/Home";
 export {
   Cliente,
   ClienteV2,
+  Clientes,
   Usuario,
   Proyecto,
   Reporte,

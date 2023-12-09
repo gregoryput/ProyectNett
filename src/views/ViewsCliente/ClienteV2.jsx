@@ -1,11 +1,14 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 //import "animate.css";
-import { Modal, message } from "antd";
+import { Button, Drawer, Form, Input, Modal, message } from "antd";
 import {
   ContainerButton,
   ViewContainerPages,
   ButtonNext,
+  DropdownActionsNew,
 } from "../../components";
+import { MdOutlinePerson } from "react-icons/md";
+import { MdBusiness } from "react-icons/md";
 
 import { TablaComponent } from "./Form";
 import {
@@ -17,7 +20,6 @@ import {
 //icons
 import { IoTrashOutline } from "react-icons/io5";
 import { MdRestore } from "react-icons/md";
-import FormClients from "./Form-Clientes/Form-Clientes";
 // modal creado por mi
 
 export default function ClienteV2() {
@@ -88,6 +90,8 @@ export default function ClienteV2() {
     isLoading: isLoadingClients,
   } = useGetClientsQuery("");
 
+  console.log;
+
   useEffect(() => {
     if (isClientsSuccess) {
       message.success("Listado de clientes obtenido correctamente!");
@@ -108,6 +112,8 @@ export default function ClienteV2() {
     });
   };
 
+  const [openDrawerForm, setOpenDrawerForm] = React.useState(false);
+
   return (
     <>
       <ViewContainerPages className="animate__animated animate__fadeIn">
@@ -117,17 +123,27 @@ export default function ClienteV2() {
           }}
         >
           <p>
-            <b>Registrar nuevo cliente tipo empresa</b>
+            <div>
+              {" "}
+              <DropdownActionsNew
+                Actions={[
+                  {
+                    Name: "NewCP",
+                    Title: "Persona física",
+                    Method: () => console.log("a"),
+                    Icon: <MdOutlinePerson size={20} />,
+                  },
+                  {
+                    Name: "NewCE",
+                    Title: "Empresa",
+                    Method: () => console.log("b"),
+                    Icon: <MdBusiness size={20} />,
+                  },
+                ]}
+              />
+            </div>
           </p>
         </ContainerButton>
-
-        <FormClients
-          setLoadingSave={setLoadingSave}
-          toggle={toggle}
-          setToggle={setToggle}
-          dataClientEdit={dataClientEdit}
-          setDataClientEdit={setDataClientEdit}
-        />
 
         <TablaComponent
           data={clientesData}
@@ -140,6 +156,7 @@ export default function ClienteV2() {
           setSelectedClient={setSelectedClient}
           setActionClient={setActionClient}
         />
+        <Button onClick={() => setOpenDrawerForm(true)}>Abrir</Button>
 
         <Modal
           open={isModalOpen}
@@ -201,6 +218,34 @@ export default function ClienteV2() {
             </ButtonNext>
           </div>
         </Modal>
+
+        <Drawer
+          open={openDrawerForm}
+          onClose={() => setOpenDrawerForm(false)}
+          placement="top"
+          title="Formulario de registro de clientes -> Nuevo Cliente"
+          height={"70%"}
+          footer={
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "flex-end",
+              }}
+            >
+              <div>
+                <Button>Registrar</Button>
+                <Button>Cancelar</Button>
+              </div>
+            </div>
+          }
+        >
+          <Form>
+            <Form.Item>
+              <Input />
+            </Form.Item>
+          </Form>
+        </Drawer>
       </ViewContainerPages>
     </>
   );
