@@ -19,7 +19,7 @@ import TareasComponent from "./components/Operar/TareasComponent";
 
 import { useState } from "react";
 import { Colores } from "../../components/GlobalColor";
-import FormularioProyecto from "./components/Operar/FormularioProyecto";
+import FormularioProyecto from "./components/FormProyecto/FormularioProyecto";
 import { Box1, ColumnItem, ColumnItem2, ColumnItem3, Container, ContainerDetail, FlexContainer, FlexibleBox, MainContainer, RowItem, ViewContainerPages } from "../../components";
 
 

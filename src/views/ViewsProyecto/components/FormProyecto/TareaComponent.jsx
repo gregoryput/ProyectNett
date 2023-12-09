@@ -5,31 +5,89 @@ import {
   ButtonNext,
   ContainerDetail,
 } from "../../../../components";
-import { List, Popover, Collapse } from "antd";
-import { IoRemoveSharp, IoAddOutline, IoCloseSharp } from "react-icons/io5";
+import { List, Popover, Collapse, message } from "antd";
+import {
+  IoRemoveSharp,
+  IoAddOutline,
+  IoCloseSharp,
+  IoClipboardOutline,
+} from "react-icons/io5";
 import ModalTarea from "../Modales/ModalTarea";
 import PropTypes from "prop-types";
 import dayjs from "dayjs";
 import { useEffect } from "react";
+import DiagramaGrantt from "./DiagramaGrantt";
+import { Statistic } from "antd";
+import CountUp from "react-countup";
+
 ComponentTarea.propTypes = {
   tarea: PropTypes.func.isRequired,
   setTarea: PropTypes.func.isRequired,
-  value: PropTypes.func.isRequired,
+  serviciosfiltrado: PropTypes.array.isRequired,
+  selectedDate: PropTypes.func.isRequired,
+  setTotalServicios: PropTypes.func.isRequired,
+  setFechaFinal: PropTypes.func.isRequired,
 };
-export default function ComponentTarea({ tarea, setTarea, value }) {
+export default function ComponentTarea({
+  tarea,
+  setTarea,
+  serviciosfiltrado,
+  selectedDate,
+  setTotalServicios,
+}) {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [messageApi, contextHolder] = message.useMessage();
+  const formatter = (value) => <CountUp end={value} separator="," />;
 
   const OpenModal = () => {
-    setIsModalOpen(true);
+    if (serviciosfiltrado <= 0) {
+      messageApi.open({
+        type: "warning",
+        content: "No tiene servicios agregados ",
+      });
+    } else {
+      setIsModalOpen(true);
+    }
   };
+  // Función para sumar los totales de los objetos
+  const sumarTotales = (objetos) => {
+    let totalGeneral = 0;
+    let totalesPorServicio = {};
+
+    objetos.forEach((objeto) => {
+      if (objeto.Total) {
+        // Objeto con estructura regular
+        totalGeneral += objeto.Total;
+        if (!totalesPorServicio[objeto.Servicio]) {
+          totalesPorServicio[objeto.Servicio] = 0;
+        }
+        totalesPorServicio[objeto.Servicio] += objeto.Total;
+      } else if (objeto.Precio) {
+        // Objeto solo con precio
+        totalGeneral += objeto.Precio;
+        if (!totalesPorServicio[objeto.Servicio]) {
+          totalesPorServicio[objeto.Servicio] = 0;
+        }
+        totalesPorServicio[objeto.Servicio] += objeto.Precio;
+      }
+    });
+
+    return { totalGeneral, totalesPorServicio };
+  };
+  // Llamada a la función
+  const resultado = sumarTotales(tarea);
 
   const CloseModal = () => {
     setIsModalOpen(false);
   };
 
+  useEffect(() => {
+    setTotalServicios(resultado.totalGeneral);
+  }, [resultado]);
+
   return (
     <>
-      {" "}
+      {contextHolder}
       <div
         style={{
           display: "flex",
@@ -40,15 +98,16 @@ export default function ComponentTarea({ tarea, setTarea, value }) {
         }}
       >
         <h3>Tareas</h3>
-       {value.length >=1 ? <>
-        <ButtonNext
-          style={{ paddingInline: 10 }}
-          
-          type="button"
-          onClick={() => OpenModal()}
-        >
-          Agregar
-        </ButtonNext></> : null}
+
+        <>
+          <ButtonNext
+            style={{ paddingInline: 10 }}
+            type="button"
+            onClick={() => OpenModal()}
+          >
+            Agregar
+          </ButtonNext>
+        </>
       </div>
       <div style={{ display: "flex" }}>
         <ContainerDetail
@@ -57,41 +116,33 @@ export default function ComponentTarea({ tarea, setTarea, value }) {
             maxHeight: 400,
             padding: 0,
             margin: 0,
-            borderRadius:0,
+            borderRadius: 0,
           }}
         >
           <List
-            dataSource={value}
+            bordered
+            style={{ border: "none" }}
+            dataSource={serviciosfiltrado}
             renderItem={(item) => (
               <Collapse
                 bordered
-                style={{border:0}}
+                style={{
+                  border: "none",
+                  borderTop: "none",
+                  borderBottom: "none",
+                }}
                 collapsible="header"
                 items={[
                   {
-                    key: "1",
-                    label: `${
-                      item === "1"
-                        ? "Asesoría de Personal en el Departamento TIC"
-                        : item === "2"
-                        ? "Soporte Técnico Remoto y en Sitio"
-                        : item === "3"
-                        ? "Optimización y Seguridad de Redes"
-                        : item === "4"
-                        ? "Documentación y Gestión de Infraestructura"
-                        : item === "5"
-                        ? "Virtualización, Cluster, NAS"
-                        : item === "6"
-                        ? "Garantía de Transferencia de conocimiento"
-                        : null
-                    }`,
+                    key: item.idServicio, // Usar el ID como clave único
+                    label: item.nombreServicio,
                     children: (
                       <>
                         <ListaDeTarea
                           setTarea={setTarea}
                           tarea={tarea}
                           item={item}
-                          value={value}
+                          serviciosfiltrado={serviciosfiltrado}
                         />
                       </>
                     ),
@@ -102,32 +153,56 @@ export default function ComponentTarea({ tarea, setTarea, value }) {
           />
         </ContainerDetail>
       </div>
+
+      {serviciosfiltrado.length >= 1 ? (
+        <DiagramaGrantt tarea={tarea} selectedDate={selectedDate} />
+      ) : null}
+
+      <div style={{ display: "flex", justifyContent: "flex-end" }}>
+        <Statistic
+          title="Total"
+          value={resultado.totalGeneral}
+          formatter={formatter}
+        />
+      </div>
+
       <ModalTarea
         CloseModal={CloseModal}
         isModalOpen={isModalOpen}
         setTarea={setTarea}
         tarea={tarea}
+        serviciosfiltrado={serviciosfiltrado}
       />
     </>
   );
 }
 
-function ListaDeTarea({ tarea, setTarea, item }) {
+// componente de lista tarea
+function ListaDeTarea({ tarea, setTarea, item, serviciosfiltrado }) {
   const [activo, setActivo] = useState(false);
   const [ver, setVer] = useState(false);
   const [datafilter, setDatafilter] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectEdit, setSelectEdit] = useState([]);
 
   useEffect(() => {
-    const filtrado = tarea.filter((data) => data.Servicio === item);
+    const filtrado = tarea.filter((data) => data.Servicio == item.idServicio);
     setDatafilter(filtrado);
   }, [tarea, item]);
-  const maxCharacters = 20;
   const Remover = (item) => {
     // Filtrar todos los elementos excepto el que coincide con el id
-    const updatedProductos = tarea.filter((data) => data.id !== item);
-    setTarea(updatedProductos);
+    const filtrado = tarea.filter((data) => data.id !== item);
+    setTarea(filtrado);
   };
 
+  const HandlerUpdate = (item) => {
+    // Filtrar todos los elementos excepto el que coincide con el id
+    const filtrado = tarea.filter((data) => data.id === item);
+    setSelectEdit(filtrado);
+    OpenModal();
+  };
+
+  const maxCharacters = 20;
   const renderDireccion = (text) => {
     if (text.length > maxCharacters) {
       return `${text.slice(0, maxCharacters)}...`;
@@ -139,12 +214,22 @@ function ListaDeTarea({ tarea, setTarea, item }) {
     tarea: PropTypes.func.isRequired,
     setTarea: PropTypes.func.isRequired,
     item: PropTypes.func.isRequired,
+    serviciosfiltrado: PropTypes.array.isRequired,
+  };
+
+  const OpenModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const CloseModal = () => {
+    setIsModalOpen(false);
   };
 
   return (
     <>
       <List
         bordered
+        style={{ border: "none" }}
         dataSource={datafilter}
         renderItem={(item) => (
           <BtnSelect
@@ -164,7 +249,6 @@ function ListaDeTarea({ tarea, setTarea, item }) {
                 justifyContent: "space-between",
                 textAlign: "left",
                 width: "100%",
-                gap: "5px",
               }}
             >
               {item.Parametro != undefined ? (
@@ -196,14 +280,13 @@ function ListaDeTarea({ tarea, setTarea, item }) {
                 }}
               >
                 <h4> Prioridad</h4>
-                <p>
-                  {item.Prioridad === "1"
-                    ? "Baja"
-                    : item.Prioridad === "2"
-                    ? "Media"
-                    : item.Prioridad === "3"
-                    ? "Alta"
-                    : null}
+                <p
+                  style={{
+                    fontSize: 12,
+                    color: "gray ",
+                  }}
+                >
+                  {item.Prioridad}
                 </p>
               </div>
               <div
@@ -213,7 +296,7 @@ function ListaDeTarea({ tarea, setTarea, item }) {
                   flexDirection: "column",
                 }}
               >
-                <h4>Tareas</h4>
+                <h4>Tarea</h4>
 
                 <p
                   style={{
@@ -313,6 +396,12 @@ function ListaDeTarea({ tarea, setTarea, item }) {
               >
                 <ButtonIconDelete
                   type="button"
+                  onClick={() => HandlerUpdate(item.id)}
+                >
+                  <IoClipboardOutline size={20} color="gray" />
+                </ButtonIconDelete>
+                <ButtonIconDelete
+                  type="button"
                   onClick={() => Remover(item.id)}
                 >
                   <IoCloseSharp size={20} color="gray" />
@@ -405,9 +494,15 @@ function ListaDeTarea({ tarea, setTarea, item }) {
           </BtnSelect>
         )}
       />
+      <ModalTarea
+        CloseModal={CloseModal}
+        isModalOpen={isModalOpen}
+        setTarea={setTarea}
+        tarea={tarea}
+        serviciosfiltrado={serviciosfiltrado}
+        selectEdit={selectEdit}
+        setSelectEdit={setSelectEdit}
+      />
     </>
   );
 }
-
-
-

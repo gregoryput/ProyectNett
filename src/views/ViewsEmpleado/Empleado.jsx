@@ -77,12 +77,13 @@ export default function Cliente() {
   const handleCloseModal = () => {
     setIsModalOpen(false);
   };
-  //Estado redux api para obtener la lista de clientes con paginacion
   const {
     data: dataEmpleado,
     isSuccess: isSuccess,
     isLoading: isLoading,
   } = useGetEmployeQuery("");
+
+
 
   useEffect(() => {
     if (isSuccess) {

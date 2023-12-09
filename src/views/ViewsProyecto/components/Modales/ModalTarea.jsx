@@ -1,11 +1,15 @@
 import { Modal, Form, Input, Select, DatePicker, InputNumber } from "antd";
 import PropTypes from "prop-types";
-import { useState } from "react";
 import { Btnbox, ButtonSave, Container } from "../../../../components";
 import { IoExtensionPuzzleOutline, IoNuclear } from "react-icons/io5";
+import dayjs from "dayjs";
 
 import { v4 as uuidv4 } from "uuid";
-import dayjs from "dayjs";
+import { useEffect, useState } from "react";
+import {
+  useGetPrioridadQuery,
+  useGetUnidadeQuery,
+} from "../../../../redux/Api/proyectoApi";
 const { RangePicker } = DatePicker;
 const { TextArea } = Input;
 
@@ -14,28 +18,95 @@ export default function ModalTarea({
   CloseModal,
   setTarea,
   tarea,
+  serviciosfiltrado,
+  selectEdit,
+  setSelectEdit,
 }) {
   ModalTarea.propTypes = {
     isModalOpen: PropTypes.func.isRequired,
     CloseModal: PropTypes.func.isRequired,
-    setTarea: PropTypes.array.isRequired,
+    setTarea: PropTypes.func.isRequired,
     tarea: PropTypes.array.isRequired,
+    serviciosfiltrado: PropTypes.array.isRequired,
+    selectEdit: PropTypes.array.isRequired,
+    setSelectEdit: PropTypes.func.isRequired,
   };
   const [seeState, setSee] = useState(true);
+  const [prioridad, setPrioridad] = useState([]);
+  const [Unidad, setUnidad] = useState([]);
 
   const [cantidad, setCantidad] = useState(0);
   const [precio, setPrecio] = useState(0);
 
   const [form] = Form.useForm();
 
-  const handleChange = (value) => {
-    console.log(`selected ${value}`);
+  const {
+    data: dataPrioridad,
+    isSuccess: isPrioridadSuccess,
+    // isLoading: isLoading,
+  } = useGetPrioridadQuery("");
+  const {
+    data: dataUnidad,
+    isSuccess: isUnidadSuccess,
+    // isLoading: isLoading,
+  } = useGetUnidadeQuery("");
+
+  useEffect(() => {
+    if (dataPrioridad?.result !== undefined && isPrioridadSuccess) {
+      setPrioridad(dataPrioridad?.result);
+    }
+    if (dataUnidad?.result !== undefined && isUnidadSuccess) {
+      setUnidad(dataUnidad?.result);
+    }
+  }, [dataPrioridad, isPrioridadSuccess, dataUnidad, isUnidadSuccess]);
+
+  useEffect(() => {
+    Editar();
+  });
+
+  const Editar = () => {
+    if (selectEdit !== null && selectEdit !== undefined) {
+      form.setFieldsValue({
+        Servicio: selectEdit[0]?.Servicio,
+        IdPrioridad: selectEdit[0]?.IdPrioridad,
+        Titulo: selectEdit[0]?.Titulo,
+        Descripcion: selectEdit[0]?.Descripcion,
+        Precio: selectEdit[0]?.Precio,
+        Costo: selectEdit[0]?.Costo,
+        Cantidad: selectEdit[0]?.Cantidad,
+        Total: selectEdit[0]?.Total,
+        IdParametro: selectEdit[0]?.IdParametro,
+        Fechas: selectEdit[0]?.Fechas,
+      });
+      if (selectEdit[0]?.Costo != null && selectEdit[0]?.Costo != undefined) {
+        setSee(false);
+      }
+    }
   };
+
   const handleChangeCantidad = (value) => {
     setCantidad(value);
     form.setFieldsValue({
       Total: value * precio,
     });
+  };
+
+  const handleCloses = () => {
+    setSee(true);
+
+    CloseModal();
+    form.resetFields([
+      "Servicio",
+      "IdPrioridad",
+      "Titulo",
+      "Descripcion",
+      "Precio",
+      "Costo",
+      "Cantidad",
+      "Total",
+      "IdParametro",
+    ]);
+    setSelectEdit([]);
   };
 
   const handleChangePrecio = (value) => {
@@ -49,64 +120,125 @@ export default function ModalTarea({
     const idUnico = uuidv4();
     const fechaInicio = dayjs(data.Fechas[0].$d).format("DD-MM-YYYY");
     const fechaFinal = dayjs(data.Fechas[1].$d).format("DD-MM-YYYY");
-    let datos = {
-      ...data,
-      id: idUnico,
-      FechaInicio: fechaInicio,
-      FechaFinal: fechaFinal,
-    };
-    console.log(datos);
-    setTarea([...tarea, datos]);
+
+    const Prioridad = prioridad.filter(
+      (f) => f.idPrioridad == data.IdPrioridad
+    );
+
+    const Parametro =Unidad.filter(
+      (f) => f.idUnidad_DeMedida == data.IdParametro
+    );
+    if (selectEdit == null) {
+      let datos = {
+        ...data,
+        id: idUnico,
+        FechaInicio: fechaInicio,
+        FechaFinal: fechaFinal,
+        Prioridad: Prioridad[0]?.nombrePrioridad,
+        Parametro: Parametro[0]?.unidadNombre,
+      };
+      setTarea([...tarea, datos]);
+    } else {
+      const filtrado = tarea.filter((valor) => valor.id !== selectEdit[0]?.id);
+
+      let datos = {
+        ...data,
+        id: idUnico,
+        FechaInicio: fechaInicio,
+        FechaFinal: fechaFinal,
+        Prioridad: Prioridad[0]?.nombrePrioridad,
+        Parametro: Parametro[0]?.unidadNombre,
+
+      };
+      setTarea([...filtrado, datos]);
+    }
+
+    handleCloses();
   };
-  const dateFormat = "YYYY/MM/DD";
+  const dateFormat = "DD-MM-YYYY";
+
+  const opciones = serviciosfiltrado?.map((dato) => ({
+    value: dato.idServicio.toString(),
+    label: dato.nombreServicio,
+  }));
+
+  const opciones2 = prioridad?.map((dato) => ({
+    value: dato.idPrioridad,
+    label: dato.nombrePrioridad,
+  }));
+
+  const opciones3 = Unidad?.map((dato) => ({
+    value: dato.idUnidad_DeMedida,
+    label: dato.unidadNombre,
+  }));
   return (
     <>
       {" "}
-      <Modal open={isModalOpen} footer={null} width={900} onCancel={CloseModal}>
+      <Modal
+        open={isModalOpen}
+        footer={null}
+        width={900}
+        onCancel={handleCloses}
+      >
         <div
           style={{ display: "flex", flexDirection: "column", marginTop: 30 }}
         >
-          <div style={{ display: "flex", justifyContent: "flex-end" }}>
-            <Btnbox
-              color={seeState == true ? true : false}
-              style={{ margin: 0, width: 200, borderRadius: "12px  0 0  12px" }}
-              onClick={() => {
-                setSee(true);
-              }}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                }}
-              >
-                <span>Tarea basica</span>
-                <IoExtensionPuzzleOutline size={22} />
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <h2>Tarea</h2>
+            {selectEdit == null ? (
+              <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                <Btnbox
+                  color={seeState == true ? true : false}
+                  style={{
+                    margin: 0,
+                    width: 200,
+                    borderRadius: "12px  0 0  12px",
+                  }}
+                  onClick={() => {
+                    setSee(true);
+                  }}
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <span>Tarea basica</span>
+                    <IoExtensionPuzzleOutline size={22} />
+                  </div>
+                </Btnbox>
+                <Btnbox
+                  color={seeState == false ? true : false}
+                  style={{
+                    margin: 0,
+                    width: 200,
+                    borderRadius: "0  12px 12px  0px",
+                  }}
+                  onClick={() => {
+                    setSee(false);
+                  }}
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <span>Tarea avanzada</span>
+                    <IoNuclear size={22} />
+                  </div>
+                </Btnbox>
               </div>
-            </Btnbox>
-            <Btnbox
-              color={seeState == false ? true : false}
-              style={{
-                margin: 0,
-                width: 200,
-                borderRadius: "0  12px 12px  0px",
-              }}
-              onClick={() => {
-                setSee(false);
-              }}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                }}
-              >
-                <span>Tarea avanzada</span>
-                <IoNuclear size={22} />
-              </div>
-            </Btnbox>
+            ) : null}
           </div>
 
           <Form
@@ -121,50 +253,24 @@ export default function ModalTarea({
           >
             {seeState == true ? (
               <>
-                <h3> Tarea basica</h3>
-
-                <Container>
+                <Container style={{ margin: 0, padding: 20 }}>
                   <Form.Item
-                    label={<strong>Servicio</strong>}
+                    label={<strong>Servicios</strong>}
                     name={"Servicio"}
                     rules={[
                       {
                         required: true,
-                        message: "No hay prioridad",
+                        message: "No hay servicio",
                       },
                     ]}
                   >
                     <Select
                       style={{
-                        width: 250,
+                        width: 450,
                       }}
-                      onChange={handleChange}
-                      options={[
-                        {
-                          value: "6",
-                          label: "Garantía de Transferencia de conocimiento",
-                        },
-                        {
-                          value: "5",
-                          label: "Virtualización, Cluster, NAS",
-                        },
-                        {
-                          value: "4",
-                          label: "Documentación y Gestión de Infraestructura",
-                        },
-                        {
-                          value: "3",
-                          label: "Optimización y Seguridad de Redes",
-                        },
-                        {
-                          value: "2",
-                          label: "Soporte Técnico Remoto y en Sitio",
-                        },
-                        {
-                          value: "1",
-                          label: "Asesoría de Personal en el Departamento TIC",
-                        },
-                      ]}
+                      options={opciones}
+                      placeholder={"Seleccionar Servicio"}
+                      allowClear
                     />
                   </Form.Item>
                 </Container>
@@ -180,7 +286,7 @@ export default function ModalTarea({
                 >
                   <Form.Item
                     label={<strong>Prioridad</strong>}
-                    name={"Prioridad"}
+                    name={"IdPrioridad"}
                     rules={[
                       {
                         required: true,
@@ -189,25 +295,8 @@ export default function ModalTarea({
                     ]}
                   >
                     <Select
-                      defaultValue="1"
-                      style={{
-                        width: 120,
-                      }}
-                      onChange={handleChange}
-                      options={[
-                        {
-                          value: "3",
-                          label: "Alta",
-                        },
-                        {
-                          value: "2",
-                          label: "Media",
-                        },
-                        {
-                          value: "1",
-                          label: "Baja",
-                        },
-                      ]}
+                      options={opciones2}
+                      placeholder={"Seleccionar prioridad"}
                     />
                   </Form.Item>
                   <Form.Item
@@ -216,7 +305,7 @@ export default function ModalTarea({
                     rules={[
                       {
                         required: true,
-                        message: "Debe ingresar el nombre del producto",
+                        message: "No hay titulo",
                       },
                       {
                         max: 40,
@@ -224,7 +313,7 @@ export default function ModalTarea({
                       },
                     ]}
                   >
-                    <Input placeholder="Ingrese el titulo" />
+                    <Input placeholder="Escriba el titulo" />
                   </Form.Item>
 
                   <Form.Item
@@ -238,6 +327,7 @@ export default function ModalTarea({
                     ]}
                   >
                     <InputNumber
+                      min={1}
                       defaultValue={0}
                       formatter={(value) =>
                         `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
@@ -256,12 +346,12 @@ export default function ModalTarea({
                   }}
                 >
                   <Form.Item
-                    label={<strong>Fechas</strong>}
+                    label={<strong>Duración</strong>}
                     name={"Fechas"}
                     rules={[
                       {
                         required: true,
-                        message: "No hay fecha",
+                        message: "No hay fechas",
                       },
                     ]}
                   >
@@ -272,12 +362,12 @@ export default function ModalTarea({
                   style={{ marginTop: 0, paddingTop: 0, width: "100%" }}
                 >
                   <Form.Item
-                    label={<strong>Descripcion</strong>}
+                    label={<strong>Descripción</strong>}
                     name={"Descripcion"}
                     rules={[
                       {
                         required: true,
-                        message: "No hay descripcion",
+                        message: "No hay descripción",
                       },
                       {
                         max: 400,
@@ -285,56 +375,31 @@ export default function ModalTarea({
                       },
                     ]}
                   >
-                    <TextArea placeholder="Explica esta tarea para los colaboradores" />
+                    <TextArea placeholder="Describe la tarea" />
                   </Form.Item>
                 </Container>
                 <ButtonSave>Crear tarea</ButtonSave>
               </>
             ) : (
               <>
-                <h3> Tarea avanzada</h3>
-                <Container>
+                <Container style={{ margin: 0, padding: 20 }}>
                   <Form.Item
                     label={<strong>Servicio</strong>}
                     name={"Servicio"}
                     rules={[
                       {
                         required: true,
-                        message: "No hay prioridad",
+                        message: "No hay servicio",
                       },
                     ]}
                   >
                     <Select
                       style={{
-                        width: 250,
+                        width: 450,
                       }}
-                      onChange={handleChange}
-                      options={[
-                        {
-                          value: "6",
-                          label: "Garantía de Transferencia de conocimiento",
-                        },
-                        {
-                          value: "5",
-                          label: "Virtualización, Cluster, NAS",
-                        },
-                        {
-                          value: "4",
-                          label: "Documentación y Gestión de Infraestructura",
-                        },
-                        {
-                          value: "3",
-                          label: "Optimización y Seguridad de Redes",
-                        },
-                        {
-                          value: "2",
-                          label: "Soporte Técnico Remoto y en Sitio",
-                        },
-                        {
-                          value: "1",
-                          label: "Asesoría de Personal en el Departamento TIC",
-                        },
-                      ]}
+                      options={opciones}
+                      placeholder={"Seleccionar Servicio"}
+                      allowClear
                     />
                   </Form.Item>
                 </Container>
@@ -349,7 +414,7 @@ export default function ModalTarea({
                 >
                   <Form.Item
                     label={<strong>Prioridad</strong>}
-                    name={"Prioridad"}
+                    name={"IdPrioridad"}
                     style={{
                       paddingRight: 100,
                     }}
@@ -361,24 +426,11 @@ export default function ModalTarea({
                     ]}
                   >
                     <Select
+                      placeholder={"Seleccionar prioridad"}
                       style={{
                         width: 120,
                       }}
-                      onChange={handleChange}
-                      options={[
-                        {
-                          value: "3",
-                          label: "Alta",
-                        },
-                        {
-                          value: "2",
-                          label: "Media",
-                        },
-                        {
-                          value: "1",
-                          label: "Baja",
-                        },
-                      ]}
+                      options={opciones2}
                     />
                   </Form.Item>
                   <Form.Item
@@ -390,16 +442,12 @@ export default function ModalTarea({
                         message: "No hay titulo",
                       },
                       {
-                        max: 55,
-                        message: "55 caracteres como máximo",
-                      },
-                      {
-                        min: 3,
-                        message: "30 caracteres como minimo",
+                        max: 400,
+                        message: "400 caracteres como máximo",
                       },
                     ]}
                   >
-                    <Input placeholder="Ingrese el titulo" />
+                    <Input placeholder="Escribe el titulo" />
                   </Form.Item>
                 </Container>
 
@@ -415,7 +463,7 @@ export default function ModalTarea({
                 >
                   <Form.Item
                     label={<strong>Parametro</strong>}
-                    name={"Parametro"}
+                    name={"IdParametro"}
                     rules={[
                       {
                         required: true,
@@ -427,13 +475,8 @@ export default function ModalTarea({
                       style={{
                         width: 120,
                       }}
-                      onChange={handleChange}
-                      options={[
-                        {
-                          value: "1",
-                          label: "metro",
-                        },
-                      ]}
+                      options={opciones3}
+                      placeholder={"Seleccionar paramentro"}
                     />
                   </Form.Item>
                   <Form.Item
@@ -446,7 +489,11 @@ export default function ModalTarea({
                       },
                     ]}
                   >
-                    <InputNumber onChange={handleChangeCantidad} />
+                    <InputNumber
+                      min={1}
+                      defaultValue={0}
+                      onChange={handleChangeCantidad}
+                    />
                   </Form.Item>
 
                   <Form.Item
@@ -460,6 +507,7 @@ export default function ModalTarea({
                     ]}
                   >
                     <InputNumber
+                      min={1}
                       onChange={handleChangePrecio}
                       defaultValue={0}
                       formatter={(value) =>
@@ -471,6 +519,7 @@ export default function ModalTarea({
                   </Form.Item>
                   <Form.Item
                     label={<strong>Total</strong>}
+                    defaultValue={0}
                     name={"Total"}
                     rules={[
                       {
@@ -480,6 +529,7 @@ export default function ModalTarea({
                     ]}
                   >
                     <InputNumber
+                      min={1}
                       readOnly
                       defaultValue={0}
                       style={{ width: 100 }}
@@ -491,12 +541,12 @@ export default function ModalTarea({
                   style={{ marginTop: 0, paddingTop: 0, width: "100%" }}
                 >
                   <Form.Item
-                    label={<strong>Fechas</strong>}
+                    label={<strong>Duración</strong>}
                     name={"Fechas"}
                     rules={[
                       {
                         required: true,
-                        message: "No hay fecha",
+                        message: "No hay fechas",
                       },
                     ]}
                   >
@@ -507,27 +557,23 @@ export default function ModalTarea({
                   style={{ marginTop: 0, paddingTop: 0, width: "100%" }}
                 >
                   <Form.Item
-                    label={<strong>Descripcion</strong>}
+                    label={<strong>Descripción</strong>}
                     name={"Descripcion"}
                     rules={[
                       {
                         required: true,
-                        message: "No hay descripcion",
+                        message: "No hay descripción",
                       },
                       {
-                        max: 55,
-                        message: "55 caracteres como máximo",
-                      },
-                      {
-                        min: 3,
-                        message: "30 caracteres como minimo",
+                        max: 400,
+                        message: "400 caracteres como máximo",
                       },
                     ]}
                   >
-                    <TextArea placeholder="Ingresa la descripcion" />
+                    <TextArea placeholder="Describe la tarea" />
                   </Form.Item>
                 </Container>
-                <ButtonSave>Crear tarea</ButtonSave>
+                <ButtonSave type="submit">Crear tarea</ButtonSave>
               </>
             )}
           </Form>

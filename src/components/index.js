@@ -70,6 +70,7 @@ import { DropdownActionsLists } from "./DropDownActionsLists";
 import { ModalFormPerson } from "./FormPerson";
 
 import { CustomUploadImage } from "./CustomUploadImage";
+import { Barra, TablaStyled, Td, Tda, Th, Tha } from "./proyecto/Diagrama";
 
 /// importanciones de los componente
 export {
@@ -154,7 +155,14 @@ export {
   ColumnItem3,
   ColumnItem,
   Btnbox,
-
+  /// digrama de gantt 
+  Barra,
+  Tha,
+  Th,
+  Td,
+  Tda,
+  TablaStyled,
+  
   ///Actiones para las tablas
   DropdownActionsLists,
   DropdownActionsNew,
