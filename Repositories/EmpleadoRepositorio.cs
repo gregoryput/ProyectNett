@@ -29,7 +29,14 @@ namespace ProyectNettApi.Repositories
 
                 foreach (var empleado in resultSet)
                 {
-                    empleado.CargoEmpleadoDTOs = JsonConvert.DeserializeObject<List<CargoEmpleadoDTO2>>(empleado.CargoEmpleadoDTOsJson);
+                    if (empleado.CargoEmpleadoDTOsJson != null)
+                    {
+                        empleado.CargoEmpleadoDTOs = JsonConvert.DeserializeObject<List<CargoEmpleadoDTO2>>(empleado.CargoEmpleadoDTOsJson);
+                    }
+                    else
+                    {
+                        empleado.CargoEmpleadoDTOs = new List<CargoEmpleadoDTO2>(); // O puedes asignar null, dependiendo de tus necesidades.
+                    }
                 }
 
                 return resultSet.ToList();

@@ -27,13 +27,21 @@ namespace ProyectNettApi.DTO
         public int IdEstadoRegistro { get; set; }
 
         //[JsonIgnore]
-        internal string CargoEmpleadoDTOsJson { get; set; }
+        internal string? CargoEmpleadoDTOsJson { get; set; }
 
         // Propiedad para deserializar la cadena JSON a lista de objetos CargoEmpleadoDTO
         [JsonIgnore]
         public List<CargoEmpleadoDTO2> CargoEmpleadoDTOs
         {
-            get { return JsonConvert.DeserializeObject<List<CargoEmpleadoDTO2>>(CargoEmpleadoDTOsJson); }
+            get
+            {
+                if (CargoEmpleadoDTOsJson == null)
+                {
+                    return new List<CargoEmpleadoDTO2>(); // O puedes devolver null, dependiendo de tus necesidades.
+                }
+
+                return JsonConvert.DeserializeObject<List<CargoEmpleadoDTO2>>(CargoEmpleadoDTOsJson);
+            }
             set { CargoEmpleadoDTOsJson = JsonConvert.SerializeObject(value); }
         }
 
