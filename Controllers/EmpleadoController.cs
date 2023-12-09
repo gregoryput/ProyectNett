@@ -9,7 +9,7 @@ namespace ProyectNettApi.Controllers
 {
     [Route("Empleados")]
     [ApiController]
-    [Authorize]
+    //[Authorize]
     public class EmpleadoController : ControllerBase
     {
         protected Respuesta _respuesta;
@@ -27,7 +27,7 @@ namespace ProyectNettApi.Controllers
 
 
         // .A.C.C.I.O.N -- Para obtener la lista basica de Emepleado: --------------------------------------------
-        [Authorize]
+        //[Authorize]
         [Route("obtenerEmpleado")]
         [HttpGet]
         public IActionResult getEmpleado()
