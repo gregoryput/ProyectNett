@@ -27,7 +27,7 @@ export default function ProductoComponent({
 
   const [producto, setProducto] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [filteredData, setFilteredData] = useState({});
+  const [filteredData, setFilteredData] = useState([]);
 
   useEffect(() => {
     if (productsData?.result !== undefined && isSuccessProducts) {

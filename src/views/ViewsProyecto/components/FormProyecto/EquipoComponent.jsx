@@ -33,7 +33,7 @@ export default function EquipoComponent() {
       dataIndex: "Responsabilidad",
       key: "Responsabilidad",
       render: (text, record) => (
-        <span>{record.Responsabilidad == 0 ? "Supervisor" : "Ayudante" }</span>
+        <span>{record.Responsabilidad}</span>
       ),
     },  {
       align: "Right",

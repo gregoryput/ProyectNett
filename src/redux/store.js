@@ -27,9 +27,11 @@ import unitsOfMeasurementsReducer from "./Slice/unitsOfMeasurementsSlice";
 import { productsApi } from "./Api/productsApi";
 import productsReducer from "./Slice/productsSlice";
 
+import { proyectoApi } from "./Api/ProyectoApi";
+import proyectoReducer from "./Slice/ProyectoSlice";
+
 import { uQVerificarApi } from "./Api/uQVerificarApi";
 import uqVerificarReducer from "./Slice/uqVerificarSlice";
-
 
 export const store = configureStore({
   reducer: {
@@ -41,18 +43,21 @@ export const store = configureStore({
     clients: clientsReducer,
     [clientsApi.reducerPath]: clientsApi.reducer,
 
-  //User
-  [usersApi.reducerPath]: usersApi.reducer,
-    
+    //User
+    [usersApi.reducerPath]: usersApi.reducer,
 
-     //Proveedores
-     proveedores: proveedoresReducer,
-     [proveedorApi.reducerPath]: proveedorApi.reducer,
-
+    //Proveedores
+    proveedores: proveedoresReducer,
+    [proveedorApi.reducerPath]: proveedorApi.reducer,
+   //cargos 
     cargos: cargoReducer,
     [cargoApi.reducerPath]: cargoApi.reducer,
 
-    //empleado 
+    //proyectos
+    proyecto: proyectoReducer,
+    [proyectoApi.reducerPath]: proyectoApi.reducer,
+
+    //empleado
     employes: employeReducer,
     [employeeApi.reducerPath]: employeeApi.reducer,
 
@@ -103,6 +108,7 @@ export const store = configureStore({
       .concat(ConfigPerfilApi.middleware)
       .concat(uQVerificarApi.middleware)
       .concat(productsApi.middleware)
+      .concat(proyectoApi.middleware)
       .concat(unitsOfMeasurementsApi.middleware),
 });
 

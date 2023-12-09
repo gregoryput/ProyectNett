@@ -1,12 +1,11 @@
-import { DatePicker, Form, Input } from "antd";
+import { DatePicker, Form, Input, Select } from "antd";
 
 import { IoPersonAddOutline } from "react-icons/io5";
 import { AiOutlineDollarCircle, AiOutlineArrowRight } from "react-icons/ai";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import CountUp from "react-countup";
 import TextArea from "antd/es/input/TextArea";
 import { useState } from "react";
-import { TreeSelect } from "antd";
 import ModalCliente from "../Modales/ModalCliente";
 import {
   BtnPro,
@@ -16,72 +15,34 @@ import {
 } from "../../../../components";
 import ComponentTarea from "../FormProyecto/TareaComponent";
 import ProductoComponent from "../FormProyecto/ProductoComponent";
-import { useGetClientsQuery } from "../../../../redux/Api/clientsApi";
 import EquipoComponent from "../FormProyecto/EquipoComponent";
 import GastoExtrasComponent from "../FormProyecto/GastoExtrasComponent";
 import { Colores } from "../../../../components/GlobalColor";
 import dayjs from "dayjs";
-const { SHOW_PARENT } = TreeSelect;
 
-const treeData = [
-  {
-    title: "Asesoría de Personal en el Departamento TIC",
-    value: "1",
-    key: "1",
-  },
-  {
-    title: "Soporte Técnico Remoto y en Sitio",
-    value: "2",
-    key: "2",
-  },
-  {
-    title: "Optimización y Seguridad de Redes",
-    value: "3",
-    key: "3",
-  },
-  {
-    title: "Documentación y Gestión de Infraestructura",
-    value: "4",
-    key: "4",
-  },
-  {
-    title: "Virtualización, Cluster, NAS",
-    value: "5",
-    key: "5",
-  },
-  {
-    title: "Garantía de Transferencia de conocimiento",
-    value: "6",
-    key: "6",
-  },
-];
+import {
+  useGetClienteProyectoQuery,
+  useGetServicioQuery,
+} from "../../../../redux/Api/proyectoApi";
 
 export default function FormularioProyecto() {
   const [form] = Form.useForm();
   const formatter = (value) => <CountUp end={value} separator="," />;
 
-  //esto es de treeselect de tipo de servicio
-  const [value, setValue] = useState([]);
-  const onChange = (newValue) => {
-    setValue(newValue);
-  };
-
-  const tProps = {
-    treeData,
-    value,
-    onChange,
-    treeCheckable: true,
-    showCheckedStrategy: SHOW_PARENT,
-    placeholder: "Selecionar los servicios",
-    style: {
-      width: "100%",
-    },
-  };
-
-  /// codigo para agregar cliente
+  const {
+    data: clientesData,
+    isSuccess: isClientsSuccess,
+    // isLoading: isLoading,
+  } = useGetClienteProyectoQuery("");
+  const {
+    data: dataServicios,
+    isSuccess: isServiciosSuccess,
+    // isLoading: isLoading,
+  } = useGetServicioQuery("");
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [filteredData, setFilteredData] = useState({});
+  const [filteredData, setFilteredData] = useState([]);
+  const [selectedDate, setSelectedDate] = useState(null);
 
   const [selectStateCliente, setSelectStateCliente] = useState({});
   const [selectStateProducto, setSelectStateProducto] = useState([]);
@@ -95,11 +56,34 @@ export default function FormularioProyecto() {
   const [fechaFinal, setFechaFinal] = useState("");
 
   const totalGeneral = totalGasto + totalProducto + totalServicios;
-  const {
-    data: clientesData,
-    isSuccess: isClientsSuccess,
-    // isLoading: isLoadingClients,
-  } = useGetClientsQuery("");
+  const [servicios, setServicios] = useState([]);
+  const [serviciosfiltrado, setServiciosFiltrado] = useState([]);
+
+  //esto es de treeselect de tipo de servicio
+  const [value, setValue] = useState([]); // IDs de servicios seleccionados
+  const selectProps = {
+    mode: "multiple",
+    style: {
+      width: "100%",
+    },
+    value,
+    options: servicios.map((servicio) => ({
+      label: servicio.nombreServicio,
+      value: servicio.idServicio,
+    })),
+    onChange: (newValue) => {
+      setValue(newValue);
+      // Filtrar los servicios que coinciden con los nuevos valores seleccionados
+      const nuevosServicios = servicios.filter((item) =>
+        newValue.includes(item.idServicio)
+      );
+      setServiciosFiltrado( nuevosServicios);
+    },
+    placeholder: "Select Item...",
+    maxTagCount: "responsive",
+  };
+
+
   const handleSearch = (value) => {
     const searchTerm = value.toLowerCase();
 
@@ -128,14 +112,10 @@ export default function FormularioProyecto() {
     return fechaFinal;
   };
 
-  const resultado = obtenerFechaMasDistante(tarea);
-  const fechafin = new Date(resultado);
-
-  useEffect(() => {
-    if (clientesData?.result !== undefined && isClientsSuccess) {
-      setFilteredData(clientesData?.result);
-    }
-  }, [clientesData, setFilteredData, isClientsSuccess]);
+  const fechafin = useMemo(() => {
+    const resultado = obtenerFechaMasDistante(tarea);
+    return new Date(resultado);
+  }, [tarea]);
 
   const ClienteInput = (item) => {
     CloseModalCliente();
@@ -145,8 +125,6 @@ export default function FormularioProyecto() {
       // Puedes agregar más campos según sea necesario
     });
   };
-
-  const [selectedDate, setSelectedDate] = useState(null);
 
   const handleDateChange = (value) => {
     // 'value' es la fecha seleccionada
@@ -176,6 +154,23 @@ export default function FormularioProyecto() {
       setFechaFinal(dayjs(fechafin).format("DD-MM-YYYY"));
     }
   }, [fecha, fechafin]);
+
+  useEffect(() => {
+    if (clientesData?.result !== undefined && isClientsSuccess) {
+      setFilteredData(clientesData?.result);
+    }
+
+    if (dataServicios?.result !== undefined && isServiciosSuccess) {
+      setServicios(dataServicios?.result);
+    }
+  }, [
+    clientesData,
+    dataServicios,
+    setFilteredData,
+    isClientsSuccess,
+    isServiciosSuccess,
+  ]);
+
   return (
     <div style={{ width: "100%", marginTop: 0, margin: 0 }}>
       <ContainerDetail
@@ -208,7 +203,7 @@ export default function FormularioProyecto() {
           >
             <h3>Servicios</h3>
             <div style={{ width: 400 }}>
-              <TreeSelect {...tProps} />
+              <Select {...selectProps} />
             </div>
           </Container>
           <Container style={{ marginInline: 5, marginBlock: 5, width: "100%" }}>
@@ -245,6 +240,7 @@ export default function FormularioProyecto() {
                   ]}
                 >
                   <Input
+                    allowClear
                     readOnly
                     style={{ backgroundColor: "white" }}
                     placeholder="Seleccionar cliente"
@@ -299,7 +295,7 @@ export default function FormularioProyecto() {
             <ComponentTarea
               setTarea={setTarea}
               tarea={tarea}
-              value={value}
+              serviciosfiltrado={serviciosfiltrado}
               selectedDate={selectedDate}
               setTotalServicios={setTotalServicios}
             />
@@ -418,7 +414,6 @@ export default function FormularioProyecto() {
                   alignItems: "center",
                   margin: 0,
                   padding: 5,
-                  
                 }}
               >
                 <div

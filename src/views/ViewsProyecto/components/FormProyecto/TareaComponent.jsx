@@ -23,7 +23,7 @@ import CountUp from "react-countup";
 ComponentTarea.propTypes = {
   tarea: PropTypes.func.isRequired,
   setTarea: PropTypes.func.isRequired,
-  value: PropTypes.func.isRequired,
+  serviciosfiltrado: PropTypes.array.isRequired,
   selectedDate: PropTypes.func.isRequired,
   setTotalServicios: PropTypes.func.isRequired,
   setFechaFinal: PropTypes.func.isRequired,
@@ -31,15 +31,16 @@ ComponentTarea.propTypes = {
 export default function ComponentTarea({
   tarea,
   setTarea,
-  value,
+  serviciosfiltrado,
   selectedDate,
   setTotalServicios,
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [messageApi, contextHolder] = message.useMessage();
   const formatter = (value) => <CountUp end={value} separator="," />;
+
   const OpenModal = () => {
-    if (value <= 0) {
+    if (serviciosfiltrado <= 0) {
       messageApi.open({
         type: "warning",
         content: "No tiene servicios agregados ",
@@ -73,18 +74,17 @@ export default function ComponentTarea({
 
     return { totalGeneral, totalesPorServicio };
   };
- // Llamada a la función
- const resultado = sumarTotales(tarea);
+  // Llamada a la función
+  const resultado = sumarTotales(tarea);
 
   const CloseModal = () => {
     setIsModalOpen(false);
   };
 
-  useEffect(()=>{
+  useEffect(() => {
     setTotalServicios(resultado.totalGeneral);
-  },[resultado])
+  }, [resultado]);
 
-  
   return (
     <>
       {contextHolder}
@@ -122,7 +122,7 @@ export default function ComponentTarea({
           <List
             bordered
             style={{ border: "none" }}
-            dataSource={value}
+            dataSource={serviciosfiltrado}
             renderItem={(item) => (
               <Collapse
                 bordered
@@ -134,29 +134,15 @@ export default function ComponentTarea({
                 collapsible="header"
                 items={[
                   {
-                    key: "1",
-                    label: `${
-                      item === "1"
-                        ? "Asesoría de Personal en el Departamento TIC"
-                        : item === "2"
-                        ? "Soporte Técnico Remoto y en Sitio"
-                        : item === "3"
-                        ? "Optimización y Seguridad de Redes"
-                        : item === "4"
-                        ? "Documentación y Gestión de Infraestructura"
-                        : item === "5"
-                        ? "Virtualización, Cluster, NAS"
-                        : item === "6"
-                        ? "Garantía de Transferencia de conocimiento"
-                        : null
-                    }`,
+                    key: item.idServicio, // Usar el ID como clave único
+                    label: item.nombreServicio,
                     children: (
                       <>
                         <ListaDeTarea
                           setTarea={setTarea}
                           tarea={tarea}
                           item={item}
-                          value={value}
+                          serviciosfiltrado={serviciosfiltrado}
                         />
                       </>
                     ),
@@ -168,7 +154,7 @@ export default function ComponentTarea({
         </ContainerDetail>
       </div>
 
-      {value.length >= 1 ? (
+      {serviciosfiltrado.length >= 1 ? (
         <DiagramaGrantt tarea={tarea} selectedDate={selectedDate} />
       ) : null}
 
@@ -185,14 +171,14 @@ export default function ComponentTarea({
         isModalOpen={isModalOpen}
         setTarea={setTarea}
         tarea={tarea}
-        value={value}
+        serviciosfiltrado={serviciosfiltrado}
       />
     </>
   );
 }
 
 // componente de lista tarea
-function ListaDeTarea({ tarea, setTarea, item, value }) {
+function ListaDeTarea({ tarea, setTarea, item, serviciosfiltrado }) {
   const [activo, setActivo] = useState(false);
   const [ver, setVer] = useState(false);
   const [datafilter, setDatafilter] = useState([]);
@@ -200,7 +186,7 @@ function ListaDeTarea({ tarea, setTarea, item, value }) {
   const [selectEdit, setSelectEdit] = useState([]);
 
   useEffect(() => {
-    const filtrado = tarea.filter((data) => data.Servicio === item);
+    const filtrado = tarea.filter((data) => data.Servicio == item.idServicio);
     setDatafilter(filtrado);
   }, [tarea, item]);
   const Remover = (item) => {
@@ -228,7 +214,7 @@ function ListaDeTarea({ tarea, setTarea, item, value }) {
     tarea: PropTypes.func.isRequired,
     setTarea: PropTypes.func.isRequired,
     item: PropTypes.func.isRequired,
-    value: PropTypes.func.isRequired,
+    serviciosfiltrado: PropTypes.array.isRequired,
   };
 
   const OpenModal = () => {
@@ -300,13 +286,7 @@ function ListaDeTarea({ tarea, setTarea, item, value }) {
                     color: "gray ",
                   }}
                 >
-                  {item.Prioridad === "1"
-                    ? "Baja"
-                    : item.Prioridad === "2"
-                    ? "Media"
-                    : item.Prioridad === "3"
-                    ? "Alta"
-                    : null}
+                  {item.Prioridad}
                 </p>
               </div>
               <div
@@ -519,7 +499,7 @@ function ListaDeTarea({ tarea, setTarea, item, value }) {
         isModalOpen={isModalOpen}
         setTarea={setTarea}
         tarea={tarea}
-        value={value}
+        serviciosfiltrado={serviciosfiltrado}
         selectEdit={selectEdit}
         setSelectEdit={setSelectEdit}
       />

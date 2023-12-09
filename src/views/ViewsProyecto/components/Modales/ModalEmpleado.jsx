@@ -7,7 +7,7 @@ import {
 } from "../../../../components";
 import { Modal, List, Table, Select, message } from "antd";
 import Search from "antd/es/input/Search";
-import { useGetEmployeQuery } from "../../../../redux/Api/employeeApi";
+import { useGetEmpleadoQuery, useGetResponsabilidadQuery } from "../../../../redux/Api/proyectoApi";
 import { useState } from "react";
 import { useEffect } from "react";
 import { IoCloseSharp } from "react-icons/io5";
@@ -18,7 +18,6 @@ ModalEmpleado.propTypes = {
   setEmpleado: PropTypes.func.isRequired,
   empleado: PropTypes.func.isRequired,
 };
-const { Option } = Select;
 export default function ModalEmpleado({
   isModalOpen,
   CloseModal,
@@ -29,10 +28,23 @@ export default function ModalEmpleado({
     data: dataEmpleado,
     isSuccess: isSuccess,
     // isLoading: isLoading,
-  } = useGetEmployeQuery("");
+  } = useGetEmpleadoQuery("");
 
-  const [filteredData, setFilteredData] = useState({});
+  const {
+    data: dataResponsabilidad,
+    isSuccess: isResponsablidadSuccess,
+    // isLoading: isLoading,
+  } = useGetResponsabilidadQuery("");
+
+
+
+  const [filteredData, setFilteredData] = useState([]);
   const [PersnalProyecto, setPersnalProyecto] = useState([]);
+  const [responsabilidad, setResponsabilidad] = useState([]);
+
+
+
+
 
   const handleSearch = (value) => {
     const searchTerm = value.toLowerCase();
@@ -43,17 +55,32 @@ export default function ModalEmpleado({
 
     setFilteredData(filter);
   };
+
+  const opciones = responsabilidad?.map((dato) => ({
+    value: dato.idResponsabilidad,
+    label: dato.responsabilidadNombre,
+      
+  }));
+
+
   useEffect(() => {
     if (dataEmpleado?.result !== undefined && isSuccess) {
       setFilteredData(dataEmpleado?.result);
     }
-  }, [isSuccess, dataEmpleado]);
+    if (dataResponsabilidad?.result !== undefined && isResponsablidadSuccess) {
+      setResponsabilidad(dataResponsabilidad?.result);
+    }
+  }, [isSuccess, dataEmpleado,dataResponsabilidad,isResponsablidadSuccess]);
 
-  const handleResponsabilidadChange = (value, id) => {
+
+
+  const handleResponsabilidadChange = (value, id,option) => {
+
+
     setPersnalProyecto((prevData) => {
       const newData = prevData.map((item) => {
         if (item.idEmpleado === id) {
-          return { ...item, Responsabilidad: value };
+          return { ...item, idResponsabilidad: option.value,Responsabilidad: option.label };
         } else {
           return item;
         }
@@ -78,12 +105,10 @@ export default function ModalEmpleado({
       align: "Right",
       render: (record) => (
         <Select
-          onChange={(value) => handleResponsabilidadChange(value, record)}
+          options={opciones}
+          onChange={(value,option) => handleResponsabilidadChange(value, record,option)}
           placeholder="Seleccionar"
         >
-          <Option value="0">Supervisor</Option>
-          <Option value="1">Ayudante</Option>
-          {/* Agrega más opciones según sea necesario */}
         </Select>
       ),
     },
@@ -131,6 +156,8 @@ export default function ModalEmpleado({
     const existeEnArreglo = PersnalProyecto?.some(
       (elemento) => elemento.idEmpleado === data.idEmpleado
     );
+
+
 
     if (!existeEnArreglo) {
       // Agregar el elemento solo si no existe en el arreglo

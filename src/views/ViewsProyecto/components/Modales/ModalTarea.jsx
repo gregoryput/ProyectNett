@@ -6,6 +6,10 @@ import dayjs from "dayjs";
 
 import { v4 as uuidv4 } from "uuid";
 import { useEffect, useState } from "react";
+import {
+  useGetPrioridadQuery,
+  useGetUnidadeQuery,
+} from "../../../../redux/Api/proyectoApi";
 const { RangePicker } = DatePicker;
 const { TextArea } = Input;
 
@@ -14,7 +18,7 @@ export default function ModalTarea({
   CloseModal,
   setTarea,
   tarea,
-  value,
+  serviciosfiltrado,
   selectEdit,
   setSelectEdit,
 }) {
@@ -23,16 +27,38 @@ export default function ModalTarea({
     CloseModal: PropTypes.func.isRequired,
     setTarea: PropTypes.func.isRequired,
     tarea: PropTypes.array.isRequired,
-    value: PropTypes.array.isRequired,
+    serviciosfiltrado: PropTypes.array.isRequired,
     selectEdit: PropTypes.array.isRequired,
     setSelectEdit: PropTypes.func.isRequired,
   };
   const [seeState, setSee] = useState(true);
+  const [prioridad, setPrioridad] = useState([]);
+  const [Unidad, setUnidad] = useState([]);
 
   const [cantidad, setCantidad] = useState(0);
   const [precio, setPrecio] = useState(0);
 
   const [form] = Form.useForm();
+
+  const {
+    data: dataPrioridad,
+    isSuccess: isPrioridadSuccess,
+    // isLoading: isLoading,
+  } = useGetPrioridadQuery("");
+  const {
+    data: dataUnidad,
+    isSuccess: isUnidadSuccess,
+    // isLoading: isLoading,
+  } = useGetUnidadeQuery("");
+
+  useEffect(() => {
+    if (dataPrioridad?.result !== undefined && isPrioridadSuccess) {
+      setPrioridad(dataPrioridad?.result);
+    }
+    if (dataUnidad?.result !== undefined && isUnidadSuccess) {
+      setUnidad(dataUnidad?.result);
+    }
+  }, [dataPrioridad, isPrioridadSuccess, dataUnidad, isUnidadSuccess]);
 
   useEffect(() => {
     Editar();
@@ -42,14 +68,14 @@ export default function ModalTarea({
     if (selectEdit !== null && selectEdit !== undefined) {
       form.setFieldsValue({
         Servicio: selectEdit[0]?.Servicio,
-        Prioridad: selectEdit[0]?.Prioridad,
+        IdPrioridad: selectEdit[0]?.IdPrioridad,
         Titulo: selectEdit[0]?.Titulo,
         Descripcion: selectEdit[0]?.Descripcion,
         Precio: selectEdit[0]?.Precio,
         Costo: selectEdit[0]?.Costo,
         Cantidad: selectEdit[0]?.Cantidad,
         Total: selectEdit[0]?.Total,
-        Parametro: selectEdit[0]?.Parametro,
+        IdParametro: selectEdit[0]?.IdParametro,
         Fechas: selectEdit[0]?.Fechas,
       });
       if (selectEdit[0]?.Costo != null && selectEdit[0]?.Costo != undefined) {
@@ -71,16 +97,16 @@ export default function ModalTarea({
     CloseModal();
     form.resetFields([
       "Servicio",
-      "Prioridad",
+      "IdPrioridad",
       "Titulo",
       "Descripcion",
       "Precio",
       "Costo",
       "Cantidad",
       "Total",
-      "Parametro",
+      "IdParametro",
     ]);
-    setSelectEdit(null);
+    setSelectEdit([]);
   };
 
   const handleChangePrecio = (value) => {
@@ -95,12 +121,21 @@ export default function ModalTarea({
     const fechaInicio = dayjs(data.Fechas[0].$d).format("DD-MM-YYYY");
     const fechaFinal = dayjs(data.Fechas[1].$d).format("DD-MM-YYYY");
 
+    const Prioridad = prioridad.filter(
+      (f) => f.idPrioridad == data.IdPrioridad
+    );
+
+    const Parametro =Unidad.filter(
+      (f) => f.idUnidad_DeMedida == data.IdParametro
+    );
     if (selectEdit == null) {
       let datos = {
         ...data,
         id: idUnico,
         FechaInicio: fechaInicio,
         FechaFinal: fechaFinal,
+        Prioridad: Prioridad[0]?.nombrePrioridad,
+        Parametro: Parametro[0]?.unidadNombre,
       };
       setTarea([...tarea, datos]);
     } else {
@@ -111,6 +146,9 @@ export default function ModalTarea({
         id: idUnico,
         FechaInicio: fechaInicio,
         FechaFinal: fechaFinal,
+        Prioridad: Prioridad[0]?.nombrePrioridad,
+        Parametro: Parametro[0]?.unidadNombre,
+
       };
       setTarea([...filtrado, datos]);
     }
@@ -119,24 +157,20 @@ export default function ModalTarea({
   };
   const dateFormat = "DD-MM-YYYY";
 
-  const opciones = value.map((dato) => ({
-    value: dato,
-    label:
-      dato === "1"
-        ? "Asesoría de Personal en el Departamento TIC"
-        : dato === "2"
-        ? "Soporte Técnico Remoto y en Sitio"
-        : dato === "3"
-        ? "Optimización y Seguridad de Redes"
-        : dato === "4"
-        ? "Documentación y Gestión de Infraestructura"
-        : dato === "5"
-        ? "Virtualización, Cluster, NAS"
-        : dato === "6"
-        ? "Garantía de Transferencia de Conocimiento"
-        : null,
+  const opciones = serviciosfiltrado?.map((dato) => ({
+    value: dato.idServicio.toString(),
+    label: dato.nombreServicio,
   }));
 
+  const opciones2 = prioridad?.map((dato) => ({
+    value: dato.idPrioridad,
+    label: dato.nombrePrioridad,
+  }));
+
+  const opciones3 = Unidad?.map((dato) => ({
+    value: dato.idUnidad_DeMedida,
+    label: dato.unidadNombre,
+  }));
   return (
     <>
       {" "}
@@ -157,54 +191,54 @@ export default function ModalTarea({
             }}
           >
             <h2>Tarea</h2>
-           {selectEdit == null ? 
-            <div style={{ display: "flex", justifyContent: "flex-end" }}>
-            <Btnbox
-              color={seeState == true ? true : false}
-              style={{
-                margin: 0,
-                width: 200,
-                borderRadius: "12px  0 0  12px",
-              }}
-              onClick={() => {
-                setSee(true);
-              }}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                }}
-              >
-                <span>Tarea basica</span>
-                <IoExtensionPuzzleOutline size={22} />
+            {selectEdit == null ? (
+              <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                <Btnbox
+                  color={seeState == true ? true : false}
+                  style={{
+                    margin: 0,
+                    width: 200,
+                    borderRadius: "12px  0 0  12px",
+                  }}
+                  onClick={() => {
+                    setSee(true);
+                  }}
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <span>Tarea basica</span>
+                    <IoExtensionPuzzleOutline size={22} />
+                  </div>
+                </Btnbox>
+                <Btnbox
+                  color={seeState == false ? true : false}
+                  style={{
+                    margin: 0,
+                    width: 200,
+                    borderRadius: "0  12px 12px  0px",
+                  }}
+                  onClick={() => {
+                    setSee(false);
+                  }}
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <span>Tarea avanzada</span>
+                    <IoNuclear size={22} />
+                  </div>
+                </Btnbox>
               </div>
-            </Btnbox>
-            <Btnbox
-              color={seeState == false ? true : false}
-              style={{
-                margin: 0,
-                width: 200,
-                borderRadius: "0  12px 12px  0px",
-              }}
-              onClick={() => {
-                setSee(false);
-              }}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                }}
-              >
-                <span>Tarea avanzada</span>
-                <IoNuclear size={22} />
-              </div>
-            </Btnbox>
-          </div> : null
-          }
+            ) : null}
           </div>
 
           <Form
@@ -252,7 +286,7 @@ export default function ModalTarea({
                 >
                   <Form.Item
                     label={<strong>Prioridad</strong>}
-                    name={"Prioridad"}
+                    name={"IdPrioridad"}
                     rules={[
                       {
                         required: true,
@@ -261,24 +295,8 @@ export default function ModalTarea({
                     ]}
                   >
                     <Select
+                      options={opciones2}
                       placeholder={"Seleccionar prioridad"}
-                      style={{
-                        width: 120,
-                      }}
-                      options={[
-                        {
-                          value: "3",
-                          label: "Alta",
-                        },
-                        {
-                          value: "2",
-                          label: "Media",
-                        },
-                        {
-                          value: "1",
-                          label: "Baja",
-                        },
-                      ]}
                     />
                   </Form.Item>
                   <Form.Item
@@ -396,7 +414,7 @@ export default function ModalTarea({
                 >
                   <Form.Item
                     label={<strong>Prioridad</strong>}
-                    name={"Prioridad"}
+                    name={"IdPrioridad"}
                     style={{
                       paddingRight: 100,
                     }}
@@ -412,20 +430,7 @@ export default function ModalTarea({
                       style={{
                         width: 120,
                       }}
-                      options={[
-                        {
-                          value: "3",
-                          label: "Alta",
-                        },
-                        {
-                          value: "2",
-                          label: "Media",
-                        },
-                        {
-                          value: "1",
-                          label: "Baja",
-                        },
-                      ]}
+                      options={opciones2}
                     />
                   </Form.Item>
                   <Form.Item
@@ -458,7 +463,7 @@ export default function ModalTarea({
                 >
                   <Form.Item
                     label={<strong>Parametro</strong>}
-                    name={"Parametro"}
+                    name={"IdParametro"}
                     rules={[
                       {
                         required: true,
@@ -470,12 +475,7 @@ export default function ModalTarea({
                       style={{
                         width: 120,
                       }}
-                      options={[
-                        {
-                          value: "1",
-                          label: "metro",
-                        },
-                      ]}
+                      options={opciones3}
                       placeholder={"Seleccionar paramentro"}
                     />
                   </Form.Item>
