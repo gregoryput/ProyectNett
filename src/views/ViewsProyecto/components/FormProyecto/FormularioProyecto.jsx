@@ -13,10 +13,10 @@ import {
   Container,
   ContainerDetail,
 } from "../../../../components";
-import ComponentTarea from "../FormProyecto/TareaComponent";
-import ProductoComponent from "../FormProyecto/ProductoComponent";
-import EquipoComponent from "../FormProyecto/EquipoComponent";
-import GastoExtrasComponent from "../FormProyecto/GastoExtrasComponent";
+import ComponentTarea from "./TareaComponent";
+import ProductoComponent from "./ProductoComponent";
+import EquipoComponent from "./EquipoComponent";
+import GastoExtrasComponent from "./GastoExtrasComponent";
 import { Colores } from "../../../../components/GlobalColor";
 import dayjs from "dayjs";
 
