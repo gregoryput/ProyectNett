@@ -49,26 +49,26 @@ export default function ModalEmpleado({
   const handleSearch = (value) => {
     const searchTerm = value.toLowerCase();
 
-    const filter = dataEmpleado?.result.filter((item) =>
-      item.nombres.toLowerCase().includes(searchTerm)
+    const filter = dataEmpleado?.Result.filter((item) =>
+      item.Nombres.toLowerCase().includes(searchTerm)
     );
 
     setFilteredData(filter);
   };
 
   const opciones = responsabilidad?.map((dato) => ({
-    value: dato.idResponsabilidad,
-    label: dato.responsabilidadNombre,
+    value: dato.IdResponsabilidad,
+    label: dato.ResponsabilidadNombre,
       
   }));
 
 
   useEffect(() => {
-    if (dataEmpleado?.result !== undefined && isSuccess) {
-      setFilteredData(dataEmpleado?.result);
+    if (dataEmpleado?.Result !== undefined && isSuccess) {
+      setFilteredData(dataEmpleado?.Result);
     }
-    if (dataResponsabilidad?.result !== undefined && isResponsablidadSuccess) {
-      setResponsabilidad(dataResponsabilidad?.result);
+    if (dataResponsabilidad?.Result !== undefined && isResponsablidadSuccess) {
+      setResponsabilidad(dataResponsabilidad?.Result);
     }
   }, [isSuccess, dataEmpleado,dataResponsabilidad,isResponsablidadSuccess]);
 
@@ -79,8 +79,8 @@ export default function ModalEmpleado({
 
     setPersnalProyecto((prevData) => {
       const newData = prevData.map((item) => {
-        if (item.idEmpleado === id) {
-          return { ...item, idResponsabilidad: option.value,Responsabilidad: option.label };
+        if (item.IdEmpleado === id) {
+          return { ...item, IdResponsabilidad: option.value, Responsabilidad: option.label };
         } else {
           return item;
         }
@@ -92,16 +92,16 @@ export default function ModalEmpleado({
   const columns = [
     {
       title: "Empleado",
-      dataIndex: "nombres",
-      key: "nombres",
+      dataIndex: "Nombres",
+      key: "Nombres",
       render: (text, record) => (
-        <span>{`${record.nombres} ${record.apellidos}`}</span>
+        <span>{`${record.Nombres} ${record.Apellidos}`}</span>
       ),
     },
     {
       title: "Responsabilidad",
-      dataIndex: "idEmpleado",
-      key: "idEmpleado",
+      dataIndex: "IdEmpleado",
+      key: "IdEmpleado",
       align: "Right",
       render: (record) => (
         <Select
@@ -115,7 +115,7 @@ export default function ModalEmpleado({
     {
       key: "action",
       render: (_, record) => (
-        <ButtonIcon onMouseUp={() => Remover(record.idEmpleado)}>
+        <ButtonIcon onMouseUp={() => Remover(record.IdEmpleado)}>
           <IoCloseSharp size={20} color="gray" />
         </ButtonIcon>
       ),
@@ -125,13 +125,13 @@ export default function ModalEmpleado({
   const Remover = (item) => {
     // Filtrar todos los elementos excepto el que coincide con el idProducto
     const updatedProductos = PersnalProyecto.filter(
-      (data) => data.idEmpleado !== item
+      (data) => data.IdEmpleado !== item
     );
 
     // Establecer el nuevo array sin el elemento eliminado
     setPersnalProyecto(updatedProductos);
   };
-  const listaDeIds = PersnalProyecto?.map((item) => item.idEmpleado);
+  const listaDeIds = PersnalProyecto?.map((item) => item.IdEmpleado);
 
   const Guardar = () => {
     const tienePropiedad = PersnalProyecto.every(
@@ -154,7 +154,7 @@ export default function ModalEmpleado({
 
     // Verificar si el elemento ya está en el arreglo
     const existeEnArreglo = PersnalProyecto?.some(
-      (elemento) => elemento.idEmpleado === data.idEmpleado
+      (elemento) => elemento.IdEmpleado === data.idEmpleado
     );
 
 
@@ -205,7 +205,7 @@ export default function ModalEmpleado({
             renderItem={(item) => (
               <>
                 <BtnSelect
-                  isSelected={listaDeIds.includes(item.idEmpleado)}
+                  isSelected={listaDeIds.includes(item.IdEmpleado)}
                   style={{
                     width: "100%",
                     justifyContent: "space-between",
@@ -228,7 +228,7 @@ export default function ModalEmpleado({
                     >
                       Empleado
                     </p>
-                    <h4> {item.nombres + " " + item.apellidos}</h4>
+                    <h4> {item.Nombres + " " + item.Apellidos}</h4>
                   </div>
                 </BtnSelect>
               </>

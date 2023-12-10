@@ -2,12 +2,15 @@ import { useState } from "react";
 import { ButtonIcon, ButtonNext } from "../../../../components";
 import { Table } from "antd";
 import ModalEmpelado from "../Modales/ModalEmpleado";
-import {
-  IoCloseSharp,
-} from "react-icons/io5"
-export default function EquipoComponent() {
+import { IoCloseSharp } from "react-icons/io5";
+import PropTypes from "prop-types";
+
+EquipoComponent.propTypes = {
+  empleado: PropTypes.array.isRequired,
+  setEmpleado: PropTypes.func.isRequired,
+};
+export default function EquipoComponent({ empleado, setEmpleado }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [empleado, setEmpleado] = useState([]);
 
   const OpenModal = () => {
     setIsModalOpen(true);
@@ -18,24 +21,22 @@ export default function EquipoComponent() {
   };
 
   const columns = [
-  
     {
       title: "Empleado",
-      dataIndex: "nombres",
-      key: "nombres",
+      dataIndex: "Nombres",
+      key: "Nombres",
       render: (text, record) => (
-        <span>{`${record.nombres} ${record.apellidos}`}</span>
+        <span>{`${record.Nombres} ${record.Apellidos}`}</span>
       ),
     },
-   
+
     {
       title: "Responsabilidad",
       dataIndex: "Responsabilidad",
       key: "Responsabilidad",
-      render: (text, record) => (
-        <span>{record.Responsabilidad}</span>
-      ),
-    },  {
+      render: (text, record) => <span>{record.Responsabilidad}</span>,
+    },
+    {
       align: "Right",
       key: "action",
       render: (_, record) => (
@@ -44,14 +45,10 @@ export default function EquipoComponent() {
         </ButtonIcon>
       ),
     },
-   
-   
   ];
   const Remover = (item) => {
     // Filtrar todos los elementos excepto el que coincide con el idProducto
-    const updated = empleado.filter(
-      (data) => data.idEmpleado !== item
-    );
+    const updated = empleado.filter((data) => data.IdEmpleado !== item);
 
     // Establecer el nuevo array sin el elemento eliminado
     setEmpleado(updated);
@@ -71,7 +68,11 @@ export default function EquipoComponent() {
         <h3>Equipo asignado</h3>
 
         <>
-          <ButtonNext style={{ paddingInline: 10 }} type="button" onClick={()=> OpenModal()}>
+          <ButtonNext
+            style={{ paddingInline: 10 }}
+            type="button"
+            onClick={() => OpenModal()}
+          >
             Agregar
           </ButtonNext>
         </>
@@ -82,11 +83,16 @@ export default function EquipoComponent() {
           columns={columns}
           pagination={false} // Desactiva la paginación si no deseas que aparezca
           // scroll={{ x: "max-content", y: 400 }}
-          size="small" 
+          size="small"
           locale={{ emptyText: "No hay empleado agregados" }}
         />
       </div>
-      <ModalEmpelado isModalOpen={isModalOpen}  CloseModal={CloseModal} setEmpleado={setEmpleado} empleado={empleado}  />
+      <ModalEmpelado
+        isModalOpen={isModalOpen}
+        CloseModal={CloseModal}
+        setEmpleado={setEmpleado}
+        empleado={empleado}
+      />
     </>
   );
 }

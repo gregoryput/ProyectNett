@@ -46,12 +46,15 @@ export default function FormularioProyecto() {
 
   const [selectStateCliente, setSelectStateCliente] = useState({});
   const [selectStateProducto, setSelectStateProducto] = useState([]);
+  const [empleado, setEmpleado] = useState([]);
   const [tarea, setTarea] = useState([]);
+  console.log("tareatareatarea", tarea);
 
   // totales por productos, servicios, gasto adicionales
   const [totalServicios, setTotalServicios] = useState(0);
   const [totalProducto, setTotalProducto] = useState(0);
   const [totalGasto, setTotalGasto] = useState(0);
+  const [gasto, setGasto] = useState([]);
   const [fechaInicio, setFechaInicio] = useState("");
   const [fechaFinal, setFechaFinal] = useState("");
 
@@ -68,27 +71,26 @@ export default function FormularioProyecto() {
     },
     value,
     options: servicios.map((servicio) => ({
-      label: servicio.nombreServicio,
-      value: servicio.idServicio,
+      label: servicio.NombreServicio,
+      value: servicio.IdServicio,
     })),
     onChange: (newValue) => {
       setValue(newValue);
       // Filtrar los servicios que coinciden con los nuevos valores seleccionados
       const nuevosServicios = servicios.filter((item) =>
-        newValue.includes(item.idServicio)
+        newValue.includes(item.IdServicio)
       );
-      setServiciosFiltrado( nuevosServicios);
+      setServiciosFiltrado(nuevosServicios);
     },
     placeholder: "Select Item...",
     maxTagCount: "responsive",
   };
 
-
   const handleSearch = (value) => {
     const searchTerm = value.toLowerCase();
 
-    const filter = clientesData?.result.filter((item) =>
-      item.nombres.toLowerCase().includes(searchTerm)
+    const filter = clientesData?.Result.filter((item) =>
+      item.Nombres.toLowerCase().includes(searchTerm)
     );
 
     setFilteredData(filter);
@@ -119,9 +121,9 @@ export default function FormularioProyecto() {
 
   const ClienteInput = (item) => {
     CloseModalCliente();
-    setSelectStateCliente(item.idCliente);
+    setSelectStateCliente(item.IdCliente);
     form.setFieldsValue({
-      cliente: item.nombres.toLowerCase(),
+      cliente: item.Identificacion + " - " + item.NombreEntidad.toLowerCase(),
       // Puedes agregar más campos según sea necesario
     });
   };
@@ -141,8 +143,132 @@ export default function FormularioProyecto() {
 
   //guardar formulario
   const onFinish = (values) => {
+    const dataSelectedClient = clientesData.data.Result.find(
+      (cliente) => cliente.IdCliente == selectStateCliente
+    );
+    const ClienteEsPersonaFisica =
+      dataSelectedClient.IdTipoEntidad == 1 ? true : false;
     // Manejar el envío del formulario aquí
-    console.log("Valores del formulario:", values);
+    const dataSubmit = {
+      IdProyecto: 0,
+      Nombre: values.Nombre,
+      Descripcion: values.Direccion,
+      FechaDeInicio: values.FechaDeInicio,
+      FechaDeFinalizacion: values.FechaDeFinalizacion,
+      TiempoDuracionEstimado: "10 dias",
+      //"FechaRealDeFinalizacion": "2023-12-10T05:51:27.368Z",
+      //"TiempoDuracionReal": "string",
+      PresupuestoAcordado: 30000,
+      ClienteEsPersonaFisica: ClienteEsPersonaFisica,
+      IdEntidad: dataSelectedClient.IdEntidad,
+      IdEstado: 1,
+      //IdCreadoPor: 1,
+      //FechaCreacion: "2023-12-10T05:51:27.368Z",
+      //IdEstadoRegistro: 1,
+      //IdModificadoPor: 0,
+      //FechaModificacion: "2023-12-10T05:51:27.368Z",
+
+      ProyectoDetallesProductos: selectStateProducto.map((detail) => ({
+        IdProyectoDetalleProducto: 0,
+        Cantidad: detail.Cantidad,
+        PrecioCompra: detail.PrecioCosto,
+        PrecioVenta: detail.PrecioVenta,
+        ITBIS: detail.ITBIS,
+        Codigo: "AAA-AAA", // <<-- En el get de pructos traer el codigo
+        Descuento: 0, // <<-- Agregar campo de descuento en la tabla de detalles (Campo modificable)
+        Subtotal: detail.Subtotal,
+        IdProducto: detail.IdProducto,
+        IdUnidadDeMedida: 0,
+        IdProyecto: detail.IdUnidadDeMedida,
+        //IdCreadoPor: 0,
+        //FechaCreacion: "2023-12-10T05:51:27.368Z",
+        //IdModificadoPor: 0,
+        //FechaModificacion: "2023-12-10T05:51:27.368Z",
+        IdEstadoRegistro: 1,
+      })),
+
+      ProyectoEntidadParams: {
+        IdProyecto: 0,
+        IdEntidad: dataSelectedClient.IdEntidad,
+      },
+
+      ProyectoEmpleados: empleado.map((empleado) => ({
+        IdPersonaProyecto: 0,
+        IdProyecto: 0,
+        IdResponsabilidad: empleado.IdResponsabilidad,
+        IdEmpleado: empleado.IdEmpleado,
+        //IdCreadoPor: 0,
+        //FechaCreacion: "2023-12-10T05:51:27.368Z",
+        //IdModificadoPor: 0,
+        //FechaModificacion: "2023-12-10T05:51:27.368Z",
+        //IdEstadoRegistro: 0,
+      })),
+
+      GastoAdicionales: gasto.map((gasto) => ({
+        IdGasto: 0,
+        DescripcionGasto: gasto.Descripcion,
+        MontoGasto: gasto.Costo,
+        IdProyecto: 0,
+        //IdCreadoPor: 0,
+        //FechaCreacion: "2023-12-10T05:51:27.368Z",
+        //IdModificadoPor: 0,
+        //FechaModificacion: "2023-12-10T05:51:27.368Z",
+        //IdEstadoRegistro: 0,
+      })),
+
+      ProyectoServicios: servicios.map((servicio) => ({
+        IdProyectoServicio: 0,
+        Descripcion: "-", // << -- Por el momento siempre iraasi
+        IdProyecto: 0,
+        IdServicio: servicio.IdServicio,
+        // IdCreadoPor: 0,
+        // FechaCreacion: "2023-12-10T05:51:27.368Z",
+        // IdModificadoPor: 0,
+        // FechaModificacion: "2023-12-10T05:51:27.368Z",
+        // IdEstadoRegistro: 0,
+      })),
+
+      ProyectoTareas: tarea.map((tarea) => ({
+        IdTarea: 0,
+        Nombre: tarea.Titulo,
+        Descripcion: tarea.Descripcion, // <<--
+        FechaInicio: tarea.FechaInicio,
+        FechaFinalizacion: tarea.FechaFinal,
+        TiempDuracionEstimado: "9 dias",
+        //FechaRealDeFinalizacion: "2023-12-10T05:51:27.368Z",
+        //TiempoDuracionReal: "string",
+        IdParametroCosto: tarea.IdParametroCosto,
+        CostoPorParametro: tarea.Costo,
+        Cantidad: tarea.Cantidad,
+        CostoTotal: tarea.Total,
+        IdPrioridad: tarea.IdPrioridad,
+        IdProyecto: 0,
+        IdEstado: 1,
+        IdServicioRelacionado: tarea.Servicio,
+        //IdCreadoPor: 0,
+        // FechaCreacion: "2023-12-10T05:51:27.368Z",
+        // IdModificadoPor: 0,
+        // FechaModificacion: "2023-12-10T05:51:27.368Z",
+        // IdEstadoRegistro: 0
+      })),
+
+      CotizacionesProyecto: {
+        IdCotizacion: 0,
+        FechaDeEmision: new Date(),
+        MontoInicial: 0,
+        MontoTotal: 0,
+        Secuencia: "0",
+        IdCliente: 0,
+        IdEstado: 1,
+        IdProyecto: 0,
+        IdEstadoCotizacion: 1,
+        // "IdCreadoPor": 0,
+        // "FechaCreacion": "2023-12-10T05:51:27.368Z",
+        // "IdModificadoPor": 0,
+        // "FechaModificacion": "2023-12-10T05:51:27.368Z",
+        // "IdEstadoRegistro": 0
+      }
+    };
   };
   const fecha = form.getFieldsValue(["FechaInicio"]);
 
@@ -156,12 +282,12 @@ export default function FormularioProyecto() {
   }, [fecha, fechafin]);
 
   useEffect(() => {
-    if (clientesData?.result !== undefined && isClientsSuccess) {
-      setFilteredData(clientesData?.result);
+    if (clientesData?.Result !== undefined && isClientsSuccess) {
+      setFilteredData(clientesData?.Result);
     }
 
-    if (dataServicios?.result !== undefined && isServiciosSuccess) {
-      setServicios(dataServicios?.result);
+    if (dataServicios?.Result !== undefined && isServiciosSuccess) {
+      setServicios(dataServicios?.Result);
     }
   }, [
     clientesData,
@@ -212,7 +338,7 @@ export default function FormularioProyecto() {
               <Form.Item
                 label={<strong>Nombre:</strong>}
                 style={{ width: 200, marginTop: 30 }}
-                name={"nombre"}
+                name={"Nombre"}
                 rules={[
                   {
                     required: true,
@@ -258,7 +384,21 @@ export default function FormularioProyecto() {
               <Form.Item
                 label={<strong>Fecha de inicio:</strong>}
                 style={{ width: 300, marginTop: 30 }}
-                name={"FechaInicio"}
+                name={"FechaDeInicio"}
+                rules={[
+                  {
+                    required: true,
+                    message: "Debe ingresar fecha ",
+                  },
+                ]}
+              >
+                <DatePicker onChange={handleDateChange} format={"DD-MM-YYYY"} />
+              </Form.Item>
+
+              <Form.Item
+                label={<strong>Fecha de finalizacion:</strong>}
+                style={{ width: 300, marginTop: 30 }}
+                name={"FechaDeFinalizacion"}
                 rules={[
                   {
                     required: true,
@@ -309,10 +449,14 @@ export default function FormularioProyecto() {
             />
           </Container>
           <Container style={{ marginBlock: 5, marginInline: 5, width: "100%" }}>
-            <GastoExtrasComponent setTotalGasto={setTotalGasto} />
+            <GastoExtrasComponent
+              setTotalGasto={setTotalGasto}
+              gasto={gasto}
+              setGasto={setGasto}
+            />
           </Container>
           <Container style={{ marginBlock: 5, marginInline: 5, width: "100%" }}>
-            <EquipoComponent />
+            <EquipoComponent empleado={empleado} setEmpleado={setEmpleado} />
           </Container>
           <ContainerDetail
             style={{

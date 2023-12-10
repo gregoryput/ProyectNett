@@ -1,15 +1,26 @@
-import { Modal, Form, Input, Select, DatePicker, InputNumber } from "antd";
+import {
+  Modal,
+  Form,
+  Input,
+  Select,
+  DatePicker,
+  InputNumber,
+  Button,
+} from "antd";
 import PropTypes from "prop-types";
 import { Btnbox, ButtonSave, Container } from "../../../../components";
 import { IoExtensionPuzzleOutline, IoNuclear } from "react-icons/io5";
+import { MdNewLabel } from "react-icons/md";
+
 import dayjs from "dayjs";
 
 import { v4 as uuidv4 } from "uuid";
 import { useEffect, useState } from "react";
 import {
+  useGetParametrosQuery,
   useGetPrioridadQuery,
-  useGetUnidadeQuery,
 } from "../../../../redux/Api/proyectoApi";
+import ModalCrearParametro from "./ModalCrearParametroCosto";
 const { RangePicker } = DatePicker;
 const { TextArea } = Input;
 
@@ -33,10 +44,15 @@ export default function ModalTarea({
   };
   const [seeState, setSee] = useState(true);
   const [prioridad, setPrioridad] = useState([]);
-  const [Unidad, setUnidad] = useState([]);
+  const [Parametros, setParametros] = useState([]);
 
-  const [cantidad, setCantidad] = useState(0);
+  const [Cantidad, setCantidad] = useState(0);
   const [precio, setPrecio] = useState(0);
+
+  const [openCreateParam, setOpenCreateParam] = useState("");
+  const onCloseModalCreateParam = () => {
+    setOpenCreateParam(false);
+  };
 
   const [form] = Form.useForm();
 
@@ -46,19 +62,19 @@ export default function ModalTarea({
     // isLoading: isLoading,
   } = useGetPrioridadQuery("");
   const {
-    data: dataUnidad,
-    isSuccess: isUnidadSuccess,
+    data: dataParametros,
+    isSuccess: isParametrosSuccess,
     // isLoading: isLoading,
-  } = useGetUnidadeQuery("");
+  } = useGetParametrosQuery("");
 
   useEffect(() => {
-    if (dataPrioridad?.result !== undefined && isPrioridadSuccess) {
-      setPrioridad(dataPrioridad?.result);
+    if (dataPrioridad?.Result !== undefined && isPrioridadSuccess) {
+      setPrioridad(dataPrioridad?.Result);
     }
-    if (dataUnidad?.result !== undefined && isUnidadSuccess) {
-      setUnidad(dataUnidad?.result);
+    if (dataParametros?.Result !== undefined && isParametrosSuccess) {
+      setParametros(dataParametros?.Result);
     }
-  }, [dataPrioridad, isPrioridadSuccess, dataUnidad, isUnidadSuccess]);
+  }, [dataPrioridad, isPrioridadSuccess, dataParametros, isParametrosSuccess]);
 
   useEffect(() => {
     Editar();
@@ -75,7 +91,7 @@ export default function ModalTarea({
         Costo: selectEdit[0]?.Costo,
         Cantidad: selectEdit[0]?.Cantidad,
         Total: selectEdit[0]?.Total,
-        IdParametro: selectEdit[0]?.IdParametro,
+        IdParametroCosto: selectEdit[0]?.IdParametroCosto,
         Fechas: selectEdit[0]?.Fechas,
       });
       if (selectEdit[0]?.Costo != null && selectEdit[0]?.Costo != undefined) {
@@ -104,15 +120,15 @@ export default function ModalTarea({
       "Costo",
       "Cantidad",
       "Total",
-      "IdParametro",
+      "IdParametroCosto",
     ]);
     setSelectEdit([]);
   };
 
-  const handleChangePrecio = (value) => {
-    setPrecio(value);
+  const handleChangePrecio = (Value) => {
+    setPrecio(Value);
     form.setFieldsValue({
-      Total: cantidad * value,
+      Total: Cantidad * Value,
     });
   };
 
@@ -122,11 +138,11 @@ export default function ModalTarea({
     const fechaFinal = dayjs(data.Fechas[1].$d).format("DD-MM-YYYY");
 
     const Prioridad = prioridad.filter(
-      (f) => f.idPrioridad == data.IdPrioridad
+      (f) => f.IdPrioridad == data.IdPrioridad
     );
 
-    const Parametro =Unidad.filter(
-      (f) => f.idUnidad_DeMedida == data.IdParametro
+    const Parametro = Parametros.filter(
+      (f) => f.IdParametroCosto == data.IdParametroCosto
     );
     if (selectEdit == null) {
       let datos = {
@@ -134,8 +150,8 @@ export default function ModalTarea({
         id: idUnico,
         FechaInicio: fechaInicio,
         FechaFinal: fechaFinal,
-        Prioridad: Prioridad[0]?.nombrePrioridad,
-        Parametro: Parametro[0]?.unidadNombre,
+        Prioridad: Prioridad[0]?.NombrePrioridad,
+        Parametro: Parametro[0]?.NombreParametro,
       };
       setTarea([...tarea, datos]);
     } else {
@@ -146,9 +162,8 @@ export default function ModalTarea({
         id: idUnico,
         FechaInicio: fechaInicio,
         FechaFinal: fechaFinal,
-        Prioridad: Prioridad[0]?.nombrePrioridad,
-        Parametro: Parametro[0]?.unidadNombre,
-
+        Prioridad: Prioridad[0]?.NombrePrioridad,
+        Parametro: Parametro[0]?.NombreParametro,
       };
       setTarea([...filtrado, datos]);
     }
@@ -158,18 +173,18 @@ export default function ModalTarea({
   const dateFormat = "DD-MM-YYYY";
 
   const opciones = serviciosfiltrado?.map((dato) => ({
-    value: dato.idServicio.toString(),
-    label: dato.nombreServicio,
+    value: dato.IdServicio.toString(),
+    label: dato.NombreServicio,
   }));
 
   const opciones2 = prioridad?.map((dato) => ({
-    value: dato.idPrioridad,
-    label: dato.nombrePrioridad,
+    value: dato.IdPrioridad,
+    label: dato.NombrePrioridad,
   }));
 
-  const opciones3 = Unidad?.map((dato) => ({
-    value: dato.idUnidad_DeMedida,
-    label: dato.unidadNombre,
+  const opciones3 = Parametros?.map((dato) => ({
+    value: dato.IdParametroCosto,
+    label: dato.NombreParametro,
   }));
   return (
     <>
@@ -455,30 +470,55 @@ export default function ModalTarea({
                   style={{
                     display: "flex",
                     flexDirection: "row",
+                    flexWrap: "wrap",
                     margin: 0,
                     width: "100%",
                     justifyContent: "space-between",
                     paddingRight: 100,
                   }}
                 >
-                  <Form.Item
-                    label={<strong>Parametro</strong>}
-                    name={"IdParametro"}
-                    rules={[
-                      {
-                        required: true,
-                        message: "No hay parametro",
-                      },
-                    ]}
+                  <div
+                    style={{
+                      width: "100%",
+                      display: "flex",
+                      flexDirection: "row",
+                      alignItems: "center",
+                    }}
                   >
-                    <Select
-                      style={{
-                        width: 120,
-                      }}
-                      options={opciones3}
-                      placeholder={"Seleccionar paramentro"}
-                    />
-                  </Form.Item>
+                    <div style={{ width: "70%" }}>
+                      <Form.Item
+                        label={<strong>Parametro de costo</strong>}
+                        name={"IdParametroCosto"}
+                        rules={[
+                          {
+                            required: true,
+                            message: "No hay parametro",
+                          },
+                        ]}
+                      >
+                        <Select
+                          style={{
+                            width: "100%",
+                          }}
+                          options={opciones3}
+                          placeholder={"Seleccionar paramentro"}
+                        />
+                      </Form.Item>
+                    </div>
+                    <div style={{ width: "15%" }}>
+                      <Button
+                        style={{
+                          display: "flex",
+                          flexDirection: "row",
+                          alignItems: "center",
+                        }}
+                        onClick={() => setOpenCreateParam(true)}
+                      >
+                        <MdNewLabel />
+                        <span>Crear parametro de costo</span>
+                      </Button>
+                    </div>
+                  </div>
                   <Form.Item
                     label={<strong>Cantidad</strong>}
                     name={"Cantidad"}
@@ -579,6 +619,11 @@ export default function ModalTarea({
           </Form>
         </div>
       </Modal>
+      
+      <ModalCrearParametro
+        open={openCreateParam}
+        onClose={onCloseModalCreateParam}
+      />
     </>
   );
 }

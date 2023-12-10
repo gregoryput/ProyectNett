@@ -3,7 +3,6 @@ import Search from "antd/es/input/Search";
 import PropTypes from "prop-types";
 import { BtnSelect, ContainerDetail } from "../../../../components";
 
-
 ModalCliente.propTypes = {
   isModalOpen: PropTypes.func.isRequired,
   filteredData: PropTypes.func.isRequired,
@@ -18,7 +17,6 @@ export default function ModalCliente({
   CloseModalCliente,
   handleSearch,
 }) {
-
   return (
     <>
       {" "}
@@ -62,14 +60,12 @@ export default function ModalCliente({
                     style={{
                       display: "flex",
                       flexDirection: "column",
-                      width: "5%",
+                      width: "10%",
                     }}
                   >
-                    <h4>ID</h4>
+                    <h4>Código</h4>
 
-                    <p style={{ fontSize: 12, color: "gray" }}>
-                      {item.idCliente}
-                    </p>
+                    <p style={{ fontSize: 12, color: "gray" }}>{item.Codigo}</p>
                   </div>
                   <div
                     style={{
@@ -82,7 +78,21 @@ export default function ModalCliente({
                     <h4>Nombre</h4>
 
                     <p style={{ fontSize: 12, color: "gray" }}>
-                      {item.nombres + " " + item.apellidos}
+                      {item.NombreEntidad}
+                    </p>
+                  </div>
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      width: "35%",
+                      textAlign: "left",
+                    }}
+                  >
+                    <h4>Tipo cliente</h4>
+
+                    <p style={{ fontSize: 12, color: "gray" }}>
+                      {item.NombreTipoEntidad}
                     </p>
                   </div>
                   <div
@@ -92,9 +102,11 @@ export default function ModalCliente({
                       width: "30%",
                     }}
                   >
-                    <h4>Cedula</h4>
+                    <h4>Cedula o RNC</h4>
 
-                    <p style={{ fontSize: 12, color: "gray" }}>{item.cedula}</p>
+                    <p style={{ fontSize: 12, color: "gray" }}>
+                      {item.Identificacion}
+                    </p>
                   </div>
                 </BtnSelect>
               </>

@@ -1,11 +1,12 @@
 import { Table } from "antd";
 import { useEffect, useState } from "react";
-import { useGetProductsForFCQuery } from "../../../../redux/Api/productsApi";
+//import { useGetProductsForFCQuery } from "../../../../redux/Api/productsApi";
 import { ButtonNext } from "../../../../components";
 import ModalProducto from "../Modales/ModalProducto";
 import PropTypes from "prop-types";
 import { Statistic } from "antd";
 import CountUp from "react-countup";
+import { useGetProductosUnidadesDetallesQuery } from "../../../../redux/Api/proyectoApi";
 
 ProductoComponent.propTypes = {
   selectStateProducto: PropTypes.func.isRequired,
@@ -22,7 +23,7 @@ export default function ProductoComponent({
     data: productsData,
     // isLoading: isLoadingProducts,
     isSuccess: isSuccessProducts,
-  } = useGetProductsForFCQuery("");
+  } = useGetProductosUnidadesDetallesQuery("");
   const formatter = (value) => <CountUp end={value} separator="," />;
 
   const [producto, setProducto] = useState([]);
@@ -30,10 +31,10 @@ export default function ProductoComponent({
   const [filteredData, setFilteredData] = useState([]);
 
   useEffect(() => {
-    if (productsData?.result !== undefined && isSuccessProducts) {
-      setFilteredData(productsData?.result);
+    if (productsData?.Result !== undefined && isSuccessProducts) {
+      setFilteredData(productsData?.Result);
     }
-  }, [producto, setProducto, isSuccessProducts]);
+  }, [productsData, isSuccessProducts]);
 
   const OpenModalProducto = () => {
     setIsModalOpen(true);
@@ -44,21 +45,17 @@ export default function ProductoComponent({
   };
   const totalSubtotal =
     selectStateProducto != null
-      ? selectStateProducto?.reduce(
-          (total, item) =>
-            total + (item.cantidad * item.precioVenta + item.itbis),
-          0
-        )
+      ? selectStateProducto?.reduce((total, item) => total + item.Subtotal, 0)
       : "0";
 
   useEffect(() => {
     setTotalProducto(totalSubtotal);
-  }, [totalSubtotal]);
-  
+  }, [setTotalProducto, totalSubtotal]);
+
   const handleSearch = (value) => {
     const searchTerm = value.toLowerCase();
 
-    const filter = productsData?.result.filter((item) =>
+    const filter = productsData?.Result.filter((item) =>
       item.nombre.toLowerCase().includes(searchTerm)
     );
 
@@ -69,66 +66,51 @@ export default function ProductoComponent({
   const columns = [
     {
       title: "Código",
-      dataIndex: "codigo",
-      key: "codigo",
+      dataIndex: "Codigo",
+      key: "Codigo",
     },
     {
       title: "Nombre",
-      dataIndex: "nombre",
-      key: "nombre",
+      dataIndex: "Nombre",
+      key: "Nombre",
     },
     {
       title: "Modelo",
-      dataIndex: "modelo",
-      key: "modelo",
+      dataIndex: "Modelo",
+      key: "Modelo",
     },
     {
       title: "Unidad",
-      dataIndex: "unidadNombre",
-      key: "unidadNombre",
+      dataIndex: "UnidadNombre",
+      key: "UnidadNombre",
     },
     {
       title: "Precio",
-      dataIndex: "precioVenta",
-      key: "precioVenta",
+      dataIndex: "PrecioVenta",
+      key: "PrecioVenta",
       align: "center",
     },
     {
       title: "ITBIS",
-      dataIndex: "itbis",
-      key: "itbis",
+      dataIndex: "ITBIS",
+      key: "ITBIS",
       align: "center",
     },
 
     {
       title: "Cantidad",
-      dataIndex: "cantidad",
+      dataIndex: "Cantidad",
 
-      key: "cantidad",
+      key: "Cantidad",
       align: "center",
     },
     {
       title: "Sub-Total",
-      dataIndex: "subtotal",
-
-      render: (text, record) => (
-        <span>{record.cantidad * record.precioVenta + record.itbis}</span>
-      ),
-      key: "sub-total",
+      dataIndex: "Subtotal",
+      key: "Subtotal",
       width: "120px",
       align: "center",
     },
-
-    // {
-    //   key: "action",
-    //   render: (_, record) => (
-    //     <Dropdown menu={{ items }} placement="bottomLeft" arrow trigger={["click"]}>
-    //       <ButtonIcon onMouseUp={() => setSelectedItem(record)}>
-    //         <IoEllipsisVerticalSharp size={22} />
-    //       </ButtonIcon>
-    //     </Dropdown>
-    //   ),
-    // },
   ];
 
   return (

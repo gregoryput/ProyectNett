@@ -83,7 +83,7 @@ export default function ComponentTarea({
 
   useEffect(() => {
     setTotalServicios(resultado.totalGeneral);
-  }, [resultado]);
+  }, [setTotalServicios, resultado.totalGeneral]);
 
   return (
     <>
@@ -134,8 +134,8 @@ export default function ComponentTarea({
                 collapsible="header"
                 items={[
                   {
-                    key: item.idServicio, // Usar el ID como clave único
-                    label: item.nombreServicio,
+                    key: item.IdServicio, // Usar el ID como clave único
+                    label: item.NombreServicio,
                     children: (
                       <>
                         <ListaDeTarea
@@ -186,7 +186,7 @@ function ListaDeTarea({ tarea, setTarea, item, serviciosfiltrado }) {
   const [selectEdit, setSelectEdit] = useState([]);
 
   useEffect(() => {
-    const filtrado = tarea.filter((data) => data.Servicio == item.idServicio);
+    const filtrado = tarea.filter((data) => data.Servicio == item.IdServicio);
     setDatafilter(filtrado);
   }, [tarea, item]);
   const Remover = (item) => {

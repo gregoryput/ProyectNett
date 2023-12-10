@@ -1,52 +1,64 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/dist/query/react";
 
 const token = localStorage.getItem("token");
-const baseUrl = 'https://localhost:7279/'
+const baseUrl = "https://localhost:7279/";
 
 export const proyectoApi = createApi({
-    reducerPath: "proyectoApi",
-    baseQuery: fetchBaseQuery({
-        baseUrl: baseUrl,
-        headers: {
-            Authorization: `Bearer ${token}`,
-        },
+  reducerPath: "proyectoApi",
+  baseQuery: fetchBaseQuery({
+    baseUrl: baseUrl,
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  }),
+  tagTypes: ["Proyecto"],
+  endpoints: (builder) => ({
+    getServicio: builder.query({
+      query: () => "/Proyecto/obtenerServicio",
+      providesTags: ["getServocoop"],
     }),
-    tagTypes: ["Proyecto"],
-    endpoints: (builder) => ({
-        getServicio: builder.query({
-            query: () => "/Proyecto/obtenerServicio",
-            providesTags: ["Proyecto"],
-        }),
-        getUnidade: builder.query({
-            query: () => "/Proyecto/obtenerUnidad",
-            providesTags: ["Proyecto"],
-        }),
-        getResponsabilidad: builder.query({
-            query: () => "/Proyecto/obtenerResposabilidad",
-            providesTags: ["Proyecto"],
-        }),
-        getPrioridad: builder.query({
-            query: () => "/Proyecto/obtenerPrioridad",
-            providesTags: ["Proyecto"],
-        }),
-        getClienteProyecto: builder.query({
-            query: () => "/Proyecto/obtenerClientes",
-            providesTags: ["Proyecto"],
-        }),
-        getEmpleado: builder.query({
-            query: () => "/Proyecto/obtenerEmpleado",
-            providesTags: ["Proyecto"],
-        }),
-      
-        
+    getParametros: builder.query({
+      query: () => "/Proyecto/obtenerParametros",
+      providesTags: ["GetParametros"],
     }),
+    getResponsabilidad: builder.query({
+      query: () => "/Proyecto/obtenerResposabilidad",
+      providesTags: ["Proyecto"],
+    }),
+    getPrioridad: builder.query({
+      query: () => "/Proyecto/obtenerPrioridad",
+      providesTags: ["Proyecto"],
+    }),
+    getClienteProyecto: builder.query({
+      query: () => "/Proyecto/obtenerClientes",
+      providesTags: ["Proyecto"],
+    }),
+    getEmpleado: builder.query({
+      query: () => "/Proyecto/obtenerEmpleado",
+      providesTags: ["Proyecto"],
+    }),
+    getProductosUnidadesDetalles: builder.query({
+      query: () => "/Proyecto/getProductosUnidadesDetalles",
+      providesTags: ["Proyecto"],
+    }),
+    createParametroCosto: builder.mutation({
+      query: (newParam) => ({
+        url: "/Proyecto/insertarParametroCosto",
+        method: "POST",
+        body: newParam,
+      }),
+      providesTags: ["Proyecto"],
+    }),
+  }),
 });
 
 export const {
-    useGetClienteProyectoQuery,
-    useGetServicioQuery,
-    useGetUnidadeQuery,
-    useGetEmpleadoQuery,
-    useGetPrioridadQuery,
-    useGetResponsabilidadQuery,
+  useGetClienteProyectoQuery,
+  useGetServicioQuery,
+  useGetParametrosQuery,
+  useGetEmpleadoQuery,
+  useGetPrioridadQuery,
+  useGetResponsabilidadQuery,
+  useGetProductosUnidadesDetallesQuery,
+  useCreateParametroCostoMutation,
 } = proyectoApi;

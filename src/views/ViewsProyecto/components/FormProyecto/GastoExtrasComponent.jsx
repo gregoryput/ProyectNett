@@ -8,9 +8,8 @@ import {
 import { Statistic } from "antd";
 import CountUp from "react-countup";
 
-export default function GastoExtrasComponent({setTotalGasto}) {
+export default function GastoExtrasComponent({setTotalGasto, gasto, setGasto}) {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [gasto, setGasto] = useState([]);
   const formatter = (value) => <CountUp end={value} separator="," />;
 
   const OpenModal = () => {

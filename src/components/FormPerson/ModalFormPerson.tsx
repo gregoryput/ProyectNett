@@ -103,8 +103,10 @@ const ModalFormPerson = ({
       Imagen: dataImage,
     } as IPersona;
 
+    console.log("dataSubmitdataSubmit", dataSubmit);
+
     // Ejecutar la subida:
-    executeCreatePerson(dataSubmit);
+    // executeCreatePerson(dataSubmit);
   };
 
   // Para almacenar la imagen subida:

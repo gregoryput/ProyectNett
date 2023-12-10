@@ -1,7 +1,14 @@
-import { List, Modal, Table, InputNumber, message } from "antd";
 import {
-  IoCloseSharp,
-} from "react-icons/io5"
+  List,
+  Modal,
+  Table,
+  InputNumber,
+  message,
+  Popover,
+  Tooltip,
+  Select,
+} from "antd";
+import { IoCloseSharp } from "react-icons/io5";
 import Search from "antd/es/input/Search";
 import PropTypes from "prop-types";
 import {
@@ -10,6 +17,10 @@ import {
   ButtonSave,
   ContainerDetail,
 } from "../../../../components";
+
+import { FaCheck } from "react-icons/fa";
+import { IoCloseOutline } from "react-icons/io5";
+import { FiAlertTriangle } from "react-icons/fi";
 
 ModalProducto.propTypes = {
   isModalOpen: PropTypes.func.isRequired,
@@ -32,65 +43,176 @@ export default function ModalProducto({
   const columns = [
     {
       title: "Código",
-      dataIndex: "codigo",
-      key: "codigo",
+      dataIndex: "Codigo",
+      key: "Codigo",
+      width: "8%",
     },
     {
       title: "Nombre",
-      dataIndex: "nombre",
-      key: "nombre",
+      dataIndex: "Nombre",
+      key: "Nombre",
+      width: "25%",
     },
     {
       title: "Modelo",
-      dataIndex: "modelo",
-      key: "modelo",
+      dataIndex: "Modelo",
+      key: "Modelo",
+      width: "8%",
     },
     {
       title: "Tipo de Unidad",
-      dataIndex: "unidadNombre",
-      key: "unidadNombre",
+      dataIndex: "ProductoDetallesUnidades",
+      key: "ProductoDetallesUnidades",
+      width: "20%",
+      render: (_, record) => (
+        <>
+          {record.IdUnidadDeMedida === 0 ? (
+            <Tooltip title="Debe seleccionar la unidad de medida">
+              <FiAlertTriangle color="red" />
+            </Tooltip>
+          ) : null}
+          <Select
+            size="middle"
+            style={{ minWidth: "120px" }}
+            options={record?.ProductoDetallesUnidades?.map((PUD) => ({
+              label: PUD.UnidadNombre,
+              value: PUD.IdUnidadDeMedida,
+            }))}
+            onChange={(value) => handleChangeUnit(value, record)}
+          />
+        </>
+      ),
     },
     {
       title: "Precio",
-      dataIndex: "precioVenta",
-      key: "precioVenta",
+      dataIndex: "PrecioVenta",
+      key: "PrecioVenta",
       align: "center",
+      width: "8%",
+      render: (_, record) => (
+        <Tooltip
+          title={
+            record.IdUnidadDeMedida === 0
+              ? "Debe seleccionar una unidad de medida"
+              : ""
+          }
+        >
+          <InputNumber
+            onChange={(value) => handlePriceChange(value, record.IdProducto)}
+            min={1}
+            disabled={record.IdUnidadDeMedida === 0}
+            value={record.IdUnidadDeMedida === 0 ? null : record.PrecioVenta}
+          />
+        </Tooltip>
+      ),
     },
     {
       title: "Cantidad",
-      dataIndex: "cantidad",
-      key: "cantidad",
+      dataIndex: "Cantidad",
+      key: "Cantidad",
       align: "right",
+      width: "8%",
       render: (text, record) => (
         <InputNumber
-          min={0}
-          value={text == " " || text == null ? 0 : text}
-          onChange={(value) => handleCantidadChange(value, record.idProducto)} 
+          disabled={record.IdUnidadDeMedida === 0}
+          min={1}
+          value={record.Cantidad}
+          defaultValue={1}
+          onChange={(value) => handleCantidadChange(value, record.IdProducto)}
         />
       ),
     },
     {
       key: "action",
       render: (_, record) => (
-        <ButtonIcon onMouseUp={() => Remover(record.idProducto)}>
+        <ButtonIcon onMouseUp={() => Remover(record.IdProducto)}>
           <IoCloseSharp size={20} color="gray" />
         </ButtonIcon>
       ),
     },
   ];
 
+  // Funcion para cuando cambie la unidad seleccionada (recibo la unidad seleccionada y el record (Producto))
+  const handleChangeUnit = (idUnidad, record) => {
+    // Le saco el detalle al producto:
+    const details = record?.ProductoDetallesUnidades;
+
+    // Capturamos el detalle de la unidad seleccionada:
+    const detailUnit = details.find(
+      (product) => product.IdUnidadDeMedida == idUnidad
+    );
+
+    // Reasignar el estado, modificando el producto en especifico
+    setProducto((prevStat) => {
+      const newState = prevStat.map((item) => {
+        return item.IdProducto == record.IdProducto
+          ? {
+              ...item,
+              IdUnidadDeMedida: idUnidad,
+              UnidadNombre: detailUnit.UnidadNombre,
+              PrecioCosto: detailUnit.PrecioCosto,
+              PrecioVenta: detailUnit.PrecioVenta,
+              ITBIS: detailUnit.ITBIS,
+              Subtotal: 0,
+            }
+          : { ...item };
+      });
+      return newState;
+    });
+  };
+
+  const calcuteSubTotal = (precioVenta, cantidad, itbis) => {
+    const Subtotal = precioVenta * cantidad + itbis;
+    return Subtotal;
+  };
+
+  // Cuando cambie la cantidad seleccionada:
   const handleCantidadChange = (value, id) => {
     setProducto((prevData) => {
       const newData = prevData.map((item) => {
-        if (item.idProducto === id) {
+        if (item.IdProducto === id) {
           // Aquí defines tu límite, por ejemplo, 100
-          const limiteCantidad = item.cantidadDisponible;
+          const limiteCantidad = 300; //item.cantidadDisponible;
 
           // No permitir que el nuevo valor supere el límite
           const nuevaCantidad =
             value <= limiteCantidad && value >= 0 ? value : limiteCantidad;
 
-          return { ...item, cantidad: nuevaCantidad };
+          const itbis = item.ITBIS;
+
+          return {
+            ...item,
+            Cantidad: nuevaCantidad,
+            Subtotal: calcuteSubTotal(item.PrecioVenta, nuevaCantidad, itbis),
+          };
+        } else {
+          return item;
+        }
+      });
+      return newData;
+    });
+  };
+
+  // Cuando cambie el precio:
+  const handlePriceChange = (value, id) => {
+    setProducto((prevData) => {
+      const newData = prevData.map((item) => {
+        if (item.IdProducto === id) {
+          // Aquí defines tu límite, por ejemplo, 100
+
+          // const limiteCantidad = 300; //item.cantidadDisponible;
+
+          // No permitir que el nuevo valor supere el límite
+          // const nuevaCantidad =
+          //   value <= limiteCantidad && value >= 0 ? value : limiteCantidad;
+
+          const itbis = item.ITBIS;
+
+          return {
+            ...item,
+            PrecioVenta: value,
+            Subtotal: calcuteSubTotal(value, item.Cantidad, itbis),
+          };
         } else {
           return item;
         }
@@ -104,12 +226,27 @@ export default function ModalProducto({
 
     // Verificar si el elemento ya está en el arreglo
     const existeEnArreglo = producto.some(
-      (elemento) => elemento.idProducto === data.idProducto
+      (elemento) => elemento.IdProducto === data.IdProducto
     );
 
     if (!existeEnArreglo) {
-      // Agregar el elemento solo si no existe en el arreglo
-      setProducto([...producto, data]);
+      //Objeto data:
+      const dataProducto = {
+        ...item,
+
+        // <<---- Dependen de la unidad de medida seleccionada:
+        UnidadNombre: "",
+        IdUnidadDeMedida: 0,
+        PrecioCosto: 0,
+        PrecioVenta: 0,
+        ITBIS: 0,
+        Subtotal: 0,
+
+        Cantidad: 1,
+      };
+
+      // Agregar el elemento solo si no existe en el arreglo:
+      setProducto([...producto, dataProducto]);
     } else {
       messageApi.open({
         type: "warning",
@@ -121,17 +258,17 @@ export default function ModalProducto({
   const Remover = (item) => {
     // Filtrar todos los elementos excepto el que coincide con el idProducto
     const updatedProductos = producto.filter(
-      (data) => data.idProducto !== item
+      (data) => data.IdProducto !== item
     );
 
     // Establecer el nuevo array sin el elemento eliminado
     setProducto(updatedProductos);
   };
 
-  const listaDeIds = producto.map((item) => item.idProducto);
+  const listaDeIds = producto.map((item) => item.IdProducto);
 
   const Guardar = () => {
-    const tienePropiedad = producto.every((item) => "cantidad" in item);
+    const tienePropiedad = producto.every((item) => "Cantidad" in item);
 
     if (tienePropiedad) {
       //  alert('Todos los elementos tienen la propiedad "cantidad".');
@@ -140,9 +277,26 @@ export default function ModalProducto({
     } else {
       messageApi.open({
         type: "warning",
-        content: 'tiene que tener una  "cantidad" mayor a cero ',
+        content: 'tiene que tener una  "Cantidad" mayor a cero ',
       });
     }
+  };
+
+  const unitControl = (item) => {
+    const existUnit = item?.ProductoDetallesUnidades.some(
+      (PUD) => PUD.IdUnidadDeMedida === 1
+    );
+
+    let detailUnit = {};
+    if (existUnit) {
+      detailUnit = item.ProductoDetallesUnidades?.find(
+        (PUD) => PUD.IdUnidadDeMedida === 1
+      );
+    }
+    return {
+      tieneMedadU: existUnit,
+      detailUnit: detailUnit,
+    };
   };
 
   return (
@@ -188,9 +342,49 @@ export default function ModalProducto({
             locale={{ emptyText: "No hay datos" }}
             dataSource={filteredData}
             renderItem={(item) => (
-              <>
+              <Popover
+                title="Más Información del producto"
+                content={
+                  //
+                  <div style={{ width: "300px" }}>
+                    <div>
+                      <strong>Nombre:</strong>
+                      <span>{item.Nombre}</span>
+                    </div>
+                    <div style={{ display: "flex", flexDirection: "column" }}>
+                      <div
+                        style={{
+                          display: "flex",
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                        }}
+                      >
+                        <strong>Unidad</strong>
+                        <strong>Precio costo</strong>
+                        <strong>Precio venta</strong>
+                        <strong>Itbis</strong>
+                      </div>
+                      {item.ProductoDetallesUnidades.map((item, index) => (
+                        <div
+                          style={{
+                            display: "flex",
+                            flexDirection: "row",
+                            justifyContent: "space-between",
+                          }}
+                          key={index}
+                        >
+                          <span>{item.UnidadNombre}</span>
+                          <span>{item.PrecioCosto}</span>
+                          <span>{item.PrecioVenta}</span>
+                          <span>{item.ITBIS}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                }
+              >
                 <BtnSelect
-                  isSelected={listaDeIds.includes(item.idProducto)}
+                  isSelected={listaDeIds.includes(item.IdProducto)}
                   style={{
                     width: "100%",
                     justifyContent: "space-between",
@@ -213,7 +407,7 @@ export default function ModalProducto({
                     >
                       Producto
                     </p>
-                    <h4> {item.nombre}</h4>
+                    <h4>{item.Codigo + ": " + item.Nombre}</h4>
                   </div>
                   <div
                     style={{
@@ -229,9 +423,10 @@ export default function ModalProducto({
                         color: "gray",
                       }}
                     >
-                      Cantidad disponible
+                      Modelo
                     </p>
-                    <h4>{item.cantidadDisponible}</h4>
+                    {item.Modelo}
+                    {/*<h4>{item.cantidadDisponible}</h4>*/}
                   </div>
                   <div
                     style={{
@@ -247,18 +442,49 @@ export default function ModalProducto({
                         color: "gray",
                       }}
                     >
-                      Precio de venta
+                      Tiene vencimiento
                     </p>
-                    <h4>${item.precioVenta}</h4>
+                    <h4>
+                      <span>
+                        {item.TieneVencimiento ? (
+                          <FaCheck />
+                        ) : (
+                          <IoCloseOutline />
+                        )}
+                      </span>
+                    </h4>
+                  </div>
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+
+                      width: "25%",
+                    }}
+                  >
+                    <p
+                      style={{
+                        fontSize: 12,
+                        color: "gray",
+                      }}
+                    >
+                      Costo unitario
+                    </p>
+                    <h4>
+                      {unitControl(item).tieneMedadU
+                        ? unitControl(item).detailUnit.PrecioVenta
+                        : "---"}
+                    </h4>
                   </div>
                 </BtnSelect>
-              </>
+              </Popover>
             )}
           />
         </ContainerDetail>
         <ContainerDetail style={{ margin: 0, padding: 0, marginTop: 50 }}>
           <h3> Producto agregados</h3>
           <Table
+            size="middle"
             style={{ height: 400 }}
             dataSource={producto}
             columns={columns}
