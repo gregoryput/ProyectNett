@@ -68,15 +68,15 @@ namespace ProyectNettApi.Controllers
         }
 
         //[Authorize]
-        [Route("obtenerUnidad")]
+        [Route("obtenerParametros")]
         [HttpGet]
-        public IActionResult getUnidad()
+        public IActionResult getParametros()
         {
             try
             {
-                var lista = _proyectoRepositorio.GetUnidades();
+                var lista = _proyectoRepositorio.GetParametros();
                 _respuesta.Result = lista;
-                _respuesta.DisplayMessage = "Listado  obtenido con exito:";
+                _respuesta.DisplayMessage = "Listado obtenido con exito:";
                 return Ok(_respuesta);
             }
             catch (Exception ex)
@@ -151,5 +151,80 @@ namespace ProyectNettApi.Controllers
             }
         }
 
+
+        //[Authorize]
+        [Route("getProductosUnidadesDetalles")]
+        [HttpGet]
+        public IActionResult getProductosUnidadesDetalles()
+        {
+            try
+            {
+                var lista = _proyectoRepositorio.GetProyectosProductos();
+                _respuesta.Result = lista;
+                _respuesta.DisplayMessage = "Listado obtenido con exito:";
+                return Ok(_respuesta);
+            }
+            catch (Exception ex)
+            {
+                _respuesta.IsSuccess = false;
+                _respuesta.DisplayMessage = "Error al solicitar la lista";
+                _respuesta.ErrorMessages = new List<string> { ex.ToString() };
+                return StatusCode(500, _respuesta);
+            }
+        }
+
+
+        //
+        // .A.C.C.I.O.N -- Para insertar Cliente: --------------------------------------------
+        [Authorize]
+        [Route("insertarParametroCosto")]
+        [HttpPost]
+        public IActionResult insertarParametroCosto(ParametroCosto parametro)
+        {
+            string token = HttpContext.Request.Headers["Authorization"];
+            parametro.IdCreadoPor = _infoUser.getUsuarioIdByToken(token);
+            try
+            {
+                _proyectoRepositorio.InsertarParametroCosto(parametro);
+                _respuesta.Result = parametro;
+                _respuesta.DisplayMessage = "Paramtro insertado correctamente:";
+                return Ok(_respuesta);
+            }
+
+            catch (Exception ex)
+            {
+                _respuesta.IsSuccess = false;
+                _respuesta.DisplayMessage = "Error al insertar el parametro";
+                _respuesta.ErrorMessages = new List<string> { ex.ToString() };
+                return StatusCode(500, _respuesta);
+            }
+        }
+
+
+        //
+        // .A.C.C.I.O.N -- Para Insertar Proyectos: --------------------------------------------
+        [Authorize]
+        [Route("intertarProyectos")]
+        [HttpPost]
+        public IActionResult insertarProyectos(Proyecto proyecto)
+        {
+            string token = HttpContext.Request.Headers["Authorization"];
+            proyecto.IdCreadoPor = _infoUser.getUsuarioIdByToken(token);
+            try
+            {
+                _proyectoRepositorio.InsertarProyecto(proyecto);
+                _respuesta.Result = proyecto;
+                _respuesta.DisplayMessage = "Proyecto insertado correctamente:";
+                return Ok(_respuesta);
+            }
+
+            catch (Exception ex)
+            {
+                _respuesta.IsSuccess = false;
+                _respuesta.DisplayMessage = "Error al insertar el proyecto";
+                _respuesta.ErrorMessages = new List<string> { ex.ToString() };
+                return StatusCode(500, _respuesta);
+            }
+        }
     }
 }

@@ -66,7 +66,6 @@ namespace ProyectNettApi.Models
         public DateTime? FechaModificacion { get; set; }
         public int? IdEstadoRegistro { get; set; }
 
-
         // Relaciones -------- :
         public PersonaTipoPersona PersonaTiposPersona { get; set; }
     }

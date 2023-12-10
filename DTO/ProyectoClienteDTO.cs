@@ -1,12 +1,13 @@
 ﻿namespace ProyectNettApi.DTO
 {
-    public class ProyectoEmpleadoDTO
+    public class ProyectoClienteDTO
     {
-        public int IdEmpleado { get; set; }
-
-        public string Nombres { get; set; }
-        public string Apellidos { get; set; }
-      
-      
+        public int IdCliente { get; set; }
+        public string NombreEntidad { get; set; }
+        public string IdEntidad { get; set; }
+        public string Codigo { get; set; }
+        public int IdTipoEntidad { get; set; }
+        public string NombreTipoEntidad { get; set; }
+        public string Identificacion { get; set; }
     }
 }
