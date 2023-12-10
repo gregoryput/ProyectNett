@@ -1,6 +1,6 @@
-CREATE DATABASE BD_PROYENETT_MV14
+CREATE DATABASE BD_PROYENETT_MV36
 GO
-USE BD_PROYENETT_MV14
+USE BD_PROYENETT_MV36
 GO
 
 
@@ -637,8 +637,8 @@ GO
 -- Tabla para la relación entre Productos y UnidadesDeMedida
 CREATE TABLE ProductosUnidadesDeMedida (
     IdProductoUnidadDeMedida INT IDENTITY CONSTRAINT PK_IdProductoUM PRIMARY KEY,
-    IdProducto INT CONSTRAINT FK_IdUnidadDeMedida_UNDM FOREIGN KEY REFERENCES UnidadesDeMedida(IdUnidadDeMedida),
-    IdUnidadDeMedida INT CONSTRAINT FK_IdProducto_UNDM FOREIGN KEY REFERENCES Productos(IdProducto),
+    IdUnidadDeMedida INT CONSTRAINT FK_IdUnidadDeMedida_UNDM FOREIGN KEY REFERENCES UnidadesDeMedida(IdUnidadDeMedida),
+    IdProducto INT CONSTRAINT FK_IdProducto_UNDM FOREIGN KEY REFERENCES Productos(IdProducto),
 
     IdCreadoPor int constraint Fk_PUDM1 foreign Key references Usuarios(IdUsuario),
     FechaCreacion Datetime,
@@ -743,17 +743,17 @@ CREATE TABLE Lotes
 GO
 
 
--- CREACION DE LA TABLA EstadosFacturas:
-CREATE TABLE EstadosFacturas
+-- CREACION DE LA TABLA EstadosDocumentos:
+CREATE TABLE EstadosDocumentos
 (
-    IdEstadoFactura INT IDENTITY CONSTRAINT PK_IdEstadoFactura PRIMARY KEY,
-    NombreEstadoFactura varchar(30),
+    IdEstadoDocumento INT IDENTITY CONSTRAINT PK_IdEstadoDocumento PRIMARY KEY,
+    NombreEstadoDocumeto varchar(30),
     --
-    IdCreadoPor int constraint Fk_EstadosFacturasdCreadoPor foreign Key references Usuarios(IdUsuario),
+    IdCreadoPor int constraint Fk_EstadosDocumentosdCreadoPor foreign Key references Usuarios(IdUsuario),
     FechaCreacion Datetime,
-    IdModificadoPor int constraint Fk_EstadosFacturasdModificadoPor foreign Key references Usuarios(IdUsuario),
+    IdModificadoPor int constraint Fk_EstadosDocumentosdModificadoPor foreign Key references Usuarios(IdUsuario),
     FechaModificacion Datetime,
-    IdEstadoRegistro int constraint Fk_EFIdEstadoR foreign Key references EstadosRegistros(IdEstadoRegistro),
+    IdEstadoRegistro int constraint Fk_EDIdEstadoR foreign Key references EstadosRegistros(IdEstadoRegistro),
 );
 GO
 
@@ -770,7 +770,7 @@ CREATE TABLE FacturasCompras
     MontoRestante DECIMAL,
     NCF VARCHAR(50),
     --
-    IdEstadoFactura int constraint Fk_IdEstadoFactura foreign Key references EstadosFacturas(IdEstadoFactura),
+    IdEstadoFactura int constraint Fk_IdEstadoFactura foreign Key references EstadosDocumentos(IdEstadoDocumento),
     --
     IdProveedor INT,
     CONSTRAINT Fk_IdProveedor FOREIGN KEY (IdProveedor) REFERENCES Proveedores(IdProveedor),
@@ -889,6 +889,7 @@ CREATE TABLE EstadosProyectos
 GO
 
 
+GO
 -- CREACION DE LA TABLA Proyectos:
 CREATE TABLE Proyectos
 (
@@ -922,11 +923,12 @@ CREATE TABLE ProyectosDetallesProductos
 (
     IdProyectoDetalleProducto INT IDENTITY CONSTRAINT PK_IdPDP PRIMARY KEY,
     Cantidad DECIMAL,
-    Precio DECIMAL,
+    PrecioCompra DECIMAL,
+    PrecioVenta DECIMAL,
     ITBIS DECIMAL,
-    Descripcion VARCHAR(255),
-    Subtotal decimal,
-    Total decimal,
+    Codigo VARCHAR(10),
+    Decuento DECIMAL,
+    Subtotal DECIMAL,
     ---
     IdProducto INT,
     IdUnidadDeMedida INT,
@@ -944,11 +946,12 @@ CREATE TABLE ProyectosDetallesProductos
 GO
 
 
+GO
 -- CREACION DE LA TABLA ProyectosEntidadesEmpresas (Permite saber cual es/era el representante actual al momento de hacer el proyecto):
 Create table ProyectosEntidadesEmpresas(
     IdProyectoEntidadEmpresa INT IDENTITY CONSTRAINT PK_IdProyectoEntidadEmpresa PRIMARY KEY,
     IdProyecto INT CONSTRAINT FK_PEE_IdProyecto foreign Key references Proyectos(IdProyecto),
-    IdEntidadEmpresa INT CONSTRAINT FK_PEE_IdEntidadEmpresa foreign Key references EntidadesEmpresas(IdEntidadEmpresa),
+    IdEER INT CONSTRAINT FK_PEE_IdEER foreign Key references EntidadesEmpresasRepresentantes(IdEER),
 );
 GO
 
@@ -969,8 +972,8 @@ GO
 -- (Permite saber cual es/era el representante actual de la persona fisica al momento de hacer el proyecto):
 Create table ProyectosEntidadesPF(
     IdProyectoEntidadPersonaFisica INT IDENTITY CONSTRAINT PK_IdProyectoEntidadPF PRIMARY KEY,
-    IdProyecto INT CONSTRAINT FK_PEPF_IdEntidadEmpresa foreign Key references EntidadesEmpresas(IdEntidadEmpresa),
-    IdEntidadEmpresa INT CONSTRAINT FK_PEPF_IdProyecto foreign Key references Proyectos(IdProyecto),
+    IdProyecto INT CONSTRAINT FK_PEPF_IdEntidadEmpresa foreign Key references Proyectos(IdProyecto),
+    IdEPFR INT CONSTRAINT FK_PEPF_IdProyecto foreign Key references EntidadesPersonasFisicasRepresentantes(IdEPFR),
 );
 GO
 
@@ -1002,11 +1005,11 @@ CREATE TABLE Responsabilidades
 GO
 
 
+GO
 -- CREACION DE LA TABLA ProyectosEmpleados:
 CREATE TABLE ProyectosEmpleados
 (
     IdPersonaProyecto INT IDENTITY CONSTRAINT PK_IdPersonaProyecto PRIMARY KEY,
-    ResponsabilidadNombre VARCHAR(40),
     --
     IdProyecto int constraint Fk_PersonalIdProyecto foreign Key references Proyectos(IdProyecto),
     IdResponsabilidad int constraint Fk_PersonalProyecto_IdResponsabilidad foreign Key references Responsabilidades(IdResponsabilidad),
@@ -1043,8 +1046,8 @@ GO
 CREATE TABLE Servicios
 (
     IdServicio INT IDENTITY CONSTRAINT PK_IdServicio PRIMARY KEY,
-    NombreServicio varchar(30),
-    Descripcion varchar(70),
+    NombreServicio varchar(100),
+    Descripcion varchar(MAX),
     --
     IdCreadoPor int constraint Fk_ServiciosIdCreadoPor foreign Key references Usuarios(IdUsuario),
     FechaCreacion Datetime,
@@ -1171,40 +1174,66 @@ CREATE TABLE TipoDocumento
 GO
 
 
--- CREACION DE LA TABLA DOCUMENTO:
-CREATE TABLE Documentos
+-- CREACION DE LA TABLA FacturaVentaProyecto:
+CREATE TABLE FacturasVentasProyectos
 (
-    IdDocumento INT IDENTITY CONSTRAINT PK_IdDocumento PRIMARY KEY,
+    IdFactura INT IDENTITY CONSTRAINT PK_IdDocumento PRIMARY KEY,
     FechaDeEmision DATE,
     MontoInicial DECIMAL(18, 2),
     FechaDeVencimiento DATE,
     DiasMora INT,
     MontoMora DECIMAL(18, 2),
     MontoTotal DECIMAL(18, 2),
-    NCF varchar(20),
-    IdTipoDocumento INT,
+    Secuencia varchar(20),
     IdCliente INT,
     IdEstado INT,
     IdProyecto INT,
     --
-    CONSTRAINT FK_DocumentoIdTipoDocumento FOREIGN KEY (IdTipoDocumento) REFERENCES TipoDocumento(IdTipoDocumento),
-    CONSTRAINT FK_DocumentoIdCliente FOREIGN KEY (IdCliente) REFERENCES Clientes(IdCliente),
+    CONSTRAINT FK_FacturasVentaProyectos_IdCliente FOREIGN KEY (IdCliente) REFERENCES Clientes(IdCliente),
     --
-    IdEstadoFactura int constraint Fk_DocumentoIdEstadoFactura foreign Key references EstadosFacturas(IdEstadoFactura),
+    IdEstadoFactura int constraint Fk_IdEstadoDocumento foreign Key references EstadosDocumentos(IdEstadoDocumento),
 
     CONSTRAINT FK_DocumentoIdProyecto FOREIGN KEY (IdProyecto) REFERENCES Proyectos(IdProyecto),
     --
-    IdCreadoPor int constraint Fk_DocumentoIdCreadoPor foreign Key references Usuarios(IdUsuario),
+    IdCreadoPor int constraint Fk_FacturasVentaProyectos_IdCreadoPor foreign Key references Usuarios(IdUsuario),
     FechaCreacion Datetime,
-    IdModificadoPor int constraint Fk_DocumentoIdModificadoPor foreign Key references Usuarios(IdUsuario),
+    IdModificadoPor int constraint Fk_FacturasVentaProyectos_IdModificadoPor foreign Key references Usuarios(IdUsuario),
     FechaModificacion Datetime,
-    IdEstadoRegistro int constraint Fk_DocumentoIdEstadoR foreign Key references EstadosRegistros(IdEstadoRegistro),
+    IdEstadoRegistro int constraint Fk_FacturasVentaProyectos_IdEstadoR foreign Key references EstadosRegistros(IdEstadoRegistro),
 );
 GO
 
 
+GO
+CREATE TABLE CotizacionesProyectos
+(
+    IdCotizacion INT IDENTITY CONSTRAINT PK_IdCotizacion PRIMARY KEY,
+    FechaDeEmision DATE,
+    MontoInicial DECIMAL(18, 2),
+    MontoTotal DECIMAL(18, 2),
+    Secuencia varchar(20),
+    IdCliente INT,
+    IdEstado INT,
+    IdProyecto INT,
+    --
+    CONSTRAINT FK_CotizacionIdCliente FOREIGN KEY (IdCliente) REFERENCES Clientes(IdCliente),
+    --
+    IdEstadoCotizacion int constraint Fk_CotizacionIdEstadoFactura foreign Key references EstadosDocumentos(IdEstadoDocumento),
+
+    CONSTRAINT FK_CotizacionIdProyecto FOREIGN KEY (IdProyecto) REFERENCES Proyectos(IdProyecto),
+    --
+    IdCreadoPor int constraint Fk_CotizacionIdCreadoPor foreign Key references Usuarios(IdUsuario),
+    FechaCreacion Datetime,
+    IdModificadoPor int constraint Fk_CotizacionIdModificadoPor foreign Key references Usuarios(IdUsuario),
+    FechaModificacion Datetime,
+    IdEstadoRegistro int constraint Fk_CotizacionIdEstadoR foreign Key references EstadosRegistros(IdEstadoRegistro),
+);
+GO
+
+
+GO
 -- CREACION DE LA TABLA TIPO DE PAGOS:
-CREATE TABLE TipoPago
+CREATE TABLE TiposPagos
 (
     IdTipoPago INT IDENTITY CONSTRAINT PK_IdTipo PRIMARY KEY,
     TipoPago varchar(30),
@@ -1218,6 +1247,7 @@ CREATE TABLE TipoPago
 GO
 
 
+GO
 -- CREACION DE LA TABLA PAGOS:
 CREATE TABLE Pagos
 (
@@ -1227,7 +1257,7 @@ CREATE TABLE Pagos
     MontoRestante DECIMAL(18, 2),
     FechaPago DATE,
     --
-    IdTipoPago int constraint Fk_IdTipoPago foreign Key references TipoPago(IdTipoPago),
+    IdTipoPago int constraint Fk_IdTipoPago foreign Key references TiposPagos(IdTipoPago),
     --
     IdCreadoPor int constraint Fk_PagosDocIdCreadoPor foreign Key references Usuarios(IdUsuario),
     FechaCreacion Datetime,
@@ -1238,14 +1268,14 @@ CREATE TABLE Pagos
 GO
 
 
--- CREACION DE LA TABLA PagoDocumentos:
-CREATE TABLE PagoDocumentos
+-- CREACION DE LA TABLA PagosFacturasVentasProyectos:
+CREATE TABLE PagosFacturasVentasProyectos
 (
     IdPagDocumento INT IDENTITY CONSTRAINT PK_IdPagoDocumento PRIMARY KEY,
     MontoPagado DECIMAL(18, 2),
     --
     IdPago int constraint Fk_PagosIdPago foreign Key references Pagos(IdPago),
-    IdDocumento int constraint Fk_PagosIdFactura foreign Key references Documentos(IdDocumento),
+    IdFactura int constraint Fk_PagosIdFactura foreign Key references FacturasVentasProyectos(IdFactura),
     -- 
     IdCreadoPor int constraint Fk_PDocIdCreadoPor foreign Key references Usuarios(IdUsuario),
     FechaCreacion Datetime,

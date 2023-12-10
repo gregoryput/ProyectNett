@@ -1,4 +1,4 @@
-USE BD_PROYENETT_MV14
+USE BD_PROYENETT_MV36
 GO
 
 
@@ -841,8 +841,202 @@ VALUES
   /*12*/('Cable Par trenzado CA', 'CPT-A1', 'Cable de red par trenzado grosor A', 'CPT-CA', 1, 1, 1, GETDATE(), 1);
 -- Select * FROM Productos
 
+
 GO
 INSERT INTO ProductosUnidadesDeMedida(IdProducto, IdUnidadDeMedida, IdCreadoPor, FechaCreacion, IdEstadoRegistro)
 VALUES 
-(1, 1, 1, GETDATE(), 1),
-(2, 1, 1, GETDATE(), 1);
+-- 1 Router:
+/*1*/ (1, 1, 1, GETDATE(), 1),
+/*2*/ (1, 7, 1, GETDATE(), 1),
+
+-- 2 Switch:
+/*3*/(2, 1, 1, GETDATE(), 1),
+/*4*/(2, 7, 1, GETDATE(), 1),
+
+-- 3 Access
+/*5*/(3, 1, 1, GETDATE(), 1),
+/*6*/(3, 7, 1, GETDATE(), 1),
+
+-- 4 Cable:
+/*7*/(4, 3, 1, GETDATE(), 1),
+/*8*/(4, 4, 1, GETDATE(), 1),
+/*9*/(4, 5, 1, GETDATE(), 1),
+/*10*/(4, 6, 1, GETDATE(), 1),
+
+-- Para el producto con IdProducto = 5 (Repetidor WiFi)
+/*11*/(5, 1, 1, GETDATE(), 1), -- Unidades
+
+-- Para el producto con IdProducto = 6 (Firewall Empresarial)
+/*12*/(6, 2, 1, GETDATE(), 1), -- Piezas
+/*13*/(6, 7, 1, GETDATE(), 1), -- Cajas
+
+-- Para el producto con IdProducto = 7 (Cámara IP HD)
+/*14*/(7, 1, 1, GETDATE(), 1), -- Unidades
+/*15*/(7, 2, 1, GETDATE(), 1), -- Piezas
+
+-- Para el producto con IdProducto = 8 (Antena Direccional 2.4GHz)
+/*16*/(8, 3, 1, GETDATE(), 1), -- Metros
+/*17*/(8, 4, 1, GETDATE(), 1), -- Pie
+/*18*/(8, 5, 1, GETDATE(), 1), -- Pulgada
+
+-- Para el producto con IdProducto = 9 (Switch PoE 8 puertos)
+/*19*/(9, 7, 1, GETDATE(), 1), -- Cajas
+
+-- Para el producto con IdProducto = 10 (Enrutador 4G LTE)
+/*20*/(10, 1, 1, GETDATE(), 1), -- Unidades
+
+-- Para el producto con IdProducto = 11 (Puertos CA):
+/*21*/(11, 2, 1, GETDATE(), 1), -- Piezas
+
+-- Para el producto con IdProducto = 12 (Cable Par trenzado CA):
+/*22*/(12, 3, 1, GETDATE(), 1), -- Metros
+/*23*/(12, 4, 1, GETDATE(), 1), -- Pie
+/*24*/(12, 5, 1, GETDATE(), 1); -- Pulgada
+
+
+GO
+-- Detalles para el producto con IdProducto = 1 (Router WiFi AC2000)
+INSERT INTO DetallesProductosUnidadesDeMedida(IdProducto, IdUnidadDeMedida, PrecioCosto, PrecioVenta, ITBIS, IdProductoUnidadDeMedida)
+VALUES 
+(1, 1, 80.00, 120.00, 18.00, 1), -- Unidades
+(1, 6, 150.00, 200.00, 28.50, 2); -- Rollos
+
+-- Detalles para el producto con IdProducto = 2 (Switch Gigabit 24 puertos)
+INSERT INTO DetallesProductosUnidadesDeMedida(IdProducto, IdUnidadDeMedida, PrecioCosto, PrecioVenta, ITBIS, IdProductoUnidadDeMedida)
+VALUES 
+(2, 1, 200.00, 300.00, 40.00, 3), -- Piezas
+(2, 7, 400.00, 600.00, 80.00, 4); -- Cajas
+
+-- Detalles para el producto con IdProducto = 3 (Access Point Dual Band)
+INSERT INTO DetallesProductosUnidadesDeMedida(IdProducto, IdUnidadDeMedida, PrecioCosto, PrecioVenta, ITBIS, IdProductoUnidadDeMedida)
+VALUES 
+(3, 1, 100.00, 150.00, 22.50, 5), -- Unidades
+(3, 6, 300.00, 400.00, 60.00, 6); -- Rollos
+
+-- Detalles para el producto con IdProducto = 4 (Cable Ethernet Cat 6)
+INSERT INTO DetallesProductosUnidadesDeMedida(IdProducto, IdUnidadDeMedida, PrecioCosto, PrecioVenta, ITBIS, IdProductoUnidadDeMedida)
+VALUES 
+(4, 3, 10.00, 15.00, 2.25, 7), -- Metros
+(4, 4, 20.00, 30.00, 4.50, 8), -- Pie
+(4, 5, 5.00, 8.00, 1.20, 9), -- Pulgada
+(4, 6, 50.00, 70.00, 12.50, 10); -- Rollos
+
+-- Detalles para el producto con IdProducto = 5 (Enrutador 4G LTE)
+INSERT INTO DetallesProductosUnidadesDeMedida(IdProducto, IdUnidadDeMedida, PrecioCosto, PrecioVenta, ITBIS, IdProductoUnidadDeMedida)
+VALUES 
+(5, 1, 90.00, 130.00, 19.50, 11); -- Unidades
+
+-- Detalles para el producto con IdProducto = 6 (Switch PoE 8 puertos)
+INSERT INTO DetallesProductosUnidadesDeMedida(IdProducto, IdUnidadDeMedida, PrecioCosto, PrecioVenta, ITBIS, IdProductoUnidadDeMedida)
+VALUES 
+(6, 2, 130.00, 220.00, 35.20, 12), -- Piezas
+(6, 7, 300.00, 480.00, 96.00, 13); -- Cajas
+
+-- Detalles para el producto con IdProducto = 7 (Antena Direccional 2.4GHz)
+INSERT INTO DetallesProductosUnidadesDeMedida(IdProducto, IdUnidadDeMedida, PrecioCosto, PrecioVenta, ITBIS, IdProductoUnidadDeMedida)
+VALUES 
+(7, 1, 60.00, 90.00, 13.50, 14), -- Unidades
+(7, 2, 120.00, 180.00, 27.00, 15); -- Piezas
+
+-- Detalles para el producto con IdProducto = 8 (Cámara IP HD)
+INSERT INTO DetallesProductosUnidadesDeMedida(IdProducto, IdUnidadDeMedida, PrecioCosto, PrecioVenta, ITBIS, IdProductoUnidadDeMedida)
+VALUES 
+(8, 3, 150.00, 220.00, 33.00, 16), -- Metros
+(8, 4, 200.00, 300.00, 45.00, 17), -- Pie
+(8, 5, 90.00, 140.00, 25.20, 18); -- Pulgada
+
+-- Detalles para el producto con IdProducto = 9 (Repetidor WiFi)
+INSERT INTO DetallesProductosUnidadesDeMedida(IdProducto, IdUnidadDeMedida, PrecioCosto, PrecioVenta, ITBIS, IdProductoUnidadDeMedida)
+VALUES 
+(9, 7, 80.00, 120.00, 18.00, 19); -- Cajas
+
+-- Detalles para el producto con IdProducto = 10 (Firewall Empresarial)
+INSERT INTO DetallesProductosUnidadesDeMedida(IdProducto, IdUnidadDeMedida, PrecioCosto, PrecioVenta, ITBIS, IdProductoUnidadDeMedida)
+VALUES 
+(10, 1, 300.00, 450.00, 81.00, 20); -- Unidades
+
+-- Detalles para el producto con IdProducto = 11 (Puertos CA)
+INSERT INTO DetallesProductosUnidadesDeMedida(IdProducto, IdUnidadDeMedida, PrecioCosto, PrecioVenta, ITBIS, IdProductoUnidadDeMedida)
+VALUES 
+(11, 2, 40.00, 60.00, 9.60, 21); -- Piezas
+
+-- Detalles para el producto con IdProducto = 12 (Cable Par trenzado CA)
+INSERT INTO DetallesProductosUnidadesDeMedida(IdProducto, IdUnidadDeMedida, PrecioCosto, PrecioVenta, ITBIS, IdProductoUnidadDeMedida)
+VALUES 
+(12, 3, 15.00, 25.00, 3.75, 22), -- Metros
+(12, 4, 25.00, 40.00, 6.00, 23), -- Pie
+(12, 5, 8.00, 13.00, 2.08, 24); -- Pulgada
+
+
+
+GO
+--
+--
+--
+--- ---- ---- ---- -----
+insert into Responsabilidades (ResponsabilidadNombre, IdCreadoPor, FechaCreacion, IdEstadoRegistro) 
+values 
+('Supervisor', 1, getdate(),1),
+('Colaborador', 1, getdate(), 1),
+('Ayudante', 1, getdate(), 1)
+
+
+GO
+insert into Prioridades (NombrePrioridad, IdCreadoPor, FechaCreacion, IdEstadoRegistro)  values 
+('Alta', 1, getdate(),1),
+('Media', 1, getdate(), 1),
+('baja', 1, getdate(), 1)
+
+GO
+insert into EstadosProyectos (EstadoNombre, IdCreadoPor, FechaCreacion, IdEstadoRegistro) values 
+('Cotizado', 1, getdate(),1),
+('Facturado', 1, getdate(),1),
+('Completado', 1, getdate(),1),
+('Cancelado', 1, getdate(),1)
+
+GO
+-- Insertar servicios con los nombres proporcionados
+INSERT INTO Servicios (NombreServicio, Descripcion, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro)
+VALUES ('Asesoría de Personal en el Departamento TIC', 'Descripción de Asesoría de Personal en el Departamento TIC', 1, GETDATE(), 1, GETDATE(), 1);
+
+INSERT INTO Servicios (NombreServicio, Descripcion, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro)
+VALUES ('Soporte Técnico Remoto y en Sitio', 'Descripción de Soporte Técnico Remoto y en Sitio', 2, GETDATE(), 2, GETDATE(), 1);
+
+INSERT INTO Servicios (NombreServicio, Descripcion, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro)
+VALUES ('Optimización y Seguridad de Redes', 'Descripción de Optimización y Seguridad de Redes', 1, GETDATE(), 2, GETDATE(), 2);
+
+INSERT INTO Servicios (NombreServicio, Descripcion, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro)
+VALUES ('Documentación y Gestión de Infraestructura', 'Descripción de Documentación y Gestión de Infraestructura', 3, GETDATE(), 3, GETDATE(), 1);
+
+INSERT INTO Servicios (NombreServicio, Descripcion, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro)
+VALUES ('Virtualización, Cluster, NAS', 'Descripción de Virtualización, Cluster, NAS', 2, GETDATE(), 1, GETDATE(), 2);
+
+INSERT INTO Servicios (NombreServicio, Descripcion, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro)
+VALUES ('Garantía de Transferencia de conocimiento', 'Descripción de Garantía de Transferencia de conocimiento', 3, GETDATE(), 2, GETDATE(), 1);
+
+
+GO
+INSERT INTO ParametrosCostos (NombreParametro, IdCreadoPor, FechaCreacion, IdEstadoRegistro)
+VALUES ('Por metro de cable instalado', 1, GETDATE(), 1);
+GO
+INSERT INTO ParametrosCostos (NombreParametro, IdCreadoPor, FechaCreacion, IdEstadoRegistro)
+VALUES ('Por metro de concreto roto', 1, GETDATE(), 1);
+GO
+INSERT INTO ParametrosCostos (NombreParametro, IdCreadoPor, FechaCreacion, IdEstadoRegistro)
+VALUES ('Por router configurado', 1, GETDATE(), 1);
+GO
+INSERT INTO ParametrosCostos (NombreParametro, IdCreadoPor, FechaCreacion, IdEstadoRegistro)
+VALUES ('Por swich configurado', 1, GETDATE(), 1);
+
+
+GO
+-- ESTADOS DOCUMENTOS:
+INSERT INTO EstadosDocumentos (
+    NombreEstadoDocumeto,
+    IdCreadoPor,
+    FechaCreacion,
+    IdEstadoRegistro
+)
+VALUES 
+('Aprobado',  1, GETDATE(), 1),
+('Pagado',  1, GETDATE(), 1);
