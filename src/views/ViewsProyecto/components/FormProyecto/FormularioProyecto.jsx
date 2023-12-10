@@ -48,7 +48,6 @@ export default function FormularioProyecto() {
   const [selectStateProducto, setSelectStateProducto] = useState([]);
   const [empleado, setEmpleado] = useState([]);
   const [tarea, setTarea] = useState([]);
-  console.log("tareatareatarea", tarea);
 
   // totales por productos, servicios, gasto adicionales
   const [totalServicios, setTotalServicios] = useState(0);
@@ -143,7 +142,7 @@ export default function FormularioProyecto() {
 
   //guardar formulario
   const onFinish = (values) => {
-    const dataSelectedClient = clientesData.data.Result.find(
+    const dataSelectedClient = clientesData?.Result.find(
       (cliente) => cliente.IdCliente == selectStateCliente
     );
     const ClienteEsPersonaFisica =
@@ -152,9 +151,9 @@ export default function FormularioProyecto() {
     const dataSubmit = {
       IdProyecto: 0,
       Nombre: values.Nombre,
-      Descripcion: values.Direccion,
-      FechaDeInicio: values.FechaDeInicio,
-      FechaDeFinalizacion: values.FechaDeFinalizacion,
+      Descripcion: values.Descripcion,
+      FechaDeInicio: dayjs(values.FechaDeInicio).format("DD-MM-YYYY"),
+      FechaDeFinalizacion: fechafin,
       TiempoDuracionEstimado: "10 dias",
       //"FechaRealDeFinalizacion": "2023-12-10T05:51:27.368Z",
       //"TiempoDuracionReal": "string",
@@ -178,8 +177,8 @@ export default function FormularioProyecto() {
         Descuento: 0, // <<-- Agregar campo de descuento en la tabla de detalles (Campo modificable)
         Subtotal: detail.Subtotal,
         IdProducto: detail.IdProducto,
-        IdUnidadDeMedida: 0,
-        IdProyecto: detail.IdUnidadDeMedida,
+        IdUnidadDeMedida: detail.IdUnidadDeMedida,
+        IdProyecto:0 ,
         //IdCreadoPor: 0,
         //FechaCreacion: "2023-12-10T05:51:27.368Z",
         //IdModificadoPor: 0,
@@ -216,7 +215,7 @@ export default function FormularioProyecto() {
         //IdEstadoRegistro: 0,
       })),
 
-      ProyectoServicios: servicios.map((servicio) => ({
+      ProyectoServicios: serviciosfiltrado.map((servicio) => ({
         IdProyectoServicio: 0,
         Descripcion: "-", // << -- Por el momento siempre iraasi
         IdProyecto: 0,
@@ -267,14 +266,15 @@ export default function FormularioProyecto() {
         // "IdModificadoPor": 0,
         // "FechaModificacion": "2023-12-10T05:51:27.368Z",
         // "IdEstadoRegistro": 0
-      }
+      },
     };
+    console.log(dataSubmit);
   };
-  const fecha = form.getFieldsValue(["FechaInicio"]);
+  const fecha = form.getFieldsValue(["FechaDeInicio"]);
 
   useEffect(() => {
     if (fecha != undefined) {
-      setFechaInicio(dayjs(fecha?.FechaInicio).format("DD-MM-YYYY"));
+      setFechaInicio(dayjs(fecha?.FechaDeInicio).format("DD-MM-YYYY"));
     }
     if (fechafin != undefined) {
       setFechaFinal(dayjs(fechafin).format("DD-MM-YYYY"));
@@ -395,19 +395,7 @@ export default function FormularioProyecto() {
                 <DatePicker onChange={handleDateChange} format={"DD-MM-YYYY"} />
               </Form.Item>
 
-              <Form.Item
-                label={<strong>Fecha de finalizacion:</strong>}
-                style={{ width: 300, marginTop: 30 }}
-                name={"FechaDeFinalizacion"}
-                rules={[
-                  {
-                    required: true,
-                    message: "Debe ingresar fecha ",
-                  },
-                ]}
-              >
-                <DatePicker onChange={handleDateChange} format={"DD-MM-YYYY"} />
-              </Form.Item>
+              
             </div>
 
             <Form.Item

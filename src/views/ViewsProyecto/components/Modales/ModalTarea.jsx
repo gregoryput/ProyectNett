@@ -140,7 +140,7 @@ export default function ModalTarea({
     const Prioridad = prioridad.filter(
       (f) => f.IdPrioridad == data.IdPrioridad
     );
-
+console.log(data)
     const Parametro = Parametros.filter(
       (f) => f.IdParametroCosto == data.IdParametroCosto
     );
