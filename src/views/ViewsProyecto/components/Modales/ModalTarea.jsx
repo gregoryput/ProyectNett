@@ -134,13 +134,13 @@ export default function ModalTarea({
 
   const onFinish = (data) => {
     const idUnico = uuidv4();
-    const fechaInicio = dayjs(data.Fechas[0].$d).format("DD-MM-YYYY");
-    const fechaFinal = dayjs(data.Fechas[1].$d).format("DD-MM-YYYY");
+    const fechaInicio = data.Fechas[0].$d; //dayjs(data.Fechas[0].$d).format("DD-MM-YYYY");
+    const fechaFinal = data.Fechas[1].$d; //dayjs(data.Fechas[1].$d).format("DD-MM-YYYY");
 
     const Prioridad = prioridad.filter(
       (f) => f.IdPrioridad == data.IdPrioridad
     );
-console.log(data)
+    console.log(data);
     const Parametro = Parametros.filter(
       (f) => f.IdParametroCosto == data.IdParametroCosto
     );
@@ -619,7 +619,6 @@ console.log(data)
           </Form>
         </div>
       </Modal>
-      
       <ModalCrearParametro
         open={openCreateParam}
         onClose={onCloseModalCreateParam}
