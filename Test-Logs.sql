@@ -1,4 +1,4 @@
-USE BD_PROYENETT_MV36
+USE BD_PROYENETT_MV47
 GO
 
 
@@ -1040,3 +1040,11 @@ INSERT INTO EstadosDocumentos (
 VALUES 
 ('Aprobado',  1, GETDATE(), 1),
 ('Pagado',  1, GETDATE(), 1);
+
+
+GO
+INSERT INTO EstadosTareas (NombreEstado, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro)
+VALUES
+('Pendiente', 1, GETDATE(), 1, GETDATE(), 1), -- Reemplaza los valores 1 con IDs válidos de Usuarios y EstadosRegistros
+('En progreso', 2, GETDATE(), 2, GETDATE(), 1), -- Reemplaza los valores 2 con IDs válidos de Usuarios y EstadosRegistros
+('Completada', 3, GETDATE(), 1, GETDATE(), 2);

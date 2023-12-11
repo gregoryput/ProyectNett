@@ -1,6 +1,6 @@
-CREATE DATABASE BD_PROYENETT_MV36
+CREATE DATABASE BD_PROYENETT_MV47
 GO
-USE BD_PROYENETT_MV36
+USE BD_PROYENETT_MV47
 GO
 
 
@@ -898,7 +898,7 @@ CREATE TABLE Proyectos
     Descripcion VARCHAR(MAX),
     FechaDeInicio DATE,
     FechaDeFinalizacion DATE,
-    TiempoDuracionEstimado VARCHAR,
+    TiempoDuracionEstimado VARCHAR(70),
     FechaRealDeFinalizacion DATE,
     TiempoDuracionReal VARCHAR,
     PresupuestoAcordado DECIMAL(18, 2),
@@ -932,10 +932,9 @@ CREATE TABLE ProyectosDetallesProductos
     ---
     IdProducto INT,
     IdUnidadDeMedida INT,
-    IdProyecto INT,
+    IdProyecto INT constraint Fk_Proyectos_IdProyecto FOREIGN KEY REFERENCES Proyectos(IdProyecto),
     FOREIGN KEY (IdProducto) REFERENCES Productos(IdProducto),
     FOREIGN KEY (IdUnidadDeMedida) REFERENCES UnidadesDeMedida(IdUnidadDeMedida),
-    FOREIGN KEY (IdProyecto) REFERENCES Proyectos(IdProyecto),
     --
     IdCreadoPor int constraint Fk_DetalleDocumentoIdCreadoPor foreign Key references Usuarios(IdUsuario),
     FechaCreacion Datetime,

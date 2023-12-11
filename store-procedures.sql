@@ -1,4 +1,4 @@
-USE BD_PROYENETT_MV36
+USE BD_PROYENETT_MV47
 
 GO
 ----------- /*1--*/ Procedimiento almcenado para obtener una lista general de clientes (empresas y personas fisicas):
@@ -53,7 +53,6 @@ GO
 	END
 	
 -- EXEC dbo.GetListaCenerallientes
-
 
 
 GO
@@ -166,6 +165,7 @@ BEGIN
 			C.IdCliente,
 			CASE WHEN NombreEntidad IS NULL THEN P.Nombres + ' ' + P.Apellidos ELSE NombreEntidad END AS NombreEntidad,
 			C.Codigo,
+            E.IdEntidad,
 			E.IdTipoEntidad,
 			NombreTipoEntidad,
 			P.Cedula AS Identificacion
@@ -181,6 +181,7 @@ BEGIN
 			C.IdCliente,
 			CASE WHEN NombreEntidad IS NULL THEN EM.NombreEmpresa ELSE NombreEntidad END AS NombreEntidad,
 			C.Codigo,
+            E.IdEntidad,
 			E.IdTipoEntidad,
 			NombreTipoEntidad,
 			EM.RNC AS Identificacion
@@ -192,7 +193,13 @@ BEGIN
 		
 		ORDER BY IdCliente ASC;
 END
-EXEC dbo.ListaClienteProyecto
+-- EXEC dbo.ListaClienteProyecto
+
+
+
+
+
+
 
 
 
@@ -331,13 +338,14 @@ GO
 
 
 
+GO
 ---------------------- PROCEDIMIENTO PARA INSERTAR EN LA TABLA PROYECTOS: ----------------------------------
 CREATE OR ALTER PROCEDURE dbo.InsertarProyecto
     @Nombre VARCHAR(255),
     @Descripcion VARCHAR(MAX),
     @FechaDeInicio DATE,
     @FechaDeFinalizacion DATE,
-    @TiempoDuracionEstimado VARCHAR(50),
+    @TiempoDuracionEstimado VARCHAR(70),
     -- @FechaRealDeFinalizacion DATE,
     -- @TiempoDuracionReal VARCHAR(50),
     @PresupuestoAcordado DECIMAL(18, 2),
@@ -387,6 +395,8 @@ BEGIN
         -- @IdModificadoPor,
         -- @FechaModificacion,
     );
+
+    Select SCOPE_IDENTITY()
 END;
 
 
@@ -667,10 +677,10 @@ BEGIN
     VALUES (
         @Nombre,
         @Descripcion,
-        @FechaInicio,
-        @FechaFinalizacion,
+        CONVERT(DATE, @FechaInicio),
+        CONVERT(DATE, @FechaFinalizacion),
         @TiempDuracionEstimado,
-        @FechaRealDeFinalizacion,
+        CONVERT(DATE, @FechaRealDeFinalizacion),
         @TiempoDuracionReal,
         @IdParametroCosto,
         @CostoPorParametro,
@@ -693,7 +703,7 @@ END;
 GO
 ---------------------- PROCEDIMIENTO PARA INSERTAR EN LA TABLA Tareas: ----------------------------------
 CREATE OR ALTER PROCEDURE dbo.InsertarCotizacionProyecto
-    @FechaDeEmision DATE,
+    @FechaDeEmision DATETIME,
     @MontoInicial DECIMAL(18, 2),
     @MontoTotal DECIMAL(18, 2),
     @Secuencia VARCHAR(20),
@@ -722,7 +732,7 @@ BEGIN
         IdEstadoRegistro
     )
     VALUES (
-        @FechaDeEmision,
+        CONVERT(DATE, @FechaDeEmision),
         @MontoInicial,
         @MontoTotal,
         @Secuencia,
@@ -736,3 +746,4 @@ BEGIN
         1 -- @IdEstadoRegistro
     );
 END;
+GO
