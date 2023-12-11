@@ -1,4 +1,5 @@
 import { DatePicker, Form, Input, Select } from "antd";
+import { message } from "antd";
 
 import { IoPersonAddOutline } from "react-icons/io5";
 import { AiOutlineDollarCircle, AiOutlineArrowRight } from "react-icons/ai";
@@ -21,6 +22,7 @@ import { Colores } from "../../../../components/GlobalColor";
 import dayjs from "dayjs";
 
 import {
+  useCreateProyectoMutation,
   useGetClienteProyectoQuery,
   useGetServicioQuery,
 } from "../../../../redux/Api/proyectoApi";
@@ -40,6 +42,15 @@ export default function FormularioProyecto() {
     // isLoading: isLoading,
   } = useGetServicioQuery("");
 
+  const [
+    createProyecto,
+    {
+      // isLoading: isLoadingCreate,
+      isSuccess: isCreateSuccess,
+      isError: isErrorCreate,
+    },
+  ] = useCreateProyectoMutation();
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [filteredData, setFilteredData] = useState([]);
   const [selectedDate, setSelectedDate] = useState(null);
@@ -48,12 +59,12 @@ export default function FormularioProyecto() {
   const [selectStateProducto, setSelectStateProducto] = useState([]);
   const [empleado, setEmpleado] = useState([]);
   const [tarea, setTarea] = useState([]);
-  console.log(tarea);
 
   // totales por productos, servicios, gasto adicionales
   const [totalServicios, setTotalServicios] = useState(0);
   const [totalProducto, setTotalProducto] = useState(0);
   const [totalGasto, setTotalGasto] = useState(0);
+
   const [gasto, setGasto] = useState([]);
   const [fechaInicio, setFechaInicio] = useState("");
   const [fechaFinal, setFechaFinal] = useState("");
@@ -146,7 +157,7 @@ export default function FormularioProyecto() {
     const dataSelectedClient = clientesData?.Result.find(
       (cliente) => cliente.IdCliente == selectStateCliente
     );
-    console.log("dataSelectedClient", dataSelectedClient);
+
     const ClienteEsPersonaFisica =
       dataSelectedClient.IdTipoEntidad == 1 ? true : false;
     // Manejar el envío del formulario aquí
@@ -270,8 +281,30 @@ export default function FormularioProyecto() {
         // "IdEstadoRegistro": 0
       },
     };
+    createProyecto({...dataSubmit});
     console.log(dataSubmit);
   };
+
+  useEffect(() => {
+    if (isCreateSuccess === true) {
+      message.error({
+        content:
+          " guardar los datos",
+        duration: 4,
+      });
+    }
+  }, [isCreateSuccess]);
+  //.. CUANDO EL INSERT TENGA UN ERROR:
+  useEffect(() => {
+    if (isErrorCreate === true) {
+      message.error({
+        content:
+          "Ha ocurrido un error al intentar guardar los datos",
+        duration: 4,
+      });
+    }
+  }, [isErrorCreate]);
+
   const fecha = form.getFieldsValue(["FechaDeInicio"]);
 
   useEffect(() => {

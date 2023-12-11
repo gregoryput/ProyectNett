@@ -20,7 +20,7 @@ import TareasComponent from "./components/Operar/TareasComponent";
 import { useState } from "react";
 import { Colores } from "../../components/GlobalColor";
 import FormularioProyecto from "./components/FormProyecto/FormularioProyecto";
-import { Box1, ColumnItem, ColumnItem2, ColumnItem3, Container, ContainerDetail, FlexContainer, FlexibleBox, MainContainer, RowItem, ViewContainerPages } from "../../components";
+import { Box1, ColumnItem, ColumnItem2, ColumnItem3, Container, ContainerDetail, FlexContainer, FlexibleBox, MainContainer, RowItem, ViewContainerPages2 } from "../../components";
 
 
 export default function Proyecto() {
@@ -28,7 +28,7 @@ export default function Proyecto() {
   const [formSee, setFormSee] = useState(true);
 
   return (
-    <ViewContainerPages>
+    <ViewContainerPages2>
       <FlexContainer>
         <Box1>
           <Seccion
@@ -43,7 +43,7 @@ export default function Proyecto() {
             formSee={formSee}
           />
         </Box1>
-        <FlexibleBox>
+        <FlexibleBox style={{width:"90vw"}}>
           <ContainerDetail
             style={{
               margin: "0",
@@ -120,6 +120,6 @@ export default function Proyecto() {
 
      
 
-    </ViewContainerPages>
+    </ViewContainerPages2>
   );
 }

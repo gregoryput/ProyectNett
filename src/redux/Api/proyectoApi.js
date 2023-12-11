@@ -49,6 +49,14 @@ export const proyectoApi = createApi({
       }),
       providesTags: ["Proyecto"],
     }),
+    createProyecto: builder.mutation({
+      query: (newProye) => ({
+        url: "/Proyecto/insertarProyectos",
+        method: "POST",
+        body: newProye,
+      }),
+      providesTags: ["Proyecto"],
+    }),
   }),
 });
 
@@ -61,4 +69,5 @@ export const {
   useGetResponsabilidadQuery,
   useGetProductosUnidadesDetallesQuery,
   useCreateParametroCostoMutation,
+  useCreateProyectoMutation,
 } = proyectoApi;

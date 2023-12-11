@@ -17,7 +17,6 @@ export default function ModalCliente({
   CloseModalCliente,
   handleSearch,
 }) {
-  console.log("filteredData", filteredData);
   return (
     <>
       {" "}
