@@ -4,7 +4,7 @@
     {
         public int IdCliente { get; set; }
         public string NombreEntidad { get; set; }
-        public string IdEntidad { get; set; }
+        public int IdEntidad { get; set; }
         public string Codigo { get; set; }
         public int IdTipoEntidad { get; set; }
         public string NombreTipoEntidad { get; set; }

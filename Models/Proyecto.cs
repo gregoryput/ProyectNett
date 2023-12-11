@@ -25,7 +25,7 @@
         public List<GastoAdicional> GastoAdicionales { get; set; }
         public List<ProyectoServicio> ProyectoServicios { get; set; }
         public List<Tarea> ProyectoTareas { get; set; }
-        public CotizacionProyecto CotizacionesProyecto { get; set; }
+        public CotizacionProyecto CotizacionProyecto { get; set; }
     }
 
     public class ProyectoDetalleProducto
@@ -102,8 +102,8 @@
         public DateTime FechaInicio { get; set; }
         public DateTime FechaFinalizacion { get; set; }
         public string TiempDuracionEstimado { get; set; }
-        public DateTime FechaRealDeFinalizacion { get; set; }
-        public string TiempoDuracionReal { get; set; }
+        public DateTime? FechaRealDeFinalizacion { get; set; }
+        public string? TiempoDuracionReal { get; set; }
 
         public int IdParametroCosto { get; set; }
         public decimal CostoPorParametro { get; set; }
@@ -124,7 +124,7 @@
     public class CotizacionProyecto
     {
         public int IdCotizacion { get; set; }
-        public DateTime FechaDeEmision { get; set; }
+        public DateTime? FechaDeEmision { get; set; }
         public decimal MontoInicial { get; set; }
         public decimal MontoTotal { get; set; }
         public string Secuencia { get; set; }

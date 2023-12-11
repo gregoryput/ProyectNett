@@ -4,6 +4,7 @@ using ProyectNettApi.Interfaces;
 using ProyectNettApi.Models;
 using System.Data;
 using System.Reflection.Metadata;
+using System.Threading;
 
 namespace ProyectNettApi.Repositories
 {
@@ -140,14 +141,14 @@ namespace ProyectNettApi.Repositories
             try
             {
                 // -------------------------- INSERTAR EN LA TABLA PROYECTOS (Procedimiento: InsertarProyecto):
-                connection.Execute("dbo.InsertarProyecto",
+                int IdProyecto = connection.Execute("dbo.InsertarProyecto",
 
                     new
                     {
                         Nombre = proyecto.Nombre,
                         Descripcion = proyecto.Descripcion,
-                        FechaDeInicio = proyecto.FechaDeInicio,
-                        FechaDeFinalizacion = proyecto.FechaDeFinalizacion,
+                        FechaDeInicio = proyecto.FechaDeInicio.ToShortDateString(),
+                        FechaDeFinalizacion = proyecto.FechaDeFinalizacion.ToShortDateString(),
                         TiempoDuracionEstimado = proyecto.TiempoDuracionEstimado,
                         //FechaRealDeFinalizacion = null,
                         //TiempoDuracionReal = proyecto.TiempoDuracionReal,
@@ -156,21 +157,38 @@ namespace ProyectNettApi.Repositories
                         IdEntidad = proyecto.IdEntidad,
                         IdEstado = proyecto.IdEstado,
                         IdCreadoPor = proyecto.IdCreadoPor,
-                        FechaCreacion = proyecto.FechaCreacion,
-                        IdEstadoRegistro = proyecto.IdEstadoRegistro,
-                        IdModificadoPor = proyecto.IdModificadoPor
+                        //FechaCreacion = proyecto.FechaCreacion,
+                        //IdEstadoRegistro = proyecto.IdEstadoRegistro,
+                        //IdModificadoPor = proyecto.IdModificadoPor
                     }, transaction, commandType: CommandType.StoredProcedure);
 
 
                 // -------------------------- INSERTAR EN LA TABLA ProyectosDetallesProductos -----PROCEDURE----- dbo.InsertarProyectoDetalleProducto:
                 var proyectoDetallesProductos = proyecto.ProyectoDetallesProductos;
+
                 foreach (var detalle in proyectoDetallesProductos)
                 {
-                    connection.Execute("dbo.InsertarProyectoDetalleProducto", detalle, transaction, commandType: CommandType.StoredProcedure);
+                    var dataDetalle = new
+                    {
+                        Cantidad = detalle.Cantidad, // DECIMAL
+                        PrecioCompra = detalle.PrecioCompra, // DECIMAL
+                        PrecioVenta = detalle.PrecioVenta, // DECIMAL
+                        ITBIS = detalle.ITBIS, // DECIMAL
+                        Codigo = detalle.Codigo, // VARCHAR(10)
+                        Descuento = detalle.Descuento, // DECIMAL
+                        Subtotal = detalle.Subtotal, // DECIMAL
+                        IdProducto = detalle.IdProducto, // INT
+                        IdUnidadDeMedida = detalle.IdUnidadDeMedida, // INT
+                        IdProyecto = IdProyecto, // INT
+                        IdCreadoPor = proyecto.IdCreadoPor // INT
+                    };
+
+                    connection.Execute("dbo.InsertarProyectoDetalleProducto", dataDetalle, transaction, commandType: CommandType.StoredProcedure);
                 }
 
                 // -------------------------- INSERTAR EN LA TABLA ProyectosEntidadesEmpresas o ProyectosEntidadesPF:
                 var proyectoEntidadParams = proyecto.ProyectoEntidadParams;
+                proyectoEntidadParams.IdProyecto = IdProyecto;
                 if (proyecto.ClienteEsPersonaFisica)
                 {
                     // -- INSERTAR EN LA TABLA ProyectosEntidadesPF:
@@ -186,36 +204,96 @@ namespace ProyectNettApi.Repositories
                 var proyectoEmpleados = proyecto.ProyectoEmpleados;
                 foreach (var empleado in proyectoEmpleados)
                 {
-                    connection.Execute("dbo.InsertarProyectoEmpleado", empleado, transaction, commandType: CommandType.StoredProcedure);
+                    var dataEmpleadoProyecto = new
+                    {
+                        IdProyecto = IdProyecto, // INT
+                        IdResponsabilidad = empleado.IdResponsabilidad, // INT
+                        IdEmpleado = empleado.IdEmpleado, // INT
+                        IdCreadoPor = proyecto.IdCreadoPor // INT
+                    };
+
+                    try
+                    {
+                        connection.Execute("dbo.InsertarProyectoEmpleado", dataEmpleadoProyecto, transaction, commandType: CommandType.StoredProcedure);
+                    }
+                    catch (Exception)
+                    {
+                        throw;
+                    }
                 }
 
                 // -------------------------- INSERTAR EN LA TABLA ProyectosGastosAdicionales -----PROCEDURE----- dbo.InsertarGastoAdicional:
                 var gastosAdicionales = proyecto.GastoAdicionales;
                 foreach (var gasto in gastosAdicionales)
                 {
-                    connection.Execute("dbo.InsertarGastoAdicional", gasto, transaction, commandType: CommandType.StoredProcedure);
+                    var dataGasto = new
+                    {
+                        DescripcionGasto = gasto.DescripcionGasto, // VARCHAR(60)
+                        MontoGasto = gasto.MontoGasto, // DECIMAL(10, 2)
+                        IdProyecto = IdProyecto, // INT
+                        IdCreadoPor = proyecto.IdCreadoPor // INT
+                    };
+                    connection.Execute("dbo.InsertarGastoAdicional", dataGasto, transaction, commandType: CommandType.StoredProcedure);
                 }
 
                 // -------------------------- INSERTAR EN LA TABLA ProyectosServicios -----PROCEDURE----- dbo.InsertarProyectoServicio:
                 var servicios = proyecto.ProyectoServicios;
                 foreach (var servicio in servicios)
                 {
-                    connection.Execute("dbo.InsertarProyectoServicio", servicio, transaction, commandType: CommandType.StoredProcedure);
+                    var dataServicio = new
+                    {
+                        Descripcion = servicio.Descripcion, // VARCHAR(70)
+                        IdProyecto = IdProyecto, // INT
+                        IdServicio = servicio.IdServicio, // INT
+                        IdCreadoPor = proyecto.IdCreadoPor // INT
+                    };
+
+                    connection.Execute("dbo.InsertarProyectoServicio", dataServicio, transaction, commandType: CommandType.StoredProcedure);
                 }
 
-                // -------------------------- INSERTAR EN LA TABLA ProyectosServicios -----PROCEDURE----- dbo.InsertarProyectoServicio:
+                // -------------------------- INSERTAR EN LA TABLA Tarareas -----PROCEDURE----- dbo.InsertarTarea:
                 var tareas = proyecto.ProyectoTareas;
                 foreach (var tarea in tareas)
                 {
-                    connection.Execute("dbo.InsertarTarea", tarea, transaction, commandType: CommandType.StoredProcedure);
+                    var dataTarea = new
+                    {
+                        Nombre = tarea.Nombre, // VARCHAR(255)
+                        Descripcion = tarea.Descripcion, // VARCHAR(255)
+                        FechaInicio = tarea.FechaInicio, // DATE
+                        FechaFinalizacion = tarea.FechaFinalizacion, // DATE
+                        TiempDuracionEstimado = tarea.TiempDuracionEstimado, // VARCHAR(40)
+                        FechaRealDeFinalizacion = tarea.FechaRealDeFinalizacion, // DATE
+                        TiempoDuracionReal = tarea.TiempoDuracionReal, // VARCHAR(40)
+                        IdParametroCosto = tarea.IdParametroCosto, // INT
+                        CostoPorParametro = tarea.CostoPorParametro, // DECIMAL(10, 2)
+                        Cantidad = tarea.Cantidad, // DECIMAL
+                        CostoTotal = tarea.CostoTotal, // DECIMAL(10, 2)
+                        IdPrioridad = tarea.IdPrioridad, // INT
+                        IdProyecto = IdProyecto, // INT
+                        IdEstado = tarea.IdEstado, // INT
+                        IdServicioRelacionado = tarea.IdServicioRelacionado, // INT
+                        IdCreadoPor = proyecto.IdCreadoPor // INT
+                    };
+
+                    connection.Execute("dbo.InsertarTarea", dataTarea, transaction, commandType: CommandType.StoredProcedure);
                 }
 
-                // -------------------------- INSERTAR EN LA TABLA Cotizaciones -----PROCEDURE----- dbo.InsertarProyectoServicio:
-                var cotizaciones = proyecto.CotizacionesProyecto;
-                foreach (var cotizacion in cotizaciones)
+                // -------------------------- INSERTAR EN LA TABLA Cotizaciones -----PROCEDURE----- dbo.InsertarCotizacionProyecto: -----------------------------------------
+                var cotizacion = proyecto.CotizacionProyecto;
+                cotizacion.FechaDeEmision = DateTime.Now;
+
+                var dataCotizacion = new
                 {
-                    connection.Execute("dbo.InsertarCotizacionProyecto", cotizacion, transaction, commandType: CommandType.StoredProcedure);
-                }
+                    FechaDeEmision = cotizacion.FechaDeEmision, // DATE
+                    MontoInicial = cotizacion.MontoInicial, // DECIMAL(18, 2)
+                    MontoTotal = cotizacion.MontoTotal, // DECIMAL(18, 2)
+                    Secuencia = cotizacion.Secuencia, // VARCHAR(20)
+                    IdCliente = cotizacion.IdCliente, // INT
+                    IdEstado = cotizacion.IdEstado, // INT
+                    IdProyecto = IdProyecto, // INT
+                    IdCreadoPor = proyecto.IdCreadoPor // INT
+                };
+                connection.Execute("dbo.InsertarCotizacionProyecto", cotizacion, transaction, commandType: CommandType.StoredProcedure);
 
                 transaction.Commit();
             }
@@ -223,6 +301,7 @@ namespace ProyectNettApi.Repositories
             catch (Exception ex)
             {
                 transaction.Rollback();
+                transaction.Dispose();
                 connection.Close();
                 throw ex;
             }
