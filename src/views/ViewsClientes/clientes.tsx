@@ -30,7 +30,6 @@ const Clientes = () => {
     isLoading: isLoadingClients,
   } = useGetClientsQuery();
 
-  console.log("clientesData", clientesData);
 
   const deleteCliente = (record: IClienteDTO) => {
     message.info("Eliminar al cliente " + record.NombreEntidad);
@@ -49,7 +48,6 @@ const Clientes = () => {
     message.info("aaa");
   };
 
-  console.log(formType);
 
   return (
     <ViewContainerPages>

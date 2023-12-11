@@ -47,9 +47,7 @@ html::-webkit-scrollbar-track {
 }
 */
 
-.scroll-container {
 
-}
 
 .scroll-container::-webkit-scrollbar {
   width: 10px;
