@@ -25,7 +25,7 @@ namespace ProyectNettApi.Controllers
         }
 
         
-        //[Authorize]
+        [Authorize]
         [Route("obtenerClientes")]
         [HttpGet]
         public IActionResult getClientes()
@@ -46,7 +46,7 @@ namespace ProyectNettApi.Controllers
             }
         }
 
-        //[Authorize]
+        [Authorize]
         [Route("obtenerServicio")]
         [HttpGet]
         public IActionResult getServicio()
@@ -67,7 +67,7 @@ namespace ProyectNettApi.Controllers
             }
         }
 
-        //[Authorize]
+        [Authorize]
         [Route("obtenerParametros")]
         [HttpGet]
         public IActionResult getParametros()
@@ -88,7 +88,7 @@ namespace ProyectNettApi.Controllers
             }
         }
 
-        //[Authorize]
+        [Authorize]
         [Route("obtenerEmpleado")]
         [HttpGet]
         public IActionResult getEmpleadoProyecto()
@@ -109,7 +109,7 @@ namespace ProyectNettApi.Controllers
             }
         }
 
-        //[Authorize]
+        [Authorize]
         [Route("obtenerResposabilidad")]
         [HttpGet]
         public IActionResult getResponsabilidad()
@@ -130,7 +130,7 @@ namespace ProyectNettApi.Controllers
             }
         }
 
-        //[Authorize]
+        [Authorize]
         [Route("obtenerPrioridad")]
         [HttpGet]
         public IActionResult getPrioridad()
@@ -152,7 +152,7 @@ namespace ProyectNettApi.Controllers
         }
 
 
-        //[Authorize]
+        [Authorize]
         [Route("getProductosUnidadesDetalles")]
         [HttpGet]
         public IActionResult getProductosUnidadesDetalles()

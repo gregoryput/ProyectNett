@@ -113,7 +113,6 @@
         public int IdProyecto { get; set; }
         public int IdEstado { get; set; }
         public int IdServicioRelacionado { get; set; }
-
         public int IdCreadoPor { get; set; }
         public DateTime FechaCreacion { get; set; }
         public int? IdModificadoPor { get; set; }
@@ -124,7 +123,7 @@
     public class CotizacionProyecto
     {
         public int IdCotizacion { get; set; }
-        public DateTime? FechaDeEmision { get; set; }
+        public DateTime FechaDeEmision { get; set; }
         public decimal MontoInicial { get; set; }
         public decimal MontoTotal { get; set; }
         public string Secuencia { get; set; }

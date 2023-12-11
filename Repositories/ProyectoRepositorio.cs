@@ -3,8 +3,10 @@ using ProyectNettApi.DTO;
 using ProyectNettApi.Interfaces;
 using ProyectNettApi.Models;
 using System.Data;
+using System.Data.Common;
 using System.Reflection.Metadata;
 using System.Threading;
+using System.Transactions;
 
 namespace ProyectNettApi.Repositories
 {
@@ -128,9 +130,6 @@ namespace ProyectNettApi.Repositories
 
 
 
-
-
-
         // INSERTAR PROYECTO:
         // ------------- ------------ ------------ ------------- ----------------- --------------- --------------- ----------------- ------------------------
         public void InsertarProyecto(Proyecto proyecto)
@@ -141,14 +140,14 @@ namespace ProyectNettApi.Repositories
             try
             {
                 // -------------------------- INSERTAR EN LA TABLA PROYECTOS (Procedimiento: InsertarProyecto):
-                int IdProyecto = connection.Execute("dbo.InsertarProyecto",
+                int IdProyecto = connection.ExecuteScalar<int>("dbo.InsertarProyecto",
 
                     new
                     {
                         Nombre = proyecto.Nombre,
                         Descripcion = proyecto.Descripcion,
-                        FechaDeInicio = proyecto.FechaDeInicio.ToShortDateString(),
-                        FechaDeFinalizacion = proyecto.FechaDeFinalizacion.ToShortDateString(),
+                        FechaDeInicio = proyecto.FechaDeInicio,
+                        FechaDeFinalizacion = proyecto.FechaDeFinalizacion,
                         TiempoDuracionEstimado = proyecto.TiempoDuracionEstimado,
                         //FechaRealDeFinalizacion = null,
                         //TiempoDuracionReal = proyecto.TiempoDuracionReal,
@@ -280,11 +279,11 @@ namespace ProyectNettApi.Repositories
 
                 // -------------------------- INSERTAR EN LA TABLA Cotizaciones -----PROCEDURE----- dbo.InsertarCotizacionProyecto: -----------------------------------------
                 var cotizacion = proyecto.CotizacionProyecto;
-                cotizacion.FechaDeEmision = DateTime.Now;
+                //cotizacion.FechaDeEmision = DateTime.Now;
 
                 var dataCotizacion = new
                 {
-                    FechaDeEmision = cotizacion.FechaDeEmision, // DATE
+                    //FechaDeEmision = cotizacion.FechaDeEmision, // DATE
                     MontoInicial = cotizacion.MontoInicial, // DECIMAL(18, 2)
                     MontoTotal = cotizacion.MontoTotal, // DECIMAL(18, 2)
                     Secuencia = cotizacion.Secuencia, // VARCHAR(20)
@@ -293,7 +292,7 @@ namespace ProyectNettApi.Repositories
                     IdProyecto = IdProyecto, // INT
                     IdCreadoPor = proyecto.IdCreadoPor // INT
                 };
-                connection.Execute("dbo.InsertarCotizacionProyecto", cotizacion, transaction, commandType: CommandType.StoredProcedure);
+                connection.Execute("dbo.InsertarCotizacionProyecto", dataCotizacion, transaction, commandType: CommandType.StoredProcedure);
 
                 transaction.Commit();
             }
