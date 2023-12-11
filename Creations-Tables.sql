@@ -1,6 +1,6 @@
-CREATE DATABASE BD_PROYENETT
+CREATE DATABASE BD_PROYENETT_54
 GO
-USE BD_PROYENETT
+USE BD_PROYENETT_54
 GO
 
 
@@ -1207,7 +1207,7 @@ GO
 CREATE TABLE CotizacionesProyectos
 (
     IdCotizacion INT IDENTITY CONSTRAINT PK_IdCotizacion PRIMARY KEY,
-    FechaDeEmision DATEtime,
+    FechaDeEmision DATETIME,
     MontoInicial DECIMAL(18, 2),
     MontoTotal DECIMAL(18, 2),
     Secuencia varchar(20),
@@ -1368,3 +1368,7 @@ CREATE TABLE ProyectosImagenes
     IdEstadoRegistro int constraint Fk_PYImg_IdEstadoR foreign Key references EstadosRegistros(IdEstadoRegistro),
 );
 GO
+
+
+
+SELECT * FROM CotizacionesProyectos

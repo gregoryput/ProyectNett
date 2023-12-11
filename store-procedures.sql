@@ -1,4 +1,4 @@
-USE BD_PROYENETT
+USE BD_PROYENETT_54
 
 GO
 ----------- /*1--*/ Procedimiento almcenado para obtener una lista general de clientes (empresas y personas fisicas):
@@ -703,7 +703,7 @@ END;
 GO
 ---------------------- PROCEDIMIENTO PARA INSERTAR EN LA TABLA Tareas: ----------------------------------
 CREATE OR ALTER PROCEDURE dbo.InsertarCotizacionProyecto
-    @FechaDeEmision DATETIME,
+    -- @FechaDeEmision DATETIME,
     @MontoInicial DECIMAL(18, 2),
     @MontoTotal DECIMAL(18, 2),
     @Secuencia VARCHAR(20),
@@ -718,7 +718,7 @@ CREATE OR ALTER PROCEDURE dbo.InsertarCotizacionProyecto
 AS
 BEGIN
     INSERT INTO CotizacionesProyectos (
-        FechaDeEmision,
+        --FechaDeEmision,
         MontoInicial,
         MontoTotal,
         Secuencia,
@@ -732,7 +732,7 @@ BEGIN
         IdEstadoRegistro
     )
     VALUES (
-        @FechaDeEmision,
+        --GETDATE(), --@FechaDeEmision,
         @MontoInicial,
         @MontoTotal,
         @Secuencia,
@@ -747,3 +747,5 @@ BEGIN
     );
 END;
 GO
+
+
