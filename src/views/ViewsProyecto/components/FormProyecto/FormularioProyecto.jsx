@@ -48,6 +48,7 @@ export default function FormularioProyecto() {
   const [selectStateProducto, setSelectStateProducto] = useState([]);
   const [empleado, setEmpleado] = useState([]);
   const [tarea, setTarea] = useState([]);
+  console.log(tarea);
 
   // totales por productos, servicios, gasto adicionales
   const [totalServicios, setTotalServicios] = useState(0);
@@ -145,6 +146,7 @@ export default function FormularioProyecto() {
     const dataSelectedClient = clientesData?.Result.find(
       (cliente) => cliente.IdCliente == selectStateCliente
     );
+    console.log("dataSelectedClient", dataSelectedClient);
     const ClienteEsPersonaFisica =
       dataSelectedClient.IdTipoEntidad == 1 ? true : false;
     // Manejar el envío del formulario aquí
@@ -152,7 +154,7 @@ export default function FormularioProyecto() {
       IdProyecto: 0,
       Nombre: values.Nombre,
       Descripcion: values.Descripcion,
-      FechaDeInicio: dayjs(values.FechaDeInicio).format("DD-MM-YYYY"),
+      FechaDeInicio: new Date(values.FechaDeInicio),
       FechaDeFinalizacion: fechafin,
       TiempoDuracionEstimado: "10 dias",
       //"FechaRealDeFinalizacion": "2023-12-10T05:51:27.368Z",
@@ -178,7 +180,7 @@ export default function FormularioProyecto() {
         Subtotal: detail.Subtotal,
         IdProducto: detail.IdProducto,
         IdUnidadDeMedida: detail.IdUnidadDeMedida,
-        IdProyecto:0 ,
+        IdProyecto: 0,
         //IdCreadoPor: 0,
         //FechaCreacion: "2023-12-10T05:51:27.368Z",
         //IdModificadoPor: 0,
@@ -231,8 +233,8 @@ export default function FormularioProyecto() {
         IdTarea: 0,
         Nombre: tarea.Titulo,
         Descripcion: tarea.Descripcion, // <<--
-        FechaInicio: tarea.FechaInicio,
-        FechaFinalizacion: tarea.FechaFinal,
+        FechaInicio: new Date(tarea.FechaInicio),
+        FechaFinalizacion: dayjs(tarea.FechaInicio),
         TiempDuracionEstimado: "9 dias",
         //FechaRealDeFinalizacion: "2023-12-10T05:51:27.368Z",
         //TiempoDuracionReal: "string",
@@ -251,9 +253,9 @@ export default function FormularioProyecto() {
         // IdEstadoRegistro: 0
       })),
 
-      CotizacionesProyecto: {
+      CotizacionProyecto: {
         IdCotizacion: 0,
-        FechaDeEmision: new Date(),
+        //FechaDeEmision: new Date(),
         MontoInicial: 0,
         MontoTotal: 0,
         Secuencia: "0",
@@ -394,8 +396,6 @@ export default function FormularioProyecto() {
               >
                 <DatePicker onChange={handleDateChange} format={"DD-MM-YYYY"} />
               </Form.Item>
-
-              
             </div>
 
             <Form.Item
