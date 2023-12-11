@@ -1,4 +1,4 @@
-USE BD_PROYENETT_MV47
+USE BD_PROYENETT
 
 GO
 ----------- /*1--*/ Procedimiento almcenado para obtener una lista general de clientes (empresas y personas fisicas):
@@ -86,7 +86,7 @@ Create or Alter procedure dbo.InsertarPersona
   @Telefono2 varchar(12),
   @Direccion varchar(60),
   @Correo varchar(60),
-  @FechaDeNacimiento date,
+  @FechaDeNacimiento datetime,
   @Cedula varchar(13),
   --
   @IdSexo int,
@@ -343,10 +343,10 @@ GO
 CREATE OR ALTER PROCEDURE dbo.InsertarProyecto
     @Nombre VARCHAR(255),
     @Descripcion VARCHAR(MAX),
-    @FechaDeInicio DATE,
-    @FechaDeFinalizacion DATE,
+    @FechaDeInicio DATEtime,
+    @FechaDeFinalizacion DATEtime,
     @TiempoDuracionEstimado VARCHAR(70),
-    -- @FechaRealDeFinalizacion DATE,
+    -- @FechaRealDeFinalizacion DATEtime,
     -- @TiempoDuracionReal VARCHAR(50),
     @PresupuestoAcordado DECIMAL(18, 2),
     @ClienteEsPersonaFisica BIT,
@@ -632,10 +632,10 @@ GO
 CREATE OR ALTER PROCEDURE dbo.InsertarTarea
     @Nombre VARCHAR(255),
     @Descripcion VARCHAR(255),
-    @FechaInicio DATE,
-    @FechaFinalizacion DATE,
+    @FechaInicio DATEtime,
+    @FechaFinalizacion DATEtime,
     @TiempDuracionEstimado VARCHAR(40),
-    @FechaRealDeFinalizacion DATE,
+    @FechaRealDeFinalizacion DATEtime,
     @TiempoDuracionReal VARCHAR(40),
     @IdParametroCosto INT,
     @CostoPorParametro DECIMAL(10, 2),
@@ -677,10 +677,10 @@ BEGIN
     VALUES (
         @Nombre,
         @Descripcion,
-        CONVERT(DATE, @FechaInicio),
-        CONVERT(DATE, @FechaFinalizacion),
+        @FechaInicio,
+        @FechaFinalizacion,
         @TiempDuracionEstimado,
-        CONVERT(DATE, @FechaRealDeFinalizacion),
+        @FechaRealDeFinalizacion,
         @TiempoDuracionReal,
         @IdParametroCosto,
         @CostoPorParametro,
@@ -732,7 +732,7 @@ BEGIN
         IdEstadoRegistro
     )
     VALUES (
-        CONVERT(DATE, @FechaDeEmision),
+        @FechaDeEmision,
         @MontoInicial,
         @MontoTotal,
         @Secuencia,

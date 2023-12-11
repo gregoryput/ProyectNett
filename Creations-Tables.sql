@@ -1,6 +1,6 @@
-CREATE DATABASE BD_PROYENETT_MV47
+CREATE DATABASE BD_PROYENETT
 GO
-USE BD_PROYENETT_MV47
+USE BD_PROYENETT
 GO
 
 
@@ -304,8 +304,8 @@ CREATE TABLE EstructurasRepresentantes(
     IdEstructuraRepresentante int identity constraint PK_IdEstructuraRepresentante primary key,
     IdEstructura int constraint Fk_EstRep_IdEstructura foreign Key references Estructuras(IdEstructura),
     IdRepresentanteActual int constraint Fk_EstRep_IdRepresentante foreign Key references Personas(IdPersona),
-    FechaInicioRepresentante Date,
-    FechaFinRepresentante Date,
+    FechaInicioRepresentante Datetime,
+    FechaFinRepresentante Datetime,
     --
     IdCreadoPor int constraint Fk_EstRep_IdCreadoPor foreign Key references Usuarios(IdUsuario),
     FechaCreacion Datetime,
@@ -423,8 +423,8 @@ CREATE TABLE EntidadesPersonasFisicasRepresentantes
     IdEntidadPersonaFisica INT constraint FK_EPFR_IdEntidadPersonaFisica foreign key references EntidadesPersonasFisicas(IdEntidadPersonaFisica),
     IdRepresentanteActual INT constraint FK_EPFR_IdEntidad foreign key references Personas(IdPersona),
     IdRolRepresentante INT constraint FK_EPFR_IdRolRepresentante foreign key references RepresentantesRoles(IdRolRepresentante),
-    FechaInicioRepresentante DATE,
-    FechaFinRepresentante DATE,
+    FechaInicioRepresentante DATEtime,
+    FechaFinRepresentante DATEtime,
     --
     IdCreadoPor INT constraint Fk_EPFR_IdCreadoPor foreign Key references Usuarios(IdUsuario),
     FechaCreacion DATETIME,
@@ -458,8 +458,8 @@ CREATE Table EntidadesEmpresasRepresentantes
     IdEntidadEmpresa int constraint FK_EER_IdEntidadEmpresa foreign key references EntidadesEmpresas(IdEntidadEmpresa),
     IdRepresentanteActual INT constraint FK_EER_IdRepresentanteActual foreign key references Personas(IdPersona),
     IdRolRepresentante int constraint FK_EER_IdRolRepresentante foreign key references RepresentantesRoles(IdRolRepresentante),
-    FechaInicioRepresentante DATE,
-    FechaFinRepresentante DATE,
+    FechaInicioRepresentante DATEtime,
+    FechaFinRepresentante DATEtime,
     --
     IdCreadoPor int constraint Fk_EER_IdCreadoPor foreign Key references Usuarios(IdUsuario),
     FechaCreacion Datetime,
@@ -476,7 +476,7 @@ Create Table Clientes
     IdCliente int identity constraint PK_IdCliente primary key,
     Codigo VARCHAR(9) constraint UQ_Codigo_Cliente UNIQUE,
     IdEntidad int constraint FK_Clientes_IdEntidad foreign key references Entidades(IdEntidad),
-    FechaInicioCliente Date,
+    FechaInicioCliente Datetime,
     --<<-- Fecha en la que comenzó a ser cliente de la empresa
     --
     IdCreadoPor int constraint Fk_Clientes_IdCreadoPor foreign Key references Usuarios(IdUsuario),
@@ -509,7 +509,7 @@ Create Table Proveedores
     IdProveedor int identity constraint PK_IdProveedor primary key,
     Codigo Varchar(9),
     IdEntidad int constraint FK_Proveedores_IdEntidad foreign key references Entidades(IdEntidad),
-    FechaInioProveedor Date,
+    FechaInioProveedor Datetime,
     IdEstadoProveedor int constraint Fk_IdEstadoProveedor foreign Key references EstadosProveedores(IdEstadoProveedor),
     --
     IdCreadoPor int constraint Fk_Proveedores_IdCreadoPor foreign Key references Usuarios(IdUsuario),
@@ -525,7 +525,7 @@ GO
 CREATE TABLE Empleados
 (
     IdEmpleado INT identity constraint PK_IdEmpleado PRIMARY KEY,
-    FechaDeContratacion DATE NOT NULL,
+    FechaDeContratacion DATEtime NOT NULL,
     CodigoEmpleado VARCHAR(9),
     IdPersona INT NOT NULL constraint Fk_Empleado_IdPersona foreign Key references Personas(IdPersona),
     --
@@ -731,7 +731,7 @@ CREATE TABLE Lotes
     IdLote INT IDENTITY CONSTRAINT PK_IdLote PRIMARY KEY,
     IdExistencia int constraint Fk_Lotes_IdExistencia foreign Key references Existencias(IdExistencia),
     NumeroDeLote varchar(40),
-    FechaVencimiento Date,
+    FechaVencimiento Datetime,
     CantidadTotalDisponible decimal,
     --
     IdCreadoPor int constraint Fk_Lotes_IdCreadoPor foreign Key references Usuarios(IdUsuario),
@@ -762,7 +762,7 @@ GO
 CREATE TABLE FacturasCompras
 (
     IdFactura INT IDENTITY CONSTRAINT PK_IdFactura PRIMARY KEY,
-    Fecha DATE,
+    Fecha DATEtime,
     Descuento DECIMAL,
     MontoImpuestos DECIMAL,
     MontoSubtotal DECIMAL,
@@ -896,10 +896,10 @@ CREATE TABLE Proyectos
     IdProyecto INT IDENTITY CONSTRAINT PK_IdProyecto PRIMARY KEY,
     Nombre VARCHAR(255),
     Descripcion VARCHAR(MAX),
-    FechaDeInicio DATE,
-    FechaDeFinalizacion DATE,
+    FechaDeInicio DATEtime,
+    FechaDeFinalizacion DATEtime,
     TiempoDuracionEstimado VARCHAR(70),
-    FechaRealDeFinalizacion DATE,
+    FechaRealDeFinalizacion DATEtime,
     TiempoDuracionReal VARCHAR,
     PresupuestoAcordado DECIMAL(18, 2),
     ClienteEsPersonaFisica BIT,
@@ -1128,10 +1128,10 @@ CREATE TABLE Tareas
     IdTarea INT IDENTITY CONSTRAINT PK_IdTarea PRIMARY KEY,
     Nombre VARCHAR(255),
     Descripcion VARCHAR(255),
-    FechaInicio DATE,
-    FechaFinalizacion DATE,
+    FechaInicio DATEtime,
+    FechaFinalizacion DATEtime,
     TiempDuracionEstimado VARCHAR(40),
-    FechaRealDeFinalizacion DATE,
+    FechaRealDeFinalizacion DATEtime,
     TiempoDuracionReal VARCHAR(40),
 
     IdParametroCosto INT,
@@ -1177,9 +1177,9 @@ GO
 CREATE TABLE FacturasVentasProyectos
 (
     IdFactura INT IDENTITY CONSTRAINT PK_IdDocumento PRIMARY KEY,
-    FechaDeEmision DATE,
+    FechaDeEmision DATEtime,
     MontoInicial DECIMAL(18, 2),
-    FechaDeVencimiento DATE,
+    FechaDeVencimiento DATEtime,
     DiasMora INT,
     MontoMora DECIMAL(18, 2),
     MontoTotal DECIMAL(18, 2),
@@ -1207,7 +1207,7 @@ GO
 CREATE TABLE CotizacionesProyectos
 (
     IdCotizacion INT IDENTITY CONSTRAINT PK_IdCotizacion PRIMARY KEY,
-    FechaDeEmision DATE,
+    FechaDeEmision DATEtime,
     MontoInicial DECIMAL(18, 2),
     MontoTotal DECIMAL(18, 2),
     Secuencia varchar(20),
@@ -1251,10 +1251,10 @@ GO
 CREATE TABLE Pagos
 (
     IdPago INT IDENTITY CONSTRAINT PK_IdPagoReg PRIMARY KEY,
-    Fecha DATE,
+    Fecha DATEtime,
     MontoPago DECIMAL(18, 2),
     MontoRestante DECIMAL(18, 2),
-    FechaPago DATE,
+    FechaPago DATEtime,
     --
     IdTipoPago int constraint Fk_IdTipoPago foreign Key references TiposPagos(IdTipoPago),
     --
