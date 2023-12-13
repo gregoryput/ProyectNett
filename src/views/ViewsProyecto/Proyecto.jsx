@@ -158,7 +158,7 @@ export default function Proyecto() {
           </>
         )}
 
-        {selectProyecto == null && formSee == false  ? (
+        {selectProyecto == null && formSee == false ? (
           <>
             <Container
               style={{
@@ -173,9 +173,10 @@ export default function Proyecto() {
                 justifyContent: "center",
                 alignItems: "center",
                 gap: 10,
-                borderRadius: 12
+                borderRadius: 12,
               }}
             >
+              <IoAlertCircleOutline size={30} />
               <h3>No hay proyecto seleccionado </h3>
             </Container>
           </>
