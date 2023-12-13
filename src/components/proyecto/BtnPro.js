@@ -74,6 +74,31 @@ export const BtnNavPro = styled.button`
   }
 `;
 
+export const BtnEstadoPro = styled.button`
+  color: white;
+  border: none;
+  font-size: 14px;
+  padding: 23px;
+  width: 99%;
+  margin: 10px auto;
+  color:${(props) =>
+    props.isSelected ? "white" : "black"};
+  overflow: hidden;
+ background-color: ${(props) =>
+    props.isSelected ? Colores.AzulMar : "white"};
+  outline: none;
+  cursor: pointer;
+  transition: transform 0.4s;
+  height:100%;
+
+  &:hover {
+
+    transform: scale(1.1);
+    background-color:  ${Colores.AzulOscuro}  ;
+    color: ${Colores.Blanco};
+  }
+`;
+
 export const Btnbox = styled.button`
   border: none;
   font-size: 14px;

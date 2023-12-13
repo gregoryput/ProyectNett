@@ -17,27 +17,28 @@ import {
 } from "react-icons/io5";
 import { useGetListaProyectoQuery } from "../../../redux/Api/proyectoApi";
 
-export default function ViewsList({ setFormSee, seeState, setSee,selectProyecto, setSelectProyecto }) {
-  const [allData, setAllData] = useState([]);
+export default function ViewsList({ setFormSee, seeState, setSee,selectProyecto, setSelectProyecto ,allData, setAllData}) {
+ 
   const itemsPerPage = 20; // Define la cantidad de elementos por página
 
   const [currentPage, setCurrentPage] = useState(1);
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentData = allData.slice(indexOfFirstItem, indexOfLastItem);
-
   const {
     data: data,
     isSuccess: isSuccessProyecto,
     isLoading: isLoading,
   } = useGetListaProyectoQuery("");
-
+  
   useEffect(() => {
     if (data?.Result !== undefined && isSuccessProyecto) {
       setAllData(data?.Result);
-      setSelectProyecto(allData[0]?.IdProyecto); //
+
     }
-  }, [data, isSuccessProyecto,setSelectProyecto,allData]);
+  }, [data,isSuccessProyecto]);
+  
+ 
 
   const paginate = (pageNumber) => {
     setCurrentPage(pageNumber);
@@ -65,11 +66,13 @@ export default function ViewsList({ setFormSee, seeState, setSee,selectProyecto,
 
   ViewsList.propTypes = {
     setSee: PropTypes.bool.isRequired,
-    seeState: PropTypes.func.isRequired,
+    seeState: PropTypes.bool.isRequired,
     setFormSee: PropTypes.func.isRequired,
     formSee: PropTypes.bool.isRequired,
-    selectProyecto: PropTypes.func.isRequired,
+    selectProyecto: PropTypes.array.isRequired,
     setSelectProyecto: PropTypes.func.isRequired,
+    allData: PropTypes.array.isRequired,
+    setAllData: PropTypes.func.isRequired,
   };
 
   return (

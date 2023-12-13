@@ -1,40 +1,39 @@
-import { Tag } from "antd";
 import {
-  BtnSelect,
+  BtnEstadoPro,
+  BtnSelectt,
   Container,
   ContainerDetail,
   ContainerList,
 } from "../../../../components";
+import { IoLogoOctocat } from "react-icons/io5";
 
-import { IoClipboardOutline, IoRadioButtonOff } from "react-icons/io5";
+import { IoClipboardOutline } from "react-icons/io5";
 import PropTypes from "prop-types";
-import { Colores } from "../../../../components/GlobalColor";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import dayjs from "dayjs";
-import { Radio } from "antd";
+import { useUpdateEstadoTareaMutation } from "../../../../redux/Api/proyectoApi";
+import { Colores } from "../../../../components/GlobalColor";
 TareasComponent.propTypes = {
   proyecto: PropTypes.array.isRequired,
+  setSelectProyecto: PropTypes.func.isRequired,
 };
 
-const optionsWithDisabled = [
-  {
-    label: "Pendiente",
-    value: "Apple",
-  },
-  {
-    label: "En curso",
-    value: "Pear",
-  },
-  {
-    label: "Completa",
-    value: "Orange",
-  },
-];
-export default function TareasComponent({ proyecto }) {
+export default function TareasComponent({ proyecto, setSelectProyecto }) {
   const [selectedTarea, setSelectedTarea] = useState({});
-  console.log(selectedTarea)
-  const [value4, setValue4] = useState("Apple");
-  const maxCharacters = 15;
+  const [vistaTareaKey, setVistaTareaKey] = useState(0); // Agrega una clave para forzar la actualización
+  const maxCharacters = 25;
+
+  useEffect(() => {
+    setSelectProyecto(proyecto[0]?.IdProyecto);
+    setSelectedTarea({});
+    
+  }, [proyecto, setSelectProyecto]);
+
+  const [
+    UpdateEstadoTarea,
+    // { isLoading: isLoadingCreate, isSuccess: isCreateSuccess, isError: isErrorCreate },
+  ] = useUpdateEstadoTareaMutation();
+
   const renderText = (text) => {
     if (text.length > maxCharacters) {
       return `${text.slice(0, maxCharacters)}...`;
@@ -42,11 +41,13 @@ export default function TareasComponent({ proyecto }) {
     return text;
   };
 
-  const onChange4 = ({ target: { value } }) => {
-    console.log("radio4 checked", value);
-    setValue4(value);
+  const update = (IdProyecto, IdTarea, IdEstado) => {
+    UpdateEstadoTarea({ IdProyecto, IdTarea, IdEstado });
   };
 
+  useEffect(() => {
+    setVistaTareaKey((prevKey) => prevKey + 1);
+  }, [selectedTarea]);
   return (
     <>
       <Container
@@ -74,18 +75,23 @@ export default function TareasComponent({ proyecto }) {
             justifyContent: "space-between",
           }}
         >
-          <p style={{ marginInline: 5 }}>Prioridad</p>
           <p style={{ marginRight: 30 }}>Tareas</p>
           <p style={{ marginInline: 15 }}>Tiempo estimado</p>
           <p style={{ marginInline: 30 }}>Estado</p>
         </div>
         <ContainerDetail
-          style={{ overflow: "auto", height: "80%", padding: 0 }}
+          style={{
+            overflow: "auto",
+            height: "80%",
+            padding: 0,
+            borderRadius: "0",
+          }}
         >
           {proyecto[0]?.TareasProyecto.map((item, key) => (
-            <BtnSelect
+            <BtnSelectt
+              isSelected={selectedTarea.IdTarea == item.IdTarea ? true : false}
               style={{
-                width: "100%",
+                width: "98%",
                 display: "flex",
                 flexDirection: "row",
                 height: "auto",
@@ -98,30 +104,12 @@ export default function TareasComponent({ proyecto }) {
               <div
                 style={{
                   display: "flex",
-                  marginRight: 10,
-                }}
-              >
-                <IoRadioButtonOff
-                  size={22}
-                  color={
-                    item.IdPrioridad == 1
-                      ? "red"
-                      : item.IdPrioridad == 2
-                      ? "yellow"
-                      : "blue"
-                  }
-                />
-              </div>
-              <div
-                style={{
-                  display: "flex",
                   marginInline: 18,
                   textAlign: "left",
                   flexDirection: "column",
                 }}
               >
                 <h4>{renderText(item.NombreTarea)}</h4>
-                <span>{renderText(item.Descripcion)}</span>
               </div>
 
               <div
@@ -130,7 +118,6 @@ export default function TareasComponent({ proyecto }) {
                   alignItems: "center",
                   marginRight: 15,
                   fontSize: 12,
-                  color: "gray",
                 }}
               >
                 <p>1 semana</p>
@@ -142,12 +129,11 @@ export default function TareasComponent({ proyecto }) {
                   alignItems: "center",
                   marginLeft: 70,
                   fontSize: 12,
-                  color: "gray",
                 }}
               >
-                <Tag color="#108ee9">{item.EstadoTarea}</Tag>
+                <p>{item.EstadoTarea}</p>
               </div>
-            </BtnSelect>
+            </BtnSelectt>
           ))}
         </ContainerDetail>
       </Container>
@@ -185,12 +171,18 @@ export default function TareasComponent({ proyecto }) {
                 }}
               >
                 <div>
+                  <b>Prioridad</b>
+                  <p>{selectedTarea.NombrePrioridad}</p>
+                </div>
+                <div>
                   <b>Titulo</b>
                   <p>{selectedTarea.NombreTarea}</p>
                 </div>
-                <div>
-                  <b>Prioridad</b>
-                  <p>{selectedTarea.NombrePrioridad}</p>
+                <div style={{ display: "flex", gap: 20, color: "black" }}>
+                  <b>Estado</b>
+                  <div style={{ color: "blue" }}>
+                    {selectedTarea.EstadoTarea}
+                  </div>
                 </div>
               </ContainerList>
               <ContainerList
@@ -205,8 +197,24 @@ export default function TareasComponent({ proyecto }) {
                 <b>Descripcion</b>
                 <p>{selectedTarea.Descripcion}</p>
               </ContainerList>
+
               <ContainerList
-                style={{ margin: 5, padding: 10, backgroundColor: "white" ,color: "black" }}
+                style={{
+                  margin: 5,
+                  padding: 10,
+                  backgroundColor: "white",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: " space-between",
+                }}
+              ></ContainerList>
+              <ContainerList
+                style={{
+                  margin: 5,
+                  padding: 10,
+                  backgroundColor: "white",
+                  color: "black",
+                }}
               >
                 <div
                   style={{
@@ -235,34 +243,81 @@ export default function TareasComponent({ proyecto }) {
                   </div>
                 </div>
               </ContainerList>
-
               <ContainerList
                 style={{
                   margin: 5,
                   padding: 10,
-                  backgroundColor: "white",
                   display: "flex",
                   alignItems: "center",
-                  justifyContent: " space-between",
+                  justifyContent: "space-between",
                 }}
               >
-                <div style={{display:"flex", gap: 20}}>
-                  <p>Estado</p>
-                  <Tag color="#108ee9">{selectedTarea.EstadoTarea}</Tag>
-                </div>
-                <div>
-                  <Radio.Group
-                    options={optionsWithDisabled}
-                    onChange={onChange4}
-                    value={value4}
-                    optionType="button"
-                    buttonStyle="solid"
-                  />
+                <h4>Cambiar estado</h4>
+
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
+                >
+                  <BtnEstadoPro
+                    isSelected={selectedTarea.IdEstadoTarea == 1 ? true : false}
+                    style={{
+                      borderRadius: "12px",
+                      width: "100px",
+                      padding: "5px 5px",
+                      marginInline: 5,
+                    }}
+                    onClick={() =>
+                      update(proyecto[0]?.IdProyecto, selectedTarea.IdTarea, 1)
+                    }
+                  >
+                    Pendiente
+                  </BtnEstadoPro>
+                  <BtnEstadoPro
+                    isSelected={selectedTarea.IdEstadoTarea == 2 ? true : false}
+                    style={{
+                      borderRadius: "12px",
+                      width: "100px",
+                      padding: "5px 5px",
+                      marginInline: 5,
+                    }}
+                    onClick={() =>
+                      update(proyecto[0]?.IdProyecto, selectedTarea.IdTarea, 2)
+                    }
+                  >
+                    En curso
+                  </BtnEstadoPro>
+                  <BtnEstadoPro
+                    isSelected={selectedTarea.IdEstadoTarea == 3 ? true : false}
+                    style={{
+                      borderRadius: "12px",
+                      width: "100px",
+                      padding: "5px 5px",
+                      marginInline: 5,
+                    }}
+                    onClick={() =>
+                      update(proyecto[0]?.IdProyecto, selectedTarea.IdTarea, 3)
+                    }
+                  >
+                    Completo
+                  </BtnEstadoPro>
                 </div>
               </ContainerList>
             </ContainerDetail>
           </>
-        ) : null}
+        ) : (
+          <>
+            <Container style={{display:"flex", justifyContent:"center",alignItems:"center", gap:5, color:"gray"}}>
+              <IoLogoOctocat
+                size={50}
+                style={{ color: `${Colores.AzulMar}` }}
+              />
+              <p>no hay tarea seleccionada</p>
+            </Container>
+          </>
+        )}
       </Container>
     </>
   );
