@@ -1,13 +1,13 @@
-import {useCallback } from "react";
+import { useCallback } from "react";
 
-function useBase64Conversion(): (file: File) => Promise<Uint8Array | null> {
+function useBase64Conversion(): (file: File) => Promise<string | null> {
   const convertToBase64 = useCallback((file: File) => {
-    return new Promise<Uint8Array | null>((resolve) => {
+    return new Promise<string | null>((resolve) => {
       const reader = new FileReader();
       reader.readAsDataURL(file);
 
       reader.onload = () => {
-        const result = reader.result as Uint8Array;
+        const result = reader.result as string;
         resolve(result);
       };
     });
