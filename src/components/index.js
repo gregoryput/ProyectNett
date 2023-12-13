@@ -46,6 +46,7 @@ import {
   ButtonIconDelete,
   ButtonIconMenuTalba,
   ButtonSelect,
+  ButtonSelectProyecto,
 } from "./General/ButtonIcon";
 import { ButtonSave } from "./Formularios/ButtonSave";
 import { DropdownContenttabla } from "./General/Dropdownmenutabla";
@@ -171,4 +172,5 @@ export {
   //
   CustomUploadImage,
   ViewContainerPages2,
+  ButtonSelectProyecto,
 };

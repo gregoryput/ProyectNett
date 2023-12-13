@@ -1,9 +1,15 @@
 import CountUp from "react-countup";
 import { Container } from "../../../../components";
+import dayjs from "dayjs";
 
-export default function Tiempo() {
+import PropTypes from "prop-types";
+Tiempo.propTypes = {
+  proyecto: PropTypes.array.isRequired,
+};
+
+export default function Tiempo({proyecto}) {
   const formatter = (value) => <CountUp end={value} separator="," />;
-
+   console.log(proyecto);
   return (
     <Container style={{ marginInline: 5 ,marginTop:0}}>
       <h3>Tiempo</h3>
@@ -20,7 +26,7 @@ export default function Tiempo() {
           <p style={{ fontSize: 12, color: "gray" }}>
             Fecha de entrega estimada
           </p>
-          <h2>05-06-2024</h2>
+          <h2>{dayjs(proyecto[0]?.FechaDeFinalizacion).format("DD-MM-YYYY")}</h2>
         </div>
       </div>
 
@@ -33,7 +39,7 @@ export default function Tiempo() {
           }}
         >
           <p>Fecha inicio:</p>
-          <span>05/01/2024</span>
+          <span>{dayjs(proyecto[0]?.FechaDeInicio).format("DD-MM-YYYY")}</span>
         </div>
         <div
           style={{
@@ -43,7 +49,7 @@ export default function Tiempo() {
           }}
         >
           <p>Fecha de proyecion</p>
-          <span>05/01/2024</span>
+          <span>{dayjs(proyecto[0]?.FechaDeFinalizacion).format("DD-MM-YYYY")}</span>
         </div>
         <div
           style={{

@@ -13,6 +13,7 @@ import {
   ButtonIcon,
   Container,
   ContainerDetail,
+  SpinnerTables,
 } from "../../../../components";
 import ComponentTarea from "./TareaComponent";
 import ProductoComponent from "./ProductoComponent";
@@ -45,7 +46,7 @@ export default function FormularioProyecto() {
   const [
     createProyecto,
     {
-      // isLoading: isLoadingCreate,
+      isLoading: isLoadingCreate,
       isSuccess: isCreateSuccess,
       isError: isErrorCreate,
     },
@@ -93,7 +94,7 @@ export default function FormularioProyecto() {
       );
       setServiciosFiltrado(nuevosServicios);
     },
-    placeholder: "Select Item...",
+    placeholder: "Seleccionar servicios",
     maxTagCount: "responsive",
   };
 
@@ -281,25 +282,20 @@ export default function FormularioProyecto() {
         // "IdEstadoRegistro": 0
       },
     };
-    createProyecto({...dataSubmit});
-    console.log(dataSubmit);
+    createProyecto({ ...dataSubmit });
   };
 
   useEffect(() => {
     if (isCreateSuccess === true) {
-      message.error({
-        content:
-          " guardar los datos",
-        duration: 4,
-      });
+      console.log();
+      
     }
   }, [isCreateSuccess]);
   //.. CUANDO EL INSERT TENGA UN ERROR:
   useEffect(() => {
     if (isErrorCreate === true) {
       message.error({
-        content:
-          "Ha ocurrido un error al intentar guardar los datos",
+        content: "Ha ocurrido un error al intentar guardar los datos",
         duration: 4,
       });
     }
@@ -333,276 +329,312 @@ export default function FormularioProyecto() {
   ]);
 
   return (
-    <div style={{ width: "100%", marginTop: 0, margin: 0 }}>
-      <ContainerDetail
-        style={{
-          margin: 0,
-          padding: 0,
-        }}
-      >
-        <Form
-          layout="vertical"
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "space-between",
-            flexWrap: "wrap",
-          }}
-          form={form}
-          onFinish={onFinish}
-        >
-          <Container
-            style={{
-              marginInline: 5,
-              marginBlock: 5,
-              width: "100%",
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              padding: 20,
-            }}
-          >
-            <h3>Servicios</h3>
-            <div style={{ width: 400 }}>
-              <Select {...selectProps} />
-            </div>
-          </Container>
-          <Container style={{ marginInline: 5, marginBlock: 5, width: "100%" }}>
-            <h3>Informacion basica</h3>
-            <div style={{ display: "flex", justifyContent: "space-between" }}>
-              <Form.Item
-                label={<strong>Nombre:</strong>}
-                style={{ width: 200, marginTop: 30 }}
-                name={"Nombre"}
-                rules={[
-                  {
-                    required: true,
-                    message: "Escriba el nombre del proyecto",
-                  },
-                  {
-                    max: 55,
-                    message: "55 caracteres como máximo",
-                  },
-                ]}
-              >
-                <Input placeholder="Ingrese el nombre" />
-              </Form.Item>
-
-              <div style={{ display: "flex", alignItems: "center" }}>
-                <Form.Item
-                  label={<strong>Cliente:</strong>}
-                  style={{ width: 200, marginTop: 30 }}
-                  name={"cliente"}
-                  rules={[
-                    {
-                      required: true,
-                      message: "Seleccionar cliente",
-                    },
-                  ]}
-                >
-                  <Input
-                    allowClear
-                    readOnly
-                    style={{ backgroundColor: "white" }}
-                    placeholder="Seleccionar cliente"
-                  />
-                </Form.Item>
-                <ButtonIcon
-                  onClick={() => OpenModalCliente()}
-                  style={{ width: 40, marginLeft: 10, marginTop: 37 }}
-                  type="button"
-                >
-                  <IoPersonAddOutline size={18} color="black" />
-                </ButtonIcon>
-              </div>
-
-              <Form.Item
-                label={<strong>Fecha de inicio:</strong>}
-                style={{ width: 300, marginTop: 30 }}
-                name={"FechaDeInicio"}
-                rules={[
-                  {
-                    required: true,
-                    message: "Debe ingresar fecha ",
-                  },
-                ]}
-              >
-                <DatePicker onChange={handleDateChange} format={"DD-MM-YYYY"} />
-              </Form.Item>
-            </div>
-
-            <Form.Item
-              label={<strong>Descripción:</strong>}
-              style={{ width: 300, marginRight: 10 }}
-              name={"Descripcion"}
-              rules={[
-                {
-                  required: true,
-                  message: "No hay descripción",
-                },
-                {
-                  max: 60,
-                  message: "60 caracteres como máximo",
-                },
-              ]}
-            >
-              <TextArea placeholder="Descripción" />
-            </Form.Item>
-          </Container>
-
-          {/* componente tarea  */}
-
-          <Container style={{ marginBlock: 5, marginInline: 5, width: "100%" }}>
-            <ComponentTarea
-              setTarea={setTarea}
-              tarea={tarea}
-              serviciosfiltrado={serviciosfiltrado}
-              selectedDate={selectedDate}
-              setTotalServicios={setTotalServicios}
-            />
-          </Container>
-
-          <Container style={{ marginBlock: 5, marginInline: 5, width: "100%" }}>
-            <ProductoComponent
-              setSelectStateProducto={setSelectStateProducto}
-              selectStateProducto={selectStateProducto}
-              setTotalProducto={setTotalProducto}
-            />
-          </Container>
-          <Container style={{ marginBlock: 5, marginInline: 5, width: "100%" }}>
-            <GastoExtrasComponent
-              setTotalGasto={setTotalGasto}
-              gasto={gasto}
-              setGasto={setGasto}
-            />
-          </Container>
-          <Container style={{ marginBlock: 5, marginInline: 5, width: "100%" }}>
-            <EquipoComponent empleado={empleado} setEmpleado={setEmpleado} />
-          </Container>
-          <ContainerDetail
-            style={{
-              backgroundColor: `${Colores.AzulOscuro}`,
-              marginBlock: 5,
-              marginInline: 5,
-              width: "100%",
-              display: "flex",
-              justifyContent: "space-between",
-              color: "white",
-            }}
-          >
-            <div style={{ width: 300 }}>
-              <h3>Detalle</h3>
-
-              <div style={{ fontSize: 12 }}>
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    paddingTop: 15,
-                  }}
-                >
-                  <p>Total productos:</p>
-                  <span>RD$ {formatter(totalProducto)}</span>
-                </div>
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    paddingTop: 10,
-                  }}
-                >
-                  <p>Total servicios:</p>
-                  <span>RD$ {formatter(totalServicios)}</span>
-                </div>
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    paddingTop: 10,
-                  }}
-                >
-                  <p>Total gasto adicional:</p>
-                  <span>RD$ {formatter(totalGasto)}</span>
-                </div>
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    paddingTop: 10,
-                  }}
-                >
-                  <h3>Total general</h3>
-                  <h3>RD$ {formatter(totalGeneral)}</h3>
-                </div>
-              </div>
-            </div>
-
-            <div style={{ marginTop: 0, width: 200 }}>
-              <h3>Tiempo</h3>
-
-              <div style={{ fontSize: 12 }}>
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    paddingTop: 15,
-                  }}
-                >
-                  <p>Fecha inicio:</p>
-                  <span> {fechaInicio}</span>
-                </div>
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    paddingTop: 8,
-                  }}
-                >
-                  <p>Fecha final:</p>
-                  <span>{fechaFinal}</span>
-                </div>
-              </div>
-            </div>
-            <div
+    <>
+      {isLoadingCreate == true ? (
+        <Container style={{textAlign:"center"}}>
+          <h2>Generando proyecto</h2>
+          <SpinnerTables />
+        </Container>
+      ) : (
+        <>
+          <div style={{ width: "100%", marginTop: 0, margin: 0 }}>
+            <ContainerDetail
               style={{
-                display: "flex",
-                alignSelf: "flex-end",
-                maxWidth: 400,
-                width: 300,
+                margin: 0,
+                padding: 0,
               }}
             >
-              <BtnPro
+              <Form
+                layout="vertical"
                 style={{
-                  height: 60,
                   display: "flex",
+                  flexDirection: "row",
                   justifyContent: "space-between",
-                  alignItems: "center",
-                  margin: 0,
-                  padding: 5,
+                  flexWrap: "wrap",
                 }}
+                form={form}
+                onFinish={onFinish}
               >
-                <div
-                  style={{ display: "flex", alignItems: "center", padding: 5 }}
+                <Container
+                  style={{
+                    marginInline: 5,
+                    marginBlock: 5,
+                    width: "100%",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    padding: 20,
+                  }}
                 >
-                  <AiOutlineDollarCircle size={30} style={{ margin: 10 }} />
-                  <h4> Realizar cotización</h4>
-                </div>
-                <AiOutlineArrowRight size={30} />
-              </BtnPro>
-            </div>
-          </ContainerDetail>
-        </Form>
-      </ContainerDetail>
-      {/* modal de cliente  */}
-      <ModalCliente
-        CloseModalCliente={CloseModalCliente}
-        OpenModalCliente={OpenModalCliente}
-        llenarCampo={ClienteInput}
-        handleSearch={handleSearch}
-        isModalOpen={isModalOpen}
-        filteredData={filteredData}
-        selectState={selectStateCliente}
-      />
-    </div>
+                  <h3>Servicios</h3>
+                  <div style={{ width: 400 }}>
+                    <Select {...selectProps} />
+                  </div>
+                </Container>
+                <Container
+                  style={{ marginInline: 5, marginBlock: 5, width: "100%" }}
+                >
+                  <h3>Informacion basica</h3>
+                  <div
+                    style={{ display: "flex", justifyContent: "space-between" }}
+                  >
+                    <Form.Item
+                      label={<strong>Nombre:</strong>}
+                      style={{ width: 200, marginTop: 30 }}
+                      name={"Nombre"}
+                      rules={[
+                        {
+                          required: true,
+                          message: "Escriba el nombre del proyecto",
+                        },
+                        {
+                          max: 55,
+                          message: "55 caracteres como máximo",
+                        },
+                      ]}
+                    >
+                      <Input placeholder="Ingrese el nombre" />
+                    </Form.Item>
+
+                    <div style={{ display: "flex", alignItems: "center" }}>
+                      <Form.Item
+                        label={<strong>Cliente:</strong>}
+                        style={{ width: 200, marginTop: 30 }}
+                        name={"cliente"}
+                        rules={[
+                          {
+                            required: true,
+                            message: "Seleccionar cliente",
+                          },
+                        ]}
+                      >
+                        <Input
+                          allowClear
+                          readOnly
+                          style={{ backgroundColor: "white" }}
+                          placeholder="Seleccionar cliente"
+                        />
+                      </Form.Item>
+                      <ButtonIcon
+                        onClick={() => OpenModalCliente()}
+                        style={{ width: 40, marginLeft: 10, marginTop: 37 }}
+                        type="button"
+                      >
+                        <IoPersonAddOutline size={18} color="black" />
+                      </ButtonIcon>
+                    </div>
+
+                    <Form.Item
+                      label={<strong>Fecha de inicio:</strong>}
+                      style={{ width: 300, marginTop: 30 }}
+                      name={"FechaDeInicio"}
+                      rules={[
+                        {
+                          required: true,
+                          message: "Debe ingresar fecha ",
+                        },
+                      ]}
+                    >
+                      <DatePicker
+                        onChange={handleDateChange}
+                        format={"DD-MM-YYYY"}
+                      />
+                    </Form.Item>
+                  </div>
+
+                  <Form.Item
+                    label={<strong>Descripción:</strong>}
+                    style={{ width: 300, marginRight: 10 }}
+                    name={"Descripcion"}
+                    rules={[
+                      {
+                        required: true,
+                        message: "No hay descripción",
+                      },
+                      {
+                        max: 60,
+                        message: "60 caracteres como máximo",
+                      },
+                    ]}
+                  >
+                    <TextArea placeholder="Descripción" />
+                  </Form.Item>
+                </Container>
+
+                {/* componente tarea  */}
+
+                <Container
+                  style={{ marginBlock: 5, marginInline: 5, width: "100%" }}
+                >
+                  <ComponentTarea
+                    setTarea={setTarea}
+                    tarea={tarea}
+                    serviciosfiltrado={serviciosfiltrado}
+                    selectedDate={selectedDate}
+                    setTotalServicios={setTotalServicios}
+                  />
+                </Container>
+
+                <Container
+                  style={{ marginBlock: 5, marginInline: 5, width: "100%" }}
+                >
+                  <ProductoComponent
+                    setSelectStateProducto={setSelectStateProducto}
+                    selectStateProducto={selectStateProducto}
+                    setTotalProducto={setTotalProducto}
+                  />
+                </Container>
+                <Container
+                  style={{ marginBlock: 5, marginInline: 5, width: "100%" }}
+                >
+                  <GastoExtrasComponent
+                    setTotalGasto={setTotalGasto}
+                    gasto={gasto}
+                    setGasto={setGasto}
+                  />
+                </Container>
+                <Container
+                  style={{ marginBlock: 5, marginInline: 5, width: "100%" }}
+                >
+                  <EquipoComponent
+                    empleado={empleado}
+                    setEmpleado={setEmpleado}
+                  />
+                </Container>
+                <ContainerDetail
+                  style={{
+                    backgroundColor: `${Colores.AzulOscuro}`,
+                    marginBlock: 5,
+                    marginInline: 5,
+                    width: "100%",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    color: "white",
+                  }}
+                >
+                  <div style={{ width: 300 }}>
+                    <h3>Detalle</h3>
+
+                    <div style={{ fontSize: 12 }}>
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          paddingTop: 15,
+                        }}
+                      >
+                        <p>Total productos:</p>
+                        <span>RD$ {formatter(totalProducto)}</span>
+                      </div>
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          paddingTop: 10,
+                        }}
+                      >
+                        <p>Total servicios:</p>
+                        <span>RD$ {formatter(totalServicios)}</span>
+                      </div>
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          paddingTop: 10,
+                        }}
+                      >
+                        <p>Total gasto adicional:</p>
+                        <span>RD$ {formatter(totalGasto)}</span>
+                      </div>
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          paddingTop: 10,
+                        }}
+                      >
+                        <h3>Total general</h3>
+                        <h3>RD$ {formatter(totalGeneral)}</h3>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div style={{ marginTop: 0, width: 200 }}>
+                    <h3>Tiempo</h3>
+
+                    <div style={{ fontSize: 12 }}>
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          paddingTop: 15,
+                        }}
+                      >
+                        <p>Fecha inicio:</p>
+                        <span> {fechaInicio}</span>
+                      </div>
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          paddingTop: 8,
+                        }}
+                      >
+                        <p>Fecha final:</p>
+                        <span>{fechaFinal}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignSelf: "flex-end",
+                      maxWidth: 400,
+                      width: 300,
+                    }}
+                  >
+                    <BtnPro
+                      style={{
+                        height: 60,
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        margin: 0,
+                        padding: 5,
+                      }}
+                    >
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          padding: 5,
+                        }}
+                      >
+                        <AiOutlineDollarCircle
+                          size={30}
+                          style={{ margin: 10 }}
+                        />
+                        <h4> Realizar cotización</h4>
+                      </div>
+                      <AiOutlineArrowRight size={30} />
+                    </BtnPro>
+                  </div>
+                </ContainerDetail>
+              </Form>
+            </ContainerDetail>
+            {/* modal de cliente  */}
+            <ModalCliente
+              CloseModalCliente={CloseModalCliente}
+              OpenModalCliente={OpenModalCliente}
+              llenarCampo={ClienteInput}
+              handleSearch={handleSearch}
+              isModalOpen={isModalOpen}
+              filteredData={filteredData}
+              selectState={selectStateCliente}
+            />
+          </div>
+        </>
+      )}
+    </>
   );
 }

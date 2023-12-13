@@ -15,11 +15,11 @@ export const proyectoApi = createApi({
   endpoints: (builder) => ({
     getServicio: builder.query({
       query: () => "/Proyecto/obtenerServicio",
-      providesTags: ["getServocoop"],
+      providesTags: ["Proyecto"],
     }),
     getParametros: builder.query({
       query: () => "/Proyecto/obtenerParametros",
-      providesTags: ["GetParametros"],
+      providesTags: ["Proyecto"],
     }),
     getResponsabilidad: builder.query({
       query: () => "/Proyecto/obtenerResposabilidad",
@@ -57,6 +57,17 @@ export const proyectoApi = createApi({
       }),
       providesTags: ["Proyecto"],
     }),
+
+    //// seecion de parte de presupuesto
+    getListaProyecto: builder.query({
+      query: () => "/Proyecto/obtenerListaProyecto",
+      providesTags: ["Proyecto"],
+    }),
+    getProyectoCompleto: builder.query({
+      query: (IdProyecto) =>
+        `/Proyecto/obtenerProyectoCompleto?IdProyecto=${IdProyecto}`,
+      providesTags: ["Proyecto"],
+    }),
   }),
 });
 
@@ -70,4 +81,8 @@ export const {
   useGetProductosUnidadesDetallesQuery,
   useCreateParametroCostoMutation,
   useCreateProyectoMutation,
+  
+  /// seccion presupuesto
+  useGetListaProyectoQuery,
+  useGetProyectoCompletoQuery,
 } = proyectoApi;

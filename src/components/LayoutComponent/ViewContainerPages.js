@@ -13,8 +13,8 @@ export const ViewContainerPages = styled.div`
 export const ViewContainerPages2 = styled.div`
   padding-left: 80px;
   padding-top: 70px;
-  height: 100vh;
-  width: 100vw;
+  height: 100%;
+  width: 99vw;
 
   diisplay: flex;
   justify-content: center;

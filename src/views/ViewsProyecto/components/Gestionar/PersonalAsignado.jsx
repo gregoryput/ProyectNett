@@ -6,33 +6,43 @@ import {
   ContainerDetail,
 } from "../../../../components";
 import { AiOutlineUser } from "react-icons/ai";
-const data = [
-  "Juan andres santana",
-  "Juan andres santana",
-  "Juan andres santana",
-  "Juan andres santana",
-  "Juan andres santana",
-  "Juan andres santana",
-];
+import PropTypes from "prop-types";
 
-export default function PersonalAsignado() {
+PersonalAsignado.propTypes = {
+  proyecto: PropTypes.array.isRequired,
+};
+
+
+export default function PersonalAsignado({proyecto}) {
   const formatter = (value) => <CountUp end={value} separator="," />;
 
+  const maxCharacters = 20;
+  const renderText = (text) => {
+    if (text.length > maxCharacters) {
+      return `${text.slice(0, maxCharacters)}...`;
+    }
+    return text;
+  };
   return (
     <>
       <Container style={{ height: 400 }}>
-        <div style={{display:"flex", justifyContent:"space-between",alignItems:"center"}}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
           <div style={{ display: "flex" }}>
             <AiOutlineUser size={20} style={{ marginRight: 5 }} />
             <h4>Personal asignado</h4>
           </div>
-         
         </div>
         <ContainerDetail style={{ overflow: "auto", height: 280, padding: 0 }}>
-          {data.map((item, key) => (
+          {proyecto[0]?.EmpleadosProyecto.map((item, key) => (
             <BtnSelect
               style={{
-                width: "98%",
+                width: "100%",
                 display: "flex",
                 flexDirection: "row",
                 height: 60,
@@ -60,16 +70,17 @@ export default function PersonalAsignado() {
                   textAlign: "justify",
                 }}
               >
-                <h3>Usuario</h3>
+                <b>{renderText(item.NombreEmpleado)}</b>
                 <div
                   style={{
                     display: "flex",
                     justifyContent: "space-between",
                     color: "gray",
+                    fontSize: "11px",
                   }}
                 >
                   <p>Responsabilidad</p>
-                  <p>Supervisor</p>
+                  <p>{item.ResponsabilidadNombre}</p>
                 </div>
               </div>
             </BtnSelect>
@@ -84,7 +95,7 @@ export default function PersonalAsignado() {
           }}
         >
           <p>Participantes:</p>
-          <span> {formatter(data.length)}</span>
+          <span> {formatter(proyecto[0]?.EmpleadosProyecto.length)}</span>
         </div>
       </Container>
     </>

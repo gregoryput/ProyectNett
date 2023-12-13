@@ -1,30 +1,57 @@
 import { Tag } from "antd";
-import { BtnSelect, Container, ContainerDetail } from "../../../../components";
+import {
+  BtnSelect,
+  Container,
+  ContainerDetail,
+  ContainerList,
+} from "../../../../components";
 
 import { IoClipboardOutline, IoRadioButtonOff } from "react-icons/io5";
-const data = [
-  "Tarea 1",
-  "Tarea 1",
-  "Tarea 1",
-  "Tarea 1",
-  "Tarea 1",
-  "Tarea 1",
-  "Tarea 1",
-  "Tarea 1",
-  "Tarea 1",
-  "Tarea 1",
-  "Tarea 1",
-  "Tarea 1",
-  "Tarea 1",
-  "Tarea 1",
-  "Tarea 1",
-  "Tarea 1",
-];
+import PropTypes from "prop-types";
+import { Colores } from "../../../../components/GlobalColor";
+import { useState } from "react";
+import dayjs from "dayjs";
+import { Radio } from "antd";
+TareasComponent.propTypes = {
+  proyecto: PropTypes.array.isRequired,
+};
 
-export default function TareasComponent() {
+const optionsWithDisabled = [
+  {
+    label: "Pendiente",
+    value: "Apple",
+  },
+  {
+    label: "En curso",
+    value: "Pear",
+  },
+  {
+    label: "Completa",
+    value: "Orange",
+  },
+];
+export default function TareasComponent({ proyecto }) {
+  const [selectedTarea, setSelectedTarea] = useState({});
+  console.log(selectedTarea)
+  const [value4, setValue4] = useState("Apple");
+  const maxCharacters = 15;
+  const renderText = (text) => {
+    if (text.length > maxCharacters) {
+      return `${text.slice(0, maxCharacters)}...`;
+    }
+    return text;
+  };
+
+  const onChange4 = ({ target: { value } }) => {
+    console.log("radio4 checked", value);
+    setValue4(value);
+  };
+
   return (
     <>
-      <Container style={{ marginInline: 5, marginBlock: 5, marginTop: 10,height:777}}>
+      <Container
+        style={{ marginInline: 5, marginBlock: 5, marginTop: 10, height: 300 }}
+      >
         <div
           style={{
             display: "flex",
@@ -39,25 +66,34 @@ export default function TareasComponent() {
             <h4>Tareas</h4>
           </div>
         </div>
-        <div style={{ display: "flex", fontSize: 12, padding: 5 }}>
+        <div
+          style={{
+            display: "flex",
+            fontSize: 12,
+            padding: 5,
+            justifyContent: "space-between",
+          }}
+        >
           <p style={{ marginInline: 5 }}>Prioridad</p>
-          <p style={{ marginRight: 90 }}>Tareas</p>
+          <p style={{ marginRight: 30 }}>Tareas</p>
           <p style={{ marginInline: 15 }}>Tiempo estimado</p>
-          <p style={{ marginInline: 25 }}>Estado</p>
+          <p style={{ marginInline: 30 }}>Estado</p>
         </div>
         <ContainerDetail
           style={{ overflow: "auto", height: "80%", padding: 0 }}
         >
-          {data.map((item, key) => (
+          {proyecto[0]?.TareasProyecto.map((item, key) => (
             <BtnSelect
               style={{
-                width: "98%",
+                width: "100%",
                 display: "flex",
                 flexDirection: "row",
                 height: "auto",
                 alignItems: "center",
+                justifyContent: "space-between",
               }}
               key={key}
+              onClick={() => setSelectedTarea(item)}
             >
               <div
                 style={{
@@ -65,7 +101,16 @@ export default function TareasComponent() {
                   marginRight: 10,
                 }}
               >
-                <IoRadioButtonOff size={22} color="red" />
+                <IoRadioButtonOff
+                  size={22}
+                  color={
+                    item.IdPrioridad == 1
+                      ? "red"
+                      : item.IdPrioridad == 2
+                      ? "yellow"
+                      : "blue"
+                  }
+                />
               </div>
               <div
                 style={{
@@ -75,8 +120,8 @@ export default function TareasComponent() {
                   flexDirection: "column",
                 }}
               >
-                <h4>Cableado edificio 1</h4>
-                <span>llevar acabo la...</span>
+                <h4>{renderText(item.NombreTarea)}</h4>
+                <span>{renderText(item.Descripcion)}</span>
               </div>
 
               <div
@@ -100,11 +145,124 @@ export default function TareasComponent() {
                   color: "gray",
                 }}
               >
-                <Tag color="#108ee9">En curso</Tag>
+                <Tag color="#108ee9">{item.EstadoTarea}</Tag>
               </div>
             </BtnSelect>
           ))}
         </ContainerDetail>
+      </Container>
+      <Container style={{ marginInline: 5 }}>
+        <h4>Vista tarea</h4>
+        {selectedTarea?.NombreTarea != undefined ? (
+          <>
+            <ContainerDetail style={{ margin: 0, padding: 10 }}>
+              <ContainerList
+                style={{
+                  margin: 5,
+                  padding: 10,
+                  color: "black",
+                  backgroundColor: "white",
+                  gap: 15,
+                  display: "flex",
+                  justifyContent: "flex-end",
+                }}
+              >
+                <b>Tipo de tarea</b>
+                <p>
+                  {selectedTarea.CostoPorParametro != undefined
+                    ? "Avanzada"
+                    : "Basica"}
+                </p>
+              </ContainerList>
+              <ContainerList
+                style={{
+                  display: "flex",
+                  margin: 5,
+                  padding: 10,
+                  color: "black",
+                  backgroundColor: "transparent",
+                  justifyContent: "space-between",
+                }}
+              >
+                <div>
+                  <b>Titulo</b>
+                  <p>{selectedTarea.NombreTarea}</p>
+                </div>
+                <div>
+                  <b>Prioridad</b>
+                  <p>{selectedTarea.NombrePrioridad}</p>
+                </div>
+              </ContainerList>
+              <ContainerList
+                style={{
+                  margin: 5,
+                  padding: 10,
+                  color: "black",
+                  backgroundColor: "white",
+                  gap: 5,
+                }}
+              >
+                <b>Descripcion</b>
+                <p>{selectedTarea.Descripcion}</p>
+              </ContainerList>
+              <ContainerList
+                style={{ margin: 5, padding: 10, backgroundColor: "white" ,color: "black" }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    gap: 200,
+                    backgroundColor: "white",
+                  }}
+                >
+                  <div>
+                    <b>Fecha inicio</b>
+                    <p>
+                      {dayjs(selectedTarea.FechaInicio).format("DD-MM-YYYY")}
+                    </p>
+                  </div>
+                  <div>
+                    <b>Fecha Final</b>
+                    <p>
+                      {dayjs(selectedTarea.FechaFinalizacion).format(
+                        "DD-MM-YYYY"
+                      )}
+                    </p>
+                  </div>
+                  <div>
+                    <b>Duracion</b>
+                    <p>9 dias</p>
+                  </div>
+                </div>
+              </ContainerList>
+
+              <ContainerList
+                style={{
+                  margin: 5,
+                  padding: 10,
+                  backgroundColor: "white",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: " space-between",
+                }}
+              >
+                <div style={{display:"flex", gap: 20}}>
+                  <p>Estado</p>
+                  <Tag color="#108ee9">{selectedTarea.EstadoTarea}</Tag>
+                </div>
+                <div>
+                  <Radio.Group
+                    options={optionsWithDisabled}
+                    onChange={onChange4}
+                    value={value4}
+                    optionType="button"
+                    buttonStyle="solid"
+                  />
+                </div>
+              </ContainerList>
+            </ContainerDetail>
+          </>
+        ) : null}
       </Container>
     </>
   );

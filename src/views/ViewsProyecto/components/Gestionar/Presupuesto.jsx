@@ -2,15 +2,18 @@ import { Container } from "../../../../components";
 import { Progress, Statistic } from "antd";
 import CountUp from "react-countup"
 
-export default function Presupuesto() {
+import PropTypes from "prop-types";
+Presupuesto.propTypes = {
+  proyecto: PropTypes.array.isRequired,
+};
+export default function Presupuesto({proyecto}) {
   const formatter = (value) => <CountUp end={value} separator="," />;
-
   return (
     <Container style={{ marginInline: 5}}>
       <h3>Presupuesto</h3>
 
       <div style={{ display: "flex", justifyContent: "flex-end" }}>
-        <Statistic title="Total" value={450000} formatter={formatter} />
+        <Statistic title="Total" value={proyecto[0]?.PresupuestoAcordado} formatter={formatter} />
       </div>
 
       <div style={{ fontSize: 12 }}>
@@ -22,7 +25,7 @@ export default function Presupuesto() {
           }}
         >
           <p>Costo en productos:</p>
-          <span>RD$ {formatter(150000)}</span>
+          <span>RD$ {formatter(proyecto[0]?.TotalProducto)}</span>
         </div>
         <div
           style={{
@@ -32,7 +35,7 @@ export default function Presupuesto() {
           }}
         >
           <p>Costo en tareas:</p>
-          <span>RD$ {formatter(250000)}</span>
+          <span>RD$ {formatter(proyecto[0]?.TotalTarea)}</span>
         </div>
         <div
           style={{
@@ -42,7 +45,7 @@ export default function Presupuesto() {
           }}
         >
           <p>Costo adicional :</p>
-          <span>RD$ {formatter(50000)}</span>
+          <span>RD$ {formatter(proyecto[0]?.TotalGasto)}</span>
         </div>
 
         <div
