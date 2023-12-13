@@ -85,6 +85,16 @@ export interface IPersona {
   IdEstadoRegistro?: number;
 
   PersonaTiposPersona?: IPersonaTipoPersona;
+
+  DataImagenPersona?: {
+    Imagen: IImagen;
+    PersonaImagen: IPersonaImagen;
+  };
+}
+
+interface IPersonaImagen {
+  IdImagen: number;
+  IdPersona: number;
 }
 
 export interface IPersonaTipoPersona {
@@ -103,7 +113,7 @@ export interface IImagen {
   FileName: string;
   ContentType: string;
   FileSize: number;
-  Data: Uint8Array | null;
+  Data: string | null;
   CheckSum?: string;
   IdCreadoPor?: number;
   FechaCreacion?: Date | null;

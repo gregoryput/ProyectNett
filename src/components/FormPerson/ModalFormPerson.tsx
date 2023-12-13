@@ -57,6 +57,19 @@ const ModalFormPerson = ({
   const [executeCreatePerson, petitionCreatePerson] =
     useCreatePersonaMutation();
 
+  // Para almacenar la imagen subida:
+  const [fileList, setFileList] = React.useState<UploadFile<any>[]>(
+    [] as UploadFile<any>[]
+  );
+
+  const [dataImage, setDataImage] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    convertToBase64(fileList[0]?.originFileObj as File).then((base64String) => {
+      setDataImage(base64String);
+    });
+  }, [fileList]);
+
   // Funcion para hacer submit:
   const onSubmit = () => {
     // Obtener los valores del formulario:
@@ -66,21 +79,13 @@ const ModalFormPerson = ({
     const selectedFile = fileList[0];
 
     // Crear objeto data para la imagen:
-    let dataImage = {
+    let objectImage = {
       IdImagen: 0,
       FileName: selectedFile.name,
       ContentType: selectedFile.type || "",
       FileSize: selectedFile.size || 0,
-      Data: null,
+      Data: dataImage,
     } as IImagen;
-
-    // Obtener la data de la imagen:
-    convertToBase64(fileList[0]?.originFileObj as File).then((base64String) => {
-      dataImage = {
-        ...dataImage,
-        Data: base64String,
-      };
-    });
 
     // Preparar el json de subida a la api:
     const dataSubmit = {
@@ -100,19 +105,22 @@ const ModalFormPerson = ({
         IdPersona: 0,
         IdTipoPersona: 4,
       },
-      Imagen: dataImage,
+      DataImagenPersona: {
+        Imagen: objectImage,
+        PersonaImagen: {
+          IdImagen: 0,
+          IdPersona: 0,
+        },
+      },
     } as IPersona;
 
     console.log("dataSubmitdataSubmit", dataSubmit);
 
     // Ejecutar la subida:
-    // executeCreatePerson(dataSubmit);
+    executeCreatePerson(dataSubmit);
   };
 
-  // Para almacenar la imagen subida:
-  const [fileList, setFileList] = React.useState<UploadFile<any>[]>(
-    [] as UploadFile<any>[]
-  );
+  // console.log("dataImage", dataImage);
 
   return (
     <Modal
@@ -234,7 +242,7 @@ const ModalFormPerson = ({
             label={<strong>Sexo:</strong>}
             style={{ width: "15%" }}
           >
-            <Group name="IdSexo">
+            <Group name="IdSexo" onChange={() => null}>
               <Radio value={1}>
                 <span>F</span>
               </Radio>
