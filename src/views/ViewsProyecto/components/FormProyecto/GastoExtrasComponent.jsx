@@ -52,11 +52,10 @@ export default function GastoExtrasComponent({
     // Establecer el nuevo array sin el elemento eliminado
     setGasto(updated);
   };
-  const totalSubtotal =
-    gasto != null ? gasto?.reduce((total, item) => total + item.Costo, 0) : "0";
+  const totalSubtotal = gasto != null ? gasto?.reduce((total, item) => total + item.Costo, 0) : "0";
   useEffect(() => {
     setTotalGasto(totalSubtotal);
-  }, [setTotalGasto]);
+  }, [setTotalGasto,totalSubtotal]);
 
   return (
     <>

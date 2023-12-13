@@ -12,7 +12,6 @@ import { Btnbox, ButtonSave, Container } from "../../../../components";
 import { IoExtensionPuzzleOutline, IoNuclear } from "react-icons/io5";
 import { MdNewLabel } from "react-icons/md";
 
-import dayjs from "dayjs";
 
 import { v4 as uuidv4 } from "uuid";
 import { useEffect, useState } from "react";
@@ -140,7 +139,6 @@ export default function ModalTarea({
     const Prioridad = prioridad.filter(
       (f) => f.IdPrioridad == data.IdPrioridad
     );
-    console.log(data);
     const Parametro = Parametros.filter(
       (f) => f.IdParametroCosto == data.IdParametroCosto
     );

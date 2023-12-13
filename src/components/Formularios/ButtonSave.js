@@ -7,7 +7,8 @@ color: white;
 height: 30px;
 width: 200px;
 border: none;
-border-radius: 5px;
+border-radius: 10px;
+
 font-size: 12px;
 display: flex;
 justify-content: center;

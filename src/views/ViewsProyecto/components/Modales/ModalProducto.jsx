@@ -264,7 +264,7 @@ export default function ModalProducto({
     // Establecer el nuevo array sin el elemento eliminado
     setProducto(updatedProductos);
   };
-
+  
   const listaDeIds = producto.map((item) => item.IdProducto);
 
   const Guardar = () => {

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ButtonIcon, ButtonNext } from "../../../../components";
+import {  ButtonIcon, ButtonNext } from "../../../../components";
 import { Table } from "antd";
 import ModalEmpelado from "../Modales/ModalEmpleado";
 import { IoCloseSharp } from "react-icons/io5";
@@ -68,8 +68,12 @@ export default function EquipoComponent({ empleado, setEmpleado }) {
         <h3>Equipo asignado</h3>
 
         <>
-          <ButtonNext
-            style={{ paddingInline: 10 }}
+        <ButtonNext
+              style={{
+                display: "flex",
+                borderRadius: "10px",
+                alignItems:"center",
+              }}
             type="button"
             onClick={() => OpenModal()}
           >

@@ -17,7 +17,7 @@ import { ButtonNav } from "./MenuNavegacion/ButtonNav";
 import { LabelNav } from "./MenuNavegacion/LabelNav";
 import { Column } from "./LayoutComponent/Column";
 import { Row } from "./LayoutComponent/Row";
-import { ViewContainerPages } from "./LayoutComponent/ViewContainerPages";
+import { ViewContainerPages, ViewContainerPages2 } from "./LayoutComponent/ViewContainerPages";
 import { DivRoll } from "./Menu/DivRoll";
 import { Spinner } from "./Spinner/Spinner";
 import { SpinnerTables } from "./Spinner/Spinner";
@@ -46,6 +46,7 @@ import {
   ButtonIconDelete,
   ButtonIconMenuTalba,
   ButtonSelect,
+  ButtonSelectProyecto,
 } from "./General/ButtonIcon";
 import { ButtonSave } from "./Formularios/ButtonSave";
 import { DropdownContenttabla } from "./General/Dropdownmenutabla";
@@ -170,4 +171,6 @@ export {
   
   //
   CustomUploadImage,
+  ViewContainerPages2,
+  ButtonSelectProyecto,
 };
