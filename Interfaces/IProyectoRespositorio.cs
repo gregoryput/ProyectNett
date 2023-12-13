@@ -15,5 +15,10 @@ namespace ProyectNettApi.Interfaces
         public IEnumerable<ProyectoProductosDTO> GetProyectosProductos();
         public void InsertarParametroCosto(ParametroCosto parametro);
         public void InsertarProyecto(Proyecto proyecto);
+
+        /// lista para presupuesto vista 
+        /// 
+        public IEnumerable<ProyectoDTO> GetListaProyecto();
+        public IEnumerable<ListaProyectoDTO> GetObtenerDatosProyecto(int IdProyecto);
     }
 }

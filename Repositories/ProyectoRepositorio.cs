@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using Newtonsoft.Json;
 using ProyectNettApi.DTO;
 using ProyectNettApi.Interfaces;
 using ProyectNettApi.Models;
@@ -22,7 +23,33 @@ namespace ProyectNettApi.Repositories
             _conexionDB = new ConexionDB();
         }
 
-        // Lista 
+        /// peticiones para proyecto 
+        public IEnumerable<ProyectoDTO> GetListaProyecto()
+        {
+            string query = "dbo.ListaProyecto";
+
+            var resultSet = _conexionDB.GetConnection(_configuration).Query<ProyectoDTO>(query, commandType: CommandType.StoredProcedure);
+            return resultSet.ToList();
+        }
+
+        public IEnumerable<ListaProyectoDTO> GetObtenerDatosProyecto(int IdProyecto)
+        {
+            string query = "dbo.ObtenerDatosProyecto";
+
+            var resultSet = _conexionDB.GetConnection(_configuration).Query<ListaProyectoDTO> (query,new {IdProyecto}, commandType: CommandType.StoredProcedure);
+
+            foreach (var proyecto in resultSet)
+            {
+                proyecto.TareasProyecto = JsonConvert.DeserializeObject<List<ListaTareaDTO>>(proyecto.TareasProyectoJson);
+                proyecto.ServicioProyecto = JsonConvert.DeserializeObject<List<ListaServicioDTO>>(proyecto.ServicioProyectoJson);
+                proyecto.ProductosProyecto = JsonConvert.DeserializeObject<List<ListaProductoDTO>>(proyecto.ProductosProyectoJson);
+                proyecto.EmpleadosProyecto = JsonConvert.DeserializeObject<List<ListaEmpleadoDTO>>(proyecto.EmpleadosProyectoJson);
+            }
+
+            return resultSet.ToList();
+        }
+
+        // Lista  de get para formulario de proyecto 
         public IEnumerable<ServiciosDTO> GetServicio()
         {
             string query = "dbo.ListaServicios";

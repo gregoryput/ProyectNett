@@ -46,6 +46,48 @@ namespace ProyectNettApi.Controllers
             }
         }
 
+        //[Authorize]
+        [Route("obtenerListaProyecto")]
+        [HttpGet]
+        public IActionResult getListaProyecto()
+        {
+            try
+            {
+                var lista = _proyectoRepositorio.GetListaProyecto();
+                _respuesta.Result = lista;
+                _respuesta.DisplayMessage = "Listado  obtenido con exito:";
+                return Ok(_respuesta);
+            }
+            catch (Exception ex)
+            {
+                _respuesta.IsSuccess = false;
+                _respuesta.DisplayMessage = "Error al solicitar la lista";
+                _respuesta.ErrorMessages = new List<string> { ex.ToString() };
+                return StatusCode(500, _respuesta);
+            }
+        }
+
+        //[Authorize]
+        [Route("obtenerProyectoCompleto")]
+        [HttpGet]
+        public IActionResult getProyectoCompleto(int IdProyecto)
+        {
+            try
+            {
+                var lista = _proyectoRepositorio.GetObtenerDatosProyecto(IdProyecto);
+                _respuesta.Result = lista;
+                _respuesta.DisplayMessage = "Listado  obtenido con exito:";
+                return Ok(_respuesta);
+            }
+            catch (Exception ex)
+            {
+                _respuesta.IsSuccess = false;
+                _respuesta.DisplayMessage = "Error al solicitar la lista";
+                _respuesta.ErrorMessages = new List<string> { ex.ToString() };
+                return StatusCode(500, _respuesta);
+            }
+        }
+
         [Authorize]
         [Route("obtenerServicio")]
         [HttpGet]
@@ -204,7 +246,7 @@ namespace ProyectNettApi.Controllers
         //
         // .A.C.C.I.O.N -- Para Insertar Proyectos: --------------------------------------------
         [Authorize]
-        [Route("intertarProyectos")]
+        [Route("insertarProyectos")]
         [HttpPost]
         public IActionResult insertarProyectos(Proyecto proyecto)
         {
