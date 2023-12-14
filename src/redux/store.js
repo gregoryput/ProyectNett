@@ -30,6 +30,10 @@ import productsReducer from "./Slice/productsSlice";
 import { proyectoApi } from "./Api/ProyectoApi";
 import proyectoReducer from "./Slice/ProyectoSlice";
 
+//---
+import { personasApi } from "./Api/personasApi";
+import personasReducer from "./Slice/personaSlice";
+
 import { uQVerificarApi } from "./Api/uQVerificarApi";
 import uqVerificarReducer from "./Slice/uqVerificarSlice";
 
@@ -49,7 +53,7 @@ export const store = configureStore({
     //Proveedores
     proveedores: proveedoresReducer,
     [proveedorApi.reducerPath]: proveedorApi.reducer,
-   //cargos 
+    //cargos
     cargos: cargoReducer,
     [cargoApi.reducerPath]: cargoApi.reducer,
 
@@ -89,6 +93,10 @@ export const store = configureStore({
     products: productsReducer,
     [productsApi.reducerPath]: productsApi.reducer,
 
+    //Personas
+    personas: personasReducer,
+    [personasApi.reducerPath]: personasApi.reducer,
+
     //Unidades de medidas
     unitsOfMeasurements: unitsOfMeasurementsReducer,
     [unitsOfMeasurementsApi.reducerPath]: unitsOfMeasurementsApi.reducer,
@@ -109,6 +117,7 @@ export const store = configureStore({
       .concat(uQVerificarApi.middleware)
       .concat(productsApi.middleware)
       .concat(proyectoApi.middleware)
+      .concat(personasApi.middleware)
       .concat(unitsOfMeasurementsApi.middleware),
 });
 

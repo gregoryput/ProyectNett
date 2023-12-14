@@ -24,6 +24,7 @@ import { RcFile } from "antd/es/upload";
 import { FaAddressCard } from "react-icons/fa";
 import { FaUserEdit } from "react-icons/fa";
 import { MdOutlinePersonSearch } from "react-icons/md";
+import { useGetPersonasIfoPersonalQuery } from "../../../redux/Api/personasApi";
 
 interface IFormClientesProps {
   toggle: boolean;
@@ -36,6 +37,8 @@ const FormClientsPersonsFi = (props: IFormClientesProps) => {
   const [fileList, setFileList] = React.useState<UploadFile<any>[]>(
     [] as UploadFile<any>[]
   );
+
+  const fecthClientes = useGetPersonasIfoPersonalQuery();
 
   const [openModalFP, setOpenModalFP] = React.useState<boolean>(false);
 
@@ -238,9 +241,10 @@ const FormClientsPersonsFi = (props: IFormClientesProps) => {
                   }
                 >
                   <Select
-                    options={[
-                      { label: "103912831 - Juan Andres Cesar", value: 1 },
-                    ]}
+                    options={fecthClientes.data?.Result.map((client) => ({
+                      value: client.IdPersona,
+                      label: client.Nombres + " " + client.Apellidos,
+                    }))}
                   />
                   <div
                     style={{

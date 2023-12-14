@@ -114,10 +114,39 @@ export interface IImagen {
   ContentType: string;
   FileSize: number;
   Data: string | null;
-  CheckSum?: string;
   IdCreadoPor?: number;
   FechaCreacion?: Date | null;
   IdModificadoPor?: number | null;
   FechaModificacion?: Date | null;
   IdEstadoRegistro?: number | null;
+}
+
+export interface PersonaInfoPersonalDTO {
+  IdPersona: number;
+  Nombres: string;
+  Apellidos: string;
+  Cedula: string;
+  FechaDeNacimiento: Date;
+  Correo: string;
+  Telefono1: string;
+  Telefono2: string;
+
+  // Propiedades para la relación con País
+  IdPais: number;
+  PaisNombre: string;
+
+  // Propiedades para la relación con Ciudad
+  IdCiudad: number;
+  CiudadNombre: string;
+
+  // Propiedades para la relación con Sexo
+  IdSexo: number;
+  SexoNombre: string;
+
+  // Propiedades para la relación con Imagen
+  IdImagen?: number | null;
+  FileName?: string | null;
+  ContentType?: string | null;
+  FileSize?: number | null;
+  Data?: Uint8Array | null; // Representa los datos de imagen como un array de bytes o nulo
 }
