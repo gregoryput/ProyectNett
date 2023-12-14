@@ -333,5 +333,22 @@ namespace ProyectNettApi.Repositories
             }
             connection.Close();
         }
+
+        public void UdapteEstado(int IdProyecto, int IdTarea, int IdEstado)
+        {
+            var connection = _conexionDB.GetConnection(_configuration);
+            connection.Open();
+            try
+            {
+                connection.Execute("dbo.EstadoTarea", new { IdProyecto, IdTarea, IdEstado }, commandType: CommandType.StoredProcedure);
+            }
+            catch (Exception ex)
+            {
+
+                connection.Close();
+                throw ex;
+            }
+            connection.Close();
+        }
     }
 }

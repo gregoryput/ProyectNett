@@ -268,5 +268,28 @@ namespace ProyectNettApi.Controllers
                 return StatusCode(500, _respuesta);
             }
         }
+
+        //[Authorize]
+        [Route("ActualizarEstadoTarea")]
+        [HttpPost]
+        public IActionResult EstadoTarea(int IdProyecto, int IdTarea, int IdEstado)
+        {
+          
+            try
+            {
+                _proyectoRepositorio.UdapteEstado(IdProyecto , IdTarea, IdEstado);
+                _respuesta.Result =  IdEstado;
+                _respuesta.DisplayMessage = "Actualizar tarea correctamente:";
+                return Ok(_respuesta);
+            }
+
+            catch (Exception ex)
+            {
+                _respuesta.IsSuccess = false;
+                _respuesta.DisplayMessage = "Error al Actualizar la tarea";
+                _respuesta.ErrorMessages = new List<string> { ex.ToString() };
+                return StatusCode(500, _respuesta);
+            }
+        }
     }
 }
