@@ -31,8 +31,12 @@ import {
   ViewContainerPages2,
 } from "../../components";
 import { useGetProyectoCompletoQuery } from "../../redux/Api/proyectoApi";
+import { JwtUtils } from "../../utils";
 
 export default function Proyecto() {
+  const token = localStorage.getItem("token");
+  const userRol = JwtUtils.getRolesByToken(token);
+
   const [seeState, setSee] = useState(true);
   const [formSee, setFormSee] = useState(false);
   const [selectProyecto, setSelectProyecto] = useState(false);
@@ -46,6 +50,9 @@ export default function Proyecto() {
     if (data?.Result !== undefined && isSuccess) {
       setProyecto(data?.Result);
      
+    }
+    if(userRol ==  "Asistente"){
+      setSee(false);
     }
 
 

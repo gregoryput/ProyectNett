@@ -166,7 +166,7 @@ export const createRouter = () => {
           path: "/proyecto",
           element: (
             <ProtectedRoute
-              roles={["Administrador", "Asistente Administrativo", "asistente"]}
+              roles={["Administrador", "Asistente Administrativo", "Asistente"]}
             >
               <Proyecto />
             </ProtectedRoute>
