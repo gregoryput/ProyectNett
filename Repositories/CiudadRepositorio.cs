@@ -15,14 +15,14 @@ namespace ProyectNettApi.Repositories
             _conexionDB = new ConexionDB();
         }
 
-        public IEnumerable<Ciudad> getCities(int idPais)
+        public IEnumerable<PersonaDTO> getCities(int idPais)
         {
             string queryExecute = $"Select * From Ciudades WHERE IdPais = {idPais}";
-            var resultSet = _conexionDB.GetConnection(_configuration).Query<Ciudad>(queryExecute);
+            var resultSet = _conexionDB.GetConnection(_configuration).Query<PersonaDTO>(queryExecute);
             return resultSet.ToList();
         }
 
-        public void InsertarCiudad(Ciudad ciudad)
+        public void InsertarCiudad(PersonaDTO ciudad)
         {
             throw new NotImplementedException();
         }

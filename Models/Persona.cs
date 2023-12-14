@@ -68,5 +68,7 @@ namespace ProyectNettApi.Models
 
         // Relaciones -------- :
         public PersonaTipoPersona PersonaTiposPersona { get; set; }
+
+        public DataImagenPersona DataImagenPersona { get; set; }
     }
 }

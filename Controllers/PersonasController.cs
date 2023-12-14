@@ -25,11 +25,11 @@ namespace ProyectNettApi.Controllers
         }
 
         //
-        // .A.C.C.I.O.N -- Para insertar Cliente: --------------------------------------------
+        // .A.C.C.I.O.N -- Para insertar Persona: --------------------------------------------
         [Authorize]
         [Route("insertarPersona")]
         [HttpPost]
-        public IActionResult insertarCliente(Persona persona)
+        public IActionResult insertarPersona(Persona persona)
         {
             string token = HttpContext.Request.Headers["Authorization"];
             persona.IdCreadoPor = _infoUser.getUsuarioIdByToken(token);
@@ -45,6 +45,30 @@ namespace ProyectNettApi.Controllers
             {
                 _respuesta.IsSuccess = false;
                 _respuesta.DisplayMessage = "Error al insertar los datos personales";
+                _respuesta.ErrorMessages = new List<string> { ex.ToString() };
+                return StatusCode(500, _respuesta);
+            }
+        }
+
+
+        //
+        // .A.C.C.I.O.N -- Para obtener la informacion persoal: --------------------------------------------
+        [Authorize]
+        [Route("GetPersonasInfoPersonal")]
+        [HttpGet]
+        public IActionResult getPersonasInfoPersonal()
+        {
+            try
+            {
+                var infoCliente = _personaRepositorio.GetPersonasInfoPersonal();
+                _respuesta.Result = infoCliente;
+                _respuesta.DisplayMessage = "Info personal obtenida con exito:";
+                return Ok(_respuesta);
+            }
+            catch (Exception ex)
+            {
+                _respuesta.IsSuccess = false;
+                _respuesta.DisplayMessage = "Error al solicitar la info personal";
                 _respuesta.ErrorMessages = new List<string> { ex.ToString() };
                 return StatusCode(500, _respuesta);
             }

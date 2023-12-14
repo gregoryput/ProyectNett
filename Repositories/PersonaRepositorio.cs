@@ -17,6 +17,13 @@ namespace ProyectNettApi.Repositories
             _conexionDB = new ConexionDB();
         }
 
+        public IEnumerable<PersonaInfoPersonalDTO> GetPersonasInfoPersonal()
+        {
+            string query = "dbo.GetDatosPersonales";
+            var resultSet = _conexionDB.GetConnection(_configuration).Query<PersonaInfoPersonalDTO>(query, commandType: CommandType.StoredProcedure);
+            return resultSet.ToList();
+        }
+
         public void InsertarPersona(Persona persona)
         {
             var connection = _conexionDB.GetConnection(_configuration);
@@ -53,7 +60,34 @@ namespace ProyectNettApi.Repositories
                     IdTipoPersona = persona.PersonaTiposPersona.IdTipoPersona,
                     IdCreadoPor = persona.IdCreadoPor,
                 };
-                connection.ExecuteScalar<int>(queryProcedureIPTP, dataIPTP, transaction, commandType: CommandType.StoredProcedure);
+                connection.ExecuteScalar(queryProcedureIPTP, dataIPTP, transaction, commandType: CommandType.StoredProcedure);
+
+                //
+                // -
+                // - ..I.N.S.E.R.T.. Insertando en la tabla Imagenes: ........................................
+                string queryProcedureInserImage = "dbo.InsertarImagen";
+                var imagen = persona.DataImagenPersona.Imagen;
+                var dataImage = new
+                {
+                    FileName = imagen.FileName,
+                    ContentType = imagen.ContentType,
+                    FileSize = imagen.FileSize,
+                    Data = imagen.Data,
+                    IdCreadoPor = persona.IdCreadoPor
+                };
+                int IdImagen = connection.ExecuteScalar<int>(queryProcedureInserImage, dataImage, transaction, commandType: CommandType.StoredProcedure);
+
+                //
+                // -
+                // - ..I.N.S.E.R.T.. Insertando en la tabla Imagenes: ........................................
+                string queryProcedureIPI = "dbo.InsertarPersonaImagen";
+                var dataIPI = new
+                {
+                    IdImagen = IdImagen,
+                    IdPersona = IdPersona,
+                    IdCreadoPor = persona.IdCreadoPor
+                };
+                connection.Execute(queryProcedureIPI, dataIPI, transaction, commandType: CommandType.StoredProcedure);
 
                 // - .C.O.M.M.I.T. Confirmo la transaccion
                 transaction.Commit();
