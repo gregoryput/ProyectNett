@@ -31,7 +31,6 @@ import {
   ViewContainerPages2,
 } from "../../components";
 import { useGetProyectoCompletoQuery } from "../../redux/Api/proyectoApi";
-import DiagramaGrantt from "./components/FormProyecto/DiagramaGrantt";
 
 export default function Proyecto() {
   const [seeState, setSee] = useState(true);
