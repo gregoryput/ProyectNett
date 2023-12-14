@@ -39,22 +39,22 @@ export default function TablaComponent({
 
   const navegation = useNavigate();
 
-  const [filteredData, setFilteredData] = useState(data?.result);
+  const [filteredData, setFilteredData] = useState([]);
 
   const handleSearch = (value) => {
     const searchTerm = value.toLowerCase();
 
-    const filter = data?.result.filter((item) =>
-      item.nombres.toLowerCase().includes(searchTerm)
+    const filter = data?.Result.filter((item) =>
+      item.Nombres.toLowerCase().includes(searchTerm)
     );
 
     setFilteredData(filter);
   };
   useEffect(() => {
-    if (data?.result !== undefined) {
-      setFilteredData(data?.result);
+    if (data?.Result !== undefined) {
+      setFilteredData(data?.Result);
     }
-  }, [data?.result, setFilteredData]);
+  }, [data?.Result, setFilteredData]);
 
   TablaComponent.propTypes = {
     data: PropTypes.object, // Cambia el tipo según lo que corresponda
@@ -104,45 +104,41 @@ export default function TablaComponent({
               showTotal: (total) => ` ${total} Total`,
             }}
           >
-             <Column
-              title="Id Empleado"
-              dataIndex="idEmpleado"
-              key="idEmpleado"
-            />
+           
             <Column
               title="Nombre completo"
-              dataIndex="nombres"
-              key="nombres"
+              dataIndex="Nombres"
+              key="Nombres"
             
             />
             <Column
               title="Apellidos"
-              dataIndex="apellidos"
+              dataIndex="Apellidos"
               key="apellidos"
            
             />
             <Column title="Teléfono" dataIndex="telefono1" key="telefono1" />
             <Column
               title="Ciudad"
-              dataIndex="ciudadNombre"
+              dataIndex="CiudadNombre"
               key="ciudad"
             />
-            <Column title="Correo" dataIndex="correo" key="correo" />
+            <Column title="Correo" dataIndex="Correo" key="correo" />
 
             <Column
               title="Estado"
-              dataIndex="idEstadoRegistro"
-              key="idEstadoRegistro"
+              dataIndex="IdEstadoRegistro"
+              key="IdEstadoRegistro"
               render={(_, record, index) => (
                 <>
                   {
                     <Tag
-                      key={`State ${record.idEstadoRegistro} ${index}`}
+                      key={`State ${record.IdEstadoRegistro} ${index}`}
                       color={
-                        record.idEstadoRegistro === 1 ? "#304878" : "#FF4D4D"
+                        record.IdEstadoRegistro === 1 ? "#304878" : "#FF4D4D"
                       }
                     >
-                      {record.nombreEstado}
+                      {record.NombreEstado}
                     </Tag>
                   }
                 </>
@@ -151,7 +147,7 @@ export default function TablaComponent({
                 { text: "Activo", value: 1 },
                 { text: "Inactivo", value: 2 },
               ]}
-              onFilter={(value, record) => record.idEstadoRegistro === value}
+              onFilter={(value, record) => record.IdEstadoRegistro === value}
             />
 
             <Column
@@ -162,20 +158,20 @@ export default function TablaComponent({
                     onMouseUp={() => {
                       setSelected(record);
                       setAction(
-                        record.idEstadoRegistro === 1 ? "Desactivar" : "Activar"
+                        record.IdEstadoRegistro === 1 ? "Desactivar" : "Activar"
                       );
-                      handleDrop(record.idEmpleado);
+                      handleDrop(record.IdEmpleado);
                     }}
                   >
                     <IoEllipsisVerticalSharp size={22} />
                   </ButtonIcon>
-                  <DropdownContenttabla open={openIndex === record.idEmpleado}>
+                  <DropdownContenttabla open={openIndex === record.IdEmpleado}>
                     <OutsideClick>
                       {/*----------VIEW BUTTON:----------*/}
                       <ButtonIconMenuTalba
                         onClick={() => {
                           handleDrop(-1);
-                          navegation(`/empleado/${record.idEmpleado}`);
+                          navegation(`/empleado/${record.IdEmpleado}`);
                           
                         }}
                       >
@@ -208,7 +204,7 @@ export default function TablaComponent({
                           handleDrop(-1);
                         }}
                       >
-                        {record.idEstadoRegistro === 1 ? (
+                        {record.IdEstadoRegistro === 1 ? (
                           <IoTrashOutline
                             size={18}
                             style={{ marginLeft: 5, marginRight: 5 }}
@@ -221,7 +217,7 @@ export default function TablaComponent({
                         )}
 
                         <p>
-                          {record.idEstadoRegistro === 1
+                          {record.IdEstadoRegistro === 1
                             ? "Desactivar"
                             : "Activar"}
                         </p>
