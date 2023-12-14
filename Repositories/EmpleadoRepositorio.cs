@@ -54,25 +54,25 @@ namespace ProyectNettApi.Repositories
 
 
 
-        // REPOSITORIO--A-P-I----P-R-O-Y-E-N-E-T-T ------ (Metodo para DEVOLVER una LISTA de Empleados) METODO PAGINADO:
-        public (IEnumerable<EmpleadoDTO> empleados, int totalCount) GetEmpleados(int pageNumber, int pageSize)
-        {
-            string query = "dbo.ListadoEmpleados";
-            var parameters = new DynamicParameters();
-            parameters.Add("@PageNumber", pageNumber);
-            parameters.Add("@PageSize", pageSize);
+        //// REPOSITORIO--A-P-I----P-R-O-Y-E-N-E-T-T ------ (Metodo para DEVOLVER una LISTA de Empleados) METODO PAGINADO:
+        //public (IEnumerable<EmpleadoDTO> empleados, int totalCount) GetEmpleados(int pageNumber, int pageSize)
+        //{
+        //    string query = "dbo.ListadoEmpleados";
+        //    var parameters = new DynamicParameters();
+        //    parameters.Add("@PageNumber", pageNumber);
+        //    parameters.Add("@PageSize", pageSize);
 
-            using (var connection = _conexionDB.GetConnection(_configuration))
-            {
-                var resultSet = connection.Query<EmpleadoDTO>(query, parameters, commandType: CommandType.StoredProcedure);
+        //    using (var connection = _conexionDB.GetConnection(_configuration))
+        //    {
+        //        var resultSet = connection.Query<EmpleadoDTO>(query, parameters, commandType: CommandType.StoredProcedure);
 
-                // Obtener el recuento total de clientes
-                string countQuery = "SELECT COUNT(*) FROM dbo.Empleados";
-                var totalCount = connection.ExecuteScalar<int>(countQuery);
+        //        // Obtener el recuento total de clientes
+        //        string countQuery = "SELECT COUNT(*) FROM dbo.Empleados";
+        //        var totalCount = connection.ExecuteScalar<int>(countQuery);
 
-                return (resultSet.ToList(), totalCount);
-            }
-        }
+        //        return (resultSet.ToList(), totalCount);
+        //    }
+        //}
 
 
         // REPOSITORIO--A-P-I----P-R-O-Y-E-N-E-T-T ------ (Metodo para INSERTAR Empleado):
@@ -113,7 +113,7 @@ namespace ProyectNettApi.Repositories
                     {
                         IdPersona,
                         empleado.IdCreadoPor,
-                        empleado.FechadDeContratación
+                        empleado.FechadDeContratacion
                     }, transaction, commandType: CommandType.StoredProcedure);
 
 

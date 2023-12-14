@@ -22,6 +22,13 @@ namespace ProyectNettApi.Repositories
             return resultSet.ToList();
         }
 
+        public IEnumerable<Ciudad> getCiti()
+        {
+            string queryExecute = $"Select * From Ciudades";
+            var resultSet = _conexionDB.GetConnection(_configuration).Query<Ciudad>(queryExecute);
+            return resultSet.ToList();
+        }
+
         public void InsertarCiudad(Ciudad ciudad)
         {
             throw new NotImplementedException();

@@ -7,5 +7,6 @@ namespace ProyectNettApi.Interfaces
     {
         public IEnumerable<Ciudad> getCities(int idPais);
         public void InsertarCiudad(Ciudad ciudad);
+        public IEnumerable<Ciudad> getCiti();
     }
 }

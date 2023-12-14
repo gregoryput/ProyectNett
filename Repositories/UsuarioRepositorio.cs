@@ -31,7 +31,7 @@ namespace ProyectNettApi.Repositories
         // REPOSITORIO--A-P-I----P-R-O-Y-E-N-E-T-T ------ (Metodo para DEVOLVER una LISTA de Usuario):
         public IEnumerable<EmpleadoDTO2> GetEmpleadoParaUsuario()
         {
-            string query = "Execute dbo.ListadoFiltradaParaUsuario";
+            string query = "Execute dbo.ListadoEmpleadoFiltradaUsuario";
             var resultSet = _conexionDB.GetConnection(_configuration).Query<EmpleadoDTO2>(query);
             return resultSet.ToList();
         }
@@ -48,14 +48,14 @@ namespace ProyectNettApi.Repositories
             {
                 // -
                 // - ..I.N.S.E.R.T.. Insertando en la tabla usuario: ........................................
-                string usuarioInsert = "dbo.Insertar_Usuario";
+                string usuarioInsert = "dbo.InsertarUsuario";
                 var data = new
                 {
               
                     NombreUsuario = usuario.NombreUsuario,
                     IdRol = usuario.IdRol,
                     Correo = usuario.Correo,
-                    Contra = Segurity.Segurity.HashPassword(usuario.Contraseña).ToString(),
+                    Contraseña = Segurity.Segurity.HashPassword(usuario.Contraseña).ToString(),
                     IdEmpleado = usuario.IdEmpleado,
                     IdCreadoPor = usuario.IdCreadoPor,
 
@@ -89,7 +89,7 @@ namespace ProyectNettApi.Repositories
                     NombreUsuario = usuario.NombreUsuario,
                     IdRol = usuario.IdRol,
                     Correo = usuario.Correo,
-                    Contra = Segurity.Segurity.HashPassword(usuario.Contraseña).ToString(),
+                    Contraseña = Segurity.Segurity.HashPassword(usuario.Contraseña).ToString(),
                     IdEmpleado = usuario.IdEmpleado,
                     IdModificadoPor = usuario.IdModificadoPor,
 
