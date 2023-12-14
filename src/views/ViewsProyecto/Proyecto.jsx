@@ -12,7 +12,7 @@ import Tiempo from "./components/Gestionar/Tiempo";
 import ViewsList from "./components/ViewsList";
 
 import TareasComponent from "./components/Operar/TareasComponent";
-
+import { IoAlertCircleOutline } from "react-icons/io5";
 import { useEffect, useState } from "react";
 import { Colores } from "../../components/GlobalColor";
 import FormularioProyecto from "./components/FormProyecto/FormularioProyecto";
@@ -35,9 +35,10 @@ import { useGetProyectoCompletoQuery } from "../../redux/Api/proyectoApi";
 export default function Proyecto() {
   const [seeState, setSee] = useState(true);
   const [formSee, setFormSee] = useState(false);
-  const [selectProyecto, setSelectProyecto] = useState(1);
+  const [tarea, setTarea] = useState([]);
+  const [selectProyecto, setSelectProyecto] = useState(null);
   const [proyecto, setProyecto] = useState([]);
-
+  const [allData, setAllData] = useState([]);
   // Llama a la consulta usando el hook generado
   const { data, isSuccess, isLoading } =
     useGetProyectoCompletoQuery(selectProyecto);
@@ -45,8 +46,9 @@ export default function Proyecto() {
   useEffect(() => {
     if (data?.Result !== undefined && isSuccess) {
       setProyecto(data?.Result);
+      setTarea(proyecto[0]?.TareasProyecto);
     }
-  }, [data, isSuccess]);
+  }, [data, isSuccess, proyecto]);
 
   return (
     <ViewContainerPages2>
@@ -67,6 +69,8 @@ export default function Proyecto() {
             formSee={formSee}
             selectProyecto={selectProyecto}
             setSelectProyecto={setSelectProyecto}
+            allData={allData}
+            setAllData={setAllData}
           />
         </Box1>
         {isLoading == true ? (
@@ -117,7 +121,7 @@ export default function Proyecto() {
                   ) : seeState == true ? (
                     <>
                       <ColumnItem2>
-                        <InfoCliente proyecto={proyecto}/>
+                        <InfoCliente proyecto={proyecto} />
                         <DescripcionProyecto proyecto={proyecto} />
                         <TareasProyecto proyecto={proyecto} />
                       </ColumnItem2>
@@ -125,19 +129,21 @@ export default function Proyecto() {
                       <ColumnItem>
                         <PersonalAsignado proyecto={proyecto} />
                         <Tiempo proyecto={proyecto} />
-                        <Detalle  />
+                        <Detalle />
                       </ColumnItem>
                       <ColumnItem>
                         <Productos proyecto={proyecto} />
                         <Presupuesto proyecto={proyecto} />
-                        <Pagos  />
+                        <Pagos />
                       </ColumnItem>
                     </>
                   ) : (
                     <>
                       <ColumnItem3>
-                        
-                        <TareasComponent proyecto={proyecto} />
+                        <TareasComponent
+                          proyecto={proyecto}
+                          setSelectProyecto={setSelectProyecto}
+                        />
                       </ColumnItem3>
                       <ColumnItem>
                         <PersonalAsignado proyecto={proyecto} />
@@ -150,6 +156,30 @@ export default function Proyecto() {
             </FlexibleBox>
           </>
         )}
+
+        {selectProyecto == null && formSee == false ? (
+          <>
+            <Container
+              style={{
+                position: "absolute",
+                backgroundColor: "transparent",
+                width: "75%",
+                right: 0,
+                top: 60,
+                height: "88vh",
+                backdropFilter: "blur(10px)",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                gap: 10,
+                borderRadius: 12,
+              }}
+            >
+              <IoAlertCircleOutline size={30} />
+              <h3>No hay proyecto seleccionado </h3>
+            </Container>
+          </>
+        ) : null}
       </FlexContainer>
     </ViewContainerPages2>
   );

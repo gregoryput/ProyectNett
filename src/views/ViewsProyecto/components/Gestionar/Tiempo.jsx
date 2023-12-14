@@ -9,7 +9,6 @@ Tiempo.propTypes = {
 
 export default function Tiempo({proyecto}) {
   const formatter = (value) => <CountUp end={value} separator="," />;
-   console.log(proyecto);
   return (
     <Container style={{ marginInline: 5 ,marginTop:0}}>
       <h3>Tiempo</h3>

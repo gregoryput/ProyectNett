@@ -131,6 +131,26 @@ export default function ModalTarea({
     });
   };
 
+  const calcularDiferenciaEnDias = (fechaInicio, fechaFin) => {
+    // Convertir las fechas a objetos de fecha
+    const inicio = new Date(fechaInicio);
+    const fin = new Date(fechaFin);
+
+    // Verificar si las fechas son iguales
+    if (inicio.toDateString() === fin.toDateString()) {
+      return 1;
+    }
+
+    // Calcular la diferencia en milisegundos
+    const diferenciaEnMilisegundos = fin - inicio;
+
+    // Calcular la diferencia en días
+    const diferenciaEnDias = Math.floor(
+      diferenciaEnMilisegundos / (1000 * 60 * 60 * 24)
+    );
+
+    return diferenciaEnDias;
+  };
   const onFinish = (data) => {
     const idUnico = uuidv4();
     const fechaInicio = data.Fechas[0].$d; //dayjs(data.Fechas[0].$d).format("DD-MM-YYYY");
@@ -150,6 +170,7 @@ export default function ModalTarea({
         FechaFinal: fechaFinal,
         Prioridad: Prioridad[0]?.NombrePrioridad,
         Parametro: Parametro[0]?.NombreParametro,
+        TiempDuracionEstimado: calcularDiferenciaEnDias(fechaInicio,fechaFinal)
       };
       setTarea([...tarea, datos]);
     } else {
@@ -162,13 +183,14 @@ export default function ModalTarea({
         FechaFinal: fechaFinal,
         Prioridad: Prioridad[0]?.NombrePrioridad,
         Parametro: Parametro[0]?.NombreParametro,
+        TiempDuracionEstimado: calcularDiferenciaEnDias(fechaInicio,fechaFinal) 
       };
       setTarea([...filtrado, datos]);
     }
-
     handleCloses();
   };
   const dateFormat = "DD-MM-YYYY";
+  console.log(tarea)
 
   const opciones = serviciosfiltrado?.map((dato) => ({
     value: dato.IdServicio.toString(),
@@ -331,7 +353,7 @@ export default function ModalTarea({
 
                   <Form.Item
                     label={<strong>Precio</strong>}
-                    name={"Precio"}
+                    name={"Total"}
                     rules={[
                       {
                         required: true,

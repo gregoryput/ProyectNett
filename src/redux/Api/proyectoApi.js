@@ -47,7 +47,7 @@ export const proyectoApi = createApi({
         method: "POST",
         body: newParam,
       }),
-      providesTags: ["Proyecto"],
+      invalidatesTags: ["Proyecto"],
     }),
     createProyecto: builder.mutation({
       query: (newProye) => ({
@@ -55,7 +55,7 @@ export const proyectoApi = createApi({
         method: "POST",
         body: newProye,
       }),
-      providesTags: ["Proyecto"],
+      invalidatesTags: ["Proyecto"],
     }),
 
     //// seecion de parte de presupuesto
@@ -66,7 +66,17 @@ export const proyectoApi = createApi({
     getProyectoCompleto: builder.query({
       query: (IdProyecto) =>
         `/Proyecto/obtenerProyectoCompleto?IdProyecto=${IdProyecto}`,
-      providesTags: ["Proyecto"],
+        providesTags: ["Proyecto"],
+    }),
+
+    UpdateEstadoTarea: builder.mutation({
+      query: ({IdProyecto, IdTarea, IdEstado}) => ({
+        url: `/Proyecto/ActualizarEstadoTarea?IdProyecto=${IdProyecto}&IdTarea=${IdTarea}&IdEstado=${IdEstado}`,
+        method: "POST",
+      }),
+
+      invalidatesTags: ["Proyecto"],
+      
     }),
   }),
 });
@@ -81,8 +91,9 @@ export const {
   useGetProductosUnidadesDetallesQuery,
   useCreateParametroCostoMutation,
   useCreateProyectoMutation,
-  
+
   /// seccion presupuesto
   useGetListaProyectoQuery,
   useGetProyectoCompletoQuery,
+  useUpdateEstadoTareaMutation,
 } = proyectoApi;

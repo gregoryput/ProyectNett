@@ -52,8 +52,8 @@ import { ButtonSave } from "./Formularios/ButtonSave";
 import { DropdownContenttabla } from "./General/Dropdownmenutabla";
 import { TitleNav } from "./General/TitleNav";
 import { Div } from "./General/Div";
-import { BtnSelect } from "./proyecto/SelectElement";
-import { BtnNavPro, BtnPago, BtnPro, Btnbox } from "./proyecto/BtnPro";
+import { BtnSelectt, BtnSelect } from "./proyecto/SelectElement";
+import { BtnEstadoPro, BtnNavPro, BtnPago, BtnPro, Btnbox } from "./proyecto/BtnPro";
 import {
   Box1,
   ColumnItem,
@@ -173,4 +173,6 @@ export {
   CustomUploadImage,
   ViewContainerPages2,
   ButtonSelectProyecto,
+  BtnSelectt,
+  BtnEstadoPro,
 };
