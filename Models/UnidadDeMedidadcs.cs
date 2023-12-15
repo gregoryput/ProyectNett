@@ -6,18 +6,18 @@ namespace ProyectNettApi.Models
     {
 
         [Key]
-        public int IdUnidad_DeMedida { get; set; }
+        public int IdUnidadDeMedida { get; set; }
         public string UnidadNombre { get; set; }
 
-        public int IdCreadoPor { get; set; }
+        public int? IdCreadoPor { get; set; }
 
-        public DateTime FechaCreacion { get; set; }
+        public DateTime? FechaCreacion { get; set; }
 
-        public int IdModificadoPor { get; set; }
+        public int? IdModificadoPor { get; set; }
 
-        public DateTime FechaModificacion { get; set; }
+        public DateTime? FechaModificacion { get; set; }
 
-        public int IdEstadoRegistro { get; set; }
+        public int? IdEstadoRegistro { get; set; }
 
     }
 }

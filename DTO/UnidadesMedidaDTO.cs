@@ -2,7 +2,7 @@
 {
     public class UnidadesMedidaDTO
     {
-        public int IdUnidad_DeMedida { get; set; }
-        public string ? UnidadNombre { get; set; }
+        public int IdUnidadDeMedida { get; set; }
+        public string? UnidadNombre { get; set; }
     }
 }

@@ -15,28 +15,21 @@ namespace ProyectNettApi.Repositories
             _conexionDB = new ConexionDB();
         }
 
-        public IEnumerable<PersonaDTO> getCities(int idPais)
+        public IEnumerable<Ciiudad> getCities(int idPais)
         {
             string queryExecute = $"Select * From Ciudades WHERE IdPais = {idPais}";
-            var resultSet = _conexionDB.GetConnection(_configuration).Query<Ciudad>(queryExecute);
+            var resultSet = _conexionDB.GetConnection(_configuration).Query<Ciiudad>(queryExecute);
             return resultSet.ToList();
         }
 
-        public IEnumerable<Ciudad> getCiti()
+        public IEnumerable<Ciiudad> getCiti()
         {
             string queryExecute = $"Select * From Ciudades";
-            var resultSet = _conexionDB.GetConnection(_configuration).Query<Ciudad>(queryExecute);
+            var resultSet = _conexionDB.GetConnection(_configuration).Query<Ciiudad>(queryExecute);
             return resultSet.ToList();
         }
 
-        public IEnumerable<Ciudad> getCiti()
-        {
-            string queryExecute = $"Select * From Ciudades";
-            var resultSet = _conexionDB.GetConnection(_configuration).Query<Ciudad>(queryExecute);
-            return resultSet.ToList();
-        }
-
-        public void InsertarCiudad(PersonaDTO ciudad)
+        public void InsertarCiudad(Ciiudad ciudad)
         {
             throw new NotImplementedException();
         }

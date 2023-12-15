@@ -2,7 +2,7 @@
 
 namespace ProyectNettApi.Models
 {
-    public class PersonaDTO
+    public class Ciiudad
     {
         public int IdCiudad { get; set; }
         public string CiudadNombre { get; set; }
