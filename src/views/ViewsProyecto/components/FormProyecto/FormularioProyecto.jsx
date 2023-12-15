@@ -305,7 +305,8 @@ export default function FormularioProyecto() {
         // "IdEstadoRegistro": 0
       },
     };
-    createProyecto({ ...dataSubmit });
+    // createProyecto({ ...dataSubmit });
+    console.log({...dataSubmit})
   };
 
   useEffect(() => {
