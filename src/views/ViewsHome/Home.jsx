@@ -39,7 +39,7 @@ export default function Home() {
             borderRadius: 12,
             margin: 4,
             marginLeft: 15,
-            objectPosition: "0% 50%",
+            objectPosition: "0% 10%",
             filter: "brightness(0.7)",
             // Mostrar la parte superior izquierda
           }}
