@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
+  BtnNavPro,
   Container,
   DropdownActionsLists,
   ViewContainerPages,
@@ -12,22 +13,40 @@ import {
   MdOutlineEdit,
   MdOutlineVisibility,
 } from "react-icons/md";
-import { useGetListaDocumentosVentasQuery } from "../../redux/Api/proyectoApi";
+import {
+  useGetListaDocumentosVentasQuery,
+  useGetProyectoCompletoQuery,
+  useLazyGetProyectoCompletoQuery,
+} from "../../redux/Api/proyectoApi";
 import { MdPrint } from "react-icons/md";
 import { MdDocumentScanner } from "react-icons/md";
 import { MdRequestQuote } from "react-icons/md";
 import { Navigate, useNavigate } from "react-router-dom";
 import { GeneradorDocumentoVentaPDF } from "./DocumentoVentaPDF";
+import { Colores } from "../../components/GlobalColor";
+import { IoMegaphoneOutline, IoDocumentAttachOutline } from "react-icons/io5";
 
 export default function CuentaPorCobrar() {
   //Fetch para obtener la lista de Documentos:
   const fetchListaDocumentos = useGetListaDocumentosVentasQuery();
+
+  const [openGeneradorPDF, setOpenGeneradorPDF] = useState(false);
+  const [Cotizacion, setCotizacion] = useState([]);
+
+  const [trigger, { data }] = useLazyGetProyectoCompletoQuery();
+
+  const handleButtonClick = async (item) => {
+    // Llamar a la función de consulta
+    const result = await trigger(item);
+
+    // Actualizar Cotizacion y abrir el generador PDF
+    if (result.data != undefined) {
+      setCotizacion(result.data.Result);
+      setOpenGeneradorPDF(true);
+    }
+  };
+
   const navigate = useNavigate();
-
-  const [openGeneradorPDF, setOpenGeneradorPDF] =
-    React.useState<boolean>(false);
-
-  const [selectedItem, setSelectedItem] = React.useState<IDocumentoDTO>();
 
   const columns: ColumnsType<IDocumentoDTO> = [
     {
@@ -105,8 +124,7 @@ export default function CuentaPorCobrar() {
               Name: "Imprimir",
               Title: "Imprimir",
               Method: () => {
-                setSelectedItem(record);
-                setOpenGeneradorPDF(true);
+                handleButtonClick(record.IdProyecto);
               },
               Icon: <MdPrint size={20} color="#25375B" />,
             },
@@ -119,11 +137,62 @@ export default function CuentaPorCobrar() {
   return (
     <ViewContainerPages>
       <div>
-        <Button>Lista general de documentos</Button>
-        <Button>Documentos por proyecto</Button>
+        <Container
+          style={{
+            marginTop: 15,
+            marginBottom: 15,
+            padding: 15,
+            alignItems: "center",
+            display: "flex",
+            justifyContent: "space-between",
+            backgroundColor: `${Colores.AzulMar}`,
+            color: `${Colores.Blanco}`,
+          }}
+        >
+          <div>
+            <h2>Facturación</h2>
+          </div>
+
+          <div style={{ display: "flex", gap: 10 }}>
+            <div>
+              <BtnNavPro
+                style={{
+                  borderRadius: "12px",
+                  width: "280px",
+                  height: "50px",
+                  padding: 15,
+                  marginInline: 15,
+                }}
+              >
+                <div
+                  style={{ display: "flex", justifyContent: "space-evenly" }}
+                >
+                  <h4>Lista general de documentos</h4>
+                </div>
+              </BtnNavPro>
+            </div>
+
+            <div>
+              <BtnNavPro
+                style={{
+                  borderRadius: "12px",
+                  width: "250px",
+                  height: "50px",
+                  padding: 15,
+                }}
+              >
+                <div
+                  style={{ display: "flex", justifyContent: "space-evenly" }}
+                >
+                  <h4>Documentos por proyecto</h4>
+                </div>
+              </BtnNavPro>
+            </div>
+          </div>
+        </Container>
       </div>
       <Container>
-        <h2>Lista genreal de documentos de ventas</h2>
+        <h3>Lista general de documentos de ventas</h3>
         <br />
         <Table
           size="small"
@@ -139,11 +208,15 @@ export default function CuentaPorCobrar() {
         />
       </Container>
 
-      <GeneradorDocumentoVentaPDF
-        documentoData={selectedItem}
-        openGeneradorPDF={openGeneradorPDF}
-        setOpenGeneradorPDF={setOpenGeneradorPDF}
-      />
+      {openGeneradorPDF == true && Cotizacion != null && Cotizacion != undefined && Array.isArray(Cotizacion) && Cotizacion.length > 0 ? (
+        <>
+          <GeneradorDocumentoVentaPDF
+            Cotizacion={Cotizacion}
+            openGeneradorPDF={openGeneradorPDF}
+            setOpenGeneradorPDF={setOpenGeneradorPDF}
+          />
+        </>
+      ) : null}
     </ViewContainerPages>
   );
 }

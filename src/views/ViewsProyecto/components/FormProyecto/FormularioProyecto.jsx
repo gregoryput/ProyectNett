@@ -126,6 +126,29 @@ export default function FormularioProyecto() {
     return fechaFinal;
   };
 
+  const calcularDiferenciaEnDias = (fechaInicio, fechaFin) => {
+    // Convertir las fechas a objetos de fecha
+    const inicio = new Date(fechaInicio);
+    const fin = new Date(fechaFin);
+
+    // Verificar si las fechas son iguales
+    if (inicio.toDateString() === fin.toDateString()) {
+      return 1;
+    }
+
+    // Calcular la diferencia en milisegundos
+    const diferenciaEnMilisegundos = fin - inicio;
+
+    // Calcular la diferencia en días
+    const diferenciaEnDias = Math.floor(
+      diferenciaEnMilisegundos / (1000 * 60 * 60 * 24)
+    );
+
+    return diferenciaEnDias;
+  };
+
+
+
   const fechafin = useMemo(() => {
     const resultado = obtenerFechaMasDistante(tarea);
     return new Date(resultado);
@@ -247,7 +270,7 @@ export default function FormularioProyecto() {
         Descripcion: tarea.Descripcion, // <<--
         FechaInicio: tarea.FechaInicio,
         FechaFinalizacion: tarea.FechaFinal, //dayjs(values.FechaFinal).format("DD-MM-YYYY")
-        TiempDuracionEstimado: "9 dias",
+        TiempDuracionEstimado: `${calcularDiferenciaEnDias(tarea.FechaInicio, tarea.FechaFinal)}` + "dias",
         //FechaRealDeFinalizacion: "2023-12-10T05:51:27.368Z",
         //TiempoDuracionReal: "string",
         IdParametroCosto: tarea.IdParametroCosto,

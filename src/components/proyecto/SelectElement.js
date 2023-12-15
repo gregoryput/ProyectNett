@@ -44,7 +44,7 @@ export const BtnSelectt = styled.button`
   &:hover {
     border-radius: 5px;
     transform: scale(1);
-    background-color: #B3B4ED;
+    background-color: #d5d6ff;
   }
   &:active {
     background-color: ${Colores.BlancoGris};

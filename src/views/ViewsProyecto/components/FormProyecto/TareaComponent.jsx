@@ -53,7 +53,7 @@ export default function ComponentTarea({
   const sumarTotales = (objetos) => {
     let totalGeneral = 0;
     let totalesPorServicio = {};
-
+  
     objetos.forEach((objeto) => {
       if (objeto.Total) {
         // Objeto con estructura regular
@@ -62,21 +62,13 @@ export default function ComponentTarea({
           totalesPorServicio[objeto.Servicio] = 0;
         }
         totalesPorServicio[objeto.Servicio] += objeto.Total;
-      } else if (objeto.Precio) {
-        // Objeto solo con precio
-        totalGeneral += objeto.Precio;
-        if (!totalesPorServicio[objeto.Servicio]) {
-          totalesPorServicio[objeto.Servicio] = 0;
-        }
-        totalesPorServicio[objeto.Servicio] += objeto.Precio;
       }
     });
-
+  
     return { totalGeneral, totalesPorServicio };
   };
-  // Llamada a la función
   const resultado = sumarTotales(tarea);
-
+  console.log(resultado);
   const CloseModal = () => {
     setIsModalOpen(false);
   };
@@ -351,7 +343,7 @@ function ListaDeTarea({ tarea, setTarea, item, serviciosfiltrado }) {
                 <p style={{ fontSize: 12, color: "gray" }}>
                   {" "}
                   RD$
-                  {item.Costo != null ? item.Total : item.Precio}
+                  { item.Total}
                 </p>
               </div>
               <div

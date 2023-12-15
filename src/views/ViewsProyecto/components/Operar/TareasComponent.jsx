@@ -1,5 +1,7 @@
 import {
-  BtnEstadoPro,
+  BtnEstadoCompleto,
+  BtnEstadoEnCuros,
+  BtnEstadoPendiente,
   BtnSelectt,
   Container,
   ContainerDetail,
@@ -21,14 +23,13 @@ TareasComponent.propTypes = {
 export default function TareasComponent({ proyecto, setSelectProyecto }) {
   const [selectedTarea, setSelectedTarea] = useState({});
   const [vistaTareaKey, setVistaTareaKey] = useState(0); // Agrega una clave para forzar la actualización
-  const maxCharacters = 25;
+  const maxCharacters = 22;
 
   useEffect(() => {
     setSelectProyecto(proyecto[0]?.IdProyecto);
     setSelectedTarea({});
-    
   }, [proyecto, setSelectProyecto]);
-
+  console.log(proyecto);
   const [
     UpdateEstadoTarea,
     // { isLoading: isLoadingCreate, isSuccess: isCreateSuccess, isError: isErrorCreate },
@@ -51,7 +52,7 @@ export default function TareasComponent({ proyecto, setSelectProyecto }) {
   return (
     <>
       <Container
-        style={{ marginInline: 5, marginBlock: 5, marginTop: 10, height: 300 }}
+        style={{ marginInline: 5, marginBlock: 5, marginTop: 10, height: 250 }}
       >
         <div
           style={{
@@ -76,7 +77,7 @@ export default function TareasComponent({ proyecto, setSelectProyecto }) {
           }}
         >
           <p style={{ marginRight: 30 }}>Tareas</p>
-          <p style={{ marginInline: 15 }}>Tiempo estimado</p>
+          <p>Tiempo estimado</p>
           <p style={{ marginInline: 30 }}>Estado</p>
         </div>
         <ContainerDetail
@@ -104,7 +105,7 @@ export default function TareasComponent({ proyecto, setSelectProyecto }) {
               <div
                 style={{
                   display: "flex",
-                  marginInline: 18,
+                  width: "33%",
                   textAlign: "left",
                   flexDirection: "column",
                 }}
@@ -118,6 +119,7 @@ export default function TareasComponent({ proyecto, setSelectProyecto }) {
                   alignItems: "center",
                   marginRight: 15,
                   fontSize: 12,
+                  width: "20%",
                 }}
               >
                 <p>1 semana</p>
@@ -180,8 +182,20 @@ export default function TareasComponent({ proyecto, setSelectProyecto }) {
                 </div>
                 <div style={{ display: "flex", gap: 20, color: "black" }}>
                   <b>Estado</b>
-                  <div style={{ color: "blue" }}>
-                    {selectedTarea.EstadoTarea}
+                  <div>
+                    {selectedTarea.EstadoTarea == "Pendiente" ? (
+                      <div style={{paddingInline:10 , borderRadius: 12 , backgroundColor:"#f94a3e", color:"white",paddingBlock:2}}>
+                      <b> {selectedTarea.EstadoTarea}</b>
+                      </div>
+                    ) : selectedTarea.EstadoTarea == "En progreso" ? (
+                      <div style={{paddingInline:10 , borderRadius: 12 , backgroundColor:"#3a0ae7", color:"white",paddingBlock:2}}>
+                      <b> {selectedTarea.EstadoTarea}</b>
+                      </div>
+                    ) : (
+                      <div style={{paddingInline:10 , borderRadius: 12 , backgroundColor:"#21f575", color:"white",paddingBlock:2}}>
+                      <b> {selectedTarea.EstadoTarea}</b>
+                      </div>
+                    )}
                   </div>
                 </div>
               </ContainerList>
@@ -192,22 +206,20 @@ export default function TareasComponent({ proyecto, setSelectProyecto }) {
                   color: "black",
                   backgroundColor: "white",
                   gap: 5,
+                  display: "flex",
+                  justifyContent: "space-between",
                 }}
               >
-                <b>Descripcion</b>
-                <p>{selectedTarea.Descripcion}</p>
+                <div>
+                  <b>Descripcion</b>
+                  <p>{selectedTarea.Descripcion}</p>
+                </div>
+                <div>
+                  <b>Tipo de servicio</b>
+                  <p>{selectedTarea.NombreServicio}</p>
+                </div>
               </ContainerList>
 
-              <ContainerList
-                style={{
-                  margin: 5,
-                  padding: 10,
-                  backgroundColor: "white",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: " space-between",
-                }}
-              ></ContainerList>
               <ContainerList
                 style={{
                   margin: 5,
@@ -219,7 +231,7 @@ export default function TareasComponent({ proyecto, setSelectProyecto }) {
                 <div
                   style={{
                     display: "flex",
-                    gap: 200,
+                    gap: 40,
                     backgroundColor: "white",
                   }}
                 >
@@ -241,6 +253,14 @@ export default function TareasComponent({ proyecto, setSelectProyecto }) {
                     <b>Duracion</b>
                     <p>9 dias</p>
                   </div>
+                  <div>
+                    <b>Fecha Terminado</b>
+                    <p>
+                      {dayjs(selectedTarea.FechaFinalizacion).format(
+                        "DD-MM-YYYY"
+                      )}
+                    </p>
+                  </div>
                 </div>
               </ContainerList>
               <ContainerList
@@ -250,9 +270,10 @@ export default function TareasComponent({ proyecto, setSelectProyecto }) {
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "space-between",
+                 
                 }}
               >
-                <h4>Cambiar estado</h4>
+                <h4>Estado</h4>
 
                 <div
                   style={{
@@ -261,7 +282,7 @@ export default function TareasComponent({ proyecto, setSelectProyecto }) {
                     alignItems: "center",
                   }}
                 >
-                  <BtnEstadoPro
+                  <BtnEstadoPendiente
                     isSelected={selectedTarea.IdEstadoTarea == 1 ? true : false}
                     style={{
                       borderRadius: "12px",
@@ -274,8 +295,8 @@ export default function TareasComponent({ proyecto, setSelectProyecto }) {
                     }
                   >
                     Pendiente
-                  </BtnEstadoPro>
-                  <BtnEstadoPro
+                  </BtnEstadoPendiente>
+                  <BtnEstadoEnCuros
                     isSelected={selectedTarea.IdEstadoTarea == 2 ? true : false}
                     style={{
                       borderRadius: "12px",
@@ -288,8 +309,8 @@ export default function TareasComponent({ proyecto, setSelectProyecto }) {
                     }
                   >
                     En curso
-                  </BtnEstadoPro>
-                  <BtnEstadoPro
+                  </BtnEstadoEnCuros>
+                  <BtnEstadoCompleto
                     isSelected={selectedTarea.IdEstadoTarea == 3 ? true : false}
                     style={{
                       borderRadius: "12px",
@@ -302,14 +323,22 @@ export default function TareasComponent({ proyecto, setSelectProyecto }) {
                     }
                   >
                     Completo
-                  </BtnEstadoPro>
+                  </BtnEstadoCompleto>
                 </div>
               </ContainerList>
             </ContainerDetail>
           </>
         ) : (
           <>
-            <Container style={{display:"flex", justifyContent:"center",alignItems:"center", gap:5, color:"gray"}}>
+            <Container
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                gap: 5,
+                color: "gray",
+              }}
+            >
               <IoLogoOctocat
                 size={50}
                 style={{ color: `${Colores.AzulMar}` }}

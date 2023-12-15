@@ -53,7 +53,7 @@ import { DropdownContenttabla } from "./General/Dropdownmenutabla";
 import { TitleNav } from "./General/TitleNav";
 import { Div } from "./General/Div";
 import { BtnSelectt, BtnSelect } from "./proyecto/SelectElement";
-import { BtnEstadoPro, BtnNavPro, BtnPago, BtnPro, Btnbox } from "./proyecto/BtnPro";
+import { BtnEstadoCompleto, BtnEstadoEnCuros, BtnEstadoPendiente, BtnNPro, BtnNavPro, BtnPago, BtnPro, Btnbox } from "./proyecto/BtnPro";
 import {
   Box1,
   ColumnItem,
@@ -174,5 +174,8 @@ export {
   ViewContainerPages2,
   ButtonSelectProyecto,
   BtnSelectt,
-  BtnEstadoPro,
+  BtnEstadoPendiente,
+  BtnEstadoCompleto,
+  BtnEstadoEnCuros,
+  BtnNPro,
 };

@@ -72,8 +72,8 @@ export default function TareasProyecto({ proyecto }) {
                     item.IdPrioridad == 1
                       ? "red"
                       : item.IdPrioridad == 2
-                      ? "yellow"
-                      : "blue"
+                      ? "blue"
+                      : "green"
                   }
                 />
               </div>

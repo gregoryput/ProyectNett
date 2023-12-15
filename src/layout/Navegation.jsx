@@ -82,7 +82,7 @@ export default function Navegation() {
                 fontWeight: `${ruta === "/" ? "600" : ""}`,
               }}
             >
-              Dashboard
+              Home
             </LabelNav>
           </ButtonNav>
         )}

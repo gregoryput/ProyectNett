@@ -190,7 +190,6 @@ export default function ModalTarea({
     handleCloses();
   };
   const dateFormat = "DD-MM-YYYY";
-  console.log(tarea)
 
   const opciones = serviciosfiltrado?.map((dato) => ({
     value: dato.IdServicio.toString(),

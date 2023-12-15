@@ -102,6 +102,7 @@ export const {
   /// seccion presupuesto
   useGetListaProyectoQuery,
   useGetProyectoCompletoQuery,
+  useLazyGetProyectoCompletoQuery,
   useUpdateEstadoTareaMutation,
   useGetListaDocumentosVentasQuery,
 } = proyectoApi;
