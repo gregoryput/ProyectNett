@@ -3,14 +3,7 @@ import { Colores } from "../../components/GlobalColor";
 import gatito from "../../assets/gatito.png";
 import fotodeljefe from "../../assets/fotodeljefe.jpg";
 export default function Home() {
-  const containerStyle = {
-    width: "300px", // Puedes ajustar el ancho según tus necesidades
-    height: "200px", // Puedes ajustar la altura según tus necesidades
-    border: "1px solid #ccc",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-  };
+
   return (
     <ViewContainerPages>
       <Container
