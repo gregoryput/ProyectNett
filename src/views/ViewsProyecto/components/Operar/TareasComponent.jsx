@@ -24,12 +24,10 @@ export default function TareasComponent({ proyecto, setSelectProyecto }) {
   const [selectedTarea, setSelectedTarea] = useState({});
   const [vistaTareaKey, setVistaTareaKey] = useState(0); // Agrega una clave para forzar la actualización
   const maxCharacters = 22;
-
   useEffect(() => {
     setSelectProyecto(proyecto[0]?.IdProyecto);
     setSelectedTarea({});
   }, [proyecto, setSelectProyecto]);
-  console.log(proyecto);
   const [
     UpdateEstadoTarea,
     // { isLoading: isLoadingCreate, isSuccess: isCreateSuccess, isError: isErrorCreate },
@@ -122,7 +120,7 @@ export default function TareasComponent({ proyecto, setSelectProyecto }) {
                   width: "20%",
                 }}
               >
-                <p>1 semana</p>
+                <p>{item.TiempDuracionEstimado }</p>
               </div>
 
               <div
@@ -250,16 +248,16 @@ export default function TareasComponent({ proyecto, setSelectProyecto }) {
                     </p>
                   </div>
                   <div>
-                    <b>Duracion</b>
-                    <p>9 dias</p>
+                    <b>Duración</b>
+                    <p>{selectedTarea.TiempDuracionEstimado}</p>
                   </div>
                   <div>
                     <b>Fecha Terminado</b>
                     <p>
-                      {dayjs(selectedTarea.FechaFinalizacion).format(
+                      {selectedTarea.FechaRealDeFinalizacion != null  ? dayjs(selectedTarea.FechaRealDeFinalizacion).format(
                         "DD-MM-YYYY"
-                      )}
-                    </p>
+                      ) : "No Terminada"}
+                    </p> 
                   </div>
                 </div>
               </ContainerList>

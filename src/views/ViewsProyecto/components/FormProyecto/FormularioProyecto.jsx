@@ -133,7 +133,7 @@ export default function FormularioProyecto() {
 
     // Verificar si las fechas son iguales
     if (inicio.toDateString() === fin.toDateString()) {
-      return 1;
+      return "1 día";
     }
 
     // Calcular la diferencia en milisegundos
@@ -143,8 +143,7 @@ export default function FormularioProyecto() {
     const diferenciaEnDias = Math.floor(
       diferenciaEnMilisegundos / (1000 * 60 * 60 * 24)
     );
-
-    return diferenciaEnDias;
+    return  `${diferenciaEnDias.toString() + " "+ "días"} ` ;
   };
 
 
@@ -191,7 +190,7 @@ export default function FormularioProyecto() {
       Descripcion: values.Descripcion,
       FechaDeInicio: new Date(values.FechaDeInicio),
       FechaDeFinalizacion: fechafin,
-      TiempoDuracionEstimado: "10 dias",
+      TiempoDuracionEstimado: `${calcularDiferenciaEnDias(new Date(values.FechaDeInicio), fechafin)}`,
       //"FechaRealDeFinalizacion": "2023-12-10T05:51:27.368Z",
       //"TiempoDuracionReal": "string",
       PresupuestoAcordado: totalGeneral,
@@ -270,12 +269,12 @@ export default function FormularioProyecto() {
         Descripcion: tarea.Descripcion, // <<--
         FechaInicio: tarea.FechaInicio,
         FechaFinalizacion: tarea.FechaFinal, //dayjs(values.FechaFinal).format("DD-MM-YYYY")
-        TiempDuracionEstimado: `${calcularDiferenciaEnDias(tarea.FechaInicio, tarea.FechaFinal)}` + "dias",
+        TiempDuracionEstimado: `${calcularDiferenciaEnDias(tarea.FechaInicio, tarea.FechaFinal)}`,
         //FechaRealDeFinalizacion: "2023-12-10T05:51:27.368Z",
         //TiempoDuracionReal: "string",
-        IdParametroCosto: tarea.IdParametroCosto,
-        CostoPorParametro: tarea.Costo,
-        Cantidad: tarea.Cantidad,
+        IdParametroCosto: tarea.IdParametroCosto ? tarea.IdParametroCosto : null,
+        CostoPorParametro: tarea.Costo ? tarea.Costo : null,
+        Cantidad: tarea.Cantidad ? tarea.Cantidad : null,
         CostoTotal: tarea.Total,
         IdPrioridad: tarea.IdPrioridad,
         IdProyecto: 0,
@@ -305,8 +304,8 @@ export default function FormularioProyecto() {
         // "IdEstadoRegistro": 0
       },
     };
-    // createProyecto({ ...dataSubmit });
-    console.log({...dataSubmit})
+    createProyecto({ ...dataSubmit });
+    // console.log({...dataSubmit})
   };
 
   useEffect(() => {
@@ -618,6 +617,7 @@ export default function FormularioProyecto() {
                     }}
                   >
                     <BtnPro
+                      type="submit"
                       style={{
                         height: 60,
                         display: "flex",
@@ -627,6 +627,7 @@ export default function FormularioProyecto() {
                         padding: 5,
                       }}
                     >
+                      
                       <div
                         style={{
                           display: "flex",

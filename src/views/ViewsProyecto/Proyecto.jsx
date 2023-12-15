@@ -49,14 +49,12 @@ export default function Proyecto() {
   useEffect(() => {
     if (data?.Result !== undefined && isSuccess) {
       setProyecto(data?.Result);
-     
     }
-    if(userRol ==  "Asistente"){
+    if (userRol == "Asistente") {
       setSee(false);
     }
-
-
   }, [data, isSuccess, proyecto]);
+
 
   return (
     <ViewContainerPages2>
@@ -96,7 +94,7 @@ export default function Proyecto() {
                   overflowY: "auto",
                 }}
               >
-                {selectProyecto == false  && formSee == false ? (
+                {selectProyecto == false && formSee == false ? (
                   <>
                     <Container
                       style={{
@@ -159,7 +157,7 @@ export default function Proyecto() {
 
                           <ColumnItem>
                             <PersonalAsignado proyecto={proyecto} />
-                            <Tiempo proyecto={proyecto} />
+                            <Tiempo proyecto={proyecto[0]} />
                             <Detalle />
                           </ColumnItem>
                           <ColumnItem>

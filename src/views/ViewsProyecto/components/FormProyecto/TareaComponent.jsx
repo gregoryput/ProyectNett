@@ -38,7 +38,7 @@ export default function ComponentTarea({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [messageApi, contextHolder] = message.useMessage();
   const formatter = (value) => <CountUp end={value} separator="," />;
-
+  console.log(tarea)
   const OpenModal = () => {
     if (serviciosfiltrado <= 0) {
       messageApi.open({
@@ -68,7 +68,6 @@ export default function ComponentTarea({
     return { totalGeneral, totalesPorServicio };
   };
   const resultado = sumarTotales(tarea);
-  console.log(resultado);
   const CloseModal = () => {
     setIsModalOpen(false);
   };
