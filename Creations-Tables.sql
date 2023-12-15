@@ -1370,5 +1370,17 @@ CREATE TABLE ProyectosImagenes
 GO
 
 
-
-SELECT * FROM CotizacionesProyectos
+-- CREACION DE LA TABLA Proyectos ProyectosDistribucionesPagos
+CREATE TABLE ProyectosDistribucionesPagos
+(
+    IdDistribucionPago INT IDENTITY CONSTRAINT PK_IdDistribucionPago PRIMARY KEY,
+    MontoPago DECIMAL,
+    FechaPago DATETIME,
+    --
+    IdCreadoPor int constraint PDP_Fk1_IdCreadoPor foreign Key references Usuarios(IdUsuario),
+    FechaCreacion Datetime,
+    IdModificadoPor int constraint PDP_Fk2_IdCreadoPor foreign Key references Usuarios(IdUsuario),
+    FechaModificacion Datetime,
+    IdEstadoRegistro int constraint PDP_Fk3_IdCreadoPor foreign Key references EstadosRegistros(IdEstadoRegistro),
+);
+GO
