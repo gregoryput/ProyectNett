@@ -87,7 +87,7 @@ export default function Navegation() {
           </ButtonNav>
         )}
 
-        {(userRol === "Administrador" || userRol === "Administrador") && (
+        {(userRol === "Administrador" || userRol === "Administrador"  || userRol === "Asistente") && (
           <ButtonNav
             exact
             to="proyecto"

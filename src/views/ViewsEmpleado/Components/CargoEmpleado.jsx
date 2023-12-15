@@ -57,7 +57,7 @@ export default function CargoEmpleado(props) {
   const [pressedonSave, setPressedonSave] = React.useState(false);
 
 //  const [cargoState, setCargoState] = useState(null)
- const [select, setSelect] = useState(null)
+ const [select, setSelect] = useState([])
   //Traer las Cargos
   const {
     data: dataCargo,
@@ -83,7 +83,7 @@ export default function CargoEmpleado(props) {
 
     // }
     if(!CargoLoding && CargoSelect != undefined) {
-      setSelect(CargoSelect?.result);
+      setSelect(CargoSelect?.Result);
     }
 
   },[isLoadingCompaniesClient])
@@ -106,17 +106,13 @@ export default function CargoEmpleado(props) {
         dataCargo !== undefined &&
         isCompaniesClientSuccess
       ) {
-        dataCargo?.result?.length > 0
+        dataCargo?.Result?.length > 0
           ? message.success({
-              content: "Lista de empresas del cliente cargada correctamente",
+              content: "Lista cargada correctamente",
               duration: 3,
             })
-          : message.info({
-              content:
-                "Información obtenida; el cliente no tiene empresas registradas",
-              duration: 4,
-            });
-        props.dataValues.cargos = dataCargo?.result.map(
+          : null;
+        props.dataValues.cargos = dataCargo?.Result.map(
           (d) => {
             return FuncUtils.capitalizePropertyKeys(d);
           }
@@ -276,16 +272,16 @@ export default function CargoEmpleado(props) {
                             {select.map((valor, index) => (
                               <Option
                                 key={index}
-                                value={parseInt(valor.idCargo)}
+                                value={parseInt(valor.IdCargo)}
                               >
-                                {valor.nombreCargo}
+                                {valor.NombreCargo}
                               </Option>
                             ))}
                           </Select>
                           {errors.cargos && errors.cargos[index] && (
                             <span style={{ color: "red", fontSize: 10 }}>
-                              {errors.cargos[index].idCargo &&
-                                errors.cargos[index].idCargo.message}
+                              {errors.cargos[index].IdCargo &&
+                                errors.cargos[index].IdCargo.message}
                             </span>
                           )}
                         </LabelFor>

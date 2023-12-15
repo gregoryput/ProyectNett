@@ -11,7 +11,6 @@ import {
 import { useForm } from "react-hook-form";
 import { IoArrowForward, IoClose } from "react-icons/io5";
 import React, { useEffect } from "react";
-import { SavingText } from "../../../components/StylesCustomLoading/loading-custom.styled";
 
 import {
   required,
@@ -21,13 +20,11 @@ import {
   email,
   cedualaDominicana,
   minValue,
-  numberOnly
 } from "../../../utils/validations";
 
 //Consultas de datos (para los select)
 import { useGetCitiesQuery } from "../../../redux/Api/citiesApi";
 import { useGetSexesQuery } from "../../../redux/Api/sexesApi";
-import { useUqVerificarCedulaUQMutation } from "../../../redux/Api/uQVerificarApi";
 import { useGetCountriesQuery } from "../../../redux/Api/countriesApi";
 import { useDispatch } from "react-redux";
 import { setCities } from "../../../redux/Slice/citiesSlice";
@@ -44,7 +41,7 @@ export default function InformacionPersonal(props) {
     setValue,
     trigger,
     reset,
-    setError,
+    // setError,
   } = useForm();
 
   const dispatch = useDispatch();
@@ -53,8 +50,7 @@ export default function InformacionPersonal(props) {
     props?.datavalues?.IdPais ? parseInt(props?.datavalues?.IdPais) : 0
   );
 
-  const [verificarCedula, { data: dataVerify, isLoading: isLoadingVerify }] =
-    useUqVerificarCedulaUQMutation();
+
 
   //Funcion para navegar al paso Informacion Empresas
   const irAdelante = () => {
@@ -62,53 +58,7 @@ export default function InformacionPersonal(props) {
     props.nextPart(dataInformacionPersnal); // Pasar al siguiente paso enviandole los datos del paso actual
   };
 
-  const controlVerify = (dataPersonal) => {
-    trigger().then((isValid) => {
-      if (isValid) {
-        let requiereVerificacionCedula = false;
-        if (
-          !(
-            props.dataValues?.InitialCedulaEdit &&
-            props.dataValues?.InitialCedulaEdit === dataPersonal.Cedula
-          )
-        ) {
-          verificarCedula(dataPersonal.Cedula);
-          requiereVerificacionCedula = true;
-        } else {
-          requiereVerificacionCedula = false;
-        }
-        if (!requiereVerificacionCedula) {
-          irAdelante();
-        }
-      } else {
-        return;
-      }
-    });
-  };
 
-  // Con este useEffect observo si la cedula existe y si existe no lo dejo avanzar al paso de empresas
-  React.useEffect(() => {
-    if (dataVerify !== null && dataVerify !== undefined) {
-      let cedulaDuplicate = false;
-      //
-      //VERIFICAR SI EL EMAIL YA EXISTE:
-      if (dataVerify?.result[0]?.Existe === true) {
-        cedulaDuplicate = true;
-        // Si el código existe se dispara una validacion React-Hook-Form
-        setError("Cedula", {
-          type: "manual",
-          message: "Ya hay un registro con esta cédula en la base de datos",
-        });
-      } else {
-        cedulaDuplicate = false;
-      }
-
-      //Si la cedula no esta duplicada lo dejo pasar al siguiente paso:
-      if (!cedulaDuplicate) {
-        irAdelante();
-      }
-    }
-  }, [dataVerify, setError]);
 
   //Traer las ciudades
   const {
@@ -116,13 +66,13 @@ export default function InformacionPersonal(props) {
     //  isSuccess: isCitiesSuccess,
     isLoading: isLoadingCities,
   } = useGetCitiesQuery("");
-
-  const optionsSelectCities = citiesData?.result
-    ?.filter((ct) => ct.idPais === IdPaisSeleccionado)
+  
+  const optionsSelectCities = citiesData?.Result
+    ?.filter((ct) => ct.IdPais === IdPaisSeleccionado)
     ?.map((citie) => {
       return {
-        value: citie?.idCiudad,
-        label: citie?.ciudadNombre,
+        value: citie?.IdCiudad,
+        label: citie?.CiudadNombre,
       };
     });
 
@@ -144,27 +94,27 @@ export default function InformacionPersonal(props) {
   const dispatchCities = React.useCallback(() => {
     if (
       !isLoadingCities &&
-      citiesData?.result != "" &&
-      citiesData?.result != null
+      citiesData?.Result != "" &&
+      citiesData?.Result != null
     ) {
       dispatch(
         setCities({
-          cities: citiesData?.result,
+          cities: citiesData?.Result,
         })
       );
     }
-  }, [dispatch, isLoadingCities, citiesData?.result]);
+  }, [dispatch, isLoadingCities, citiesData?.Result]);
 
   // Llenar el estado global Countries, para usarlo en el paso Informacion de empresas y no tener que volver a hacer la peticion al backend
   const dispatchCountries = React.useCallback(() => {
     if (
       !isLoadingCountries &&
-      countriesData?.result != "" &&
-      countriesData?.result != null
+      countriesData?.Result != "" &&
+      countriesData?.Result != null
     ) {
       dispatch(
         setCountries({
-          countries: countriesData?.result,
+          countries: countriesData?.Result,
         })
       );
     }
@@ -212,7 +162,7 @@ export default function InformacionPersonal(props) {
   };
 
   return (
-    <ContainerFormPrueba onSubmit={handleSubmit(controlVerify)}>
+    <ContainerFormPrueba onSubmit={handleSubmit(irAdelante)}>
       <div>
         <h2>Datos personales </h2>
       </div>
@@ -310,24 +260,7 @@ export default function InformacionPersonal(props) {
           )}
         </LabelFor>
 
-        <LabelFor>
-          {" "}
-          Edad
-          <InputFor
-            {...register("Edad", {
-              ...required("Este campo es requerido"),
-              ...maxLength(2,"Edad real"),
-              ...minLength(2,"Edad real"),
-              ...numberOnly("Solo numero"),
-            })}
-            placeholder="Ingrese la edad"
-          />
-          {errors.Edad && (
-            <span style={{ color: "red", fontSize: 10 }}>
-              {errors.Edad.message}
-            </span>
-          )}
-        </LabelFor>
+       
 
         <LabelFor>
           {" "}
@@ -362,11 +295,7 @@ export default function InformacionPersonal(props) {
               {errors.Cedula.message}
             </span>
           )}
-          {isLoadingVerify ? (
-            <SavingText marginTop="0" isSaving={true}>
-              Verificando...
-            </SavingText>
-          ) : null}
+        
         </LabelFor>
 
         {/*---------SELECT OPTION IDSEXO---------*/}
@@ -383,9 +312,9 @@ export default function InformacionPersonal(props) {
             <Option disabled value={0}>
               -- Seleccione el sexo --
             </Option>
-            {sexesData?.result.map((sex, index) => (
-              <Option key={index} value={parseInt(sex.idSexo)}>
-                {sex.sexoNombre}
+            {sexesData?.Result.map((sex, index) => (
+              <Option key={index} value={parseInt(sex.IdSexo)}>
+                {sex.SexoNombre}
               </Option>
             ))}
           </Select>
@@ -400,10 +329,10 @@ export default function InformacionPersonal(props) {
         <LabelFor>
           {" "}
           Fecha de nacimiento
-          <InputFor type="date" {...register("fechaDeNacimiento",{...required("Este campo es requerido")})} />
-          {errors.fechaDeNacimiento && (
+          <InputFor type="date" {...register("FechaDeNacimiento",{...required("Este campo es requerido")})} />
+          {errors.FechaDeNacimiento && (
             <span style={{ color: "red", fontSize: 10 }}>
-              {errors.fechaDeNacimiento.message}
+              {errors.FechaDeNacimiento.message}
             </span>
           )}
         </LabelFor>
@@ -428,9 +357,9 @@ export default function InformacionPersonal(props) {
             <Option disabled value={0}>
               -- Seleccione el país --
             </Option>
-            {countriesData?.result.map((country, index) => (
-              <Option key={index} value={parseInt(country.idPais)}>
-                {country.paisNombre}
+            {countriesData?.Result.map((country, index) => (
+              <Option key={index} value={parseInt(country.IdPais)}>
+                {country.PaisNombre}
               </Option>
             ))}
           </Select>
@@ -476,12 +405,12 @@ export default function InformacionPersonal(props) {
           type="button"
           onClick={()=> clearFields() }
           style={{ marginLeft: 5 }}
-          disabled={isLoadingVerify}
+       
         >
           <IoClose size={18} style={{ marginRight: 2 }} /> Cancelar
         </ButtonRemove>
 
-        <ButtonNext htmlType="submit" disabled={isLoadingVerify}>
+        <ButtonNext htmlType="submit">
           <IoArrowForward size={18} style={{ marginRight: 4 }} /> Siguiente{" "}
         </ButtonNext>
       </div>

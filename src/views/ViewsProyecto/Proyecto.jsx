@@ -31,12 +31,15 @@ import {
   ViewContainerPages2,
 } from "../../components";
 import { useGetProyectoCompletoQuery } from "../../redux/Api/proyectoApi";
+import { JwtUtils } from "../../utils";
 
 export default function Proyecto() {
+  const token = localStorage.getItem("token");
+  const userRol = JwtUtils.getRolesByToken(token);
+
   const [seeState, setSee] = useState(true);
   const [formSee, setFormSee] = useState(false);
-  const [tarea, setTarea] = useState([]);
-  const [selectProyecto, setSelectProyecto] = useState(null);
+  const [selectProyecto, setSelectProyecto] = useState(false);
   const [proyecto, setProyecto] = useState([]);
   const [allData, setAllData] = useState([]);
   // Llama a la consulta usando el hook generado
@@ -46,8 +49,13 @@ export default function Proyecto() {
   useEffect(() => {
     if (data?.Result !== undefined && isSuccess) {
       setProyecto(data?.Result);
-      setTarea(proyecto[0]?.TareasProyecto);
+     
     }
+    if(userRol ==  "Asistente"){
+      setSee(false);
+    }
+
+
   }, [data, isSuccess, proyecto]);
 
   return (
@@ -88,85 +96,107 @@ export default function Proyecto() {
                   overflowY: "auto",
                 }}
               >
-                {formSee == false ? (
-                  <>
-                    {" "}
-                    <RowItem>
-                      <ProgressTarea proyecto={proyecto} />
-                    </RowItem>
-                  </>
-                ) : (
+                {selectProyecto == false  && formSee == false ? (
                   <>
                     <Container
                       style={{
-                        marginInline: 5,
-                        marginTop: 0,
-                        marginBottom: 5,
-                        height: 70,
-                        padding: 20,
+                        backgroundColor: "white",
+                        backdropFilter: "blur(10px)",
+                        display: "flex",
+                        justifyContent: "center",
                         alignItems: "center",
-                        backgroundColor: `${Colores.AzulMar}`,
-                        color: `${Colores.Blanco}`,
+                        margin: 0,
+                        borderRadius: 12,
+                        marginBlock: 0,
+                        marginInline: 5,
+                        height: "87vh",
+                        gap: 5,
                       }}
                     >
-                      <h2>Creacion de proyecto</h2>
+                      <IoAlertCircleOutline size={30} />
+                      <h3>No hay proyecto seleccionado </h3>
                     </Container>
                   </>
-                )}
-                <MainContainer>
-                  {formSee == true ? (
-                    <>
-                      <FormularioProyecto />
-                    </>
-                  ) : seeState == true ? (
-                    <>
-                      <ColumnItem2>
-                        <InfoCliente proyecto={proyecto} />
-                        <DescripcionProyecto proyecto={proyecto} />
-                        <TareasProyecto proyecto={proyecto} />
-                      </ColumnItem2>
+                ) : (
+                  <>
+                    {formSee == false ? (
+                      <>
+                        {" "}
+                        <RowItem>
+                          <ProgressTarea proyecto={proyecto} />
+                        </RowItem>
+                      </>
+                    ) : (
+                      <>
+                        <Container
+                          style={{
+                            marginInline: 5,
+                            marginTop: 0,
+                            marginBottom: 5,
+                            height: 70,
+                            padding: 20,
+                            alignItems: "center",
+                            backgroundColor: `${Colores.AzulMar}`,
+                            color: `${Colores.Blanco}`,
+                          }}
+                        >
+                          <h2>Creacion de proyecto</h2>
+                        </Container>
+                      </>
+                    )}
+                    <MainContainer>
+                      {formSee == true ? (
+                        <>
+                          <FormularioProyecto />
+                        </>
+                      ) : seeState == true ? (
+                        <>
+                          <ColumnItem2>
+                            <InfoCliente proyecto={proyecto} />
+                            <DescripcionProyecto proyecto={proyecto} />
+                            <TareasProyecto proyecto={proyecto} />
+                          </ColumnItem2>
 
-                      <ColumnItem>
-                        <PersonalAsignado proyecto={proyecto} />
-                        <Tiempo proyecto={proyecto} />
-                        <Detalle />
-                      </ColumnItem>
-                      <ColumnItem>
-                        <Productos proyecto={proyecto} />
-                        <Presupuesto proyecto={proyecto} />
-                        <Pagos />
-                      </ColumnItem>
-                    </>
-                  ) : (
-                    <>
-                      <ColumnItem3>
-                        <TareasComponent
-                          proyecto={proyecto}
-                          setSelectProyecto={setSelectProyecto}
-                        />
-                      </ColumnItem3>
-                      <ColumnItem>
-                        <PersonalAsignado proyecto={proyecto} />
-                        <Tiempo proyecto={proyecto} />
-                      </ColumnItem>
-                    </>
-                  )}
-                </MainContainer>
+                          <ColumnItem>
+                            <PersonalAsignado proyecto={proyecto} />
+                            <Tiempo proyecto={proyecto} />
+                            <Detalle />
+                          </ColumnItem>
+                          <ColumnItem>
+                            <Productos proyecto={proyecto} />
+                            <Presupuesto proyecto={proyecto} />
+                            <Pagos />
+                          </ColumnItem>
+                        </>
+                      ) : (
+                        <>
+                          <ColumnItem3>
+                            <TareasComponent
+                              proyecto={proyecto}
+                              setSelectProyecto={setSelectProyecto}
+                            />
+                          </ColumnItem3>
+                          <ColumnItem>
+                            <PersonalAsignado proyecto={proyecto} />
+                            <Tiempo proyecto={proyecto} />
+                          </ColumnItem>
+                        </>
+                      )}
+                    </MainContainer>
+                  </>
+                )}
               </ContainerDetail>
             </FlexibleBox>
           </>
         )}
 
-        {selectProyecto == null && formSee == false ? (
-          <>
+        {/* {selectProyecto == null && formSee == false ? (
+          <MainContainer>
             <Container
               style={{
-                position: "absolute",
+                position: 'absolute',
+                right:0,
                 backgroundColor: "transparent",
-                width: "75%",
-                right: 0,
-                top: 60,
-                height: "88vh",
                 backdropFilter: "blur(10px)",
                 display: "flex",
                 justifyContent: "center",
@@ -178,8 +208,8 @@ export default function Proyecto() {
               <IoAlertCircleOutline size={30} />
               <h3>No hay proyecto seleccionado </h3>
             </Container>
-          </>
-        ) : null}
+          </MainContainer>
+        ) : null} */}
       </FlexContainer>
     </ViewContainerPages2>
   );
