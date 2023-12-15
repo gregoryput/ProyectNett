@@ -1,4 +1,9 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/dist/query/react";
+import {
+  IDocumentoDTO,
+  IResponseApi,
+  PersonaInfoPersonalDTO,
+} from "../../interfaces";
 
 const token = localStorage.getItem("token");
 const baseUrl = "https://localhost:7279/";
@@ -66,17 +71,19 @@ export const proyectoApi = createApi({
     getProyectoCompleto: builder.query({
       query: (IdProyecto) =>
         `/Proyecto/obtenerProyectoCompleto?IdProyecto=${IdProyecto}`,
-        providesTags: ["Proyecto"],
+      providesTags: ["Proyecto"],
     }),
 
     UpdateEstadoTarea: builder.mutation({
-      query: ({IdProyecto, IdTarea, IdEstado}) => ({
+      query: ({ IdProyecto, IdTarea, IdEstado }) => ({
         url: `/Proyecto/ActualizarEstadoTarea?IdProyecto=${IdProyecto}&IdTarea=${IdTarea}&IdEstado=${IdEstado}`,
         method: "POST",
       }),
-
       invalidatesTags: ["Proyecto"],
-      
+    }),
+    getListaDocumentosVentas: builder.query<IResponseApi<IDocumentoDTO>, void>({
+      query: () => "/Proyecto/GetListaDocumentos",
+      providesTags: ["Proyecto"],
     }),
   }),
 });
@@ -96,4 +103,5 @@ export const {
   useGetListaProyectoQuery,
   useGetProyectoCompletoQuery,
   useUpdateEstadoTareaMutation,
+  useGetListaDocumentosVentasQuery,
 } = proyectoApi;
