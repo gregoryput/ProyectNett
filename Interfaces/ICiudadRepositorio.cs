@@ -5,7 +5,8 @@ namespace ProyectNettApi.Interfaces
 {
     public interface ICiudadRepositorio
     {
-        public IEnumerable<PersonaDTO> getCities(int idPais);
-        public void InsertarCiudad(PersonaDTO ciudad);
+        public IEnumerable<Ciudad> getCities(int idPais);
+        public void InsertarCiudad(Ciudad ciudad);
+        public IEnumerable<Ciudad> getCiti();
     }
 }

@@ -18,7 +18,21 @@ namespace ProyectNettApi.Repositories
         public IEnumerable<PersonaDTO> getCities(int idPais)
         {
             string queryExecute = $"Select * From Ciudades WHERE IdPais = {idPais}";
-            var resultSet = _conexionDB.GetConnection(_configuration).Query<PersonaDTO>(queryExecute);
+            var resultSet = _conexionDB.GetConnection(_configuration).Query<Ciudad>(queryExecute);
+            return resultSet.ToList();
+        }
+
+        public IEnumerable<Ciudad> getCiti()
+        {
+            string queryExecute = $"Select * From Ciudades";
+            var resultSet = _conexionDB.GetConnection(_configuration).Query<Ciudad>(queryExecute);
+            return resultSet.ToList();
+        }
+
+        public IEnumerable<Ciudad> getCiti()
+        {
+            string queryExecute = $"Select * From Ciudades";
+            var resultSet = _conexionDB.GetConnection(_configuration).Query<Ciudad>(queryExecute);
             return resultSet.ToList();
         }
 

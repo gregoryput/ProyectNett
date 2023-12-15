@@ -44,5 +44,25 @@ namespace ProyectNettApi.Controllers
 
             return Ok(_respuesta);
         }
+        /// esto es por que tamo rapdio
+        [Route("obtenerCiudadesEmpleado")]
+        [HttpGet]
+        public IActionResult getCiudades()
+        {
+            try
+            {
+                var listaCiudades = _ciudadRepositorio.getCiti();
+                _respuesta.Result = listaCiudades;
+                _respuesta.DisplayMessage = "Listado de ciudades obtenido con exito:";
+            }
+            catch (Exception ex)
+            {
+                _respuesta.IsSuccess = false;
+                _respuesta.DisplayMessage = "Error al solicitar la lista de ciudades";
+                _respuesta.ErrorMessages = new List<string> { ex.ToString() };
+            }
+
+            return Ok(_respuesta);
+        }
     }
 }

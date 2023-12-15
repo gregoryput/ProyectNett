@@ -12,15 +12,15 @@ namespace ProyectNettApi.Models
 
         public DateTime FechaCreacion { get; set; }
 
-        public DateTime FechadDeContratación { get; set; }
+        public DateTime FechadDeContratacion { get; set; }
         public int IdModificadoPor { get; set; }
 
         public DateTime FechaModificacion { get; set; }
 
         public int IdEstadoRegistro { get; set; }
 
-        [Required(ErrorMessage = "Este campo es requerido")]
-        public Persona Persona { get; set; }
+        //[Required(ErrorMessage = "Este campo es requerido")]
+        public Persona2 Persona { get; set; }
 
         public List<EmpleadoCargo> Cargos { get; set; }
 
