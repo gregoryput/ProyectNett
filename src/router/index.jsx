@@ -24,6 +24,7 @@ import ProtectedRoute from "./protected-route/protected-route";
 import ConfiguracionPerfil from "../views/ViewUsuario/ConfiguracionPerfil";
 import { Toaster } from "react-hot-toast";
 import Empleado from "../views/ViewsEmpleado/Empleado";
+import { FormConvertToInvoice } from "../views/ViewsCuentaPorCobrar";
 
 export const createRouter = () => {
   const router = createBrowserRouter([
@@ -93,7 +94,6 @@ export const createRouter = () => {
             </ProtectedRoute>
           ),
         },
-
         {
           path: "/cuenta-por-pagar",
           element: (
@@ -101,6 +101,16 @@ export const createRouter = () => {
               roles={["Administrador", "Asistente Administrativo"]}
             >
               <CuentaPorPagar />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "/cuentas-por-pagar-facturar-cotizacion=1",
+          element: (
+            <ProtectedRoute
+              roles={["Administrador", "Asistente Administrativo"]}
+            >
+              <FormConvertToInvoice />
             </ProtectedRoute>
           ),
         },

@@ -150,3 +150,19 @@ export interface PersonaInfoPersonalDTO {
   FileSize?: number | null;
   Data?: Uint8Array | null; // Representa los datos de imagen como un array de bytes o nulo
 }
+
+export interface IDocumentoDTO {
+  IdDocumento: number;
+  IdTipoDocumento: number;
+  DocumentoNombre: string;
+  FechaDeEmision: Date;
+  MontoTotal: number;
+  Secuencia: string;
+  IdCliente: number;
+  NombreEntidad: string;
+  IdTipoEntidad: number;
+  NombreTipoEntidad: string;
+  IdEstado: number;
+  IdProyecto: number;
+  NombreProyecto: string;
+}
