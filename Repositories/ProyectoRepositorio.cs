@@ -4,10 +4,6 @@ using ProyectNettApi.DTO;
 using ProyectNettApi.Interfaces;
 using ProyectNettApi.Models;
 using System.Data;
-using System.Data.Common;
-using System.Reflection.Metadata;
-using System.Threading;
-using System.Transactions;
 
 namespace ProyectNettApi.Repositories
 {
@@ -349,6 +345,15 @@ namespace ProyectNettApi.Repositories
                 throw ex;
             }
             connection.Close();
+        }
+
+        // -----------------------------------------------------------------------------------------------------------------------------------------------
+        public IEnumerable<DocumentoDTO> GetListaDocumentosVentas()
+        {
+            string query = "dbo.ListadoDocumentsVentas";
+
+            var resultSet = _conexionDB.GetConnection(_configuration).Query<DocumentoDTO>(query, commandType: CommandType.StoredProcedure);
+            return resultSet.ToList();
         }
     }
 }

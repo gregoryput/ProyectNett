@@ -21,5 +21,8 @@ namespace ProyectNettApi.Interfaces
         public IEnumerable<ProyectoDTO> GetListaProyecto();
         public IEnumerable<ListaProyectoDTO> GetObtenerDatosProyecto(int IdProyecto);
         public void UdapteEstado(int IdProyecto, int IdTarea, int IdEstado);
+
+        // Listado de documentos hechos a los proyectos
+        public IEnumerable<DocumentoDTO> GetListaDocumentosVentas();
     }
 }
