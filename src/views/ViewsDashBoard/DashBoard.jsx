@@ -5,7 +5,7 @@ export default function DashBoard()
   return (
     <ViewContainerPages >
        <Container>
-         <h1>Bienvenido a proyectnett</h1>
+         <h1>Bienvenido</h1>
        </Container>
     </ViewContainerPages>
   )
