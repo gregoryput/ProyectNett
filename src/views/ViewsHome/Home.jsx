@@ -1,4 +1,4 @@
-import { Container, ViewContainerPages, ViewContainerPages2 } from "../../components";
+import { Container, ViewContainerPages2 } from "../../components";
 import { Colores } from "../../components/GlobalColor";
 import gatito from "../../assets/gatito.png";
 import fotodeljefe from "../../assets/fotodeljefe.jpg";
