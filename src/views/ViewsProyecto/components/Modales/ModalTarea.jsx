@@ -77,7 +77,7 @@ export default function ModalTarea({
 
   useEffect(() => {
     Editar();
-  });
+  },[selectEdit]);
 
   const Editar = () => {
     if (selectEdit !== null && selectEdit !== undefined) {
