@@ -1,4 +1,4 @@
-import { DatePicker, Form, Input, Select } from "antd";
+import { DatePicker, Form, Input, Select, InputNumber } from "antd";
 import { message } from "antd";
 
 import { IoPersonAddOutline } from "react-icons/io5";
@@ -143,10 +143,8 @@ export default function FormularioProyecto() {
     const diferenciaEnDias = Math.floor(
       diferenciaEnMilisegundos / (1000 * 60 * 60 * 24)
     );
-    return  `${diferenciaEnDias.toString() + " "+ "días"} ` ;
+    return `${diferenciaEnDias.toString() + " " + "días"} `;
   };
-
-
 
   const fechafin = useMemo(() => {
     const resultado = obtenerFechaMasDistante(tarea);
@@ -190,7 +188,10 @@ export default function FormularioProyecto() {
       Descripcion: values.Descripcion,
       FechaDeInicio: new Date(values.FechaDeInicio),
       FechaDeFinalizacion: fechafin,
-      TiempoDuracionEstimado: `${calcularDiferenciaEnDias(new Date(values.FechaDeInicio), fechafin)}`,
+      TiempoDuracionEstimado: `${calcularDiferenciaEnDias(
+        new Date(values.FechaDeInicio),
+        fechafin
+      )}`,
       //"FechaRealDeFinalizacion": "2023-12-10T05:51:27.368Z",
       //"TiempoDuracionReal": "string",
       PresupuestoAcordado: totalGeneral,
@@ -269,10 +270,15 @@ export default function FormularioProyecto() {
         Descripcion: tarea.Descripcion, // <<--
         FechaInicio: tarea.FechaInicio,
         FechaFinalizacion: tarea.FechaFinal, //dayjs(values.FechaFinal).format("DD-MM-YYYY")
-        TiempDuracionEstimado: `${calcularDiferenciaEnDias(tarea.FechaInicio, tarea.FechaFinal)}`,
+        TiempDuracionEstimado: `${calcularDiferenciaEnDias(
+          tarea.FechaInicio,
+          tarea.FechaFinal
+        )}`,
         //FechaRealDeFinalizacion: "2023-12-10T05:51:27.368Z",
         //TiempoDuracionReal: "string",
-        IdParametroCosto: tarea.IdParametroCosto ? tarea.IdParametroCosto : null,
+        IdParametroCosto: tarea.IdParametroCosto
+          ? tarea.IdParametroCosto
+          : null,
         CostoPorParametro: tarea.Costo ? tarea.Costo : null,
         Cantidad: tarea.Cantidad ? tarea.Cantidad : null,
         CostoTotal: tarea.Total,
@@ -290,7 +296,7 @@ export default function FormularioProyecto() {
       CotizacionProyecto: {
         IdCotizacion: 0,
         //FechaDeEmision: new Date(),
-        MontoInicial: 0,
+        MontoInicial: values.MontoInicial,
         MontoTotal: totalGeneral,
         Secuencia: "0",
         IdCliente: dataSelectedClient.IdCliente,
@@ -304,14 +310,13 @@ export default function FormularioProyecto() {
         // "IdEstadoRegistro": 0
       },
     };
-    createProyecto({ ...dataSubmit });
-    // console.log({...dataSubmit})
+    // createProyecto({ ...dataSubmit });
+     console.log({...dataSubmit})
   };
 
   useEffect(() => {
     if (isCreateSuccess === true) {
       console.log();
-      
     }
   }, [isCreateSuccess]);
   //.. CUANDO EL INSERT TENGA UN ERROR:
@@ -354,7 +359,7 @@ export default function FormularioProyecto() {
   return (
     <>
       {isLoadingCreate == true ? (
-        <Container style={{textAlign:"center"}}>
+        <Container style={{ textAlign: "center" }}>
           <h2>Generando proyecto</h2>
           <SpinnerTables />
         </Container>
@@ -608,14 +613,44 @@ export default function FormularioProyecto() {
                       </div>
                     </div>
                   </div>
+
                   <div
                     style={{
                       display: "flex",
                       alignSelf: "flex-end",
                       maxWidth: 400,
                       width: 300,
+                      flexDirection: "column",
+                      justifyContent: "flex-end",
                     }}
                   >
+                    <div style={{ float: "right" }}>
+                      <Form.Item
+                        label={
+                          <strong style={{ color: "white" }}>
+                            Monto Inicial:
+                          </strong>
+                        }
+                        name={"MontoInicial"}
+                        rules={[
+                          {
+                            required: true,
+                            message: "No hay Monto",
+                          },
+                        ]}
+                      >
+                        <InputNumber
+                          min={1}
+                          defaultValue={0}
+                          formatter={(value) =>
+                            `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                          }
+                          parser={(value) => value.replace(/\$\s?|(,*)/g, "")}
+                          style={{ width: 200, backgroundColor:`${Colores.fondo}` }}
+                        />
+                      </Form.Item>
+                    </div>
+
                     <BtnPro
                       type="submit"
                       style={{
@@ -627,7 +662,6 @@ export default function FormularioProyecto() {
                         padding: 5,
                       }}
                     >
-                      
                       <div
                         style={{
                           display: "flex",

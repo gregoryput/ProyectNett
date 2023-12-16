@@ -2,7 +2,7 @@ import React from "react";
 import DocumentoVentaPDF from "./DocumentoVentaPDF";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import { Spin } from "antd";
-import { BtnNPro, Container } from "../../../components";
+import { BtnNPro, Container, SpinnerTables } from "../../../components";
 import { IoDocumentAttachOutline } from "react-icons/io5";
 
 const GeneradorDocumentoVentaPDF = ({
@@ -11,7 +11,6 @@ const GeneradorDocumentoVentaPDF = ({
   documentoData,
   Cotizacion,
 }) => {
-  console.log(Cotizacion[0]);
   const sumarTotales = (proyecto) => {
     let totalGeneral = 0;
     let totalesPorServicio = [];
@@ -46,6 +45,7 @@ const GeneradorDocumentoVentaPDF = ({
         style={{
           width: "200px",
           height: "50px",
+          float:"right",
         }}
       >
         <PDFDownloadLink
@@ -61,7 +61,7 @@ const GeneradorDocumentoVentaPDF = ({
             <>
               {loading ? (
                 <div>
-                  <Spin />
+                  <SpinnerTables />
                   <span>Generando documento de venta en PDF</span>
                 </div>
               ) : (
@@ -92,10 +92,8 @@ const GeneradorDocumentoVentaPDF = ({
           )}
         </PDFDownloadLink>
       </div>
-
-      <div>
-        <h4>Vista de proyecto</h4>
-      </div>
+      
+   
     </Container>
   );
 };

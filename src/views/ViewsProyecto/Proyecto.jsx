@@ -10,7 +10,7 @@ import InfoCliente from "./components/Gestionar/InfoCliente";
 import TareasProyecto from "./components/Gestionar/TareasProyecto";
 import Tiempo from "./components/Gestionar/Tiempo";
 import ViewsList from "./components/ViewsList";
-
+import { Modal, Table, Descriptions } from "antd";
 import TareasComponent from "./components/Operar/TareasComponent";
 import { IoAlertCircleOutline } from "react-icons/io5";
 import { useEffect, useState } from "react";
@@ -36,12 +36,22 @@ import { JwtUtils } from "../../utils";
 export default function Proyecto() {
   const token = localStorage.getItem("token");
   const userRol = JwtUtils.getRolesByToken(token);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const [seeState, setSee] = useState(true);
   const [formSee, setFormSee] = useState(false);
   const [selectProyecto, setSelectProyecto] = useState(false);
   const [proyecto, setProyecto] = useState([]);
   const [allData, setAllData] = useState([]);
+
+  const OpenModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const CloseModal = () => {
+    setIsModalOpen(false);
+  };
+
   // Llama a la consulta usando el hook generado
   const { data, isSuccess, isLoading } =
     useGetProyectoCompletoQuery(selectProyecto);
@@ -55,7 +65,7 @@ export default function Proyecto() {
     }
   }, [data, isSuccess, proyecto]);
 
-
+  console.log(proyecto);
   return (
     <ViewContainerPages2>
       <FlexContainer>
@@ -158,7 +168,7 @@ export default function Proyecto() {
                           <ColumnItem>
                             <PersonalAsignado proyecto={proyecto} />
                             <Tiempo proyecto={proyecto[0]} />
-                            <Detalle />
+                            <Detalle OpenModal={OpenModal} />
                           </ColumnItem>
                           <ColumnItem>
                             <Productos proyecto={proyecto} />
@@ -176,7 +186,7 @@ export default function Proyecto() {
                           </ColumnItem3>
                           <ColumnItem>
                             <PersonalAsignado proyecto={proyecto} />
-                            <Tiempo proyecto={proyecto} />
+                            <Tiempo proyecto={proyecto[0]} />
                           </ColumnItem>
                         </>
                       )}
@@ -187,28 +197,195 @@ export default function Proyecto() {
             </FlexibleBox>
           </>
         )}
-
-        {/* {selectProyecto == null && formSee == false ? (
-          <MainContainer>
-            <Container
-              style={{
-                position: 'absolute',
-                right:0,
-                backgroundColor: "transparent",
-                backdropFilter: "blur(10px)",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                gap: 10,
-                borderRadius: 12,
-              }}
-            >
-              <IoAlertCircleOutline size={30} />
-              <h3>No hay proyecto seleccionado </h3>
-            </Container>
-          </MainContainer>
-        ) : null} */}
       </FlexContainer>
+      <ProyectoModal
+        proyecto={proyecto}
+        OpenModal={OpenModal}
+        CloseModal={CloseModal}
+        isModalOpen={isModalOpen}
+      />
     </ViewContainerPages2>
   );
 }
+
+const ProyectoModal = ({ proyecto, OpenModal, CloseModal, isModalOpen }) => {
+  // Columnas para la tabla de proyectos
+  const columnsProyectos = [
+    {
+      title: "Nombre Entidad",
+      dataIndex: "NombreEntidad",
+      key: "NombreEntidad",
+    },
+    {
+      title: "Tipo Entidad",
+      dataIndex: "NombreTipoEntidad",
+      key: "NombreTipoEntidad",
+    },
+    {
+      title: "Nombre Proyecto",
+      dataIndex: "NombreProyecto",
+      key: "NombreProyecto",
+    },
+    {
+      title: "Fecha Inicio",
+      dataIndex: "FechaDeInicio",
+      key: "FechaDeInicio",
+    },
+    {
+      title: "Fecha Fin",
+      dataIndex: "FechaDeFinalizacion",
+      key: "FechaDeFinalizacion",
+    },
+    {
+      title: "Presupuesto Acordado",
+      dataIndex: "PresupuestoAcordado",
+      key: "PresupuestoAcordado",
+    },
+    {
+      title: "Estado Proyecto",
+      dataIndex: "EstadoProyecto",
+      key: "EstadoProyecto",
+    },
+    // Agregar más columnas según tus necesidades
+  ];
+
+  // Columnas para la tabla de tareas
+  const columnsTareas = [
+    {
+      title: "Nombre Tarea",
+      dataIndex: "NombreTarea",
+      key: "NombreTarea",
+    },
+    {
+      title: "Fecha Inicio",
+      dataIndex: "FechaInicio",
+      key: "FechaInicio",
+    },
+    {
+      title: "Fecha Finalización",
+      dataIndex: "FechaFinalizacion",
+      key: "FechaFinalizacion",
+    },
+    {
+      title: "Estado Tarea",
+      dataIndex: "EstadoTarea",
+      key: "EstadoTarea",
+    },
+    {
+      title: "Prioridad",
+      dataIndex: "NombrePrioridad",
+      key: "NombrePrioridad",
+    },
+    {
+      title: "Costo Total",
+      dataIndex: "CostoTotal",
+      key: "CostoTotal",
+    },
+    // Agregar más columnas según tus necesidades
+  ];
+
+  // Columnas para la tabla de productos
+  const columnsProductos = [
+    {
+      title: "Nombre Producto",
+      dataIndex: "NombreProducto",
+      key: "NombreProducto",
+    },
+    {
+      title: "Cantidad",
+      dataIndex: "Cantidad",
+      key: "Cantidad",
+    },
+    {
+      title: "Precio Venta",
+      dataIndex: "PrecioVenta",
+      key: "PrecioVenta",
+    },
+    {
+      title: "Subtotal",
+      dataIndex: "Subtotal",
+      key: "Subtotal",
+    },
+    // Agregar más columnas según tus necesidades
+  ];
+
+  // Columnas para la tabla de empleados
+  const columnsEmpleados = [
+    {
+      title: "Nombre Empleado",
+      dataIndex: "NombreEmpleado",
+      key: "NombreEmpleado",
+    },
+    {
+      title: "Responsabilidad",
+      dataIndex: "ResponsabilidadNombre",
+      key: "ResponsabilidadNombre",
+    },
+    // Agregar más columnas según tus necesidades
+  ];
+
+  // Columnas para la tabla de gastos
+  const columnsGastos = [
+    {
+      title: "Descripción Gasto",
+      dataIndex: "DescripcionGasto",
+      key: "DescripcionGasto",
+    },
+    {
+      title: "Monto Gasto",
+      dataIndex: "MontoGasto",
+      key: "MontoGasto",
+    },
+    // Agregar más columnas según tus necesidades
+  ];
+  return (
+    <Modal
+      open={isModalOpen}
+      footer={null}
+      width={1000}
+      onCancel={CloseModal}
+      X
+    >
+      <Container>
+        <Table
+          dataSource={proyecto}
+          pagination={false} // Desactiva la paginación si no deseas que aparezca
+          size="middle"
+          columns={columnsProyectos}
+        />
+        <br />
+
+        <Table
+          dataSource={proyecto[0]?.TareasProyecto}
+          pagination={false} // Desactiva la paginación si no deseas que aparezca
+          size="middle"
+          columns={columnsTareas}
+        />
+        <br />
+
+        <Table
+          dataSource={proyecto[0]?.ProductosProyecto}
+          pagination={false} // Desactiva la paginación si no deseas que aparezca
+          size="middle"
+          columns={columnsProductos}
+        />
+        <br />
+
+        <Table
+          dataSource={proyecto[0]?.EmpleadosProyecto}
+          pagination={false} // Desactiva la paginación si no deseas que aparezca
+          size="middle"
+          columns={columnsEmpleados}
+        />
+        <br />
+        <Table
+          dataSource={proyecto[0]?.GastoProyecto}
+          pagination={false} // Desactiva la paginación si no deseas que aparezca
+          size="middle"
+          columns={columnsGastos}
+        />
+      </Container>
+      {/* Agregar más secciones según tus necesidades */}
+    </Modal>
+  );
+};
