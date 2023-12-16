@@ -8,10 +8,13 @@ import {
 import { BiCartAdd } from "react-icons/bi";
 import { FaFileInvoiceDollar } from "react-icons/fa";
 
-import { useGetProductsInvWithExistenceQuery } from "../../redux/Api/productsApi";
 import { DrawerForm } from "./DrawerForm";
 import { useGetUnistOfMeasurementsQuery } from "../../redux/Api/unitsOfMeasurementsApi";
-import { useCreateProductMutation } from "../../redux/Api/productsApi";
+import {
+  useCreateProductMutation,
+  useGetProductsInvWithExistenceInvQuery,
+  //useGetProductsInvWithExistenceQuery,
+} from "../../redux/Api/productsApi";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import React from "react";
@@ -33,7 +36,7 @@ export default function Inventario() {
     //isSuccess: isProductsSuccess,
     isError: isProductsError,
     isLoading: isLoadingProducts,
-  } = useGetProductsInvWithExistenceQuery();
+  } = useGetProductsInvWithExistenceInvQuery();
 
   //Funcion peticion para el create/insert de Producto:
   const [

@@ -14,12 +14,12 @@ export const productsApi = createApi({
   }),
   tagTypes: ["Products"],
   endpoints: (builder) => ({
-    getProductsWithExistence: builder.query({
-      query: () => `/Productos/obtenerProductos`,
+    getProductsInvWithExistenceInv: builder.query<IResponseApi<IProductoInv>, void>({
+      query: () => `Productos/GetListaProductosInfoInv`,
       providesTags: ["Products"],
     }),
-    getProductsInvWithExistence: builder.query<IResponseApi<IProductoInv>, void>({
-      query: () => `Productos/GetListaProductosInfoInv`,
+    getProductsWithExistence: builder.query({
+      query: () => `/Productos/obtenerProductos`,
       providesTags: ["Products"],
     }),
     getProductsForFC: builder.query({
@@ -39,7 +39,7 @@ export const productsApi = createApi({
 
 export const {
   useGetProductsWithExistenceQuery,
-  useGetProductsInvWithExistenceQuery,
+  useGetProductsInvWithExistenceInvQuery,
   useGetProductsForFCQuery,
   useCreateProductMutation,
 } = productsApi;
