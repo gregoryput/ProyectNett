@@ -9,7 +9,7 @@ import {
   Home,
   Proveedores,
   DetailCliente,
-  DetailProveedor,
+  //DetailProveedor,
   DetailEmpleado,
   FormFacturacion,
   //Cliente,
@@ -164,14 +164,14 @@ export const createRouter = () => {
             </ProtectedRoute>
           ),
         },
-        {
-          path: "/proveedores/:IdProveedor",
-          element: (
-            <ProtectedRoute roles={["Administrador"]}>
-              <DetailProveedor />
-            </ProtectedRoute>
-          ),
-        },
+        // {
+        //   path: "/proveedores/:IdProveedor",
+        //   element: (
+        //     <ProtectedRoute roles={["Administrador"]}>
+        //       <DetailProveedor />
+        //     </ProtectedRoute>
+        //   ),
+        // },
         {
           path: "/proyecto",
           element: (
