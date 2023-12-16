@@ -1,4 +1,4 @@
-USE BD_PROYENETT_54
+USE BD_PROYENETT
 
 GO
 ----------- /*1--*/ Procedimiento almcenado para obtener una lista general de clientes (empresas y personas fisicas):
@@ -401,7 +401,7 @@ CREATE OR ALTER PROCEDURE dbo.InsertarProyecto
     @FechaDeFinalizacion DATEtime,
     @TiempoDuracionEstimado VARCHAR(70),
     -- @FechaRealDeFinalizacion DATEtime,
-    -- @TiempoDuracionReal VARCHAR(50),
+    @TiempoDuracionReal VARCHAR(50),
     @PresupuestoAcordado DECIMAL(18, 2),
     @ClienteEsPersonaFisica BIT,
     @IdEntidad INT,
@@ -420,7 +420,7 @@ BEGIN
         FechaDeFinalizacion,
         TiempoDuracionEstimado,
         -- FechaRealDeFinalizacion,
-        -- TiempoDuracionReal,
+        TiempoDuracionReal,
         PresupuestoAcordado,
         ClienteEsPersonaFisica,
         IdEntidad,
@@ -438,7 +438,7 @@ BEGIN
         @FechaDeFinalizacion,
         @TiempoDuracionEstimado,
         -- @FechaRealDeFinalizacion,
-        -- @TiempoDuracionReal,
+        @TiempoDuracionReal,
         @PresupuestoAcordado,
         @ClienteEsPersonaFisica,
         @IdEntidad,
@@ -755,7 +755,7 @@ END;
 GO
 ---------------------- PROCEDIMIENTO PARA INSERTAR EN LA TABLA Tareas: ----------------------------------
 CREATE OR ALTER PROCEDURE dbo.InsertarCotizacionProyecto
-    -- @FechaDeEmision DATETIME,
+   -- @FechaDeEmision DATETIME,
     @MontoInicial DECIMAL(18, 2),
     @MontoTotal DECIMAL(18, 2),
     @Secuencia VARCHAR(20),
@@ -770,7 +770,7 @@ CREATE OR ALTER PROCEDURE dbo.InsertarCotizacionProyecto
 AS
 BEGIN
     INSERT INTO CotizacionesProyectos (
-        --FechaDeEmision,
+        FechaDeEmision,
         MontoInicial,
         MontoTotal,
         Secuencia,
@@ -784,7 +784,7 @@ BEGIN
         IdEstadoRegistro
     )
     VALUES (
-        --GETDATE(), --@FechaDeEmision,
+        GETDATE(), --@FechaDeEmision,
         @MontoInicial,
         @MontoTotal,
         @Secuencia,
@@ -816,12 +816,16 @@ SELECT
     p.FechaDeInicio,
     p.FechaDeFinalizacion,
     p.PresupuestoAcordado,
+	en.NombreEntidad,
+	ten.NombreTipoEntidad,
     ep.EstadoNombre AS 'EstadoProyecto',
     (SUM(CASE WHEN t.IdEstado = 3 THEN 1 ELSE 0 END) * 100.0 / COUNT(*)) AS PorcentajeCompletado,
     -- Total por tarea 
     (SELECT SUM(Cantidad * CostoTotal) as totalTarea FROM Tareas WHERE IdProyecto = p.IdProyecto) AS 'TotalTarea',
     (SELECT SUM(Subtotal) as totalProducto FROM ProyectosDetallesProductos WHERE IdProyecto = p.IdProyecto) AS 'TotalProducto',
     (SELECT SUM(MontoGasto) as totalGasto FROM GastosAdicionales WHERE IdProyecto = p.IdProyecto) AS 'TotalGasto',
+
+	
     -- Lista de Servicio para el Proyecto
     (
          SELECT p.IdServicio, s.NombreServicio 
@@ -881,6 +885,8 @@ SELECT
         FOR JSON PATH
     ) AS 'EmpleadosProyectoJson'
 FROM Proyectos p
+Inner join Entidades en on en.IdEntidad = p.IdEntidad
+inner join TiposEntidades ten on ten.IdTipoEntidad = en.IdTipoEntidad
 INNER JOIN EstadosProyectos ep ON ep.IdEstado = p.IdEstado
 INNER JOIN Tareas t ON t.IdProyecto = p.IdProyecto
 INNER JOIN EstadosTareas e ON e.IdEstadoTarea = t.IdEstado
@@ -892,11 +898,11 @@ GROUP BY
     p.FechaDeFinalizacion,
     p.PresupuestoAcordado,
     ep.EstadoNombre,
-    p.Descripcion;
+    p.Descripcion,
+	en.NombreEntidad,
+	ten.NombreTipoEntidad
 END
--- exec ObtenerDatosProyecto @IdProyecto = 13
-
-
+-- exec ObtenerDatosProyecto @IdProyecto = 1
 
 
 GO
@@ -936,8 +942,6 @@ END
 GO
 -- EXEC dbo.GetDatosPersonales
 
-
-GO
 CREATE OR ALTER PROCEDURE dbo.EstadoTarea
 (
     @IdProyecto int,
@@ -948,20 +952,20 @@ AS
 BEGIN
     SET NOCOUNT ON 
 	UPDATE Tareas
-SET  IdEstado = @IdEstado
-	WHERE IdTarea = @IdTarea and IdProyecto = @IdProyecto
-
+    SET 
+        IdEstado = @IdEstado,
+        FechaRealDeFinalizacion = CASE WHEN @IdEstado = 3 THEN GETDATE() ELSE FechaRealDeFinalizacion END
+    WHERE IdTarea = @IdTarea AND IdProyecto = @IdProyecto
 END
-
-
 GO
+
 
 
 CREATE OR ALTER PROCEDURE dbo.ListadoDocumentsVentas
 AS
 BEGIN
     SELECT IdCotizacion AS IdDocumento, 1 AS IdTipoDocumento, 'Cotización de proyecto' AS DocumentoNombre,
-           FechaDeEmision, MontoTotal, Secuencia, C.IdCliente, E.NombreEntidad, E.IdTipoEntidad, TP.NombreTipoEntidad,
+           FechaDeEmision, MontoTotal,MontoInicial, Secuencia, C.IdCliente, E.NombreEntidad, E.IdTipoEntidad, TP.NombreTipoEntidad,
             CP.IdEstado, Py.IdProyecto, Py.Nombre AS NombreProyecto
            
            FROM CotizacionesProyectos CP INNER JOIN Clientes C ON CP.IdCliente = c.IdCliente
@@ -972,7 +976,7 @@ BEGIN
 
 
     SELECT IdFactura AS IdDocumento, 2 AS IdTipoDocumento, 'Factura de proyecto' AS DocumentoNombre,
-           FechaDeEmision, MontoTotal, Secuencia, C.IdCliente, E.NombreEntidad, E.IdTipoEntidad, TP.NombreTipoEntidad,
+           FechaDeEmision, MontoTotal,MontoInicial, Secuencia, C.IdCliente, E.NombreEntidad, E.IdTipoEntidad, TP.NombreTipoEntidad,
            FV.IdEstado, Py.IdProyecto, Py.Nombre AS NombreProyecto
            
            FROM FacturasVentasProyectos FV INNER JOIN Clientes C ON FV.IdCliente = c.IdCliente
@@ -1122,6 +1126,7 @@ END
 */
 -- Execute dbo.ListadoEmpleadoV2 
 
+select * from FacturasVentasProyectos
 
 go
 ---Buscar empleado por id y traer toda su informacion
@@ -1444,4 +1449,5 @@ END
 
 GO
 
-EXEC dbo.ObtenerUnidadesMedida
+
+
