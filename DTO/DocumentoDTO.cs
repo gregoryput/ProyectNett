@@ -7,6 +7,8 @@
         public string DocumentoNombre { get; set; }
         public DateTime FechaDeEmision { get; set; }
         public decimal MontoTotal { get; set; }
+        public decimal MontoInicial { get; set; }
+
         public int Secuencia { get; set; }
         public int IdCliente { get; set; }
         public string NombreEntidad { get; set; }

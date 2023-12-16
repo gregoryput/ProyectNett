@@ -80,6 +80,8 @@ namespace ProyectNettApi.DTO
         public decimal TotalTarea { get; set; }
         public decimal TotalProducto { get; set; }
         public decimal TotalGasto { get; set; }
+        public decimal MontoInicial { get; set; }
+
 
         [JsonIgnore]
         public string TareasProyectoJson { get; set; }
