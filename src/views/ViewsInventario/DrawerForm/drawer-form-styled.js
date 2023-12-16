@@ -123,8 +123,7 @@ export const DivCreateNewUnit = styled.div`
 
 export const ContainerUnitsAddes = styled.div`
   display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
+  flex-direction: column;
   margintop: 15px;
 `;
 

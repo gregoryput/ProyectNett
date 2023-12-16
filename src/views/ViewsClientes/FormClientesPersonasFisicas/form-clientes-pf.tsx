@@ -1,15 +1,5 @@
 import React from "react";
-import {
-  Button,
-  DatePicker,
-  Form,
-  Image,
-  Input,
-  Select,
-  Tooltip,
-  UploadFile,
-  message,
-} from "antd";
+import { Button, DatePicker, Form, Image, Input, Select, message } from "antd";
 import {
   ContainerForm,
   ContainerFormAntd,
@@ -19,12 +9,14 @@ import { OutsideClick } from "outsideclick-react";
 
 import { MdImageNotSupported, MdHelpOutline } from "react-icons/md";
 import { DivAreaFoto } from "./steps.styled";
-import { RcFile } from "antd/es/upload";
 
 import { FaAddressCard } from "react-icons/fa";
 import { FaUserEdit } from "react-icons/fa";
 import { MdOutlinePersonSearch } from "react-icons/md";
 import { useGetPersonasIfoPersonalQuery } from "../../../redux/Api/personasApi";
+import { PersonaInfoPersonalDTO } from "../../../interfaces";
+import dayjs from "dayjs";
+import { useCreateEntitieMutation } from "../../../redux/Api/entitiesApi";
 
 interface IFormClientesProps {
   toggle: boolean;
@@ -34,13 +26,26 @@ interface IFormClientesProps {
 const FormClientsPersonsFi = (props: IFormClientesProps) => {
   const [animacion, setAnimacion] = React.useState<boolean>(false);
 
-  const [fileList, setFileList] = React.useState<UploadFile<any>[]>(
-    [] as UploadFile<any>[]
-  );
+  const [selectedClient, setSelectedClient] =
+    React.useState<PersonaInfoPersonalDTO>();
 
   const fecthClientes = useGetPersonasIfoPersonalQuery();
 
+  //const fetchEntities = useCreateEntitieMutation();
+
   const [openModalFP, setOpenModalFP] = React.useState<boolean>(false);
+
+  const [form] = Form.useForm();
+
+  //Funcion peticion para el create/insert de Producto:
+  const [
+    createEntitie,
+    {
+      isLoading: isLoadingCreate,
+      isSuccess: isCreateSuccess,
+      isError: isErrorCreate,
+    },
+  ] = useCreateEntitieMutation();
 
   React.useEffect(() => {
     if (props.toggle == false) {
@@ -54,6 +59,110 @@ const FormClientsPersonsFi = (props: IFormClientesProps) => {
     }
   }, [props.toggle, setAnimacion]);
 
+  function truncateText(text: string, maxLength: number): string {
+    if (text.length <= maxLength) {
+      return text;
+    } else {
+      return `${text.substring(0, maxLength)}...`;
+    }
+  }
+
+  const [IdPersona, setIdPersona] = React.useState<number>(0);
+
+  const dataSubmit = (data) => {
+    const dataS = {
+      IdEntidad: 0,
+      NombreEntidad: data.NombreEntidad,
+      IdTipoEntidad: 1,
+
+      EntidadRolEntidad: {
+        IdEntidadRolEntidad: 0,
+        IdEntidad: 0,
+        IdRolEntidad: 1,
+      },
+
+      EntidadPersonaFisica: {
+        IdEntidadPersonaFisica: 0,
+        IdEntidad: 0,
+        IdPersona: IdPersona,
+      },
+
+      EntidadPersonaFisicaRepresentante: {
+        IdEPFR: 0,
+        IdEntidadPersonaFisica: 0,
+        IdRepresentanteActual: IdPersona,
+        IdRolRepresentante: 1,
+      },
+
+      ClienteEntidad: {
+        IdCliente: 0,
+        Codigo: data.Codigo,
+        IdEntidad: 0,
+        FechaInicioCliente: data.FechaInicioCliente,
+      },
+    };
+
+    createEntitie({ ...dataS });
+
+    // Crear: -----------------------------------------------------
+  };
+  // },
+  // }
+  //   "IdEntidad": 0,
+  //   "NombreEntidad": "string",
+  //   "IdTipoEntidad": 0,
+  //   "IdCreadoPor": 0,
+  //   "FechaCreacion": "2023-12-16T08:11:23.825Z",
+  //   "IdModificadoPor": 0,
+  //   "FechaModificacion": "2023-12-16T08:11:23.825Z",
+  //   "IdEstadoRegistro": 0,
+  //   "EntidadRolEntidad": {
+  //     "IdEntidadRolEntidad": 0,
+  //     "IdEntidad": 0,
+  //     "IdRolEntidad": 0,
+  //     "IdCreadoPor": 0,
+  //     "FechaCreacion": "2023-12-16T08:11:23.825Z",
+  //     "IdModificadoPor": 0,
+  //     "FechaModificacion": "2023-12-16T08:11:23.825Z",
+  //     "IdEstadoRegistro": 0
+  //   },
+  //   "EntidadPersonaFisica": {
+  //     "IdEntidadPersonaFisica": 0,
+  //     "IdEntidad": 0,
+  //     "IdPersona": 0,
+  //     "IdCreadoPor": 0,
+  //     "FechaCreacion": "2023-12-16T08:11:23.825Z",
+  //     "IdModificadoPor": 0,
+  //     "FechaModificacion": "2023-12-16T08:11:23.825Z",
+  //     "IdEstadoRegistro": 0
+  //   },
+  //   "EntidadPersonaFisicaRepresentante": {
+  //     "IdEPFR": 0,
+  //     "IdEntidadPersonaFisica": 0,
+  //     "IdRepresentanteActual": 0,
+  //     "IdRolRepresentante": 0,
+  //     "FechaInicioRepresentante": "2023-12-16T08:11:23.825Z",
+  //     "FechaFinRepresentante": "2023-12-16T08:11:23.825Z",
+  //     "IdCreadoPor": 0,
+  //     "FechaCreacion": "2023-12-16T08:11:23.825Z",
+  //     "IdModificadoPor": 0,
+  //     "FechaModificacion": "2023-12-16T08:11:23.825Z",
+  //     "IdEstadoRegistro": 0
+  //   },
+  //   "ClienteEntidad": {
+  //     "IdCliente": 0,
+  //     "Codigo": "string",
+  //     "IdEntidad": 0,
+  //     "FechaInicioCliente": "2023-12-16T08:11:23.825Z",
+  //     "IdCreadoPor": 0,
+  //     "FechaCreacion": "2023-12-16T08:11:23.825Z",
+  //     "IdModificadoPor": 0,
+  //     "FechaModificacion": "2023-12-16T08:11:23.825Z",
+  //     "IdEstadoRegistro": 0
+  //   }
+  // }
+  //};
+
   return (
     <ContainerForm
       animacion={animacion}
@@ -61,7 +170,11 @@ const FormClientsPersonsFi = (props: IFormClientesProps) => {
       layout={"vertical"}
     >
       <OutsideClick>
-        <ContainerFormAntd layout={"vertical"}>
+        <ContainerFormAntd
+          layout={"vertical"}
+          onFinish={dataSubmit}
+          form={form}
+        >
           <div style={{ marginTop: "15px", width: "100%" }}>
             <div
               style={{
@@ -93,7 +206,7 @@ const FormClientsPersonsFi = (props: IFormClientesProps) => {
               }}
             >
               <Form.Item
-                name={"nombreEntidad"}
+                name={"NombreEntidad"}
                 label={<strong>Nombre de identificación (opcional):</strong>}
                 style={{ width: "29%" }}
               >
@@ -101,7 +214,7 @@ const FormClientsPersonsFi = (props: IFormClientesProps) => {
               </Form.Item>
 
               <Form.Item
-                name={"codigoCliente"}
+                name={"Codigo"}
                 label={<strong>Código del cliente:</strong>}
                 style={{ width: "29%" }}
               >
@@ -109,7 +222,7 @@ const FormClientsPersonsFi = (props: IFormClientesProps) => {
               </Form.Item>
 
               <Form.Item
-                name={"fechaInicioCliente"}
+                name={"FechaInicioCliente"}
                 label={<strong>Fecha de inicio como cliente:</strong>}
                 style={{ width: "29%" }}
               >
@@ -166,12 +279,10 @@ const FormClientsPersonsFi = (props: IFormClientesProps) => {
                     }}
                   >
                     <DivAreaFoto>
-                      {fileList.length > 0 ? (
+                      {selectedClient?.Data !== null ? (
                         <Image
-                          src={URL.createObjectURL(
-                            fileList[0].originFileObj as RcFile
-                          )}
-                          alt={`Imagen-${fileList[0].fileName}`}
+                          src={`data:${selectedClient?.ContentType};base64,${selectedClient?.Data}`}
+                          alt={`Imagen-${selectedClient?.FileName}`}
                           style={{
                             maxHeight: "80px",
                             minWidth: "80px",
@@ -224,7 +335,7 @@ const FormClientsPersonsFi = (props: IFormClientesProps) => {
                   style={{
                     width: "100%",
                   }}
-                  name={"idPersona"}
+                  name={"IdPersona"}
                   label={
                     <div
                       style={{
@@ -241,10 +352,30 @@ const FormClientsPersonsFi = (props: IFormClientesProps) => {
                   }
                 >
                   <Select
-                    options={fecthClientes.data?.Result.map((client) => ({
+                    showSearch
+                    allowClear
+                    filterOption={(input, option) =>
+                      option
+                        ? option.label
+                            ?.toString()
+                            ?.toLowerCase()
+                            ?.includes(input.toLowerCase())
+                        : null
+                    }
+                    options={fecthClientes.data?.Result?.map((client) => ({
                       value: client.IdPersona,
-                      label: client.Nombres + " " + client.Apellidos,
+                      label: `${client.Cedula} - ${client.Nombres} ${client.Apellidos}`,
                     }))}
+                    onChange={(value: number | null) => {
+                      setSelectedClient(
+                        fecthClientes.data?.Result.find(
+                          (client) => client.IdPersona === value
+                        )
+                      );
+
+                      setIdPersona(value as number);
+                    }}
+                    placeholder="Seleccionar cliente"
                   />
                   <div
                     style={{
@@ -310,7 +441,7 @@ const FormClientsPersonsFi = (props: IFormClientesProps) => {
                 }}
               >
                 <strong>Nombre completo:</strong>
-                <span>Juan Andres Cesar Jimenez</span>
+                <span>{selectedClient?.Nombres || "-"}</span>
               </div>
 
               <div
@@ -331,7 +462,7 @@ const FormClientsPersonsFi = (props: IFormClientesProps) => {
                   }}
                 >
                   <strong>Cédula:</strong>
-                  <span style={{}}>849-123-1414</span>
+                  <span>{selectedClient?.Cedula || "-"}</span>
                 </div>
               </div>
 
@@ -346,7 +477,13 @@ const FormClientsPersonsFi = (props: IFormClientesProps) => {
                 }}
               >
                 <strong>Fecha nacimiento:</strong>
-                <span>26-02-2001</span>
+                <span>
+                  {selectedClient?.FechaDeNacimiento
+                    ? dayjs(selectedClient?.FechaDeNacimiento).format(
+                        "DD/MM/YYYY"
+                      )
+                    : "-"}
+                </span>
               </div>
 
               <div
@@ -360,7 +497,7 @@ const FormClientsPersonsFi = (props: IFormClientesProps) => {
                 }}
               >
                 <strong>Correo:</strong>
-                <span>juanjim123@gmail.com</span>
+                <span>{selectedClient?.Correo || "-"}</span>
               </div>
 
               <div
@@ -381,7 +518,7 @@ const FormClientsPersonsFi = (props: IFormClientesProps) => {
                   }}
                 >
                   <strong>Tel1:</strong>
-                  <span>121-112-2424</span>
+                  <span>{selectedClient?.Telefono1 || "-"}</span>
                 </div>
               </div>
 
@@ -396,7 +533,7 @@ const FormClientsPersonsFi = (props: IFormClientesProps) => {
                 }}
               >
                 <strong>Tel2:</strong>
-                <span>121-112-2424</span>
+                <span>{selectedClient?.Telefono2 || "-"}</span>
               </div>
 
               <div
@@ -410,7 +547,7 @@ const FormClientsPersonsFi = (props: IFormClientesProps) => {
                 }}
               >
                 <strong>Pais:</strong>
-                <span>Republica Dominicana</span>
+                <span>{selectedClient?.PaisNombre || "-"}</span>
               </div>
 
               <div
@@ -431,7 +568,11 @@ const FormClientsPersonsFi = (props: IFormClientesProps) => {
                   }}
                 >
                   <strong>Ciudad:</strong>
-                  <span>Hato Mayor</span>
+                  <span>
+                    {selectedClient?.CiudadNombre
+                      ? truncateText(selectedClient?.CiudadNombre || "", 10)
+                      : null}
+                  </span>
                 </div>
               </div>
 
@@ -446,7 +587,7 @@ const FormClientsPersonsFi = (props: IFormClientesProps) => {
                 }}
               >
                 <strong>Sexo:</strong>
-                <span>Masculino</span>
+                <span>{selectedClient?.SexoNombre || "-"}</span>
               </div>
             </div>
           </div>
@@ -470,7 +611,9 @@ const FormClientsPersonsFi = (props: IFormClientesProps) => {
             </div>
 
             <div>
-              <Button>Guardar</Button>
+              <Button htmlType="submit" type="primary">
+                Guardar
+              </Button>
             </div>
           </div>
         </ContainerFormAntd>

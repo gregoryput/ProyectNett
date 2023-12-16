@@ -166,3 +166,29 @@ export interface IDocumentoDTO {
   IdProyecto: number;
   NombreProyecto: string;
 }
+
+
+export interface IProductoInv {
+  IdProducto: number;
+  Nombre: string;
+  Codigo: string;
+  Descripcion: string;
+  Modelo: string;
+  TieneVencimiento: boolean;
+  IdEstado: number;
+  EstadoNombreProducto: string;
+  IdEstadoRegistro: number;
+  NombreEstado: string;
+  ContentType: any; // Puedes cambiar el tipo si conoces la estructura de los datos
+  Data: any; // Puedes cambiar el tipo si conoces la estructura de los datos
+  ProductoExistencias: IProductoExistencia[];
+}
+
+export interface IProductoExistencia {
+  IdUnidadDeMedida: number;
+  PrecioCosto: number;
+  PrecioVenta: number;
+  ITBIS: number;
+  UnidadNombre: string;
+  CantidadExistente: number;
+}

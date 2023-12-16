@@ -4,7 +4,7 @@ export default function CuentaPorPagar()
  {
   return (
     <ViewContainerPages >
-        <h1>Cuenta por cobrar</h1>
+        <h1>Cuentas por pagar</h1>
     </ViewContainerPages>
   )
 }

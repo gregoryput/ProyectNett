@@ -3,17 +3,17 @@ import { MdOutlineRadioButtonUnchecked } from "react-icons/md";
 import { MdCheckCircle } from "react-icons/md";
 import PropTypes from "prop-types";
 
-const CustomChecked = ({ onChange, isActive, file }) => {
+const CustomChecked = ({ onChange, isActive, dataImage }) => {
   CustomChecked.propTypes = {
     onChange: PropTypes.func.isRequired,
     isActive: PropTypes.bool.isRequired,
-    file: PropTypes.object.isRequired,
+    dataImage: PropTypes.object.isRequired,
   };
 
   const handleClick = (action) => {
     const newState = action === "unChecked" ? true : false;
     // Llama a la funcion de devolucion (callback) onChange para informar al componente principal sobre el cambio
-    onChange(newState, file);
+    onChange(newState, dataImage);
   };
 
   return (

@@ -37,6 +37,10 @@ import personasReducer from "./Slice/personaSlice";
 import { uQVerificarApi } from "./Api/uQVerificarApi";
 import uqVerificarReducer from "./Slice/uqVerificarSlice";
 
+// --
+import { entitiesApi } from "./Api/entitiesApi";
+import entitiesReducer from "./Slice/entitieSlice";
+
 export const store = configureStore({
   reducer: {
     //Autenticacion y usuarios
@@ -100,6 +104,10 @@ export const store = configureStore({
     //Unidades de medidas
     unitsOfMeasurements: unitsOfMeasurementsReducer,
     [unitsOfMeasurementsApi.reducerPath]: unitsOfMeasurementsApi.reducer,
+
+    //Unidades ------------------------------------------------------------------------------
+    entities: entitiesReducer,
+    [entitiesApi.reducerPath]: entitiesApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware()
@@ -118,6 +126,7 @@ export const store = configureStore({
       .concat(productsApi.middleware)
       .concat(proyectoApi.middleware)
       .concat(personasApi.middleware)
+      .concat(entitiesApi.middleware)
       .concat(unitsOfMeasurementsApi.middleware),
 });
 

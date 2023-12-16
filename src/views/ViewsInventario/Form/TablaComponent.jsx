@@ -164,20 +164,20 @@ export default function TablaComponent({
           >
             <Column
               title="Código"
-              dataIndex="codigo"
-              key="codigo"
+              dataIndex="Codigo"
+              key="Codigo"
               sorter={(a, b) => a.nombres.localeCompare(b.nombres)}
             />
             <Column
-              title="Nombre"
-              dataIndex="nombre"
-              key="nombre"
+              title="Nombre del producto"
+              dataIndex="Nombre"
+              key="Nombre"
               sorter={(a, b) => a.nombres.localeCompare(b.nombres)}
             />
             <Column
               title="Modelo"
-              dataIndex="modelo"
-              key="modelo"
+              dataIndex="Modelo"
+              key="Modelo"
               sorter={(a, b) => a.modelo.localeCompare(b.modelo)}
             />
             <Column
