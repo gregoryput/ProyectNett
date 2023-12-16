@@ -7,6 +7,7 @@ namespace ProyectNettApi.Interfaces
     {
         public IEnumerable<ProductoDTO> GetProductos();
         public IEnumerable<ProductoDTO> GetProductosParaFC();
-        public void InsertarProducto(Producto cliente);
+        public void InsertarProducto(ProductoINV producto);
+        public IEnumerable<ProductoInfoBasicaDTO> GetListaProductosInfoInv();
     }
 }

@@ -48,7 +48,31 @@ namespace ProyectNettApi.Controllers
         }
 
 
-                //
+        //
+        // .A.C.C.I.O.N -- Para obtener la lista basica de Productos: --------------------------------------------
+        [Authorize]
+        [Route("GetListaProductosInfoInv")]
+        [HttpGet]
+        public IActionResult GetListaProductosInfoInv()
+        {
+            try
+            {
+                var listaProductos = _productoRepositorio.GetListaProductosInfoInv();
+                _respuesta.Result = listaProductos;
+                _respuesta.DisplayMessage = "Listado de productos obtenido con exito:";
+                return Ok(_respuesta);
+            }
+            catch (Exception ex)
+            {
+                _respuesta.IsSuccess = false;
+                _respuesta.DisplayMessage = "Error al solicitar la lista de products";
+                _respuesta.ErrorMessages = new List<string> { ex.ToString() };
+                return StatusCode(500, _respuesta);
+            }
+        }
+
+
+        //
         // .A.C.C.I.O.N -- Para obtener los productos a mostrar en la Factura de Entraada: --------------------------------------------
         [Authorize]
         [Route("obtenerProductosParaFC")]
@@ -77,7 +101,7 @@ namespace ProyectNettApi.Controllers
         [Authorize]
         [Route("insertarProducto")]
         [HttpPost]
-        public IActionResult insertarProducto(Producto producto)
+        public IActionResult insertarProducto(ProductoINV producto)
         {
             string token = HttpContext.Request.Headers["Authorization"];
             producto.IdCreadoPor = _infoUser.getUsuarioIdByToken(token);
