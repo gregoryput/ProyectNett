@@ -1,6 +1,6 @@
-CREATE DATABASE BD_PROYENETT_54
+CREATE DATABASE BD_PROYENETT_58
 GO
-USE BD_PROYENETT_54
+USE BD_PROYENETT_58
 GO
 
 
@@ -400,6 +400,7 @@ CREATE TABLE RepresentantesRoles
 GO
 
 
+GO
 -- CREACION DE LA TABLA EntidadesPersonasFisicas:
 CREATE Table EntidadesPersonasFisicas
 (
@@ -649,15 +650,17 @@ CREATE TABLE ProductosUnidadesDeMedida (
 GO
 
 
+GO
 -- Tabla para detalles de precios, etc.
 CREATE TABLE DetallesProductosUnidadesDeMedida (
-    IdProducto INT,
+    IdDetalle INT IDENTITY CONSTRAINT FK_PK_DETAIL Primary Key,
     IdUnidadDeMedida INT,
     PrecioCosto DECIMAL(10, 2),
     PrecioVenta DECIMAL(10, 2),
     ITBIS DECIMAL(5, 2),
-    -- Otras columnas de detalle si es necesario
+    -- Otras columnas de detalle si es necesario:
     IdProductoUnidadDeMedida INT CONSTRAINT FK_DPUDM_ foreign Key references ProductosUnidadesDeMedida(IdProductoUnidadDeMedida),
+    IdProducto INT CONSTRAINT FK_ID_DPUDM foreign Key references Productos(IdProducto),
     -- 
     IdCreadoPor int constraint FK_DPUDM1 foreign Key references Usuarios(IdUsuario),
     FechaCreacion Datetime,
@@ -758,6 +761,61 @@ CREATE TABLE EstadosDocumentos
 GO
 
 
+CREATE TABLE OrdenesCompras
+(
+    IdEstadoOrdenCompra INT IDENTITY CONSTRAINT PK_IdEstadoOrdenCompra PRIMARY KEY,
+    NombreEstado VARCHAR(70)
+);
+GO
+
+
+GO
+-- CREACION DE LA TABLA OrdenCompras:
+CREATE TABLE OrdenesCompras
+(
+    IdOrdenCompra INT IDENTITY CONSTRAINT PK_IdOrdenCompra PRIMARY KEY,
+    IdProveedor INT CONSTRAINT Fk_IdProveedorOC FOREIGN KEY REFERENCES Proveedores(IdProveedor),
+    MontoTotal DECIMAL,
+    Secuencia Varchar(11),
+    FechaEmision DATEtime,
+    FechaEntrega DateTime,
+    IdCiudadEntrega INT CONSTRAINT FK_IdCiudadEntrega FOREIGN KEY REFERENCES Ciudades(IdCiudad),
+    DireccionEntrega VARCHAR(MAX),
+    --
+    IdEstadoOrdenCompra int constraint Fk_IdEstadoOrdenCompra foreign Key references OrdenesCompras(IdEstadoOrdenCompra),
+    --
+    IdCreadoPor int constraint Fk_OrdenesComprasIdCreadoPor foreign Key references Usuarios(IdUsuario),
+    FechaCreacion Datetime,
+    IdModificadoPor int constraint Fk_OrdenesComprasdModificadoPor foreign Key references Usuarios(IdUsuario),
+    FechaModificacion Datetime,
+    IdEstadoRegistro int constraint Fk_OrdenesComprasIdEstadoR foreign Key references EstadosRegistros(IdEstadoRegistro)
+);
+GO
+
+
+-- CREACION DE LA TABLA Entradas OrdenesComprasDetalles:
+CREATE TABLE OrdenesComprasDetalles
+(
+    IdOrdenCompra INT IDENTITY CONSTRAINT PK_IdOrdenCompra PRIMARY KEY,
+    --
+    IdProducto int constraint Fk_OC_Detalle_IdProducto foreign Key references Productos(IdProducto),
+    IdUnidadDeMedida int constraint Fk_OC_Entradas_IdUnidadMedida foreign key references UnidadesDeMedida(IdUnidadDeMedida),
+    IdFactura int constraint Fk_OC_Detalle_IdFactura foreign Key references FacturasCompras(IdFactura),
+    --
+    Cantidad int,
+    Precio decimal,
+    ITBIS decimal,
+    Subtotal decimal,
+    --
+    IdCreadoPor int constraint Fk_OC_DFPIdCreadoPor foreign Key references Usuarios(IdUsuario),
+    FechaCreacion Datetime,
+    IdModificadoPor int constraint Fk_OC_DFPIdModificadoPor foreign Key references Usuarios(IdUsuario),
+    FechaModificacion Datetime,
+    IdEstadoRegistro int constraint Fk_OC_DFPIdEstadoR foreign Key references EstadosRegistros(IdEstadoRegistro),
+);
+
+
+GO
 -- CREACION DE LA TABLA FacturasCompras:
 CREATE TABLE FacturasCompras
 (
@@ -767,10 +825,10 @@ CREATE TABLE FacturasCompras
     MontoImpuestos DECIMAL,
     MontoSubtotal DECIMAL,
     MontoTotal DECIMAL,
-    MontoRestante DECIMAL,
     NCF VARCHAR(50),
     --
     IdEstadoFactura int constraint Fk_IdEstadoFactura foreign Key references EstadosDocumentos(IdEstadoDocumento),
+    IdOrdenCompra int constraint FK_IdOrdenCompra foreign key references OrdenesCompras(IdOrdenCompra),
     --
     IdProveedor INT,
     CONSTRAINT Fk_IdProveedor FOREIGN KEY (IdProveedor) REFERENCES Proveedores(IdProveedor),
@@ -784,6 +842,7 @@ CREATE TABLE FacturasCompras
 GO
 
 
+GO
 -- CREACION DE LA TABLA Entradas DetallesFacturasCompras:
 CREATE TABLE DetallesFacturasCompras
 (
@@ -798,7 +857,6 @@ CREATE TABLE DetallesFacturasCompras
     Precio decimal,
     ITBIS decimal,
     Subtotal decimal,
-    Total decimal,
     --
     IdCreadoPor int constraint Fk_DFPIdCreadoPor foreign Key references Usuarios(IdUsuario),
     FechaCreacion Datetime,
@@ -1370,6 +1428,8 @@ CREATE TABLE ProyectosImagenes
 GO
 
 
+
+GO
 -- CREACION DE LA TABLA Proyectos ProyectosDistribucionesPagos
 CREATE TABLE ProyectosDistribucionesPagos
 (
