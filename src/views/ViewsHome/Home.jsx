@@ -1,12 +1,13 @@
-import { Container, ViewContainerPages } from "../../components";
+import { Container, ViewContainerPages, ViewContainerPages2 } from "../../components";
 import { Colores } from "../../components/GlobalColor";
 import gatito from "../../assets/gatito.png";
 import fotodeljefe from "../../assets/fotodeljefe.jpg";
 export default function Home() {
 
   return (
-    <ViewContainerPages>
+    <ViewContainerPages2 >
       <Container
+      className="animate__animated animate__bounceInLeft "
         style={{
           color: `${Colores.fondo}`,
           backgroundColor: `${Colores.AzulMar}`,
@@ -26,7 +27,9 @@ export default function Home() {
         />
       </Container>
 
-      <div style={{ position: "relative" }}>
+      <div
+      className="animate__animated animate__fadeInUp animate__bounce animate__delay-1s "
+      style={{ position: "relative" }}>
         <img
           src={fotodeljefe}
           style={{
@@ -62,20 +65,32 @@ export default function Home() {
         </div>
       </div>
       <div style={{ display: "flex", gap: 15, margin: 10 }}>
-        <Container style={{ backgroundColor: "#010937" }}>
+        <Container 
+      className="animate__animated animate__fadeInUp animate__bounce animate__delay-2s "
+        
+        style={{ backgroundColor: "#010937" }}>
           <h3 style={{ color: `${Colores.fondo}` }}>Crea presupuesto </h3>
         </Container>
-        <Container style={{ backgroundColor: "#020f59" }}>
+        <Container 
+      className="animate__animated animate__fadeInUp animate__bounce animate__delay-3s "
+        
+        style={{ backgroundColor: "#020f59" }}>
           <h3 style={{ color: `${Colores.fondo}` }}>Gestiona proyecto </h3>
         </Container>
-        <Container style={{ backgroundColor: "#101f78" }}>
+        <Container 
+      className="animate__animated animate__fadeInUp animate__bounce animate__delay-4s "
+        
+        style={{ backgroundColor: "#101f78" }}>
           <h3 style={{ color: `${Colores.fondo}` }}>Organiza inventario </h3>
         </Container>
-        <Container style={{ backgroundColor: "#232226" }}>
+        <Container
+      className="animate__animated animate__fadeInUp animate__bounce animate__delay-5s "
+        
+        style={{ backgroundColor: "#232226" }}>
           <h3 style={{ color: `${Colores.fondo}` }}>Factura tus servicios</h3>
         </Container>
       </div>
   
-    </ViewContainerPages>
+    </ViewContainerPages2>
   );
 }
