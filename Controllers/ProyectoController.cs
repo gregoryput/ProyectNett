@@ -46,7 +46,7 @@ namespace ProyectNettApi.Controllers
             }
         }
 
-        [Authorize]
+        //[Authorize]
         [Route("obtenerListaProyecto")]
         [HttpGet]
         public IActionResult getListaProyecto()
@@ -67,7 +67,7 @@ namespace ProyectNettApi.Controllers
             }
         }
 
-        [Authorize]
+        //[Authorize]
         [Route("obtenerProyectoCompleto")]
         [HttpGet]
         public IActionResult getProyectoCompleto(int IdProyecto)

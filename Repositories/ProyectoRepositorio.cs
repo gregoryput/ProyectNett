@@ -40,6 +40,7 @@ namespace ProyectNettApi.Repositories
                 proyecto.ServicioProyecto = JsonConvert.DeserializeObject<List<ListaServicioDTO>>(proyecto.ServicioProyectoJson);
                 proyecto.ProductosProyecto = JsonConvert.DeserializeObject<List<ListaProductoDTO>>(proyecto.ProductosProyectoJson);
                 proyecto.EmpleadosProyecto = JsonConvert.DeserializeObject<List<ListaEmpleadoDTO>>(proyecto.EmpleadosProyectoJson);
+                proyecto.GastoProyecto = JsonConvert.DeserializeObject<List<GastoDTO>>(proyecto.GastoProyectoJson);
             }
 
             return resultSet.ToList();
@@ -173,7 +174,7 @@ namespace ProyectNettApi.Repositories
                         FechaDeFinalizacion = proyecto.FechaDeFinalizacion,
                         TiempoDuracionEstimado = proyecto.TiempoDuracionEstimado,
                         //FechaRealDeFinalizacion = null,
-                        //TiempoDuracionReal = proyecto.TiempoDuracionReal,
+                        TiempoDuracionReal = proyecto.TiempoDuracionReal,
                         PresupuestoAcordado = proyecto.PresupuestoAcordado,
                         ClienteEsPersonaFisica = proyecto.ClienteEsPersonaFisica,
                         IdEntidad = proyecto.IdEntidad,

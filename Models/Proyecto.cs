@@ -105,9 +105,9 @@
         public DateTime? FechaRealDeFinalizacion { get; set; }
         public string? TiempoDuracionReal { get; set; }
 
-        public int IdParametroCosto { get; set; }
-        public decimal CostoPorParametro { get; set; }
-        public decimal Cantidad { get; set; }
+        public int ? IdParametroCosto { get; set; }
+        public decimal? CostoPorParametro { get; set; }
+        public decimal? Cantidad { get; set; }
         public decimal CostoTotal { get; set; }
         public int IdPrioridad { get; set; }
         public int IdProyecto { get; set; }
