@@ -2036,3 +2036,63 @@ BEGIN
     WHERE IdTarea = @IdTarea AND IdProyecto = @IdProyecto
 END
 GO
+
+GO
+
+GO
+
+GO
+
+GO
+----------- /*1--*/ Procedimiento almcenado para obtener una lista general de Proveedores (empresas y personas fisicas):
+CREATE OR ALTER PROCEDURE dbo.GetListaCeneralProveedores
+AS
+BEGIN
+            SELECT
+            C.IdCliente,
+            CASE WHEN NombreEntidad IS NULL THEN P.Nombres + ' ' + P.Apellidos ELSE NombreEntidad END AS NombreEntidad,
+            C.Codigo,
+            E.IdEntidad,
+            E.IdTipoEntidad,
+            NombreTipoEntidad,
+            P.Cedula AS Identificacion,
+            P.Telefono1 AS Telefono,
+            Correo,
+            C.FechaInicioCliente,
+            CiudadNombre,
+            PaisNombre
+        FROM Entidades E
+            INNER JOIN TiposEntidades TE ON E.IdTipoEntidad = TE.IdTipoEntidad
+            INNER JOIN Clientes C ON E.IdEntidad = C.IdEntidad
+            INNER JOIN EntidadesPersonasFisicas EPF ON E.IdEntidad = EPF.IdEntidad
+            INNER JOIN Personas P ON EPF.IdPersona = P.IdPersona
+            INNER JOIN Ciudades Ci ON P.IdCiudad = Ci.IdCiudad
+            INNER JOIN Paises Pa ON Ci.IdPais = Pa.IdPais
+
+    UNION
+
+        SELECT
+            C.IdCliente,
+            CASE WHEN NombreEntidad IS NULL THEN EM.NombreEmpresa ELSE NombreEntidad END AS NombreEntidad,
+            C.Codigo,
+            E.IdEntidad,
+            E.IdTipoEntidad,
+            NombreTipoEntidad,
+            EM.RNC AS Identificacion,
+            EM.Telefono1 AS Telefono,
+            Correo,
+            C.FechaInicioCliente,
+            CiudadNombre,
+            PaisNombre
+        FROM Entidades E
+            INNER JOIN TiposEntidades TE ON E.IdTipoEntidad = TE.IdTipoEntidad
+            INNER JOIN Clientes C ON E.IdEntidad = C.IdEntidad
+            INNER JOIN EntidadesEmpresas EE ON E.IdEntidad = EE.IdEntidad
+            INNER JOIN Empresas EM ON EE.IdEmpresa = EM.IdEmpresa
+            INNER JOIN Ciudades Ci ON EM.IdCiudad = Ci.IdCiudad
+            INNER JOIN Paises Pa ON Ci.IdPais = Pa.IdPais
+
+    ORDER BY IdCliente ASC;
+END
+	
+-- EXEC dbo.GetListaCenerallientes
