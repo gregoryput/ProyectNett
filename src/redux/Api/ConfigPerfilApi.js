@@ -4,7 +4,7 @@ import { JwtUtils } from "../../utils";
 const token = localStorage.getItem("token");
 const id = JwtUtils.getUserIdByToken(token);
 console.log(id);
-const baseUrl = "https://localhost:5173/";
+const baseUrl = "https://localhost:7279/";
 
 export const ConfigPerfilApi = createApi({
   reducerPath: "ConfigPerfilApi",
