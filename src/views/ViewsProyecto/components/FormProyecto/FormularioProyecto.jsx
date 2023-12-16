@@ -310,8 +310,8 @@ export default function FormularioProyecto() {
         // "IdEstadoRegistro": 0
       },
     };
-    // createProyecto({ ...dataSubmit });
-     console.log({...dataSubmit})
+    createProyecto({ ...dataSubmit });
+    //  console.log({...dataSubmit})
   };
 
   useEffect(() => {
@@ -642,11 +642,18 @@ export default function FormularioProyecto() {
                         <InputNumber
                           min={1}
                           defaultValue={0}
+                          rules={[
+                            {
+                              required: true,
+                              message: "Debe de tener un monto Inicial",
+                            },
+                            
+                          ]}
                           formatter={(value) =>
                             `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
                           }
                           parser={(value) => value.replace(/\$\s?|(,*)/g, "")}
-                          style={{ width: 200, backgroundColor:`${Colores.fondo}` }}
+                          style={{ width: 150, backgroundColor:`${Colores.fondo}` }}
                         />
                       </Form.Item>
                     </div>

@@ -10,7 +10,7 @@ import InfoCliente from "./components/Gestionar/InfoCliente";
 import TareasProyecto from "./components/Gestionar/TareasProyecto";
 import Tiempo from "./components/Gestionar/Tiempo";
 import ViewsList from "./components/ViewsList";
-import { Modal, Table, Descriptions } from "antd";
+import { Modal, Table } from "antd";
 import TareasComponent from "./components/Operar/TareasComponent";
 import { IoAlertCircleOutline } from "react-icons/io5";
 import { useEffect, useState } from "react";
@@ -55,6 +55,7 @@ export default function Proyecto() {
   // Llama a la consulta usando el hook generado
   const { data, isSuccess, isLoading } =
     useGetProyectoCompletoQuery(selectProyecto);
+    console.log(proyecto);
 
   useEffect(() => {
     if (data?.Result !== undefined && isSuccess) {
@@ -65,7 +66,6 @@ export default function Proyecto() {
     }
   }, [data, isSuccess, proyecto]);
 
-  console.log(proyecto);
   return (
     <ViewContainerPages2>
       <FlexContainer>
@@ -245,6 +245,11 @@ const ProyectoModal = ({ proyecto, OpenModal, CloseModal, isModalOpen }) => {
       title: "Estado Proyecto",
       dataIndex: "EstadoProyecto",
       key: "EstadoProyecto",
+    },
+    {
+      title: "Monto Incial",
+      dataIndex: "MontoInicial",
+      key: "MontoInicial",
     },
     // Agregar más columnas según tus necesidades
   ];

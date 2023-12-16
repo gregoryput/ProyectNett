@@ -105,7 +105,7 @@ export const createRouter = () => {
           ),
         },
         {
-          path: "/cuentas-por-pagar-facturar-cotizacion=1",
+          path: "/cuenta-por-paga/:ID",
           element: (
             <ProtectedRoute
               roles={["Administrador", "Asistente Administrativo"]}

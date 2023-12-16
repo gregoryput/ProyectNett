@@ -92,7 +92,9 @@ const GeneradorDocumentoVentaPDF = ({
           )}
         </PDFDownloadLink>
       </div>
-      
+      <div>
+        <h2>Descargar Cotización</h2>
+      </div>
    
     </Container>
   );

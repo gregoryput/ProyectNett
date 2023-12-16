@@ -72,6 +72,11 @@ export default function CuentaPorCobrar() {
       key: "MontoTotal",
     },
     {
+      title: "Monto Incial",
+      dataIndex: "MontoInicial",
+      key: "MontoInicial",
+    },
+    {
       title: "Proyecto asociado",
       dataIndex: "NombreProyecto",
       key: "NombreProyecto",
@@ -89,7 +94,6 @@ export default function CuentaPorCobrar() {
       render: (_, record) => <Tag>{record.NombreTipoEntidad}</Tag>,
     },
     {
-      title: "Action",
       key: "action",
       render: (_, record: IDocumentoDTO, index) => (
         <DropdownActionsLists
@@ -111,7 +115,7 @@ export default function CuentaPorCobrar() {
               Name: "ConvertInvoice",
               Title: "Convertir en factura",
               Method: () =>
-                navigate("/cuentas-por-pagar-facturar-cotizacion=1"),
+                navigate(`/cuenta-por-paga/${record.IdProyecto}`),
               Icon: <MdRequestQuote size={20} color="#25375B" />,
             },
             {
