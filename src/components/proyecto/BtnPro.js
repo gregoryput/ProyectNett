@@ -74,3 +74,118 @@ export const BtnNavPro = styled.button`
   }
 `;
 
+export const BtnNPro = styled.button`
+  color: white;
+  border: none;
+  font-size: 14px;
+  padding: 23px;
+  width: 99%;
+  margin: 10px auto;
+  color:${(props) => (props.color ?   `${Colores.AzulMar}` : `${Colores.fondo}`)}; ;
+  overflow: hidden;
+  background-color: ${(props) => (props.color ? "orange" : `${Colores.AzulOscuro}`)};
+  outline: none;
+  cursor: pointer;
+  transition: transform 0.4s;
+  height:100%;
+
+  &:hover {
+
+    transform: scale(1.1);
+    background-color:  ${Colores.fondo}  ;
+    color: ${Colores.AzulOscuro};
+  }
+`;
+
+export const BtnEstadoPendiente = styled.button`
+  color: white;
+  border: none;
+  font-size: 14px;
+  padding: 23px;
+  width: 99%;
+  margin: 10px auto;
+  color:${(props) =>
+    props.isSelected ? "white" : "black"};
+  overflow: hidden;
+ background-color: ${(props) =>
+    props.isSelected ? "#f52628" : "white"};
+  outline: none;
+  cursor: pointer;
+  transition: transform 0.4s;
+  height:100%;
+
+  &:hover {
+
+    transform: scale(1.1);
+    background-color:  ${Colores.AzulOscuro}  ;
+    color: ${Colores.Blanco};
+  }
+`;
+
+export const BtnEstadoCompleto = styled.button`
+  color: white;
+  border: none;
+  font-size: 14px;
+  padding: 23px;
+  width: 99%;
+  margin: 10px auto;
+  color:${(props) =>
+    props.isSelected ? "white" : "black"};
+  overflow: hidden;
+ background-color: ${(props) =>
+    props.isSelected ? "#19e263" : "white"};
+  outline: none;
+  cursor: pointer;
+  transition: transform 0.4s;
+  height:100%;
+
+  &:hover {
+
+    transform: scale(1.1);
+    background-color:  ${Colores.AzulOscuro}  ;
+    color: ${Colores.Blanco};
+  }
+`;
+export const BtnEstadoEnCuros = styled.button`
+  color: white;
+  border: none;
+  font-size: 14px;
+  padding: 23px;
+  width: 99%;
+  margin: 10px auto;
+  color:${(props) =>
+    props.isSelected ? "white" : "black"};
+  overflow: hidden;
+ background-color: ${(props) =>
+    props.isSelected ? "#1303c0" : "white"};
+  outline: none;
+  cursor: pointer;
+  transition: transform 0.4s;
+  height:100%;
+
+  &:hover {
+
+    transform: scale(1.1);
+    background-color:  ${Colores.AzulOscuro}  ;
+    color: ${Colores.Blanco};
+  }
+`;
+
+export const Btnbox = styled.button`
+  border: none;
+  font-size: 14px;
+  padding: 15px;
+  margin: 10px auto;
+  color:${(props) => (props.color ? "white" : `${Colores.AzulOscuro}`)}; ;
+  overflow: hidden;
+  background-color: ${(props) => (props.color ? `${Colores.AzulOscuro}` : `${Colores.fondo}`)};
+  outline: none;
+  cursor: pointer;
+
+  &:hover {
+
+    background-color:  orange  ;
+    color: ${Colores.Blanco};
+  }
+`;
+

@@ -1,6 +1,7 @@
 import {  BtnPro } from "../../../../components";
 import { IoEyeOutline ,IoCashOutline} from "react-icons/io5";
-export default function Detalle() {
+export default function Detalle({OpenModal}) {
+
   return (
     <BtnPro
       style={{
@@ -10,6 +11,7 @@ export default function Detalle() {
         alignItems: "center",
         marginTop:0
       }}
+      onClick={()=> OpenModal()}
     >
       <div style={{display:"flex",alignItems:"center",padding:5}}>
       < IoCashOutline size={35} style={{margin: 10}}/>

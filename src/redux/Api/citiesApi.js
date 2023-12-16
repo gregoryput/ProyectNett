@@ -14,7 +14,7 @@ export const citiesApi = createApi({
     tagTypes: ["Cities"],
     endpoints: (builder) => ({
         getCities: builder.query({
-            query: () => "/Ciudades/ObtenerCiudades",
+            query: () => `/Ciudades/obtenerCiudadesEmpleado`,
             providesTags: ["Cities"],
         }),
         createCities: builder.mutation({

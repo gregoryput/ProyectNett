@@ -1,10 +1,13 @@
 import { useState, useEffect } from "react";
 //import "animate.css";
 import { Modal, message } from "antd";
+import { MdOutlinePerson } from "react-icons/md";
+import { MdBusiness } from "react-icons/md";
 import {
   ContainerButton,
   ViewContainerPages,
   ButtonNext,
+  DropdownActionsNew,
 } from "../../components";
 
 import { FormComponent, TablaComponent } from "./Form";
@@ -27,6 +30,8 @@ export default function Cliente() {
 
   const [selectedClient, setSelectedClient] = useState();
   const [actionClient, setActionClient] = useState("");
+
+  const [selectedTypeClient, setSelectedTypeClient] = useState(1);
 
   const [
     deleteClient,
@@ -118,7 +123,35 @@ export default function Cliente() {
           }}
         >
           <p>
-            <b>Formulario</b>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+              }}
+              onClick={(event) => event.stopPropagation()}
+            >
+              <b style={{ marginRight: "7px" }}>Nuevo cliente{"  -->> "}</b>
+              <DropdownActionsNew
+                Actions={[
+                  {
+                    Value: 1,
+                    Name: "NewCP",
+                    Title: "Persona física",
+                    Method: () => setSelectedTypeClient(1),
+                    Icon: <MdOutlinePerson size={20} />,
+                  },
+                  {
+                    Value: 2,
+                    Name: "NewCE",
+                    Title: "Empresa",
+                    Method: () => setSelectedTypeClient(2),
+                    Icon: <MdBusiness size={20} />,
+                  },
+                ]}
+                selectedTypeClient={selectedTypeClient}
+              />
+            </div>
           </p>
           {/* <IoChevronDownSharp style={{ width: 20, height: 20 }} /> */}
         </ContainerButton>

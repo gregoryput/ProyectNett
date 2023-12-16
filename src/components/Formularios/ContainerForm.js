@@ -1,5 +1,6 @@
 import styled, { keyframes } from "styled-components";
 import { Colores } from "../GlobalColor";
+import { Form } from "antd";
 
 // Definir la animación
 const slideDown = keyframes`
@@ -130,6 +131,14 @@ export const ContainerList = styled.div`
 `;
 
 export const ContainerFormPrueba = styled.form`
+  display: ${(props) => (props.display ? "none" : "block")};
+  color: white;
+  border-radius: 12px;
+  font-size: 14px;
+  color: ${Colores.AzulOscuro};
+`;
+
+export const ContainerFormAntd = styled(Form)`
   display: ${(props) => (props.display ? "none" : "block")};
   color: white;
   border-radius: 12px;

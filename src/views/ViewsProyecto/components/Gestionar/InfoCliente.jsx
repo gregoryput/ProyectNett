@@ -1,8 +1,11 @@
 import { Container } from "../../../../components";
 import { Colores } from "../../../../components/GlobalColor";
+import PropTypes from "prop-types";
+InfoCliente.propTypes = {
+  proyecto: PropTypes.array.isRequired,
+};
 
-
-export default function Servicio() {
+export default function InfoCliente({proyecto}) {
   return (
     <Container
       style={{
@@ -16,10 +19,10 @@ export default function Servicio() {
         marginBottom:5
       }}
     >
-      <div style={{display:"flex",alignItems:"center",padding:5}}>
-      <h3>Tipo de Servicio</h3>
+      <div style={{display:"flex",alignItems:"center",padding:5, justifyContent:"space-between"}}>
+      <h3>Cliente</h3>
       </div>
-      <p>Optimización y Seguridad de Redes</p>
+      <h4>{proyecto[0]?.NombreEntidad}</h4>
     </Container>
   )
 }

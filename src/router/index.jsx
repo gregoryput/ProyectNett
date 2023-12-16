@@ -1,6 +1,5 @@
 import { createBrowserRouter } from "react-router-dom";
 import {
-  Cliente,
   CuentaPorCobrar,
   DashBoard,
   Inventario,
@@ -13,6 +12,9 @@ import {
   DetailProveedor,
   DetailEmpleado,
   FormFacturacion,
+  //Cliente,
+  Clientes,
+  //ClienteV2
 } from "../views";
 import CuentaPorPagar from "../views/ViewsCuentasPorPagar/CuentaPorPagar";
 import Login from "../page/Login";
@@ -22,8 +24,7 @@ import ProtectedRoute from "./protected-route/protected-route";
 import ConfiguracionPerfil from "../views/ViewUsuario/ConfiguracionPerfil";
 import { Toaster } from "react-hot-toast";
 import Empleado from "../views/ViewsEmpleado/Empleado";
-// import FormComponet from "../views/ViewsProyecto/components/Form/FormComponet";
-
+import { FormConvertToInvoice } from "../views/ViewsCuentaPorCobrar";
 
 export const createRouter = () => {
   const router = createBrowserRouter([
@@ -81,7 +82,7 @@ export const createRouter = () => {
           path: "/cliente",
           element: (
             <ProtectedRoute roles={["Administrador"]}>
-              <Cliente />
+              <Clientes />
             </ProtectedRoute>
           ),
         },
@@ -93,7 +94,6 @@ export const createRouter = () => {
             </ProtectedRoute>
           ),
         },
-
         {
           path: "/cuenta-por-pagar",
           element: (
@@ -101,6 +101,16 @@ export const createRouter = () => {
               roles={["Administrador", "Asistente Administrativo"]}
             >
               <CuentaPorPagar />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "/cuenta-por-paga/:ID",
+          element: (
+            <ProtectedRoute
+              roles={["Administrador", "Asistente Administrativo"]}
+            >
+              <FormConvertToInvoice />
             </ProtectedRoute>
           ),
         },
@@ -166,13 +176,12 @@ export const createRouter = () => {
           path: "/proyecto",
           element: (
             <ProtectedRoute
-              roles={["Administrador", "Asistente Administrativo", "asistente"]}
+              roles={["Administrador", "Asistente Administrativo", "Asistente"]}
             >
               <Proyecto />
             </ProtectedRoute>
           ),
         },
-       
         {
           path: "/reporte",
           element: (

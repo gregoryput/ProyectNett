@@ -7,15 +7,19 @@ import { IoTrashOutline } from "react-icons/io5";
 import { MdRestore } from "react-icons/md";
 import FormComponent from "./componentsUsuario/FormComponent";
 import { useDeleteUserMutation, useGetUsersQuery, useRestoreUserMutation } from "../../redux/Api/usersApi";
+
+
+
 export default function Usuario() {
   const [loadingSave, setLoadingSave] = useState(false);
   const [toggle, setToggle] = useState(false);
-  const [dataEdit, setDataEdit] = useState(null);
+  const [dataEdit, setDataEdit] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const [selected, setSelected] = useState();
+  const [selected, setSelected] = useState(false);
+  const [idEmpleado, setIdEmpleado] = useState(false);
   const [action, setAction] = useState("");
-  1
+  
   ///Consulta de datos 
 
   const {
@@ -23,7 +27,6 @@ export default function Usuario() {
     // isSuccess: isSuccess,
     isLoading: isLoading,
   } = useGetUsersQuery("");
-
 
   const [
     deleteUser,
@@ -113,6 +116,9 @@ export default function Usuario() {
         setToggle={setToggle}
         dataEdit={dataEdit}
         setDataEdit={setDataEdit}
+        idEmpleado={idEmpleado}
+        setIdEmpleado={setIdEmpleado}
+
       />
       <TablaComponent
         data={dataUsuarios}
@@ -123,6 +129,7 @@ export default function Usuario() {
         goSectionUp={scrollToTop}
         setSelected={setSelected}
         setAction={setAction}
+        setIdEmpleado={setIdEmpleado}
       />
 
 
@@ -139,7 +146,7 @@ export default function Usuario() {
         ) : (
           <p>
 
-            {selected != undefined && selected.nombreEstado === "Activo" ? (
+            {selected != undefined && selected.NombreEstado === "Activo" ? (
               "Esta seguro de desactivar a este Empleado"
             ) :
               ("Esta seguro de activar a este Empleado")
@@ -170,8 +177,8 @@ export default function Usuario() {
             }}
             onClick={() =>
               action === "Activar"
-                ? restoreUser(selected.idUsuario)
-                : deleteUser(selected.idUsuario)
+                ? restoreUser(selected.IdUsuario)
+                : deleteUser(selected.IdUsuario)
             }
           >
             {action === "Desactivar" ? (

@@ -19,10 +19,10 @@ import { useDeleteEmployeMutation, useGetEmployeQuery, useRestoreEmployeMutation
 export default function Cliente() {
   const [loadingSave, setLoadingSave] = useState(false);
   const [toggle, setToggle] = useState(false);
-  const [dataEdit, setDataEdit] = useState(null);
+  const [dataEdit, setDataEdit] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const [selected, setSelected] = useState();
+  const [selected, setSelected] = useState([]);
   const [action, setAction] = useState("");
 
   const [
@@ -77,12 +77,13 @@ export default function Cliente() {
   const handleCloseModal = () => {
     setIsModalOpen(false);
   };
-  //Estado redux api para obtener la lista de clientes con paginacion
   const {
     data: dataEmpleado,
     isSuccess: isSuccess,
     isLoading: isLoading,
   } = useGetEmployeQuery("");
+
+
 
   useEffect(() => {
     if (isSuccess) {
@@ -153,7 +154,7 @@ export default function Cliente() {
           ) : (
             <p>
 
-              {selected != undefined && selected.nombreEstado === "Activo" ? (
+              {selected != undefined && selected.NombreEstado === "Activo" ? (
                 "Esta seguro de desactivar a este Empleado"
               ) :
                 ("Esta seguro de activar a este Empleado")
@@ -184,8 +185,8 @@ export default function Cliente() {
               }}
               onClick={() =>
                 action === "Activar"
-                  ? restoreEmploye(selected.idEmpleado)
-                  : deleteEmploye(selected.idEmpleado)
+                  ? restoreEmploye(selected.IdEmpleado)
+                  : deleteEmploye(selected.IdEmpleado)
               }
             >
               {action === "Desactivar" ? (

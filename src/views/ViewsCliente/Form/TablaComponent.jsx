@@ -48,7 +48,6 @@ export default function TablaComponent({
       item.nombres.toLowerCase().includes(searchTerm)
     );
 
-
     setFilteredData(filter);
   };
   useEffect(() => {
@@ -75,7 +74,8 @@ export default function TablaComponent({
         margin: 15,
         padding: 20,
         borderRadius: 12,
-      }}>
+      }}
+    >
       {isLoadingClients || loadingSave ? (
         <>
           <SpinnerTables />
@@ -102,31 +102,12 @@ export default function TablaComponent({
               defaultPageSize: 5,
               showSizeChanger: true,
               pageSizeOptions: [6, 12, 18, 24, 32, 40, 45, 50, 55, 60, 100],
-            }}>
-            <Column
-              title="Id Cliente"
-              dataIndex="idCliente"
-              key="idCliente"
-             
-            />
-            <Column
-              title="Nombre completo"
-              dataIndex="nombres"
-              key="nombres"
-           
-            />
-            <Column
-              title="Apellidos"
-              dataIndex="apellidos"
-              key="apellidos"
-              
-            />
-            <Column
-              title="Sexo"
-              dataIndex="sexoNombre"
-              key="sexoNombre"
-             
-            />
+            }}
+          >
+            <Column title="Id Cliente" dataIndex="idCliente" key="idCliente" />
+            <Column title="Nombre completo" dataIndex="nombres" key="nombres" />
+            <Column title="Apellidos" dataIndex="apellidos" key="apellidos" />
+            <Column title="Sexo" dataIndex="sexoNombre" key="sexoNombre" />
             <Column title="Teléfono" dataIndex="telefono1" key="telefono1" />
             <Column
               title="Ciudad"
@@ -147,7 +128,8 @@ export default function TablaComponent({
                       key={`State ${record.idEstadoRegistro} ${index}`}
                       color={
                         record.idEstadoRegistro === 1 ? "#304878" : "#FF4D4D"
-                      }>
+                      }
+                    >
                       {record.nombreEstado}
                     </Tag>
                   }
@@ -171,7 +153,8 @@ export default function TablaComponent({
                         record.idEstadoRegistro === 1 ? "Desactivar" : "Activar"
                       );
                       handleDrop(record.idCliente);
-                    }}>
+                    }}
+                  >
                     <IoEllipsisVerticalSharp size={22} />
                   </ButtonIcon>
                   <DropdownContenttabla open={openIndex === record.idCliente}>
@@ -181,7 +164,8 @@ export default function TablaComponent({
                         onClick={() => {
                           handleDrop(-1);
                           navegation(`/cliente/${record.idCliente}`);
-                        }}>
+                        }}
+                      >
                         <IoEyeOutline
                           size={18}
                           style={{ marginLeft: 5, marginRight: 5 }}
@@ -195,7 +179,8 @@ export default function TablaComponent({
                           handleDrop(-1);
                           editarCliente(record);
                           goSectionUp();
-                        }}>
+                        }}
+                      >
                         <IoClipboardOutline
                           size={18}
                           style={{ marginLeft: 5, marginRight: 5 }}
@@ -208,7 +193,8 @@ export default function TablaComponent({
                         onClick={() => {
                           handleOpenModal();
                           handleDrop(-1);
-                        }}>
+                        }}
+                      >
                         {record.idEstadoRegistro === 1 ? (
                           <IoTrashOutline
                             size={18}

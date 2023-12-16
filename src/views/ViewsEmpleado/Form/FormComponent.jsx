@@ -29,7 +29,7 @@ export default function FormComponent(props) {
 
   const navigate = useNavigate();
   const [posicionActual, setPosicionActual] = useState(1);
-  const [datosFormulario, setDatosFormulario] = useState({});
+  const [datosFormulario, setDatosFormulario] = useState([]);
   const [animacion, setAnimacion] = useState(false);
 
   const siguiente = (data) => {
@@ -120,30 +120,25 @@ export default function FormComponent(props) {
     const fecha = new Date(); // Obtén la fecha actual
 
     // Formatea la fecha en el formato deseado
-    const fechaFormateada = fecha.toISOString();
+   
     //DataEncabezado de cliente:
     data?.IdEmpleado !== 0 && data?.IdEmpleado !== undefined
       ? (dataHead = {
-          idEmpleado: data?.IdEmpleado,
+          IdEmpleado: data?.IdEmpleado,
           IdModificadoPor: userId,
-          FechaModificacion: fechaFormateada,
         })
       : (dataHead = {
-          idEmpleado: 0,
-          idCreadoPor: userId,
-          fechadDeContratación: fechaFormateada,
-          fechaCreacion: fechaFormateada,
-          idModificadoPor: 1,
-          fechaModificacion: fechaFormateada,
-          idEstadoRegistro: 1,
+          IdEmpleado: 0,
+          IdCreadoPor: userId,
+          FechadDeContratacion: fecha,
+          IdModificadoPor: 1,
+          IdEstadoRegistro: 1,
         });
 
         let dataExtra = {
-          idCreadoPor: userId,
-          fechaCreacion: fechaFormateada,
-          idModificadoPor: 1,
-          fechaModificacion: fechaFormateada,
-          idEstadoRegistro: 1,
+          IdCreadoPor: userId,
+          IdModificadoPor: 1,
+          IdEstadoRegistro: 1,
         };
  
     //Armar el objeto persona
@@ -160,11 +155,9 @@ export default function FormComponent(props) {
     
       return {
         ...compo,
-        idCreadoPor: userId,
-        fechaCreacion: fechaFormateada,
-        idModificadoPor: 1,
-        fechaModificacion: fechaFormateada,
-        idEstadoRegistro: 1,
+        IdCreadoPor: userId,
+        IdModificadoPor: 1,
+        IdEstadoRegistro: 1,
       };
     });
     //Armar la data submit (el objeto puede ser de dos formas):
@@ -173,19 +166,17 @@ export default function FormComponent(props) {
       ? // -- Forma 1 (Cuando no hayan cargos):
         (dataJson = {
           ...dataHead,
-          persona,
+          Persona : persona,
         })
       : // -- Forma 2 (Cuando hayan cargos):
         (dataJson = {
           ...dataHead,
-          persona,
+          Persona: persona,
           Cargos: Cargo,
         });
       data?.IdEmpleado === 0 || data?.IdEmpleado === undefined
         ? createEmploye({ ...dataJson })
         : updateEmploye({ ...dataJson });
-
-
 
   };
  

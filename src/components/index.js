@@ -17,7 +17,7 @@ import { ButtonNav } from "./MenuNavegacion/ButtonNav";
 import { LabelNav } from "./MenuNavegacion/LabelNav";
 import { Column } from "./LayoutComponent/Column";
 import { Row } from "./LayoutComponent/Row";
-import { ViewContainerPages } from "./LayoutComponent/ViewContainerPages";
+import { ViewContainerPages, ViewContainerPages2 } from "./LayoutComponent/ViewContainerPages";
 import { DivRoll } from "./Menu/DivRoll";
 import { Spinner } from "./Spinner/Spinner";
 import { SpinnerTables } from "./Spinner/Spinner";
@@ -29,6 +29,7 @@ import {
   ContainerForm,
   ContainerForm2,
   ContainerFormPrueba,
+  ContainerFormAntd,
   ContainerList,
   PrincipalContainerForm,
 } from "./Formularios/ContainerForm";
@@ -39,14 +40,38 @@ import { ContainerTable } from "./Formularios/ContainerTable";
 import { NotificationContainer } from "./notifiaciones/notificaciones";
 import { GradientText } from "./404/GrandientText";
 import { ButtonAdd, ButtonNext, ButtonRemove } from "./Formularios/ButtonNext";
-import { ButtonIcon, ButtonIconBorder, ButtonIconDelete, ButtonIconMenuTalba, ButtonSelect } from "./General/ButtonIcon";
+import {
+  ButtonIcon,
+  ButtonIconBorder,
+  ButtonIconDelete,
+  ButtonIconMenuTalba,
+  ButtonSelect,
+  ButtonSelectProyecto,
+} from "./General/ButtonIcon";
 import { ButtonSave } from "./Formularios/ButtonSave";
 import { DropdownContenttabla } from "./General/Dropdownmenutabla";
 import { TitleNav } from "./General/TitleNav";
 import { Div } from "./General/Div";
-import { BtnSelect } from "./proyecto/SelectElement";
-import { BtnNavPro, BtnPago, BtnPro } from "./proyecto/BtnPro";
-import { Box1, ColumnItem, ColumnItem2, ColumnItem3, FlexContainer, FlexibleBox, MainContainer, RowItem } from "./proyecto/ColumnAndRow";
+import { BtnSelectt, BtnSelect } from "./proyecto/SelectElement";
+import { BtnEstadoCompleto, BtnEstadoEnCuros, BtnEstadoPendiente, BtnNPro, BtnNavPro, BtnPago, BtnPro, Btnbox } from "./proyecto/BtnPro";
+import {
+  Box1,
+  ColumnItem,
+  ColumnItem2,
+  ColumnItem3,
+  FlexContainer,
+  FlexibleBox,
+  MainContainer,
+  RowItem,
+} from "./proyecto/ColumnAndRow";
+
+import { DropdownActionsNew } from "./DropDownActionsNew";
+import { DropdownActionsLists } from "./DropDownActionsLists";
+
+import { ModalFormPerson } from "./FormPerson";
+
+import { CustomUploadImage } from "./CustomUploadImage";
+import { Barra, TablaStyled, Td, Tda, Th, Tha } from "./proyecto/Diagrama";
 
 /// importanciones de los componente
 export {
@@ -96,6 +121,7 @@ export {
   Select,
   ContainerTable,
   ContainerFormPrueba,
+  ContainerFormAntd,
   PrincipalContainerForm,
   GradientText,
   ButtonNext,
@@ -120,7 +146,7 @@ export {
   BtnPro,
   BtnNavPro,
 
-  ///proyecto 
+  ///proyecto
   FlexibleBox,
   FlexContainer,
   Box1,
@@ -129,6 +155,27 @@ export {
   ColumnItem2,
   ColumnItem3,
   ColumnItem,
-
+  Btnbox,
+  /// digrama de gantt 
+  Barra,
+  Tha,
+  Th,
+  Td,
+  Tda,
+  TablaStyled,
   
+  ///Actiones para las tablas
+  DropdownActionsLists,
+  DropdownActionsNew,
+  ModalFormPerson,
+  
+  //
+  CustomUploadImage,
+  ViewContainerPages2,
+  ButtonSelectProyecto,
+  BtnSelectt,
+  BtnEstadoPendiente,
+  BtnEstadoCompleto,
+  BtnEstadoEnCuros,
+  BtnNPro,
 };

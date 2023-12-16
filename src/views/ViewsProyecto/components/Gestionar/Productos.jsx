@@ -1,26 +1,23 @@
 import CountUp from "react-countup";
 import { BtnSelect, Container, ContainerDetail } from "../../../../components";
 import { AiOutlineInbox } from "react-icons/ai";
+import PropTypes from "prop-types";
 
-const data2 = [
-    "Producto 1",
-    "Producto 1",
-    "Producto 1",
-    "Producto 1",
-    "Producto 1",
-    "Producto 1",
-    "Producto 1",
-    "Producto 1",
-    "Producto 1",
-    "Producto 1",
-    "Producto 1",
-    "Producto 1",
-    "Producto 1",
-  ];
+Productos.propTypes = {
+  proyecto: PropTypes.array.isRequired,
+};
 
-export default function Productos() {
+
+export default function Productos({proyecto}) {
   const formatter = (value) => <CountUp end={value} separator="," />;
-
+  console.log(proyecto[0]?.ProductosProyecto);
+  const maxCharacters = 20;
+  const renderText = (text) => {
+    if (text.length > maxCharacters) {
+      return `${text.slice(0, maxCharacters)}...`;
+    }
+    return text;
+  };
   return (
     <Container style={{ height: 400 }}>
     <div
@@ -37,7 +34,7 @@ export default function Productos() {
     
     </div>
     <ContainerDetail style={{ overflow: "auto", height: 280, padding: 0 }}>
-      {data2.map((item, key) => (
+      {proyecto[0]?.ProductosProyecto.map((item, key) => (
         <BtnSelect
           style={{
             width: "98%",
@@ -64,7 +61,7 @@ export default function Productos() {
               textAlign: "justify",
             }}
           >
-            <h3>Producto 1</h3>
+            <h3>{renderText(item.NombreProducto)}</h3>
             <div
               style={{
                 display: "flex",
@@ -73,7 +70,7 @@ export default function Productos() {
               }}
             >
               <p>Cantidad</p>
-              <p>20</p>
+              <p>{item.Cantidad}</p>
             </div>
           </div>
         </BtnSelect>
@@ -88,7 +85,7 @@ export default function Productos() {
           }}
         >
           <p>Cantidad:</p>
-          <span> {formatter(data2.length)}</span>
+          <span> {formatter(proyecto[0]?.ProductosProyecto.length)}</span>
         </div>
   </Container>
   )

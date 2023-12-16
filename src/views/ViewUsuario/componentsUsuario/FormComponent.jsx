@@ -1,21 +1,21 @@
 import { ContainerForm2 } from "../../../components";
-import { useEffect, useState, } from "react";
+import { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { OutsideClick } from "outsideclick-react";
 import { JwtUtils } from "../../../utils";
 import InformacionUsuario from "./InformacionUsuario";
 import { message } from "antd";
 import { useNavigate } from "react-router-dom";
-import { useCreateUserMutation, useUpdateUserMutation } from "../../../redux/Api/usersApi";
-
-
-
+import {
+  useCreateUserMutation,
+  useUpdateUserMutation,
+} from "../../../redux/Api/usersApi";
 
 export default function FormComponent(props) {
   const token = localStorage.getItem("token");
   const userId = parseInt(JwtUtils.getUserIdByToken(token), 10);
   const [animacion, setAnimacion] = useState(false);
-  
+
   const navigate = useNavigate();
   //Funcion peticion para el create/insert de Cliente:
   const [
@@ -40,7 +40,7 @@ export default function FormComponent(props) {
   //.. INSERT
   //.. INSERT
   //.. CUANDO EL INSERT (CREATE) SE LLEVE A CABO CORRECTAMENTE:
-useEffect(() => {
+  useEffect(() => {
     if (isCreateSuccess === true) {
       message.success({
         content: "Información del Usuario guardada correctamente",
@@ -84,9 +84,8 @@ useEffect(() => {
       });
     }
   }, [isErrorUpdate]);
- 
+
   useEffect(() => {
-   
     if (props.toggle == false) {
       setTimeout(() => {
         setAnimacion(false);
@@ -99,72 +98,65 @@ useEffect(() => {
     }
   }, [props.dataEdit, props.toggle, setAnimacion]);
 
- //Funcion para insertar, enviar los datos a la api:
- const handleSubmit = (data) => {
- 
-  delete data.Empleado;
-  delete data.Confirmar
-  delete data.NombreEstado
-  delete data.NombreRol
+  //Funcion para insertar, enviar los datos a la api:
+  const handleSubmit = (data) => {
+    delete data.Empleado;
+    delete data.Empleado;
+    delete data.Confirmar;
+    delete data.NombreEstado;
+    delete data.IdEmpleado;
 
-  let dataHead;
-  const fecha = new Date(); // Obtén la fecha actual
+    let dataHead;
+    let id = props.idEmpleado;
 
-  // Formatea la fecha en el formato deseado
-  const fechaFormateada = fecha.toISOString();
-  //DataEncabezado de usuario:
-  data?.IdUsuario !== 0 && data?.IdUsuario !== undefined
-    ? (dataHead = {
-      IdUsuario: data?.IdUsuario,
-        IdModificadoPor: userId,
-        FechaModificacion: fechaFormateada,
-        IdCreadoPor: userId,
-        idEstadoRegistro: 1
-      }
-      )
-    : (dataHead = {
-        IdUsuario: 0,
-        IdCreadoPor: userId,
-        FechaCreacion: fechaFormateada,
-      });
+    //DataEncabezado de usuario:
+    data?.IdUsuario !== 0 &&
+    data?.IdUsuario !== undefined &&
+    data.IdEmpleado == undefined
+      ? (dataHead = {
+          IdUsuario: data?.IdUsuario,
+          IdModificadoPor: userId,
+          IdCreadoPor: userId,
+          idEstadoRegistro: 1,
+          IdEmpleado: id,
+        })
+      : (dataHead = {
+          IdUsuario: 0,
+          IdCreadoPor: userId,
+        });
 
+    //Armar el objeto persona
 
-  //Armar el objeto persona
- 
-  //Quitar el objeto empresas del objet persona
-  
-  //Armar la data submit (el objeto puede ser de dos formas):
-  let dataJson;
+    //Quitar el objeto empresas del objet persona
 
-      dataJson = {
-        ...dataHead,
-        ...data,
-      }
+    //Armar la data submit (el objeto puede ser de dos formas):
+    let dataJson;
 
-      
+    dataJson = {
+      ...dataHead,
+      ...data,
+    };
+
     data?.IdUsuario === 0 || data?.IdUsuario === undefined
       ? createUser({ ...dataJson })
       : updateUser({ ...dataJson });
 
-      
-      console.log(dataJson);
-    
-
-};
-
+  };
 
   return (
     <ContainerForm2 animacion={animacion} display={props.toggle}>
       <OutsideClick>
-          <div>
-             <InformacionUsuario
-                toggle={props.toggle}
-                setToggle={props.setToggle}
-                dataEdit={props.dataEdit}
-                setDataEdit={props.setDataEdit}
-                handleSubmit={handleSubmit}
-              />
-          </div>
+        <div>
+          <InformacionUsuario
+            toggle={props.toggle}
+            setToggle={props.setToggle}
+            dataEdit={props.dataEdit}
+            setDataEdit={props.setDataEdit}
+            handleSubmit={handleSubmit}
+            setIdEmpleado={props.setIdEmpleado}
+            idEmpleado={props.idEmpleado}
+          />
+        </div>
       </OutsideClick>
     </ContainerForm2>
   );
@@ -176,4 +168,6 @@ FormComponent.propTypes = {
   setToggle: PropTypes.func.isRequired,
   dataEdit: PropTypes.array, // Cambia el tipo según corresponda
   setDataEdit: PropTypes.func.isRequired,
+  setIdEmpleado: PropTypes.func.isRequired,
+  idEmpleado: PropTypes.array,
 };

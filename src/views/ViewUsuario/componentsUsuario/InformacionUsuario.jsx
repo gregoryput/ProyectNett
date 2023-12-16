@@ -7,7 +7,7 @@ import {
   Option,
   Select,
   ButtonAdd,
-  ButtonIconBorder,
+  BtnSelect,
 } from "../../../components";
 
 import { useForm } from "react-hook-form";
@@ -42,28 +42,25 @@ export default function InformacionUsuario(props) {
     reset,
   } = useForm();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [filteredData, setFilteredData] = useState({});
-  const [selectState, setSelectState] = useState({});
-
+  const [filteredData, setFilteredData] = useState([]);
   const {
     data: dataEmpleado,
     isSuccess: isSuccess,
     // isLoading: isLoading,
   } = useGetEmpleadoNotUserQuery("");
 
-
   const handleSearch = (value) => {
     const searchTerm = value.toLowerCase();
 
-    const filter = dataEmpleado?.result.filter((item) =>
-      item.nombres.toLowerCase().includes(searchTerm)
+    const filter = dataEmpleado?.Result.filter((item) =>
+      item.Nombres.toLowerCase().includes(searchTerm)
     );
 
     setFilteredData(filter);
   };
   useEffect(() => {
-    if (dataEmpleado?.result !== undefined && isSuccess) {
-      setFilteredData(dataEmpleado?.result);
+    if (dataEmpleado?.Result !== undefined && isSuccess) {
+      setFilteredData(dataEmpleado?.Result);
     }
   }, [dataEmpleado, setFilteredData, isSuccess]);
 
@@ -74,22 +71,19 @@ export default function InformacionUsuario(props) {
     // isLoading: isLoading,
   } = useGetRolesQuery("");
 
-  const convertirAtributosAMayusculas = objeto =>
-  objeto
-    ? Object.fromEntries(
-        Object.entries(objeto).map(([key, value]) => [
-          key.charAt(0).toUpperCase() + key.slice(1),
-          value,
-        ])
-      )
-    : {};
-
-
-
+  const convertirAtributosAMayusculas = (objeto) =>
+    objeto
+      ? Object.fromEntries(
+          Object.entries(objeto).map(([key, value]) => [
+            key.charAt(0).toUpperCase() + key.slice(1),
+            value,
+          ])
+        )
+      : {};
 
   useEffect(() => {
     reset(convertirAtributosAMayusculas(props.dataEdit));
-  }, [ reset, props.dataEdit]);
+  }, [reset, props.dataEdit]);
 
   const clearFields = () => {
     props.setDataEdit([]);
@@ -102,20 +96,19 @@ export default function InformacionUsuario(props) {
 
   //Funcion para insertar, enviar los datos a la api:
   const onSubmit = (data) => {
-
+    let id = props.idEmpleado
     let info = {
       ...data,
-      IdEmpleado: selectState 
+      idEmpleado: id ,
     };
     props.handleSubmit(info);
   };
-
-  const llenarCampo = (item)=>{
-    setValue("Empleado", item.nombres + " " + item.apellidos);
+  const llenarCampo = (item) => {
+    setValue("Empleado", item.Nombres + " " + item.Apellidos);
     handleCloseModal();
 
-    setSelectState(item.idEmpleado);
-  }
+    props.setIdEmpleado(item.IdEmpleado);
+  };
 
   const handleOpenModal = () => {
     setIsModalOpen(true);
@@ -131,7 +124,9 @@ export default function InformacionUsuario(props) {
     dataEdit: PropTypes.array, // Cambia el tipo según corresponda
     setDataEdit: PropTypes.func.isRequired,
     dataValues: PropTypes.array,
+    idEmpleado: PropTypes.array,
     handleSubmit: PropTypes.func.isRequired,
+    setIdEmpleado: PropTypes.func.isRequired,
   };
 
   return (
@@ -166,7 +161,6 @@ export default function InformacionUsuario(props) {
           )}
         </LabelFor>
 
-     
         <LabelFor>
           {" "}
           Correo
@@ -192,15 +186,14 @@ export default function InformacionUsuario(props) {
             {...register("IdRol", {
               ...minValue(1, "debe seleccionar el rol"),
               ...required("Este campo es requerido"),
-
             })}
           >
             <Option disabled value={0}>
               -- Seleccione el Rol --
             </Option>
-            {dataRoles?.result?.map((data, index) => (
-              <Option key={index} value={parseInt(data.idRol)}>
-                {data.nombreRol}
+            {dataRoles?.Result?.map((data, index) => (
+              <Option key={index} value={parseInt(data.IdRol)}>
+                {data.NombreRol}
               </Option>
             ))}
           </Select>
@@ -211,11 +204,17 @@ export default function InformacionUsuario(props) {
           )}
         </LabelFor>
 
-        <div style={{ display: "flex", flexDirection: "row" , alignItems:"center"}}>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+          }}
+        >
           <LabelFor>
             {" "}
             Empleado
-            <InputFor 
+            <InputFor
               {...register("Empleado", {
                 ...required("Este campo es requerido"),
               })}
@@ -227,11 +226,14 @@ export default function InformacionUsuario(props) {
               </span>
             )}
           </LabelFor>
-            <ButtonAdd style={{width:40, marginTop:16, marginLeft:5}} type="button" onClick={() => handleOpenModal()}>
-              <IoPersonAddOutline size={18}/>
-            </ButtonAdd>
+          <ButtonAdd
+            style={{ width: 40, marginTop: 16, marginLeft: 5 }}
+            type="button"
+            onClick={() => handleOpenModal()}
+          >
+            <IoPersonAddOutline size={18} />
+          </ButtonAdd>
         </div>
-
 
         <LabelFor>
           {" "}
@@ -242,7 +244,7 @@ export default function InformacionUsuario(props) {
               ...minLength(2),
               ...maxLength(40),
             })}
-            placeholder="Ingrese los Contraseña "
+            placeholder="Ingrese los contraseña "
             type="password"
           />
           {errors.Contraseña && (
@@ -263,7 +265,7 @@ export default function InformacionUsuario(props) {
               validate: (value) =>
                 value === watch("Contraseña") || "Contraseña no es igual ",
             })}
-            placeholder="Ingrese los Contraseña "
+            placeholder="Ingrese los contraseña "
             type="password"
           />
           {errors.Confirmar && (
@@ -272,9 +274,6 @@ export default function InformacionUsuario(props) {
             </span>
           )}
         </LabelFor>
-
-
-
       </div>
       <br />
       <div style={{ display: "flex", justifyContent: "flex-end" }}>
@@ -312,7 +311,7 @@ export default function InformacionUsuario(props) {
       >
         <div style={{ display: "flex", justifyContent: "flex-end" }}>
           <Search
-            placeholder="Buscar Empleado..."
+            placeholder="Buscar empleado..."
             style={{
               width: 304,
               marginTop: 10,
@@ -325,19 +324,21 @@ export default function InformacionUsuario(props) {
 
         <List
           pagination={{
-            onChange: (page) => {
-              console.log(page);
-            },
+            // onChange: (page) => {
+            // },
             pageSize: 5,
           }}
           dataSource={filteredData}
           renderItem={(item) => (
             <>
-              <ButtonIconBorder style={{width:"100%",justifyContent:"flex-start"}} onClick={()=> llenarCampo(item)}>
+              <BtnSelect
+                style={{ width: "100%", justifyContent: "flex-start" }}
+                onClick={() => llenarCampo(item)}
+              >
                 <List.Item>
-                  <p>{item.nombres + " " + item.apellidos}</p>
+                  <p>{item.Nombres + " " + item.Apellidos}</p>
                 </List.Item>
-              </ButtonIconBorder>
+              </BtnSelect>
             </>
           )}
         />

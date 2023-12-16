@@ -82,12 +82,12 @@ export default function Navegation() {
                 fontWeight: `${ruta === "/" ? "600" : ""}`,
               }}
             >
-              Dashboard
+              Home
             </LabelNav>
           </ButtonNav>
         )}
 
-        {(userRol === "Administrador" || userRol === "Administrador") && (
+        {(userRol === "Administrador" || userRol === "Administrador"  || userRol === "Asistente") && (
           <ButtonNav
             exact
             to="proyecto"

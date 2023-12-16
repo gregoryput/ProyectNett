@@ -1,10 +1,12 @@
-import { ViewContainerPages } from '../../components'
+import { Container, ViewContainerPages } from '../../components'
 
 export default function DashBoard()
  {
   return (
     <ViewContainerPages >
-        <h1>DashBoard</h1>
+       <Container>
+         <h1>Bienvenido</h1>
+       </Container>
     </ViewContainerPages>
   )
 }

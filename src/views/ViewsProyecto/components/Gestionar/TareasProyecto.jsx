@@ -1,40 +1,32 @@
 import { Tag } from "antd";
-import {
-  BtnSelect,
-  Container,
-  ContainerDetail,
-} from "../../../../components";
+import { BtnSelect, Container, ContainerDetail } from "../../../../components";
 
 import { IoClipboardOutline, IoRadioButtonOff } from "react-icons/io5";
-const data = [
-  "Tarea 1",
-  "Tarea 1",
-  "Tarea 1",
-  "Tarea 1",
-  "Tarea 1",
-  "Tarea 1",
-  "Tarea 1",
-  "Tarea 1",
-  "Tarea 1",
-  "Tarea 1",
-  "Tarea 1",
-  "Tarea 1",
-  "Tarea 1",
-  "Tarea 1",
-  "Tarea 1",
-  "Tarea 1",
-];
 
-export default function TareasProyecto() {
+import PropTypes from "prop-types";
+
+TareasProyecto.propTypes = {
+  proyecto: PropTypes.array.isRequired,
+};
+
+export default function TareasProyecto({ proyecto }) {
+
+  const maxCharacters = 15;
+  const renderText = (text) => {
+    if (text.length > maxCharacters) {
+      return `${text.slice(0, maxCharacters)}...`;
+    }
+    return text;
+  };
   return (
     <>
-      <Container style={{ marginInline: 5, marginBlock: 5, height: 490 ,}}>
+      <Container style={{ marginInline: 5, marginBlock: 5, height: 490 }}>
         <div
           style={{
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            marginBottom:10,
+            marginBottom: 10,
           }}
         >
           <div style={{ display: "flex" }}>
@@ -42,21 +34,29 @@ export default function TareasProyecto() {
             <h4>Tareas</h4>
           </div>
         </div>
-        <div style={{ display: "flex", fontSize: 12, padding: 5 }}>
+        <div
+          style={{
+            display: "flex",
+            fontSize: 12,
+            padding: 5,
+            justifyContent: "space-between",
+          }}
+        >
           <p style={{ marginInline: 5 }}>Prioridad</p>
-          <p style={{ marginRight: 90 }}>Tareas</p>
+          <p style={{ marginRight: 30 }}>Tareas</p>
           <p style={{ marginInline: 15 }}>Tiempo estimado</p>
-          <p style={{ marginInline: 25 }}>Estado</p>
+          <p style={{ marginInline: 30 }}>Estado</p>
         </div>
         <ContainerDetail style={{ overflow: "auto", height: 350, padding: 0 }}>
-          {data.map((item, key) => (
+          {proyecto[0]?.TareasProyecto.map((item, key) => (
             <BtnSelect
               style={{
-                width: "98%",
+                width: "100%",
                 display: "flex",
                 flexDirection: "row",
                 height: "auto",
                 alignItems: "center",
+                justifyContent: "space-between",
               }}
               key={key}
             >
@@ -66,7 +66,16 @@ export default function TareasProyecto() {
                   marginRight: 10,
                 }}
               >
-                <IoRadioButtonOff size={22} color="red" />
+                <IoRadioButtonOff
+                  size={22}
+                  color={
+                    item.IdPrioridad == 1
+                      ? "red"
+                      : item.IdPrioridad == 2
+                      ? "blue"
+                      : "green"
+                  }
+                />
               </div>
               <div
                 style={{
@@ -76,8 +85,8 @@ export default function TareasProyecto() {
                   flexDirection: "column",
                 }}
               >
-                <h4>Cableado edificio 1</h4>
-                <span>llevar acabo la...</span>
+                <h4>{ renderText(item.NombreTarea)}</h4>
+                <span>{renderText(item.Descripcion)}</span>
               </div>
 
               <div
@@ -91,7 +100,7 @@ export default function TareasProyecto() {
               >
                 <p>1 semana</p>
               </div>
-           
+
               <div
                 style={{
                   display: "flex",
@@ -101,12 +110,11 @@ export default function TareasProyecto() {
                   color: "gray",
                 }}
               >
-                <Tag color="#108ee9">En curso</Tag>
+                <Tag color="#108ee9">{item.EstadoTarea}</Tag>
               </div>
             </BtnSelect>
           ))}
         </ContainerDetail>
-  
       </Container>
     </>
   );
