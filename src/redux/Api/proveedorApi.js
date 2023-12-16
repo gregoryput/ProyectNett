@@ -1,7 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/dist/query/react";
 
 const token = localStorage.getItem("token");
-const baseUrl = "https://localhost:7279/";
+const baseUrl = "https://localhost:5173/";
 
 export const proveedorApi = createApi({
   reducerPath: "proveedorApi",
