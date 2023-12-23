@@ -504,7 +504,7 @@ export default function FormFacturacionCP() {
                 flexDirection: "row",
                 justifyContent: "space-around",
                 padding: "10px",
-                background: "blue",
+                background: "gray",
                 overflowX: "scroll",
                 overflowY: "hidden",
                 height: "150px",
