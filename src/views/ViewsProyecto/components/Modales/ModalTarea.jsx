@@ -20,6 +20,7 @@ import {
   useGetPrioridadQuery,
 } from "../../../../redux/Api/proyectoApi";
 import ModalCrearParametro from "./ModalCrearParametroCosto";
+import dayjs from "dayjs";
 const { RangePicker } = DatePicker;
 const { TextArea } = Input;
 
@@ -389,7 +390,7 @@ export default function ModalTarea({
                       },
                     ]}
                   >
-                    <RangePicker format={dateFormat} />
+                    <RangePicker format={dateFormat}  disabledDate={current => current && current < dayjs().startOf('day')} />
                   </Form.Item>
                 </Container>
                 <Container
@@ -609,7 +610,7 @@ export default function ModalTarea({
                       },
                     ]}
                   >
-                    <RangePicker format="DD-MM-YYYY" />
+                    <RangePicker format="DD-MM-YYYY"  disabledDate={current => current && current < dayjs().startOf('day')} />
                   </Form.Item>
                 </Container>
                 <Container

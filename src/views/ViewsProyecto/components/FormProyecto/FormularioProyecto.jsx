@@ -356,6 +356,8 @@ export default function FormularioProyecto() {
     isServiciosSuccess,
   ]);
 
+  
+
   return (
     <>
       {isLoadingCreate == true ? (
@@ -407,7 +409,7 @@ export default function FormularioProyecto() {
                     style={{ display: "flex", justifyContent: "space-between" }}
                   >
                     <Form.Item
-                      label={<strong>Nombre:</strong>}
+                      label={<strong>Nombre del proyecto:</strong>}
                       style={{ width: 200, marginTop: 30 }}
                       name={"Nombre"}
                       rules={[
@@ -426,7 +428,7 @@ export default function FormularioProyecto() {
 
                     <div style={{ display: "flex", alignItems: "center" }}>
                       <Form.Item
-                        label={<strong>Cliente:</strong>}
+                        label={<strong>Cliente seleccionado:</strong>}
                         style={{ width: 200, marginTop: 30 }}
                         name={"cliente"}
                         rules={[
@@ -453,19 +455,21 @@ export default function FormularioProyecto() {
                     </div>
 
                     <Form.Item
-                      label={<strong>Fecha de inicio:</strong>}
+                      label={<strong>Fecha de inicio del proyecto:</strong>}
                       style={{ width: 300, marginTop: 30 }}
                       name={"FechaDeInicio"}
                       rules={[
                         {
                           required: true,
                           message: "Debe ingresar fecha ",
+
                         },
                       ]}
                     >
                       <DatePicker
                         onChange={handleDateChange}
                         format={"DD-MM-YYYY"}
+                        disabledDate={current => current && current < dayjs().startOf('day')}
                       />
                     </Form.Item>
                   </div>

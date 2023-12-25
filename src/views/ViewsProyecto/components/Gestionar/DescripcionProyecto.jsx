@@ -22,10 +22,11 @@ export default function DescripcionProyecto({ proyecto }) {
         <p>
           <b>Nombre:</b> <span>{proyecto[0]?.NombreProyecto}</span>
         </p>
+        <b>Servicios:</b>
         {proyecto[0]?.ServicioProyecto.map((item, key) => (
           <>
             <p key={key}>
-              <b>Servicios:</b> <span>{renderText(item.NombreServicio)}</span>
+              <span>{renderText(item.NombreServicio)}</span>
             </p>
           </>
         ))}

@@ -20,7 +20,7 @@ export default function TareasProyecto({ proyecto }) {
   };
   return (
     <>
-      <Container style={{ marginInline: 5, marginBlock: 5, height: 490 }}>
+      <Container style={{ marginInline: 5, marginBlock: 5, height: 440 }}>
         <div
           style={{
             display: "flex",
@@ -47,7 +47,7 @@ export default function TareasProyecto({ proyecto }) {
           <p style={{ marginInline: 15 }}>Tiempo estimado</p>
           <p style={{ marginInline: 30 }}>Estado</p>
         </div>
-        <ContainerDetail style={{ overflow: "auto", height: 350, padding: 0 }}>
+        <ContainerDetail style={{ overflow: "auto", height: 320, padding: 0 }}>
           {proyecto[0]?.TareasProyecto.map((item, key) => (
             <BtnSelect
               style={{
