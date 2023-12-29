@@ -69,7 +69,7 @@ BEGIN
     SET NOCOUNT ON
     SELECT IdUsuario, NombreUsuario, Correo, Contraseña, NombreRol
     FROM Usuarios U INNER JOIN Roles R ON U.IdRol = R.IdRol
-    WHERE NombreUsuario = @NombreUsuario AND Contraseña = @Contraseña
+    WHERE NombreUsuario = @NombreUsuario AND Contraseña = @Contraseña AND EstadosRegistros = 1 
 END
 --- EXEC dbo.GetUsuarioLogin 
 
