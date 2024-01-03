@@ -1,5 +1,9 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/dist/query/react";
-import { IPersona, IResponseApi, PersonaInfoPersonalDTO } from "../../interfaces";
+import {
+  IPersona,
+  IResponseApi,
+  PersonaInfoPersonalDTO,
+} from "../../interfaces";
 
 const token = localStorage.getItem("token");
 const baseUrl = "https://localhost:7279/";
@@ -15,23 +19,26 @@ export const personasApi = createApi({
   tagTypes: ["Personas"],
 
   endpoints: (builder) => ({
-    getPersonasIfoPersonal: builder.query<IResponseApi<PersonaInfoPersonalDTO>, void>({
+    getPersonasIfoPersonal: builder.query<
+      IResponseApi<PersonaInfoPersonalDTO>,
+      void
+    >({
       query: () => "Personas/GetPersonasInfoPersonal",
       providesTags: ["Personas"],
     }),
     createPersona: builder.mutation<IResponseApi<any>, IPersona>({
-      query: (newClient) => ({
+      query: (newPerson) => ({
         url: "/personas/insertarPersona",
         method: "POST",
-        body: newClient,
+        body: newPerson,
       }),
       invalidatesTags: ["Personas"],
     }),
-    updatePersona: builder.mutation({
-      query: (dataClient) => ({
-        url: "/personas/insertarPersona",
+    updatePersona: builder.mutation<IResponseApi<any>, IPersona>({
+      query: (updatePerson) => ({
+        url: "/personas/actualizarPersona",
         method: "POST",
-        body: dataClient,
+        body: updatePerson,
       }),
       invalidatesTags: ["Personas"],
     }),
@@ -53,4 +60,8 @@ export const personasApi = createApi({
   }),
 });
 
-export const { useCreatePersonaMutation, useGetPersonasIfoPersonalQuery } = personasApi;
+export const {
+  useCreatePersonaMutation,
+  useUpdatePersonaMutation,
+  useGetPersonasIfoPersonalQuery,
+} = personasApi;

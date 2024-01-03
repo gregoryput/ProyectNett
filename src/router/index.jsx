@@ -8,13 +8,9 @@ import {
   Usuario,
   Home,
   Proveedores,
-  DetailCliente,
-  //DetailProveedor,
   DetailEmpleado,
   FormFacturacion,
-  //Cliente,
   Clientes,
-  //ClienteV2
 } from "../views";
 import CuentaPorPagar from "../views/ViewsCuentasPorPagar/CuentaPorPagar";
 import Login from "../page/Login";
@@ -86,14 +82,14 @@ export const createRouter = () => {
             </ProtectedRoute>
           ),
         },
-        {
-          path: "/cliente/:clienteId",
-          element: (
-            <ProtectedRoute roles={["Administrador"]}>
-              <DetailCliente />
-            </ProtectedRoute>
-          ),
-        },
+        // {
+        //   path: "/cliente/:clienteId",
+        //   element: (
+        //     <ProtectedRoute roles={["Administrador"]}>
+        //       <DetailCliente />
+        //     </ProtectedRoute>
+        //   ),
+        // },
         {
           path: "/cuenta-por-pagar",
           element: (

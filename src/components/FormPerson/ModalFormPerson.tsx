@@ -1,7 +1,7 @@
 import {
   Button,
-  DatePicker,
   Form,
+  FormInstance,
   Input,
   Modal,
   Select,
@@ -14,7 +14,10 @@ import React from "react";
 import { useGetCountriesQuery } from "../../redux/Api/countriesApiT";
 import { useGetCitiesQuery } from "../../redux/Api/citiesApiT";
 import { IImagen, IPersona } from "../../interfaces";
-import { useCreatePersonaMutation } from "../../redux/Api/personasApi";
+import {
+  useCreatePersonaMutation,
+  useUpdatePersonaMutation,
+} from "../../redux/Api/personasApi";
 import { CustomUploadImage } from "../CustomUploadImage";
 import useBase64Conversion from "../../hooks/UseBase64Conversion";
 import toast from "react-hot-toast";
@@ -26,11 +29,21 @@ import { BsPersonVcardFill } from "react-icons/bs";
 interface IModalFormPersonProps {
   openModalFP: boolean;
   setOpenModalFP: React.Dispatch<React.SetStateAction<boolean>>;
+  dataEditPersona: IPersona | undefined;
+  setDataEditPersona: React.Dispatch<
+    React.SetStateAction<IPersona | undefined>
+  >;
+  formCPF: FormInstance<any>;
+  setIdPersona: React.Dispatch<React.SetStateAction<number | null>>;
 }
 
 const ModalFormPerson = ({
   openModalFP,
   setOpenModalFP,
+  dataEditPersona,
+  setDataEditPersona,
+  formCPF,
+  setIdPersona,
 }: IModalFormPersonProps) => {
   const [form] = Form.useForm(); // <<--- Instancia del Form
 
@@ -39,14 +52,14 @@ const ModalFormPerson = ({
 
   const [cerrableModal, setCerrableModal] = React.useState<boolean>(true);
 
-  //Fetch para obtener la lista de paises:
+  const [deleteImageEditMode, setDeleteImageEditMode] =
+    React.useState<boolean>(false);
+
   const {
     data: countiresData,
     //isSuccess: countriesSuccess,
     isLoading: isLoadingCountries,
   } = useGetCountriesQuery();
-
-  // Loading:
 
   // fetch de obtener ciudades por pais (el skip es para que se ejecute solo si idPais tiene valor):
   const fetchCitiesByCountry = useGetCitiesQuery(idPais, {
@@ -65,40 +78,66 @@ const ModalFormPerson = ({
 
   // Fetch Mutation Redux para hacer la solicitud de insert:
   const [executeCreatePerson, fetchCreatePerson] = useCreatePersonaMutation();
+  // Fetch Mutation Redux para hacer la solicitud de Update:
+  const [executeUpdatePerson, fetchUpdatePerson] = useUpdatePersonaMutation();
 
-  // --------------------------------------------------------------------------------
+  // MOSTRAR MENSAJE DE LOADING: -------------------------------------------------------------------------------- --------------------------------------------------------------------------------
   React.useEffect(() => {
-    if (fetchCreatePerson.isLoading) {
-      toast.loading("Guardando los datos personales", {
-        id: "tSavinPerson",
-      });
+    if (fetchCreatePerson.isLoading || fetchUpdatePerson.isLoading) {
+      toast.loading(
+        `${
+          dataEditPersona == undefined ? "Guardando" : "Actualizando"
+        } los datos personales`,
+        {
+          id: "tSavinPerson",
+        }
+      );
       setCerrableModal(false); // <<-- hacer que el modal no sea cerrable mientras se esta guardando
     } else {
       toast.dismiss("tSavinPerson");
       !cerrableModal ? setCerrableModal(true) : null; // <<-- hacer que el modal sea cerrable cuando deje de cargar el guardado
     }
-  }, [fetchCreatePerson.isLoading, setCerrableModal]);
+  }, [
+    fetchCreatePerson.isLoading,
+    fetchUpdatePerson.isLoading,
+    setCerrableModal,
+  ]);
 
-  // --------------------------------------------------------------------------------
+  // // MOSTRAR MENSAJE DE GUARDADO/ACTUALIZADO CORRECTAMENTE: --------------------------------------------------------------------------------
   React.useEffect(() => {
-    if (fetchCreatePerson.isSuccess) {
+    if (fetchCreatePerson.isSuccess || fetchUpdatePerson.isSuccess) {
       toast.dismiss("tSavinPerson");
-      toast.success("Los datos personales han sido guardados correctamente", {
-        id: "tSucc",
-      });
+      toast.success(
+        `Los datos personales han sido ${
+          dataEditPersona == undefined ? "guardados" : "actualizados"
+        } correctamente`,
+        {
+          id: "tSucc",
+        }
+      );
+      formCPF.resetFields(["IdPersona"]);
+      //formCPF.resetFields();
+      form.resetFields();
+      setFileList([]);
+      setIdPersona(null);
+      setDataEditPersona(undefined);
       setOpenModalFP(false);
     }
-  }, [fetchCreatePerson.isSuccess, setOpenModalFP]);
+  }, [
+    fetchCreatePerson.isSuccess,
+    fetchUpdatePerson.isSuccess,
+    setOpenModalFP,
+  ]);
 
-  // --------------------------------------------------------------------------------
+  // // MOSTRAR MENSAJE DE ERROR DE GUARDADO/ACTUALZADO: --------------------------------------------------------------------------------
   React.useEffect(() => {
-    if (fetchCreatePerson.isError) {
+    if (fetchCreatePerson.isError || fetchUpdatePerson.isError) {
       toast.dismiss("tSavinPerson");
       toast.error("Error al guardar los datos personales", {
         id: "tError",
       });
     }
-  }, [fetchCreatePerson.isError]);
+  }, [fetchCreatePerson.isError, fetchUpdatePerson.isError]);
 
   // Para almacenar la imagen seleccionada:
   const [fileList, setFileList] = React.useState<UploadFile<any>[]>(
@@ -120,6 +159,20 @@ const ModalFormPerson = ({
       : null;
   }, [fileList]);
 
+  // Un useEffect para cuando se vaya editar, capturar la informacion de la persona y mapearla en los campos:
+  React.useEffect(() => {
+    // si la data edit es diferente !== undefined es porque se va editar:
+    if (dataEditPersona !== undefined) {
+      const dataEstable = dataEditPersona as IPersona;
+      dataEstable.FechaDeNacimiento = new Date(dataEstable.FechaDeNacimiento);
+      form.setFieldsValue(dataEstable);
+    } else {
+      setDataEditPersona(undefined);
+      form.resetFields();
+      setFileList([]);
+    }
+  }, [dataEditPersona]);
+
   // Funcion para hacer submit:
   const onSubmit = (dataValues: IPersona) => {
     // Obtener los valores del formulario:
@@ -129,17 +182,24 @@ const ModalFormPerson = ({
     const selectedFile = fileList[0];
 
     // Crear objeto data para la imagen:
-    let objectImage = {
-      IdImagen: 0,
-      FileName: selectedFile.name,
-      ContentType: selectedFile.type || "",
-      FileSize: selectedFile.size || 0,
-      Data: dataImage,
-    } as IImagen;
+    let objectImage =
+      fileList.length > 0
+        ? ({
+            IdImagen: dataEditPersona?.DataImagenPersona?.Imagen.IdImagen || 0,
+            FileName: selectedFile.name,
+            ContentType: selectedFile.type || "",
+            FileSize: selectedFile.size || 0,
+            Data: dataImage,
+          } as IImagen)
+        : undefined;
+
+    const PTP = dataEditPersona?.PersonaTiposPersona?.map(
+      (P) => P.IdTipoPersona
+    );
 
     // Preparar el json de subida a la api:
     const dataSubmit = {
-      IdPersona: 0,
+      IdPersona: dataEditPersona?.IdPersona || 0,
       Nombres: dataValues.Nombres,
       Apellidos: dataValues.Apellidos,
       Telefono1: dataValues.Telefono1,
@@ -150,25 +210,52 @@ const ModalFormPerson = ({
       Cedula: dataValues.Cedula,
       IdSexo: dataValues.IdSexo,
       IdCiudad: dataValues.IdCiudad,
-      PersonaTiposPersona: {
-        IdPersonaTipoPersona: 0,
-        IdPersona: 0,
-        IdTipoPersona: 4,
-      },
-      DataImagenPersona: {
-        Imagen: objectImage,
-        PersonaImagen: {
-          IdImagen: 0,
-          IdPersona: 0,
-        },
-      },
+      PersonaTiposPersona:
+        dataEditPersona == undefined && !PTP?.includes(4)
+          ? [
+              {
+                IdPersonaTipoPersona: 0,
+                IdPersona: 0,
+                IdTipoPersona: 4,
+              },
+            ]
+          : undefined,
+      DataImagenPersona:
+        objectImage !== undefined
+          ? {
+              Imagen: objectImage as IImagen,
+              PersonaImagen: {
+                IdPersonaImagen:
+                  dataEditPersona?.DataImagenPersona?.PersonaImagen
+                    .IdPersonaImagen || 0,
+                IdImagen: objectImage?.IdImagen || 0,
+                IdPersona: dataEditPersona?.IdPersona || 0,
+              },
+            }
+          : !deleteImageEditMode
+          ? {
+              Imagen: {
+                IdImagen: 0,
+                FileName: "",
+                ContentType: "",
+                FileSize: 0,
+                Data: "",
+              } as IImagen,
+              PersonaImagen: {
+                IdImagen: 0,
+                IdPersona: 0,
+              },
+            }
+          : undefined,
     } as IPersona;
 
     // Ejecutar la subida:
-    executeCreatePerson(dataSubmit);
+    if (dataEditPersona == undefined) {
+      executeCreatePerson(dataSubmit);
+    } else {
+      executeUpdatePerson(dataSubmit);
+    }
   };
-
-  // console.log("dataImage", dataImage);
 
   return (
     <Modal
@@ -181,7 +268,9 @@ const ModalFormPerson = ({
             display: "flex",
             flexDirection: "row",
             alignItems: "center",
-            justifyContent: "space-between",
+            borderRadius: "5px",
+            justifyContent: "center",
+            marginBottom: "30px",
           }}
         >
           <BsPersonVcardFill style={{ marginRight: "10px" }} size={20} />
@@ -193,6 +282,7 @@ const ModalFormPerson = ({
         setOpenModalFP(false);
         form.resetFields();
         setFileList([]);
+        setDataEditPersona(undefined);
       }}
       width={"60%"}
       okText="Guardar"
@@ -202,7 +292,7 @@ const ModalFormPerson = ({
       maskClosable={!cerrableModal} // Evitar cerrar al hacer clic fuera del modal
       keyboard={!cerrableModal} // Evitar cerrar al presionar la tecla Esc
     >
-      {fetchCreatePerson.isLoading ? (
+      {fetchCreatePerson.isLoading || fetchUpdatePerson.isLoading ? (
         <div
           style={{ display: "flex", flexDirection: "column", width: "100%" }}
         >
@@ -361,7 +451,25 @@ const ModalFormPerson = ({
               },
             ]}
           >
-            <DatePicker size="small" style={{ width: "100%" }} />
+            {/* <DatePicker
+              size="small"
+              style={{ width: "100%" }}
+              format="DD/MM/YYYY"
+            /> */}
+
+            <input
+              type="date"
+              style={{
+                //padding: "2px",
+                fontSize: "14px",
+                border: "1px solid #d9d9d9",
+                borderRadius: "4px",
+                outline: "none",
+                boxSizing: "border-box",
+                backgroundColor: "#fff",
+                transition: "border-color 0.3s ease-in-out",
+              }}
+            />
           </Form.Item>
 
           {/*-------------------------------- CAMPO IdPais: --------------------------------*/}
@@ -375,6 +483,7 @@ const ModalFormPerson = ({
                 message: "Este campo es requerido.",
               },
             ]}
+            initialValue={dataEditPersona?.IdPais}
           >
             <Select
               loading={isLoadingCountries === true}
@@ -412,6 +521,9 @@ const ModalFormPerson = ({
             fileList={fileList}
             setFileList={setFileList}
             width="14%"
+            dataEditPersona={dataEditPersona}
+            deleteImageEditMode={deleteImageEditMode}
+            setDeleteImageEditMode={setDeleteImageEditMode}
           />
 
           {/*-------------------------------- CAMPO Sexo: --------------------------------*/}
@@ -455,6 +567,7 @@ const ModalFormPerson = ({
                 message: "11 caracteres como mínimo.",
               },
             ]}
+            initialValue={dataEditPersona?.Direccion}
           >
             <TextArea />
           </Form.Item>
@@ -482,6 +595,7 @@ const ModalFormPerson = ({
                     setOpenModalFP(false);
                     form.resetFields();
                     setFileList([]);
+                    setDataEditPersona(undefined);
                   }}
                 >
                   <MdCancel size={20} />
