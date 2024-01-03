@@ -1,4 +1,4 @@
-USE BD_PROYENETT_58
+USE BD_PROYENETT_VF8
 
 GO
 ----------- /*1--*/ Procedimiento almcenado para obtener una lista general de clientes (empresas y personas fisicas):
@@ -17,7 +17,14 @@ BEGIN
             Correo,
             C.FechaInicioCliente,
             CiudadNombre,
-            PaisNombre
+            PaisNombre,
+            C.FechaCreacion,
+            C.FechaModificacion,
+            img.IdImagen,
+            img.FileName,
+            img.ContentType,
+            img.FileSize,
+            img.Data
         FROM Entidades E
             INNER JOIN TiposEntidades TE ON E.IdTipoEntidad = TE.IdTipoEntidad
             INNER JOIN Clientes C ON E.IdEntidad = C.IdEntidad
@@ -25,7 +32,8 @@ BEGIN
             INNER JOIN Personas P ON EPF.IdPersona = P.IdPersona
             INNER JOIN Ciudades Ci ON P.IdCiudad = Ci.IdCiudad
             INNER JOIN Paises Pa ON Ci.IdPais = Pa.IdPais
-
+            LEFT JOIN PersonasImagenes PImg ON PImg.IdPersona = P.IdPersona
+            LEFT JOIN Imagenes Img ON Img.IdImagen = PImg.IdImagen
     UNION
 
         SELECT
@@ -40,7 +48,14 @@ BEGIN
             Correo,
             C.FechaInicioCliente,
             CiudadNombre,
-            PaisNombre
+            PaisNombre,
+            C.FechaCreacion,
+            C.FechaModificacion,
+            null AS IdImagen,
+            null AS FileName,
+            null AS ContentType,
+            null AS FileSize,
+            null AS Data
         FROM Entidades E
             INNER JOIN TiposEntidades TE ON E.IdTipoEntidad = TE.IdTipoEntidad
             INNER JOIN Clientes C ON E.IdEntidad = C.IdEntidad
@@ -49,7 +64,8 @@ BEGIN
             INNER JOIN Ciudades Ci ON EM.IdCiudad = Ci.IdCiudad
             INNER JOIN Paises Pa ON Ci.IdPais = Pa.IdPais
 
-    ORDER BY IdCliente ASC;
+    ORDER BY 
+    IdCliente DESC, FechaModificacion DESC, FechaCreacion DESC;
 END
 	
 -- EXEC dbo.GetListaCenerallientes
@@ -69,9 +85,11 @@ BEGIN
     SET NOCOUNT ON
     SELECT IdUsuario, NombreUsuario, Correo, Contraseña, NombreRol
     FROM Usuarios U INNER JOIN Roles R ON U.IdRol = R.IdRol
-    WHERE NombreUsuario = @NombreUsuario AND Contraseña = @Contraseña
+    WHERE NombreUsuario = @NombreUsuario AND Contraseña = @Contraseña AND u.IdEstadoRegistro = 1
 END
---- EXEC dbo.GetUsuarioLogin 
+--- EXEC dbo.GetUsuarioLogin @
+GO
+
 
 
 
@@ -105,14 +123,37 @@ BEGIN
 
     Select SCOPE_IDENTITY();
 END
-/* EJECUCION DEL PROCEDIMIENTO:
-DECLARE @FechaActual DATETIME = GETDATE(); -- 'Fecha actual'
 
-EXEC dbo.InsertarPersona  @Nombres = 'Ignacio Mael', @Apellidos = 'Lima Leopoldo', @Telefono1 = '809-193-3209', 
-                          @Telefono2 = '849-105-0525', @Direccion = 'Bo. Las Boemias, Calle 3, #29', 
-                          @Correo = 'ignaciomael@example.com', @FechaDeNacimiento = '1992-05-10', @Cedula = '2123406080', @IdSexo = 1, 
-						  @IdCiudad = 2, @IdCreadoPor = 1;
-*/ -- Select * From Personas
+
+
+
+GO
+--
+--
+--.P.R.O.C.E.D.U.R.E.......P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P Procedimiento almacenado para Actualizar en la tabla Personas: --
+Create or Alter procedure dbo.ActualizarPersona
+    @IdPersona INT,
+    @Nombres varchar(40),
+    @Apellidos varchar(40),
+    @Telefono1 varchar(12),
+    @Telefono2 varchar(12),
+    @Direccion varchar(60),
+    @Correo varchar(60),
+    @FechaDeNacimiento datetime,
+    @Cedula varchar(13),
+    --
+    @IdSexo int,
+    @IdCiudad int,
+    --
+    @IdModificadoPor int
+AS
+BEGIN
+    Set nocount On
+    UPDATE Personas SET Nombres = @Nombres, Apellidos = @Apellidos, Telefono1 = @Telefono1, Telefono2 = @Telefono2, Direccion = @Direccion,
+                        Correo = @Correo, FechaDeNacimiento = @FechaDeNacimiento, Cedula = @Cedula, IdSexo = @IdSexo, IdCiudad = @IdCiudad,
+                        IdModificadoPor = @IdModificadoPor, FechaCreacion = GETDATE()
+    WHERE IdPersona = @IdPersona
+END
 
 
 
@@ -159,11 +200,52 @@ BEGIN
     INSERT INTO Imagenes
         (FileName, ContentType, FileSize, DATA, IdCreadoPor, FechaCreacion, IdEstadoRegistro)
     VALUES
-        (@FileName, @ContentType, @FileSize, CONVERT(varbinary(MAX), @Data), @IdCreadoPor, GETDATE(), 1);
+        (@FileName, @ContentType, @FileSize, @Data, @IdCreadoPor, GETDATE(), 1);
 
     Select SCOPE_IDENTITY();
 END;
 
+
+
+GO
+--
+--
+--.P.R.O.C.E.D.U.R.E.......P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P Procedimiento almacenado para insertar en la tabla imagenes: --
+GO
+CREATE OR ALTER PROCEDURE dbo.ActualizarImagen
+    @IdImagen INT,
+    @FileName VARCHAR(MAX),
+    @ContentType VARCHAR(60),
+    @FileSize INT,
+    @Data VARCHAR(MAX),
+    @IdModificadoPor INT
+
+AS
+BEGIN
+    SET NOCOUNT ON;
+    UPDATE Imagenes SET FileName = @FileName, ContentType = @ContentType, FileSize = @FileSize, DATA = @DATA, IdModificadoPor = @IdModificadoPor, FechaCreacion = GETDATE()
+    WHERE IdImagen = @IdImagen
+END;
+
+
+
+GO
+--
+--
+--.P.R.O.C.E.D.U.R.E.......P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P Procedimiento almacenado para Eliminar Imagen de persona: --
+GO
+CREATE OR ALTER PROCEDURE dbo.EliminarPersonaImagen
+    @IdPersona INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    DECLARE @IdImagen INT;
+    --
+    SELECT @IdImagen = IdImagen FROM PersonasImagenes WHERE IdPersona = @IdPersona;
+    
+    DELETE PersonasImagenes WHERE IdImagen = @IdImagen AND IdPersona = @IdPersona
+    DELETE Imagenes WHERE IdImagen = @IdImagen
+END;
 
 
 
@@ -190,6 +272,128 @@ BEGIN
         (@IdImagen, @IdPersona, @IdCreadoPor, GETDATE(), 1);
 END;
 
+
+
+GO
+---- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+--
+--.P.R.O.C.E.D.U.R.E.......P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P Procedimiento almacenado para insertar en la tabla Entidades: --
+GO
+GO
+GO
+GO 
+CREATE OR ALTER PROCEDURE dbo.InsertarEntidad
+    @NombreEntidad VARCHAR(60),
+    @IdTipoEntidad int,
+    @IdCreadoPor int
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    INSERT INTO Entidades (NombreEntidad, IdTipoEntidad, IdCreadoPor, FechaCreacion, IdEstadoRegistro)
+                    VALUES (@NombreEntidad, @IdTipoEntidad, @IdCreadoPor, GETDATE(), 1);
+
+    SELECT SCOPE_IDENTITY();
+END
+GO
+
+
+
+
+
+GO
+---- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+--
+--.P.R.O.C.E.D.U.R.E.......P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P Procedimiento almacenado para insertar en la tabla EntidadesRolesEntidades: --
+GO
+GO 
+GO
+CREATE OR ALTER PROCEDURE dbo.InsertarEntidadRolEntidad
+    @IdEntidad int,
+    @IdRolEntidad int,
+    @IdCreadoPor int
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    INSERT INTO EntidadesRolesEntidades (IdEntidad, IdRolEntidad, IdCreadoPor, FechaCreacion, IdEstadoRegistro)
+                                 VALUES (@IdEntidad, @IdRolEntidad, @IdCreadoPor, GETDATE(), 1);
+
+    -- Puedes añadir aquí cualquier otro código o lógica que desees después de la inserción
+END
+GO
+
+
+
+
+GO
+---- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+--
+--.P.R.O.C.E.D.U.R.E.......P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P Procedimiento almacenado para insertar en la tabla EntidadesPersonasFisicas: --
+GO
+GO
+GO
+CREATE OR ALTER PROCEDURE InsertarEntidadPersonaFisica
+    @IdEntidad int,
+    @IdPersona int,
+    @IdCreadoPor int
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    INSERT INTO EntidadesPersonasFisicas (IdEntidad, IdPersona, IdCreadoPor, FechaCreacion, IdEstadoRegistro)
+                                  VALUES (@IdEntidad, @IdPersona, @IdCreadoPor, GETDATE(), 1);
+
+     SELECT SCOPE_IDENTITY();
+END
+
+
+
+
+GO
+--
+--.P.R.O.C.E.D.U.R.E.......P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P Procedimiento almacenado para insertar en la tabla EntidadesPersonasFisicasRepresentantes: --
+-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+GO
+GO
+GO
+CREATE OR ALTER PROCEDURE InsertarEntidadPersonaFisicaRepresentante
+    @IdEntidadPersonaFisica INT,
+    @IdRepresentanteActual INT,
+    @IdRolRepresentante INT,
+    @FechaInicioRepresentante DATETIME,
+    @IdCreadoPor INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    INSERT INTO EntidadesPersonasFisicasRepresentantes (IdEntidadPersonaFisica, IdRepresentanteActual, IdRolRepresentante, FechaInicioRepresentante, IdCreadoPor, FechaCreacion, IdEstadoRegistro)
+                                                VALUES (@IdEntidadPersonaFisica, @IdRepresentanteActual, @IdRolRepresentante, GETDATE(), @IdCreadoPor, GETDATE(), 1);
+END
+GO
+
+
+
+
+GO
+--
+--.P.R.O.C.E.D.U.R.E.......P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P.P Procedimiento almacenado para insertar en la tabla Clientes: --
+-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+GO
+CREATE OR ALTER PROCEDURE InsertarCliente
+    @Codigo VARCHAR(9),
+    @IdEntidad int,
+    @FechaInicioCliente Datetime,
+    @IdCreadoPor int
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    INSERT INTO Clientes (Codigo, IdEntidad, FechaInicioCliente, IdCreadoPor, FechaCreacion, IdEstadoRegistro)
+                  VALUES (@Codigo, @IdEntidad, @FechaInicioCliente, @IdCreadoPor, GETDATE(), 1);
+
+    -- Puedes añadir aquí cualquier otro código o lógica que desees después de la inserción
+END
 
 
 
@@ -407,68 +611,67 @@ GO
 
 
 GO
--- ---------------------- PROCEDIMIENTO PARA INSERTAR EN LA TABLA PROYECTOS: ----------------------------------
--- CREATE OR ALTER PROCEDURE dbo.InsertarProyecto
---     @Nombre VARCHAR(255),
---     @Descripcion VARCHAR(MAX),
---     @FechaDeInicio DATEtime,
---     @FechaDeFinalizacion DATEtime,
---     @TiempoDuracionEstimado VARCHAR(70),
---     -- @FechaRealDeFinalizacion DATEtime,
---     -- @TiempoDuracionReal VARCHAR(50),
---     @PresupuestoAcordado DECIMAL(18, 2),
---     @ClienteEsPersonaFisica BIT,
---     @IdEntidad INT,
---     @IdEstado INT,
---     @IdCreadoPor INT
--- -- @FechaCreacion DATETIME,
--- -- @IdEstadoRegistro INT
--- -- @IdModificadoPor INT
--- -- @FechaModificacion DATETIME,
--- AS
--- BEGIN
---     INSERT INTO Proyectos
---         (
---         Nombre,
---         Descripcion,
---         FechaDeInicio,
---         FechaDeFinalizacion,
---         TiempoDuracionEstimado,
---         -- FechaRealDeFinalizacion,
---         -- TiempoDuracionReal,
---         PresupuestoAcordado,
---         ClienteEsPersonaFisica,
---         IdEntidad,
---         IdEstado,
---         IdCreadoPor,
---         FechaCreacion,
---         IdEstadoRegistro
---         -- IdModificadoPor,
---         -- FechaModificacion,
---         )
---     VALUES
---         (
---             @Nombre,
---             @Descripcion,
---             @FechaDeInicio,
---             @FechaDeFinalizacion,
---             @TiempoDuracionEstimado,
---             -- @FechaRealDeFinalizacion,
---             -- @TiempoDuracionReal,
---             @PresupuestoAcordado,
---             @ClienteEsPersonaFisica,
---             @IdEntidad,
---             @IdCreadoPor,
---             @IdEstado,
---             GETDATE(),
---             1
---         -- @IdModificadoPor,
---         -- @FechaModificacion,
---     );
+---------------------- PROCEDIMIENTO PARA INSERTAR EN LA TABLA PROYECTOS: ----------------------------------
+CREATE OR ALTER PROCEDURE dbo.InsertarProyecto
+    @Nombre VARCHAR(255),
+    @Descripcion VARCHAR(MAX),
+    @FechaDeInicio DATEtime,
+    @FechaDeFinalizacion DATEtime,
+    @TiempoDuracionEstimado VARCHAR(70),
+    -- @FechaRealDeFinalizacion DATEtime,
+    -- @TiempoDuracionReal VARCHAR(50),
+    @PresupuestoAcordado DECIMAL(18, 2),
+    @ClienteEsPersonaFisica BIT,
+    @IdEntidad INT,
+    @IdEstado INT,
+    @IdCreadoPor INT
+-- @FechaCreacion DATETIME,
+-- @IdEstadoRegistro INT
+-- @IdModificadoPor INT
+-- @FechaModificacion DATETIME,
+AS
+BEGIN
+    INSERT INTO Proyectos
+        (
+        Nombre,
+        Descripcion,
+        FechaDeInicio,
+        FechaDeFinalizacion,
+        TiempoDuracionEstimado,
+        -- FechaRealDeFinalizacion,
+        -- TiempoDuracionReal,
+        PresupuestoAcordado,
+        ClienteEsPersonaFisica,
+        IdEntidad,
+        IdEstado,
+        IdCreadoPor,
+        FechaCreacion,
+        IdEstadoRegistro
+        -- IdModificadoPor,
+        -- FechaModificacion,
+        )
+    VALUES
+        (
+            @Nombre,
+            @Descripcion,
+            @FechaDeInicio,
+            @FechaDeFinalizacion,
+            @TiempoDuracionEstimado,
+            -- @FechaRealDeFinalizacion,
+            -- @TiempoDuracionReal,
+            @PresupuestoAcordado,
+            @ClienteEsPersonaFisica,
+            @IdEntidad,
+            @IdCreadoPor,
+            @IdEstado,
+            GETDATE(),
+            1
+        -- @IdModificadoPor,
+        -- @FechaModificacion,
+    );
 
---     Select SCOPE_IDENTITY()
--- END;
-
+    Select SCOPE_IDENTITY()
+END;
 
 
 
@@ -919,6 +1122,8 @@ BEGIN
         FOR JSON PATH
     ) AS 'EmpleadosProyectoJson'
     FROM Proyectos p
+        INNER JOIN Entidades en ON P.IdEntidad = en.IdEntidad
+        INNER JOIN TiposEntidades ten ON en.IdTipoEntidad = ten.IdTipoEntidad
         INNER JOIN EstadosProyectos ep ON ep.IdEstado = p.IdEstado
         INNER JOIN Tareas t ON t.IdProyecto = p.IdProyecto
         INNER JOIN EstadosTareas e ON e.IdEstadoTarea = t.IdEstado
@@ -930,11 +1135,11 @@ BEGIN
     p.FechaDeFinalizacion,
     p.PresupuestoAcordado,
     ep.EstadoNombre,
-    p.Descripcion;
+    p.Descripcion,
+	en.NombreEntidad,
+	ten.NombreTipoEntidad
 END
--- exec ObtenerDatosProyecto @IdProyecto = 13
-
-
+-- exec ObtenerDatosProyecto @IdProyecto = 1
 
 
 GO
@@ -960,18 +1165,26 @@ BEGIN
 END
 go
 
-
-
 GO
 CREATE OR ALTER PROCEDURE dbo.GetDatosPersonales
 AS
 BEGIN
     SELECT P.IdPersona, Nombres, Apellidos, Cedula, FechaDeNacimiento, Correo, Telefono1, Telefono2, Pa.IdPais, PaisNombre, C.IdCiudad, CiudadNombre, S.IdSexo, S.SexoNombre,
-        PI.IdPersonaImagen, I.IdImagen, I.[FileName], I.ContentType, I.FileSize, I.[DATA] AS [Data]
-    FROM Personas P INNER JOIN Ciudades C ON P.IdCiudad = C.IdCiudad INNER JOIN Paises Pa ON C.IdPais = Pa.IdPais INNER JOIN Sexos S ON P.IdSexo = S.IdSexo
-        LEFT JOIN PersonasImagenes PI ON PI.IdPersona = P.IdPersona LEFT JOIN Imagenes I ON PI.IdImagen = I.IdImagen
+        PI.IdPersonaImagen, I.IdImagen, I.[FileName], I.ContentType, I.FileSize, I.[DATA] AS [Data], Direccion,
+        CASE WHEN EPF.IdPersona IS NOT NULL THEN CAST(1 AS bit) ELSE CAST(0 AS bit) END AS YaEstaAsociado
+    FROM Personas P 
+    INNER JOIN Ciudades C ON P.IdCiudad = C.IdCiudad 
+    INNER JOIN Paises Pa ON C.IdPais = Pa.IdPais 
+    INNER JOIN Sexos S ON P.IdSexo = S.IdSexo
+    LEFT JOIN PersonasImagenes PI ON PI.IdPersona = P.IdPersona 
+    LEFT JOIN Imagenes I ON PI.IdImagen = I.IdImagen
+    LEFT JOIN EntidadesPersonasFisicas EPF ON P.IdPersona = EPF.IdPersona
+
+    ORDER BY 
+    P.IdPersona DESC, P.FechaModificacion DESC, P.FechaCreacion DESC;
 END
 GO
+
 -- EXEC dbo.GetDatosPersonales
 
 
@@ -990,9 +1203,8 @@ SET  IdEstado = @IdEstado
 	WHERE IdTarea = @IdTarea and IdProyecto = @IdProyecto
 
 END
-
-
 GO
+
 
 
 CREATE OR ALTER PROCEDURE dbo.ListadoDocumentsVentas
@@ -1164,6 +1376,8 @@ END
 */
 -- Execute dbo.ListadoEmpleadoV2 
 
+select *
+from FacturasVentasProyectos
 
 go
 ---Buscar empleado por id y traer toda su informacion
@@ -1493,606 +1707,3 @@ BEGIN
 END
 -- EXEC dbo.ObtenerUnidadesMedida
 GO
-
-
-
-
-GO
-----  PROCEDIMIENTO PARA INSERTAR EN PRODUCTOS ----------------- ---------------- ----------------- ---------------- --------------------- ------------------ ---------------- ----------:
-GO
-CREATE OR ALTER PROCEDURE dbo.InsertarProductoInv
-    @Nombre VARCHAR(255),
-    @Codigo VARCHAR(7),
-    @Descripcion VARCHAR(255),
-    @Modelo VARCHAR(50),
-    @TieneVencimiento BIT,
-    -- @IdEstado INT,
-    @IdCreadoPor INT
--- @FechaCreacion DATETIME,
--- @IdModificadoPor INT,
--- @FechaModificacion DATETIME,
--- @IdEstadoRegistro INT
-AS
-BEGIN
-    SET NOCOUNT ON;
-
-    INSERT INTO Productos
-        (Nombre, Codigo, Descripcion, Modelo, TieneVencimiento, IdEstado, IdCreadoPor, FechaCreacion, IdEstadoRegistro)
-    VALUES
-        (@Nombre, @Codigo, @Descripcion, @Modelo, @TieneVencimiento, 1, 1, GETDATE(), 1);
-
-    Select SCOPE_IDENTITY();
-END
-
-
-
-
-GO
--------
-GO
-CREATE or ALTER PROCEDURE dbo.InsertarProductoUnidadDeMedida
-    @IdUnidadDeMedida INT,
-    @IdProducto INT,
-    @IdCreadoPor INT
--- @FechaCreacion DATETIME,
--- @IdModificadoPor INT,
--- @FechaModificacion DATETIME,
--- @IdEstadoRegistro INT
-AS
-BEGIN
-    SET NOCOUNT ON;
-
-    INSERT INTO ProductosUnidadesDeMedida
-        (IdUnidadDeMedida, IdProducto, IdCreadoPor, FechaCreacion, IdEstadoRegistro)
-    VALUES
-        (@IdUnidadDeMedida, @IdProducto, @IdCreadoPor, GETDATE(), 1);
-    
-    SELECT SCOPE_IDENTITY();
-END
-
-
-
-
-GO
--------
-CREATE OR ALTER PROCEDURE dbo.InsertarDetalleProductoUnidadDeMedida
-    @IdProducto INT,
-    @IdUnidadDeMedida INT,
-    @PrecioCosto DECIMAL(10, 2),
-    @PrecioVenta DECIMAL(10, 2),
-    @ITBIS DECIMAL(5, 2),
-    @IdProductoUnidadDeMedida INT,
-    @IdCreadoPor INT
--- @FechaCreacion DATETIME,
--- @IdModificadoPor INT,
--- @FechaModificacion DATETIME,
--- @IdEstadoRegistro INT
-AS
-BEGIN
-    SET NOCOUNT ON;
-
-    INSERT INTO DetallesProductosUnidadesDeMedida
-        (IdProducto, IdUnidadDeMedida, PrecioCosto, PrecioVenta, ITBIS, IdProductoUnidadDeMedida, IdCreadoPor, FechaCreacion, IdEstadoRegistro)
-    VALUES
-        (@IdProducto, @IdUnidadDeMedida, @PrecioCosto, @PrecioVenta, @ITBIS, @IdProductoUnidadDeMedida, @IdCreadoPor, GETDATE(), 1);
-END
-
-
-
-
-GO
---- --- --- --- --- --- ---
-CREATE OR ALTER PROCEDURE dbo.InsertarExistencia
-    @Descripcion VARCHAR(255),
-    @Codigo VARCHAR(6),
-    @CantidadExistente INT,
-    @IdProducto INT,
-    @IdUnidadMedida INT,
-    @IdCreadoPor INT
-    -- @FechaCreacion DATETIME,
-    -- @IdModificadoPor INT,
-    -- @FechaModificacion DATETIME,
-    -- @IdEstadoRegistro INT
-AS
-BEGIN
-    SET NOCOUNT ON;
-
-    INSERT INTO Existencias
-        (Descripcion, Codigo, CantidadExistente, IdProducto, IdUnidadMedida, IdCreadoPor, FechaCreacion, IdEstadoRegistro)
-    VALUES
-        (@Descripcion, @Codigo, @CantidadExistente, @IdProducto, @IdUnidadMedida, @IdCreadoPor, GETDATE(), 1);
-END
-
-
-
-GO
--- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-
-GO
-CREATE OR ALTER PROCEDURE dbo.InsertarProductoImagen
-    @IdImagen INT,
-    @IdProducto INT,
-    @EsLaPrincipal BIT,
-    @IdCreadoPor INT
-    -- @FechaCreacion DATETIME,
-    -- @IdModificadoPor INT,
-    -- @FechaModificacion DATETIME,
-    -- @IdEstadoRegistro INT
-AS
-BEGIN
-    SET NOCOUNT ON;
-
-    INSERT INTO ProductosImagenes (IdImagen, IdProducto, EsLaPrincipal, IdCreadoPor, FechaCreacion, IdEstadoRegistro)
-                          VALUES (@IdImagen, @IdProducto, @EsLaPrincipal, @IdCreadoPor, GETDATE(), 1);
-END
-
-
-
-
-
-
-
--- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-GO
-CREATE OR ALTER PROCEDURE dbo.GetListaProductosInfoBasica
-AS
-BEGIN
-   SELECT P.IdProducto, Nombre, Codigo, Descripcion, Modelo, TieneVencimiento, IdEstado, EP.EstadoNombre AS EstadoNombreProducto, 
-          P.IdEstadoRegistro, ER.NombreEstado, I.ContentType, I.[DATA] as Data, --- I.IdImagen, I.[FileName], I.FileSize,
-        (
-        SELECT PUDM.IdUnidadDeMedida, UDM.UnidadNombre, PrecioCosto, PrecioVenta, ITBIS,
-        CASE WHEN e.CantidadExistente IS NULL THEN 0 ELSE e.CantidadExistente END AS CantidadExistente
-        FROM ProductosUnidadesDeMedida PUDM INNER JOIN DetallesProductosUnidadesDeMedida DPUDM ON PUDM.IdProductoUnidadDeMedida = DPUDM.IdProductoUnidadDeMedida
-                                            LEFT JOIN Existencias E ON E.IdUnidadMedida = DPUDM.IdUnidadDeMedida AND E.IdProducto = DPUDM.IdProducto
-                                            INNER JOIN UnidadesDeMedida UDM ON UDM.IdUnidadDeMedida = PUDM.IdUnidadDeMedida
-        WHERE PUDM.IdProducto = P.IdProducto
-        FOR JSON PATH
-    ) AS 'ProductosExistenciasJson'
-
-   FROM Productos AS P INNER JOIN EstadosProductos EP ON P.IdEstado = EP.IdEstadoProducto
-                       INNER JOIN EstadosRegistros ER ON P.IdEstadoRegistro = ER.IdEstadoRegistro
-                       --- IMAGNEES
-                       LEFT JOIN ProductosImagenes PI ON P.IdProducto = PI.IdProducto AND PI.EsLaPrincipal = 1
-                       LEFT JOIN Imagenes I ON PI.IdImagen = I.IdImagen
-    ORDER BY IdProducto DESC
-END
-GO
--- dbo.GetListaProductosInfoBasica
-
-
-
-
-
--- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-GO
-GO
-GO
-GO 
-CREATE OR ALTER PROCEDURE dbo.InsertarEntidad
-    @NombreEntidad VARCHAR(60),
-    @IdTipoEntidad int,
-    @IdCreadoPor int
-AS
-BEGIN
-    SET NOCOUNT ON;
-
-    INSERT INTO Entidades (NombreEntidad, IdTipoEntidad, IdCreadoPor, FechaCreacion, IdEstadoRegistro)
-                    VALUES (@NombreEntidad, @IdTipoEntidad, @IdCreadoPor, GETDATE(), 1);
-
-    SELECT SCOPE_IDENTITY();
-END
-GO
-
-
-
-
--- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-GO
-GO
-GO 
-GO
-CREATE OR ALTER PROCEDURE dbo.InsertarEntidadRolEntidad
-    @IdEntidad int,
-    @IdRolEntidad int,
-    @IdCreadoPor int
-    -- @FechaCreacion Datetime,
-    -- @IdModificadoPor int,
-    -- @FechaModificacion Datetime,
-    -- @IdEstadoRegistro int
-AS
-BEGIN
-    SET NOCOUNT ON;
-
-    INSERT INTO EntidadesRolesEntidades (IdEntidad, IdRolEntidad, IdCreadoPor, FechaCreacion, IdEstadoRegistro)
-                                 VALUES (@IdEntidad, @IdRolEntidad, @IdCreadoPor, GETDATE(), 1);
-
-    -- Puedes añadir aquí cualquier otro código o lógica que desees después de la inserción
-END
-GO
-
-
-
-
--- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-GO
-GO
-GO
-GO
-CREATE OR ALTER PROCEDURE InsertarEntidadPersonaFisica
-    @IdEntidad int,
-    @IdPersona int,
-    @IdCreadoPor int
-    -- @FechaCreacion Datetime,
-    -- @IdModificadoPor int,
-    -- @FechaModificacion Datetime,
-    -- @IdEstadoRegistro int
-AS
-BEGIN
-    SET NOCOUNT ON;
-
-    INSERT INTO EntidadesPersonasFisicas (IdEntidad, IdPersona, IdCreadoPor, FechaCreacion, IdEstadoRegistro)
-                                  VALUES (@IdEntidad, @IdPersona, @IdCreadoPor, GETDATE(), 1);
-
-     SELECT SCOPE_IDENTITY();
-END
-GO
-
-
-
-
--- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-GO
-GO
-GO
-CREATE OR ALTER PROCEDURE InsertarEntidadPersonaFisicaRepresentante
-    @IdEntidadPersonaFisica INT,
-    @IdRepresentanteActual INT,
-    @IdRolRepresentante INT,
-    @FechaInicioRepresentante DATETIME,
-    -- @FechaFinRepresentante DATETIME,
-    @IdCreadoPor INT
-    -- @FechaCreacion DATETIME,
-    -- @IdModificadoPor INT,
-    -- @FechaModificacion DATETIME,
-    -- @IdEstadoRegistro INT
-AS
-BEGIN
-    SET NOCOUNT ON;
-
-    INSERT INTO EntidadesPersonasFisicasRepresentantes (IdEntidadPersonaFisica, IdRepresentanteActual, IdRolRepresentante, FechaInicioRepresentante, IdCreadoPor, FechaCreacion, IdEstadoRegistro)
-                                                VALUES (@IdEntidadPersonaFisica, @IdRepresentanteActual, @IdRolRepresentante, GETDATE(), @IdCreadoPor, GETDATE(), 1);
-
-    -- Puedes añadir aquí cualquier otro código o lógica que desees después de la inserción
-
-END
-GO
-
-
-
-
-
--- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-GO
-GO
-GO
-CREATE OR ALTER PROCEDURE InsertarCliente
-    @Codigo VARCHAR(9),
-    @IdEntidad int,
-    @FechaInicioCliente Datetime,
-    @IdCreadoPor int
-    -- @FechaCreacion Datetime,
-    -- @IdModificadoPor int,
-    -- @FechaModificacion Datetime,
-    -- @IdEstadoRegistro int
-AS
-BEGIN
-    SET NOCOUNT ON;
-
-    INSERT INTO Clientes (Codigo, IdEntidad, FechaInicioCliente, IdCreadoPor, FechaCreacion, IdEstadoRegistro)
-                  VALUES (@Codigo, @IdEntidad, @FechaInicioCliente, @IdCreadoPor, GETDATE(), 1);
-
-    -- Puedes añadir aquí cualquier otro código o lógica que desees después de la inserción
-END
-GO
-
-
-
-
---------------------------------------------------------------------------------------------------------
-GO
-CREATE OR ALTER PROCEDURE ObtenerDatosProyecto
-    @IdProyecto INT
-AS
-BEGIN
-    IF NOT EXISTS (SELECT 1 FROM Proyectos WHERE IdProyecto = @IdProyecto)
-    BEGIN
-        -- Si el proyecto no existe, devuelve NULL
-        SELECT NULL AS 'ProyectoNoExiste';
-        RETURN;
-    END
-    SELECT 
-        p.IdProyecto,
-        p.Nombre AS 'NombreProyecto',
-        p.Descripcion,
-        p.FechaDeInicio,
-        p.FechaDeFinalizacion,
-        p.PresupuestoAcordado,
-		cp.MontoInicial,
-        en.NombreEntidad,
-        ten.NombreTipoEntidad,
-
-        ep.EstadoNombre AS 'EstadoProyecto',
-        (SUM(CASE WHEN t.IdEstado = 3 THEN 1 ELSE 0 END) * 100.0 / COUNT(*)) AS PorcentajeCompletado,
-        -- Total por tarea 
-        (SELECT SUM(CostoTotal) as totalTarea FROM Tareas WHERE IdProyecto = p.IdProyecto) AS 'TotalTarea',
-        (SELECT SUM(Subtotal) as totalProducto FROM ProyectosDetallesProductos WHERE IdProyecto = p.IdProyecto) AS 'TotalProducto',
-        (SELECT SUM(MontoGasto) as totalGasto FROM GastosAdicionales WHERE IdProyecto = p.IdProyecto) AS 'TotalGasto',
-
-        -- Lista de Servicio para el Proyecto
-        (
-            SELECT p.IdServicio, s.NombreServicio 
-            FROM ProyectosServicios p 
-            INNER JOIN Servicios s ON s.IdServicio = p.IdServicio
-            INNER JOIN Proyectos r on r.IdProyecto = p.IdProyecto
-            WHERE p.IdProyecto = @IdProyecto
-            FOR JSON PATH
-        ) AS 'ServicioProyectoJson',
-        -- Lista de Tareas para el Proyecto
-        (
-          SELECT 
-    t.IdTarea,
-    t.Nombre AS 'NombreTarea',
-    t.Descripcion,
-    et.NombreEstado AS 'EstadoTarea',
-    t.IdPrioridad,
-    t.FechaInicio,
-    t.FechaFinalizacion,
-	t.FechaRealDeFinalizacion,
-    t.TiempDuracionEstimado,
-    cp.NombreParametro,
-    t.CostoPorParametro,
-    t.Cantidad,
-    t.CostoTotal ,
-    p.NombrePrioridad,
-    ep.IdEstadoTarea,
-    ep.NombreEstado,
-    s.NombreServicio,
-    s.IdServicio
-FROM Tareas t
-LEFT JOIN EstadosTareas et ON et.IdEstadoTarea = t.IdEstado
-LEFT JOIN Servicios s ON s.IdServicio = t.IdServicioRelacionado
-LEFT JOIN Prioridades p ON t.IdPrioridad = p.IdPrioridad
-LEFT JOIN ParametrosCostos cp ON cp.IdParametroCosto = t.IdParametroCosto
-LEFT JOIN EstadosTareas ep ON ep.IdEstadoTarea = t.IdEstado
-WHERE t.IdProyecto = @IdProyecto
-            FOR JSON PATH
-        ) AS 'TareasProyectoJson',
-        -- Lista de Productos para el Proyecto
-        (
-            SELECT 
-                pp.Cantidad,
-                pr.Nombre AS 'NombreProducto',
-                pp.PrecioVenta,
-                pp.Subtotal
-            FROM ProyectosDetallesProductos pp
-            INNER JOIN Productos pr ON pr.IdProducto = pp.IdProducto
-            WHERE pp.IdProyecto = p.IdProyecto
-            FOR JSON PATH
-        ) AS 'ProductosProyectoJson',
-        -- Lista de Empleados para el Proyecto SELECT * FROM ProyectosEmpleados WHERE IdProyecto = 13
-        (
-            SELECT 
-                r.ResponsabilidadNombre,
-                pe.IdResponsabilidad,
-                pe.IdEmpleado,
-                pe.IdPersonaProyecto,
-                CONCAT(persona.Nombres, ' ', persona.Apellidos) AS 'NombreEmpleado'
-            FROM ProyectosEmpleados pe
-            INNER JOIN Responsabilidades r ON pe.IdResponsabilidad = r.IdResponsabilidad
-            INNER JOIN Empleados emp ON pe.IdEmpleado = emp.IdEmpleado
-            INNER JOIN Personas persona ON persona.IdPersona = emp.IdPersona
-            WHERE pe.IdProyecto = p.IdProyecto
-            FOR JSON PATH
-        ) AS 'EmpleadosProyectoJson',
-
-        --- lista de cargo adicionales 
-        ( 
-            SELECT 
-                pp.DescripcionGasto,
-                pp.MontoGasto
-            FROM GastosAdicionales pp
-            WHERE pp.IdProyecto = p.IdProyecto
-            FOR JSON PATH
-        ) AS 'GastoProyectoJson'
-    FROM Proyectos p
-    Inner join Entidades en on en.IdEntidad = p.IdEntidad
-    inner join TiposEntidades ten on ten.IdTipoEntidad = en.IdTipoEntidad
-    INNER JOIN EstadosProyectos ep ON ep.IdEstado = p.IdEstado
-    INNER JOIN Tareas t ON t.IdProyecto = p.IdProyecto
-    INNER JOIN EstadosTareas e ON e.IdEstadoTarea = t.IdEstado
-	inner join CotizacionesProyectos cp on cp.IdProyecto = p.IdProyecto
-    WHERE p.IdProyecto = @IdProyecto
-    GROUP BY 
-        p.IdProyecto,
-        p.Nombre,
-        p.FechaDeInicio,
-        p.FechaDeFinalizacion,
-        p.PresupuestoAcordado,
-        ep.EstadoNombre,
-        p.Descripcion,
-        en.NombreEntidad,
-        ten.NombreTipoEntidad,
-		cp.MontoInicial
-END
-
-
-go
-----------------------------------------------------------------------------------------------------------------------------------------------
-CREATE OR ALTER PROCEDURE dbo.ListadoDocumentsVentas
-AS
-BEGIN
-    SELECT IdCotizacion AS IdDocumento, 1 AS IdTipoDocumento, 'Cotización de proyecto' AS DocumentoNombre,
-           FechaDeEmision, MontoTotal, MontoInicial, Secuencia, C.IdCliente, E.NombreEntidad, E.IdTipoEntidad, TP.NombreTipoEntidad,
-            CP.IdEstado, Py.IdProyecto, Py.Nombre AS NombreProyecto
-           
-           FROM CotizacionesProyectos CP INNER JOIN Clientes C ON CP.IdCliente = c.IdCliente
-                                         INNER JOIN Entidades E ON C.IdEntidad = E.IdEntidad
-                                         INNER JOIN TiposEntidades TP ON E.IdTipoEntidad = TP.IdTipoEntidad
-                                         INNER JOIN Proyectos Py ON CP.IdProyecto = Py.IdProyecto
-    UNION 
-
-
-    SELECT IdFactura AS IdDocumento, 2 AS IdTipoDocumento, 'Factura de proyecto' AS DocumentoNombre,
-           FechaDeEmision, MontoTotal,MontoInicial, Secuencia, C.IdCliente, E.NombreEntidad, E.IdTipoEntidad, TP.NombreTipoEntidad,
-           FV.IdEstado, Py.IdProyecto, Py.Nombre AS NombreProyecto
-           
-           FROM FacturasVentasProyectos FV INNER JOIN Clientes C ON FV.IdCliente = c.IdCliente
-                                         INNER JOIN Entidades E ON C.IdEntidad = E.IdEntidad
-                                         INNER JOIN TiposEntidades TP ON E.IdTipoEntidad = TP.IdTipoEntidad
-                                         INNER JOIN Proyectos Py ON FV.IdProyecto = Py.IdProyecto
-END
-
-
-
-
-
-GO
----------------------- PROCEDIMIENTO PARA INSERTAR EN LA TABLA PROYECTOS: ----------------------------------
-CREATE OR ALTER PROCEDURE dbo.InsertarProyecto
-    @Nombre VARCHAR(255),
-    @Descripcion VARCHAR(MAX),
-    @FechaDeInicio DATEtime,
-    @FechaDeFinalizacion DATEtime,
-    @TiempoDuracionEstimado VARCHAR(70),
-    -- @FechaRealDeFinalizacion DATEtime,
-    @TiempoDuracionReal VARCHAR(50),
-    @PresupuestoAcordado DECIMAL(18, 2),
-    @ClienteEsPersonaFisica BIT,
-    @IdEntidad INT,
-    @IdEstado INT,
-    @IdCreadoPor INT
-    -- @FechaCreacion DATETIME,
-	-- @IdEstadoRegistro INT
-    -- @IdModificadoPor INT
-    -- @FechaModificacion DATETIME,
-AS
-BEGIN
-    INSERT INTO Proyectos (
-        Nombre,
-        Descripcion,
-        FechaDeInicio,
-        FechaDeFinalizacion,
-        TiempoDuracionEstimado,
-        -- FechaRealDeFinalizacion,
-        TiempoDuracionReal,
-        PresupuestoAcordado,
-        ClienteEsPersonaFisica,
-        IdEntidad,
-		IdEstado,
-        IdCreadoPor,
-        FechaCreacion,
-		IdEstadoRegistro
-        -- IdModificadoPor,
-        -- FechaModificacion,
-    )
-    VALUES (
-        @Nombre,
-        @Descripcion,
-        @FechaDeInicio,
-        @FechaDeFinalizacion,
-        @TiempoDuracionEstimado,
-        -- @FechaRealDeFinalizacion,
-        @TiempoDuracionReal,
-        @PresupuestoAcordado,
-        @ClienteEsPersonaFisica,
-        @IdEntidad,
-        @IdCreadoPor,
-		@IdEstado,
-        GETDATE(),
-		1
-        -- @IdModificadoPor,
-        -- @FechaModificacion,
-    );
-
-    Select SCOPE_IDENTITY()
-END;
-
-
-GO
-----------------------------------------------------------------------
-CREATE OR ALTER PROCEDURE dbo.EstadoTarea
-(
-    @IdProyecto int,
-    @IdTarea int,
-    @IdEstado int 
-)
-AS
-BEGIN
-    SET NOCOUNT ON 
-	UPDATE Tareas
-    SET 
-        IdEstado = @IdEstado,
-        FechaRealDeFinalizacion = CASE WHEN @IdEstado = 3 THEN GETDATE() ELSE FechaRealDeFinalizacion END
-    WHERE IdTarea = @IdTarea AND IdProyecto = @IdProyecto
-END
-GO
-
-GO
-
-GO
-
-GO
-
-GO
------------ /*1--*/ Procedimiento almcenado para obtener una lista general de Proveedores (empresas y personas fisicas):
-CREATE OR ALTER PROCEDURE dbo.GetListaCeneralProveedores
-AS
-BEGIN
-            SELECT
-            C.IdCliente,
-            CASE WHEN NombreEntidad IS NULL THEN P.Nombres + ' ' + P.Apellidos ELSE NombreEntidad END AS NombreEntidad,
-            C.Codigo,
-            E.IdEntidad,
-            E.IdTipoEntidad,
-            NombreTipoEntidad,
-            P.Cedula AS Identificacion,
-            P.Telefono1 AS Telefono,
-            Correo,
-            C.FechaInicioCliente,
-            CiudadNombre,
-            PaisNombre
-        FROM Entidades E
-            INNER JOIN TiposEntidades TE ON E.IdTipoEntidad = TE.IdTipoEntidad
-            INNER JOIN Clientes C ON E.IdEntidad = C.IdEntidad
-            INNER JOIN EntidadesPersonasFisicas EPF ON E.IdEntidad = EPF.IdEntidad
-            INNER JOIN Personas P ON EPF.IdPersona = P.IdPersona
-            INNER JOIN Ciudades Ci ON P.IdCiudad = Ci.IdCiudad
-            INNER JOIN Paises Pa ON Ci.IdPais = Pa.IdPais
-
-    UNION
-
-        SELECT
-            C.IdCliente,
-            CASE WHEN NombreEntidad IS NULL THEN EM.NombreEmpresa ELSE NombreEntidad END AS NombreEntidad,
-            C.Codigo,
-            E.IdEntidad,
-            E.IdTipoEntidad,
-            NombreTipoEntidad,
-            EM.RNC AS Identificacion,
-            EM.Telefono1 AS Telefono,
-            Correo,
-            C.FechaInicioCliente,
-            CiudadNombre,
-            PaisNombre
-        FROM Entidades E
-            INNER JOIN TiposEntidades TE ON E.IdTipoEntidad = TE.IdTipoEntidad
-            INNER JOIN Clientes C ON E.IdEntidad = C.IdEntidad
-            INNER JOIN EntidadesEmpresas EE ON E.IdEntidad = EE.IdEntidad
-            INNER JOIN Empresas EM ON EE.IdEmpresa = EM.IdEmpresa
-            INNER JOIN Ciudades Ci ON EM.IdCiudad = Ci.IdCiudad
-            INNER JOIN Paises Pa ON Ci.IdPais = Pa.IdPais
-
-    ORDER BY IdCliente ASC;
-END
-	
--- EXEC dbo.GetListaCenerallientes

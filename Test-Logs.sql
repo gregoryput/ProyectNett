@@ -1,4 +1,4 @@
-USE BD_PROYENETT_58
+USE BD_PROYENETT_VF17
 GO
 
 
@@ -34,20 +34,20 @@ VALUES
 GO
 -- Insertar datos en la tabla Usuarios
 INSERT INTO Usuarios
-  (NombreUsuario, Correo, IdRol, Contraseña, IdCreadoPor, FechaCreacion)
+  (NombreUsuario, Correo, IdRol, Contraseña, IdCreadoPor, FechaCreacion, IdEstadoRegistro)
 VALUES
   /*1*/
-  ('juan01andres', 'juan@gestnett.com', 1, 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3', 1, GETDATE()),
+  ('juan01andres', 'juan@gestnett.com', 1, 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3', 1, GETDATE(), 1),
   /*2*/
-  ('carlos01', 'carlos@gestnett.com', 2, 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3', 1, GETDATE()),
+  ('carlos01', 'carlos@gestnett.com', 2, 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3', 1, GETDATE(), 1),
   /*3*/
-  ('joselo01', 'joselo@gestnett.com', 1, 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3', 1, GETDATE()),
+  ('joselo01', 'joselo@gestnett.com', 1, 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3', 1, GETDATE(), 1),
   /*4*/
-  ('cristian01', 'cristiano@gestnett.com', 4, 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3', 1, GETDATE()),
+  ('cristian01', 'cristiano@gestnett.com', 4, 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3', 1, GETDATE(), 1),
   /*5*/
-  ('pedro01', 'pedro@gestnett.com', 3, 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3', 1, GETDATE()),
+  ('pedro01', 'pedro@gestnett.com', 3, 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3', 1, GETDATE(), 1),
   /*6*/
-  ('gregory01', 'greg@gestnett.com', 1, 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3', 1, GETDATE());
+  ('gregory01', 'greg@gestnett.com', 1, 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3', 1, GETDATE(), 1);
 -- Select * FROM Usuarios
 
 
@@ -1048,3 +1048,62 @@ VALUES
 ('Pendiente', 1, GETDATE(), 1, GETDATE(), 1), -- Reemplaza los valores 1 con IDs válidos de Usuarios y EstadosRegistros
 ('En progreso', 2, GETDATE(), 2, GETDATE(), 1), -- Reemplaza los valores 2 con IDs válidos de Usuarios y EstadosRegistros
 ('Completada', 3, GETDATE(), 1, GETDATE(), 2);
+
+
+GO
+-- Inserción de datos en la tabla TiposDatosConfiguraciones
+INSERT INTO TiposDatosConfiguraciones (Nombre, Descripcion, IdCreadoPor, FechaCreacion,  IdEstadoRegistro)
+VALUES 
+('string', 'Para configuraciones con valor cadena de texto', 1, GETDATE(), 1),
+('number', 'Para configuraciones con valor numerico', 3,   GETDATE(), 1);
+
+-- Puedes agregar más filas según sea necesario utilizando la misma estructura de la sentencia INSERT INTO
+-- SELECT * FROM TiposDatosConfiguraciones
+
+
+
+GO
+-- Inserción de datos en la tabla ConfiguracionesGenerales
+INSERT INTO ConfiguracionesGenerales (Nombre, Clave, Valor, ValorPorDefecto, IdTipoDato, Descripcion, IdCreadoPor, FechaCreacion, IdEstadoRegistro)
+VALUES 
+('Código para secuencia de las cotizaciones', 'CO', '0', '0', 2, 'Esto permite manejar y autoincrementar la secuencia de las cotizaciones', 1, GETDATE(), 1),
+('Código para secuencia de las ordenes de compra', 'OC', '0', '0', 2, 'Esto permite manejar y autoincrementar la secuencia de las ordenes de compra', 1, GETDATE(), 1),
+('Código para secuencia de ls pagos', 'P', '0', '0', 2, 'Esto permite manejar y autoincrementar la secuencia de los pagos', 1, GETDATE(), 1);
+
+
+---
+GO
+--- INSERTAR DATOS EN LA TABLA NCF:
+INSERT INTO TiposNCF (NombreCorto, NombreLargo, IdCreadoPor, FechaCreacion, IdEstadoRegistro)
+VALUES 
+('Factura de Crédito Fiscal', 
+'registran las transacciones comerciales de compra y venta de bienes y/o los que prestan algún servicio.', 
+1,
+GETDATE(),
+1);
+
+
+INSERT INTO TiposNCF (NombreCorto, NombreLargo, IdCreadoPor, FechaCreacion, IdEstadoRegistro)
+VALUES 
+('Factura de Consumo', 
+'acreditan la transferencia de bienes, la entrega en uso o la prestación de servicios a consumidores finales..', 
+1, 
+GETDATE(),
+1)
+
+GO
+-- CREACION DE LA TABLA TiposNCF:
+CREATE TABLE TiposNCF
+(
+    IdTipoNCF INT IDENTITY CONSTRAINT PK_TiposNCF PRIMARY KEY,
+    NombreLargo varchar(MAX),
+    NombreCorto varchar(70),
+    --
+    IdCreadoPor int constraint Fk_TiposNCF_IdCreadoPor foreign Key references Usuarios(IdUsuario),
+    FechaCreacion Datetime,
+    IdModificadoPor int constraint Fk_TiposNCF_IdModificadoPor foreign Key references Usuarios(IdUsuario),
+    FechaModificacion Datetime,
+    IdEstadoRegistro int constraint Fk_TiposNCF_IdEstadoR foreign Key references EstadosRegistros(IdEstadoRegistro),
+);
+
+GO

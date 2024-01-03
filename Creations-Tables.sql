@@ -1,6 +1,6 @@
-CREATE DATABASE BD_PROYENETT_58
+CREATE DATABASE BD_PROYENETT_VF17
 GO
-USE BD_PROYENETT_58
+USE BD_PROYENETT_VF17
 GO
 
 
@@ -761,7 +761,7 @@ CREATE TABLE EstadosDocumentos
 GO
 
 
-CREATE TABLE OrdenesCompras
+CREATE TABLE EstadosOrdenesCompras
 (
     IdEstadoOrdenCompra INT IDENTITY CONSTRAINT PK_IdEstadoOrdenCompra PRIMARY KEY,
     NombreEstado VARCHAR(70)
@@ -782,7 +782,7 @@ CREATE TABLE OrdenesCompras
     IdCiudadEntrega INT CONSTRAINT FK_IdCiudadEntrega FOREIGN KEY REFERENCES Ciudades(IdCiudad),
     DireccionEntrega VARCHAR(MAX),
     --
-    IdEstadoOrdenCompra int constraint Fk_IdEstadoOrdenCompra foreign Key references OrdenesCompras(IdEstadoOrdenCompra),
+    IdEstadoOrdenCompra int constraint Fk_OC_IdEstadoOrdenCompra foreign Key references EstadosOrdenesCompras(IdEstadoOrdenCompra),
     --
     IdCreadoPor int constraint Fk_OrdenesComprasIdCreadoPor foreign Key references Usuarios(IdUsuario),
     FechaCreacion Datetime,
@@ -796,11 +796,11 @@ GO
 -- CREACION DE LA TABLA Entradas OrdenesComprasDetalles:
 CREATE TABLE OrdenesComprasDetalles
 (
-    IdOrdenCompra INT IDENTITY CONSTRAINT PK_IdOrdenCompra PRIMARY KEY,
+    IdDetalleOrdenCompra INT IDENTITY CONSTRAINT PK_OC_Detalle_IdOrdenCompra PRIMARY KEY,
     --
     IdProducto int constraint Fk_OC_Detalle_IdProducto foreign Key references Productos(IdProducto),
     IdUnidadDeMedida int constraint Fk_OC_Entradas_IdUnidadMedida foreign key references UnidadesDeMedida(IdUnidadDeMedida),
-    IdFactura int constraint Fk_OC_Detalle_IdFactura foreign Key references FacturasCompras(IdFactura),
+    IdOrdenCompra int constraint Fk_OC_Detalle_IdOrdenCompra foreign Key references OrdenesCompras(IdOrdenCompra),
     --
     Cantidad int,
     Precio decimal,
@@ -828,7 +828,7 @@ CREATE TABLE FacturasCompras
     NCF VARCHAR(50),
     --
     IdEstadoFactura int constraint Fk_IdEstadoFactura foreign Key references EstadosDocumentos(IdEstadoDocumento),
-    IdOrdenCompra int constraint FK_IdOrdenCompra foreign key references OrdenesCompras(IdOrdenCompra),
+    IdOrdenCompra int constraint FK_FC_IdOrdenCompra foreign key references OrdenesCompras(IdOrdenCompra),
     --
     IdProveedor INT,
     CONSTRAINT Fk_IdProveedor FOREIGN KEY (IdProveedor) REFERENCES Proveedores(IdProveedor),
@@ -1231,6 +1231,45 @@ CREATE TABLE TipoDocumento
 GO
 
 
+GO
+-- CREACION DE LA TABLA TiposNCF:
+CREATE TABLE TiposNCF
+(
+    IdTipoNCF INT IDENTITY CONSTRAINT PK_TiposNCF PRIMARY KEY,
+    NombreLargo varchar(MAX),
+    NombreCorto varchar(70),
+    --
+    IdCreadoPor int constraint Fk_TiposNCF_IdCreadoPor foreign Key references Usuarios(IdUsuario),
+    FechaCreacion Datetime,
+    IdModificadoPor int constraint Fk_TiposNCF_IdModificadoPor foreign Key references Usuarios(IdUsuario),
+    FechaModificacion Datetime,
+    IdEstadoRegistro int constraint Fk_TiposNCF_IdEstadoR foreign Key references EstadosRegistros(IdEstadoRegistro),
+);
+
+
+
+GO
+-- CREACION DE LA TABLA TipoDocumento:
+CREATE TABLE NCF
+(
+    IdNCF INT IDENTITY CONSTRAINT PK_IdTipoNCF PRIMARY KEY,
+    IdTipoNCF varchar(30),
+    Codigo varchar(30),
+    Actual INT,
+    Limite INT,
+    FechaVencimiento DATETIME,
+    TipoNCFId INT CONSTRAINT Fk_TipoNCFId FOREIGN KEY REFERENCES TiposNCF(IdTipoNCF),
+    --
+    IdCreadoPor int constraint Fk_TipoNCF_CreadoPor foreign Key references Usuarios(IdUsuario),
+    FechaCreacion Datetime,
+    IdModificadoPor int constraint Fk_TipoNCFModificadoPor foreign Key references Usuarios(IdUsuario),
+    FechaModificacion Datetime,
+    IdEstadoRegistro int constraint Fk_NCF_IdEstadoRegistro foreign Key references EstadosRegistros(IdEstadoRegistro),
+);
+
+
+
+GO
 -- CREACION DE LA TABLA FacturaVentaProyecto:
 CREATE TABLE FacturasVentasProyectos
 (
@@ -1241,6 +1280,7 @@ CREATE TABLE FacturasVentasProyectos
     DiasMora INT,
     MontoMora DECIMAL(18, 2),
     MontoTotal DECIMAL(18, 2),
+    TipoNCFId INT CONSTRAINT Fk_FV_TipoNCFId FOREIGN KEY REFERENCES TiposNCF(IdTipoNCF),
     Secuencia varchar(20),
     IdCliente INT,
     IdEstado INT,
@@ -1272,6 +1312,7 @@ CREATE TABLE CotizacionesProyectos
     IdCliente INT,
     IdEstado INT,
     IdProyecto INT,
+    TipoNCFId INT CONSTRAINT Fk_cp_TipoNCFId FOREIGN KEY REFERENCES TiposNCF(IdTipoNCF),
     --
     CONSTRAINT FK_CotizacionIdCliente FOREIGN KEY (IdCliente) REFERENCES Clientes(IdCliente),
     --
@@ -1351,7 +1392,7 @@ CREATE TABLE Imagenes
     FileName VARCHAR(MAX),
     ContentType VARCHAR(60),
     FileSize INT,
-    DATA VARBINARY(MAX),
+    DATA VARCHAR(MAX),
     --
     IdCreadoPor int constraint Fk_Imagenes_IdCreadoPor foreign Key references Usuarios(IdUsuario),
     FechaCreacion Datetime,
@@ -1436,6 +1477,7 @@ CREATE TABLE ProyectosDistribucionesPagos
     IdDistribucionPago INT IDENTITY CONSTRAINT PK_IdDistribucionPago PRIMARY KEY,
     MontoPago DECIMAL,
     FechaPago DATETIME,
+    -- MontoMora,
     --
     IdCreadoPor int constraint PDP_Fk1_IdCreadoPor foreign Key references Usuarios(IdUsuario),
     FechaCreacion Datetime,
@@ -1444,3 +1486,54 @@ CREATE TABLE ProyectosDistribucionesPagos
     IdEstadoRegistro int constraint PDP_Fk3_IdCreadoPor foreign Key references EstadosRegistros(IdEstadoRegistro),
 );
 GO
+
+
+GO
+-- CREACION DE LA TABLA Proyectos TiposDatosConfiguraciones
+CREATE TABLE TiposDatosConfiguraciones
+(
+    IdTipoDato INT IDENTITY CONSTRAINT PK_IdTipoDato PRIMARY KEY,
+    Nombre VARCHAR(60),
+    Descripcion Varchar (60),
+    --
+    IdCreadoPor int constraint TipD_Fk1_IdCreadoPor foreign Key references Usuarios(IdUsuario),
+    FechaCreacion Datetime,
+    IdModificadoPor int constraint TipD_Fk2_IdCreadoPor foreign Key references Usuarios(IdUsuario),
+    FechaModificacion Datetime,
+    IdEstadoRegistro int constraint TipD_Fk3_IdCreadoPor foreign Key references EstadosRegistros(IdEstadoRegistro),
+);
+GO
+
+
+GO
+-- CREACION DE LA TABLA Proyectos ConfiguracionesGenerales
+CREATE TABLE ConfiguracionesGenerales
+(
+    IdConfiguracion INT IDENTITY CONSTRAINT PK_IdConfiguraciono PRIMARY KEY,
+    Nombre VARCHAR(60),
+    Clave VARCHAR(60), -- 'CO'
+    Valor VARCHAR(60), -- ''
+    ValorPorDefecto VARCHAR(60),
+    Descripcion VARCHAR(100),
+    IdTipoDato INT CONSTRAINT IdTipoDato FOREIGN KEY REFERENCES TiposDatosConfiguraciones(IdTipoDato),
+    --
+    IdCreadoPor int constraint ConfigGen_Fk1_IdCreadoPor foreign Key references Usuarios(IdUsuario),
+    FechaCreacion Datetime,
+    IdModificadoPor int constraint ConfigGen_Fk2_IdCreadoPor foreign Key references Usuarios(IdUsuario),
+    FechaModificacion Datetime,
+    IdEstadoRegistro int constraint ConfigGen_Fk3_IdCreadoPor foreign Key references EstadosRegistros(IdEstadoRegistro),
+);
+GO
+
+
+
+-- Inserción de datos ficticios en la tabla NCF
+INSERT INTO NCF (IdTipoNCF, Codigo, Actual, Limite, FechaVencimiento, TipoNCFId, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro)
+VALUES 
+('FA', '001', 100, 500, '2023-12-31 23:59:59', 1, 1, '2023-01-01 08:00:00', 2, '2023-01-02 10:30:00', 3),
+('FB', '002', 50, 200, '2023-12-31 23:59:59', 2, 2, '2023-02-15 11:20:00', 3, '2023-02-18 09:45:00', 1),
+('ND', '003', 80, 300, '2023-12-31 23:59:59', 3, 3, '2023-03-20 14:45:00', 1, '2023-03-22 16:10:00', 2),
+('NC', '004', 30, 150, '2023-12-31 23:59:59', 4, 1, '2023-04-10 09:30:00', 2, '2023-04-12 12:15:00', 3),
+('RA', '005', 120, 600, '2023-12-31 23:59:59', 5, 2, '2023-05-05 13:00:00', 3, '2023-05-08 15:20:00', 1);
+
+-- Puedes ajustar estos datos ficticios según tus necesidades o reglas específicas
