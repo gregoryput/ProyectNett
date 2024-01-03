@@ -988,7 +988,7 @@ END;
 GO
 ---------------------- PROCEDIMIENTO PARA INSERTAR EN LA TABLA Tareas: ----------------------------------
 CREATE OR ALTER PROCEDURE dbo.InsertarCotizacionProyecto
-    -- @FechaDeEmision DATETIME,
+   -- @FechaDeEmision DATETIME,
     @MontoInicial DECIMAL(18, 2),
     @MontoTotal DECIMAL(18, 2),
     @Secuencia VARCHAR(20),
@@ -1002,8 +1002,7 @@ CREATE OR ALTER PROCEDURE dbo.InsertarCotizacionProyecto
 -- @IdEstadoRegistro INT
 AS
 BEGIN
-    INSERT INTO CotizacionesProyectos
-        (
+    INSERT INTO CotizacionesProyectos (
         --FechaDeEmision,
         MontoInicial,
         MontoTotal,
@@ -1016,21 +1015,20 @@ BEGIN
         -- IdModificadoPor,
         -- FechaModificacion,
         IdEstadoRegistro
-        )
-    VALUES
-        (
-            --GETDATE(), --@FechaDeEmision,
-            @MontoInicial,
-            @MontoTotal,
-            @Secuencia,
-            @IdCliente,
-            @IdEstado,
-            @IdProyecto,
-            @IdCreadoPor,
-            GETDATE(), -- @FechaCreacion,
-            -- @IdModificadoPor,
-            -- @FechaModificacion,
-            1 -- @IdEstadoRegistro
+    )
+    VALUES (
+        --GETDATE(), --@FechaDeEmision,
+        @MontoInicial,
+        @MontoTotal,
+        @Secuencia,
+        @IdCliente,
+        @IdEstado,
+        @IdProyecto,
+        @IdCreadoPor,
+        GETDATE(), -- @FechaCreacion,
+        -- @IdModificadoPor,
+        -- @FechaModificacion,
+        1 -- @IdEstadoRegistro
     );
 END;
 GO
@@ -1044,31 +1042,25 @@ CREATE OR ALTER PROCEDURE  ObtenerDatosProyecto
     @IdProyecto INT
 AS
 BEGIN
-    SELECT
-        p.IdProyecto,
-        p.Nombre AS 'NombreProyecto',
-        p.Descripcion,
-        p.FechaDeInicio,
-        p.FechaDeFinalizacion,
-        p.PresupuestoAcordado,
-        ep.EstadoNombre AS 'EstadoProyecto',
-        (SUM(CASE WHEN t.IdEstado = 3 THEN 1 ELSE 0 END) * 100.0 / COUNT(*)) AS PorcentajeCompletado,
-        -- Total por tarea 
-        (SELECT SUM(Cantidad * CostoTotal) as totalTarea
-        FROM Tareas
-        WHERE IdProyecto = p.IdProyecto) AS 'TotalTarea',
-        (SELECT SUM(Subtotal) as totalProducto
-        FROM ProyectosDetallesProductos
-        WHERE IdProyecto = p.IdProyecto) AS 'TotalProducto',
-        (SELECT SUM(MontoGasto) as totalGasto
-        FROM GastosAdicionales
-        WHERE IdProyecto = p.IdProyecto) AS 'TotalGasto',
-        -- Lista de Servicio para el Proyecto
-        (
-         SELECT p.IdServicio, s.NombreServicio
-        FROM ProyectosServicios p
-            INNER JOIN Servicios s ON s.IdServicio = p.IdServicio
-            inner join Proyectos r on r.IdProyecto = p.IdProyecto
+SELECT 
+    p.IdProyecto,
+    p.Nombre AS 'NombreProyecto',
+    p.Descripcion,
+    p.FechaDeInicio,
+    p.FechaDeFinalizacion,
+    p.PresupuestoAcordado,
+    ep.EstadoNombre AS 'EstadoProyecto',
+    (SUM(CASE WHEN t.IdEstado = 3 THEN 1 ELSE 0 END) * 100.0 / COUNT(*)) AS PorcentajeCompletado,
+    -- Total por tarea 
+    (SELECT SUM(Cantidad * CostoTotal) as totalTarea FROM Tareas WHERE IdProyecto = p.IdProyecto) AS 'TotalTarea',
+    (SELECT SUM(Subtotal) as totalProducto FROM ProyectosDetallesProductos WHERE IdProyecto = p.IdProyecto) AS 'TotalProducto',
+    (SELECT SUM(MontoGasto) as totalGasto FROM GastosAdicionales WHERE IdProyecto = p.IdProyecto) AS 'TotalGasto',
+    -- Lista de Servicio para el Proyecto
+    (
+         SELECT p.IdServicio, s.NombreServicio 
+        FROM ProyectosServicios p 
+        INNER JOIN Servicios s ON s.IdServicio = p.IdServicio
+		inner join Proyectos r on r.IdProyecto = p.IdProyecto
         WHERE p.IdProyecto = @IdProyecto
         FOR JSON PATH
     ) AS 'ServicioProyectoJson',
@@ -1138,7 +1130,11 @@ BEGIN
     p.Descripcion,
 	en.NombreEntidad,
 	ten.NombreTipoEntidad
+    p.Descripcion,
+	en.NombreEntidad,
+	ten.NombreTipoEntidad
 END
+-- exec ObtenerDatosProyecto @IdProyecto = 1
 -- exec ObtenerDatosProyecto @IdProyecto = 1
 
 
@@ -1187,8 +1183,6 @@ GO
 
 -- EXEC dbo.GetDatosPersonales
 
-
-GO
 CREATE OR ALTER PROCEDURE dbo.EstadoTarea
     (
     @IdProyecto int,
@@ -1197,8 +1191,8 @@ CREATE OR ALTER PROCEDURE dbo.EstadoTarea
 )
 AS
 BEGIN
-    SET NOCOUNT ON
-    UPDATE Tareas
+    SET NOCOUNT ON 
+	UPDATE Tareas
 SET  IdEstado = @IdEstado
 	WHERE IdTarea = @IdTarea and IdProyecto = @IdProyecto
 
@@ -1207,11 +1201,12 @@ GO
 
 
 
+
 CREATE OR ALTER PROCEDURE dbo.ListadoDocumentsVentas
 AS
 BEGIN
-            SELECT IdCotizacion AS IdDocumento, 1 AS IdTipoDocumento, 'Cotización de proyecto' AS DocumentoNombre,
-            FechaDeEmision, MontoTotal, Secuencia, C.IdCliente, E.NombreEntidad, E.IdTipoEntidad, TP.NombreTipoEntidad,
+    SELECT IdCotizacion AS IdDocumento, 1 AS IdTipoDocumento, 'Cotización de proyecto' AS DocumentoNombre,
+           FechaDeEmision, MontoTotal, Secuencia, C.IdCliente, E.NombreEntidad, E.IdTipoEntidad, TP.NombreTipoEntidad,
             CP.IdEstado, Py.IdProyecto, Py.Nombre AS NombreProyecto
 
         FROM CotizacionesProyectos CP INNER JOIN Clientes C ON CP.IdCliente = c.IdCliente
@@ -1221,14 +1216,14 @@ BEGIN
     UNION
 
 
-        SELECT IdFactura AS IdDocumento, 2 AS IdTipoDocumento, 'Factura de proyecto' AS DocumentoNombre,
-            FechaDeEmision, MontoTotal, Secuencia, C.IdCliente, E.NombreEntidad, E.IdTipoEntidad, TP.NombreTipoEntidad,
-            FV.IdEstado, Py.IdProyecto, Py.Nombre AS NombreProyecto
-
-        FROM FacturasVentasProyectos FV INNER JOIN Clientes C ON FV.IdCliente = c.IdCliente
-            INNER JOIN Entidades E ON C.IdEntidad = E.IdEntidad
-            INNER JOIN TiposEntidades TP ON E.IdTipoEntidad = TP.IdTipoEntidad
-            INNER JOIN Proyectos Py ON FV.IdProyecto = Py.IdProyecto
+    SELECT IdFactura AS IdDocumento, 2 AS IdTipoDocumento, 'Factura de proyecto' AS DocumentoNombre,
+           FechaDeEmision, MontoTotal, Secuencia, C.IdCliente, E.NombreEntidad, E.IdTipoEntidad, TP.NombreTipoEntidad,
+           FV.IdEstado, Py.IdProyecto, Py.Nombre AS NombreProyecto
+           
+           FROM FacturasVentasProyectos FV INNER JOIN Clientes C ON FV.IdCliente = c.IdCliente
+                                         INNER JOIN Entidades E ON C.IdEntidad = E.IdEntidad
+                                         INNER JOIN TiposEntidades TP ON E.IdTipoEntidad = TP.IdTipoEntidad
+                                         INNER JOIN Proyectos Py ON FV.IdProyecto = Py.IdProyecto
 END
 GO
 
