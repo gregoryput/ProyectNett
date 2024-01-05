@@ -8,7 +8,6 @@ import {
 import React from "react";
 import { IActionsNew, IClienteDTO, TFormType } from "../../interfaces";
 import getColumnsTable from "./columnsTable";
-import { useGetClientsQuery } from "../../redux/Api/clientsApiT";
 import { MdOutlinePerson } from "react-icons/md";
 import { MdBusiness } from "react-icons/md";
 
@@ -17,6 +16,7 @@ import "./styles-table.css";
 import "animate.css";
 import { FormClientesEmpresas } from "./FormClientesEmpresas";
 import FormClientsPersonsFi from "./FormClientesPersonasFisicas/form-clientes-pf";
+import { useGetClientsQuery } from "../../redux/Api/entitiesApi";
 
 const Clientes = () => {
   const [toggle, setToggle] = React.useState<boolean>(false);
@@ -24,12 +24,8 @@ const Clientes = () => {
   const [formType, setFormType] = React.useState<TFormType>("form-ce");
 
   //Fetch para obtener la lista de clientes:
-  const {
-    data: clientesData,
-    //isSuccess: isClientsSuccess,
-    isLoading: isLoadingClients,
-  } = useGetClientsQuery();
-
+  const { data: clientesData, isLoading: isLoadingClients } =
+    useGetClientsQuery();
 
   const deleteCliente = (record: IClienteDTO) => {
     message.info("Eliminar al cliente " + record.NombreEntidad);
@@ -47,7 +43,6 @@ const Clientes = () => {
     setFormType(typeForm);
     message.info("aaa");
   };
-
 
   return (
     <ViewContainerPages>

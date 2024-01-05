@@ -1,4 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/dist/query/react";
+import { IClienteDTO, IResponseApi } from "../../interfaces";
 
 const token = localStorage.getItem("token");
 const baseUrl = "https://localhost:7279/";
@@ -11,16 +12,20 @@ export const entitiesApi = createApi({
       Authorization: `Bearer ${token}`,
     },
   }),
-  tagTypes: ["Entities"],
+  tagTypes: ["Entities", "Clients"],
 
   endpoints: (builder) => ({
+    getClients: builder.query<IResponseApi<IClienteDTO>, void>({
+      query: () => `/Clientes/obtenerClientes`,
+      providesTags: ["Clients"],
+    }),
     createEntitie: builder.mutation({
       query: (newEntitie) => ({
         url: "/Entidades/InsertarEntidad",
         method: "POST",
         body: newEntitie,
       }),
-      invalidatesTags: ["Entities"],
+      invalidatesTags: ["Clients"],
     }),
     updateEntitie: builder.mutation({
       query: (dataClient) => ({
@@ -28,26 +33,27 @@ export const entitiesApi = createApi({
         method: "POST",
         body: dataClient,
       }),
-      invalidatesTags: ["Entities"],
+      invalidatesTags: ["Clients"],
     }),
     deleteEntitie: builder.mutation({
       query: (IdCliente) => ({
         url: `/Entidades/EliminarEntidad?IdCliente=${IdCliente}`,
         method: "POST",
       }),
-      invalidatesTags: ["Entities"],
+      invalidatesTags: ["Clients"],
     }),
     restoreEntitie: builder.mutation({
       query: (IdCliente) => ({
         url: `/Clientes/ActivarEntidad?IdCliente=${IdCliente}`,
         method: "POST",
       }),
-      invalidatesTags: ["Entities"],
+      invalidatesTags: ["Clients"],
     }),
   }),
 });
 
 export const {
+  useGetClientsQuery,
   useCreateEntitieMutation,
   useUpdateEntitieMutation,
   useDeleteEntitieMutation,

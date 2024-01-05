@@ -10,6 +10,12 @@ export interface IClienteDTO {
   FechaInicioCliente: Date;
   CiudadNombre: string;
   PaisNombre: string;
+  //
+  IdImagen: number;
+  FileName: string;
+  ContentType: string;
+  FileSize: number;
+  Data: string;
 }
 
 export interface IActionsDAT {
@@ -73,8 +79,9 @@ export interface IPersona {
   Telefono1: string;
   Telefono2: string;
   Correo: string;
-  FechaDeNacimiento: string;
+  FechaDeNacimiento: Date;
   IdSexo: number;
+  IdPais?: number | undefined | null;
   IdCiudad: number;
   Direccion: string;
 
@@ -84,7 +91,7 @@ export interface IPersona {
   FechaModificacion?: string;
   IdEstadoRegistro?: number;
 
-  PersonaTiposPersona?: IPersonaTipoPersona;
+  PersonaTiposPersona?: IPersonaTipoPersona[];
 
   DataImagenPersona?: {
     Imagen: IImagen;
@@ -92,7 +99,38 @@ export interface IPersona {
   };
 }
 
+export interface IPersonaConAsociado {
+  IdPersona: number;
+  Nombres: string;
+  Apellidos: string;
+  Cedula: string;
+  Telefono1: string;
+  Telefono2: string;
+  Correo: string;
+  FechaDeNacimiento: Date;
+  IdSexo: number;
+  IdPais?: number | undefined | null;
+  IdCiudad: number;
+  Direccion: string;
+
+  IdCreadoPor?: number;
+  FechaCreacion?: string;
+  IdModificadoPor?: number;
+  FechaModificacion?: string;
+  IdEstadoRegistro?: number;
+
+  PersonaTiposPersona?: IPersonaTipoPersona[];
+
+  DataImagenPersona?: {
+    Imagen: IImagen;
+    PersonaImagen: IPersonaImagen;
+  };
+
+  YaEstaAsociado: boolean;
+}
+
 interface IPersonaImagen {
+  IdPersonaImagen: number;
   IdImagen: number;
   IdPersona: number;
 }
@@ -131,6 +169,8 @@ export interface PersonaInfoPersonalDTO {
   Telefono1: string;
   Telefono2: string;
 
+  Direccion: string;
+
   // Propiedades para la relación con País
   IdPais: number;
   PaisNombre: string;
@@ -148,7 +188,13 @@ export interface PersonaInfoPersonalDTO {
   FileName?: string | null;
   ContentType?: string | null;
   FileSize?: number | null;
-  Data?: Uint8Array | null; // Representa los datos de imagen como un array de bytes o nulo
+  Data?: string | null; // Representa los datos de imagen como un array de bytes o nulo
+
+  PersonaTiposPersona?: IPersonaTipoPersona[];
+
+  IdPersonaImagen: number;
+
+  YaEstaAsociado: boolean;
 }
 
 export interface IDocumentoDTO {
@@ -167,7 +213,6 @@ export interface IDocumentoDTO {
   NombreProyecto: string;
 }
 
-
 export interface IProductoInv {
   IdProducto: number;
   Nombre: string;
@@ -180,7 +225,7 @@ export interface IProductoInv {
   IdEstadoRegistro: number;
   NombreEstado: string;
   ContentType: any; // Puedes cambiar el tipo si conoces la estructura de los datos
-  Data: any; // Puedes cambiar el tipo si conoces la estructura de los datos
+  Data: string | null; // Puedes cambiar el tipo si conoces la estructura de los datos
   ProductoExistencias: IProductoExistencia[];
 }
 

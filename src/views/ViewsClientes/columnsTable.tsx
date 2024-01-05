@@ -2,11 +2,11 @@ import { ColumnsType } from "antd/es/table";
 import React from "react";
 import { IClienteDTO } from "../../interfaces";
 import DropdownActionsLists from "../../components/DropDownActionsLists/dropdown-actions-lists";
-import { MdOutlineVisibility } from "react-icons/md";
+import { MdImage, MdOutlineVisibility } from "react-icons/md";
 import { MdOutlineEdit } from "react-icons/md";
 import { MdDeleteOutline } from "react-icons/md";
 import dayjs from "dayjs";
-import { Avatar, Tag } from "antd";
+import { Avatar, Image, Tag } from "antd";
 import { getTagTipoEntidad } from "../../gen-utils";
 
 interface IGetsColumnsTableProps {
@@ -26,21 +26,41 @@ const getColumnsTable = ({
       dataIndex: "NombreEntidad",
       key: "NombreEntidad",
       width: 220,
-      render: (text: string) => (
+      render: (_, record) => (
         <div
           style={{
             display: "flex",
             flexDirection: "row",
             alignItems: "center",
-            cursor: "pointer",
           }}
         >
-          <div style={{ marginRight: "5px" }}>
-            <Avatar src={"a"} />
+          <div
+            style={{
+              background: "#BFBFBF",
+              maxWidth: "30px",
+              maxHeight: "30px",
+              minWidth: "30px",
+              minHeight: "30px",
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "center",
+              borderRadius: "50%",
+              border: "1px solid #6DA7FB",
+            }}
+          >
+            {record.Data !== null ? (
+              <Image
+                src={`data:${record.ContentType};base64,${record.Data}`}
+                alt="Producto"
+              />
+            ) : (
+              <MdImage color="#DDDDDD" size={25} />
+            )}
           </div>
-          <div style={{ fontWeight: "bold", color: "#25375B" }}>
-            <span>{text}</span>
-          </div>
+          <a
+            style={{ marginLeft: "5px" }}
+          >{`(${record.Codigo}) - ${record.NombreEntidad}`}</a>
         </div>
       ),
     },
