@@ -1,7 +1,7 @@
 import { useState } from "react";
 import InformacionPerfil from "./components/InformacionPerfil";
 import InformacionPersonal from "./components/InformacionPersonal";
-import { DivContainerPage, ViewContainerPages } from "../../components";
+import { Container, Div, DivContainerPage, ViewContainerPages2 } from "../../components";
 import FormPasword from "./components/FormPasword";
 import { useGetPerfilQuery } from "../../redux/Api/configPerfilApi";
 
@@ -10,7 +10,7 @@ function ConfiguracionPerfil() {
   const { data, isLoading } = useGetPerfilQuery();
 
   return (
-    <ViewContainerPages>
+    <ViewContainerPages2>
       {data !== undefined ? (
         <>
           <h2 style={{ marginLeft: 15, marginBottom: 40 }}>
@@ -31,11 +31,11 @@ function ConfiguracionPerfil() {
           {!isLoading ? <InformacionPersonal data={data} /> : null}
         </>
       ) : (
-        <DivContainerPage>
+        <Container>
           <p> no existe dato de este usuario </p>
-        </DivContainerPage>
+        </Container>
       )}
-    </ViewContainerPages>
+    </ViewContainerPages2>
   );
 }
 

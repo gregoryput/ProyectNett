@@ -162,7 +162,7 @@ export default function ModalProducto({
   };
 
   const calcuteSubTotal = (precioVenta, cantidad, itbis) => {
-    const Subtotal = precioVenta * cantidad + itbis;
+    const Subtotal = precioVenta * cantidad + itbis * cantidad;
     return Subtotal;
   };
 

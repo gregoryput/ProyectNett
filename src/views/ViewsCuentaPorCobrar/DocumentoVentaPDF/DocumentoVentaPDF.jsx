@@ -1,45 +1,6 @@
 import { Document, Page, Text, View, StyleSheet } from "@react-pdf/renderer";
 import dayjs from "dayjs";
 
-// const documentoFakeData = {
-//   empresa: {
-//     nombre: "Empresa Ejemplo",
-//     direccion: "Calle Ejemplo 123",
-//     telefono: "555-1234",
-//     email: "info@empresa.com",
-//   },
-//   cotizacion: {
-//     numero: "COT-001",
-//   },
-//   fecha: "01/01/2023",
-//   cliente: {
-//     nombre: "Cliente de Prueba",
-//     direccion: "Calle Cliente 456",
-//   },
-//   servicios: [
-//     { nombre: "Servicio 1", total: 100 },
-//     { nombre: "Servicio 2", total: 150 },
-//   ],
-//   productos: [
-//     { nombre: "Producto 1", cantidad: 2, precio: 50, total: 100 },
-//     { nombre: "Producto 2", cantidad: 1, precio: 75, total: 75 },
-//     { nombre: "Producto 1", cantidad: 2, precio: 50, total: 100 },
-//     { nombre: "Producto 2", cantidad: 1, precio: 75, total: 75 },
-//     { nombre: "Producto 1", cantidad: 2, precio: 50, total: 100 },
-//     { nombre: "Producto 2", cantidad: 1, precio: 75, total: 75 },
-//     { nombre: "Producto 1", cantidad: 2, precio: 50, total: 100 },
-//     { nombre: "Producto 2", cantidad: 1, precio: 75, total: 75 },
-//     { nombre: "Producto 1", cantidad: 2, precio: 50, total: 100 },
-//     { nombre: "Producto 2", cantidad: 1, precio: 75, total: 75 },
-//     { nombre: "Producto 1", cantidad: 2, precio: 50, total: 100 },
-//     { nombre: "Producto 2", cantidad: 1, precio: 75, total: 75 },
-//   ],
-//   gastos: [
-//     { nombre: "Gasto 1", precio: 20 },
-//     { nombre: "Gasto 2", precio: 30 },
-//   ],
-// };
-
 // Estilos para el documento
 const styles = StyleSheet.create({
   page: {
@@ -108,8 +69,17 @@ const styles = StyleSheet.create({
 });
 
 const DocumentoVentaPDF = ({ Cotizacion, resultado }) => {
-
   let fecha = new Date();
+
+  function currencyFormatter({ currency, value }) {
+    const formatter = new Intl.NumberFormat("en-US", {
+      style: "currency",
+      minimumFractionDigits: 2,
+      currency,
+    });
+    return formatter.format(value);
+  }
+
   return (
     <>
       <Document>
@@ -119,7 +89,9 @@ const DocumentoVentaPDF = ({ Cotizacion, resultado }) => {
             {/* Número de Cotización y Fecha */}
             <View style={{ textAlign: "right", fontSize: 9 }}>
               <Text>Número de Cotización: {"CDO00-1"}</Text>
-              <Text>Fecha: {dayjs(fecha.toISOString()).format("DD-MM-YYYY")}</Text>
+              <Text>
+                Fecha: {dayjs(fecha.toISOString()).format("DD-MM-YYYY")}
+              </Text>
             </View>
             <View
               style={{
@@ -168,7 +140,14 @@ const DocumentoVentaPDF = ({ Cotizacion, resultado }) => {
                     </Text>
                   </View>
                   <View style={styles.tableCol2}>
-                    <Text style={styles.tableCell}>${servicio.Total}</Text>
+                    <Text style={styles.tableCell}>
+                      {"  "}
+                      RD
+                      {currencyFormatter({
+                        currency: "USD",
+                        value: servicio.Total,
+                      })}
+                    </Text>
                   </View>
                 </View>
               ))}
@@ -202,11 +181,23 @@ const DocumentoVentaPDF = ({ Cotizacion, resultado }) => {
                   </View>
                   <View style={styles.tableCol}>
                     <Text style={styles.tableCell}>
-                      ${producto.PrecioVenta}
+                      {"  "}
+                      RD
+                      {currencyFormatter({
+                        currency: "USD",
+                        value: producto.PrecioVenta,
+                      })}
                     </Text>
                   </View>
                   <View style={styles.tableCol}>
-                    <Text style={styles.tableCell}>${producto.Subtotal}</Text>
+                    <Text style={styles.tableCell}>
+                      {"  "}
+                      RD
+                      {currencyFormatter({
+                        currency: "USD",
+                        value: producto.Subtotal,
+                      })}
+                    </Text>
                   </View>
                 </View>
               ))}
@@ -230,7 +221,14 @@ const DocumentoVentaPDF = ({ Cotizacion, resultado }) => {
                     </Text>
                   </View>
                   <View style={styles.tableCol2}>
-                    <Text style={styles.tableCell}>${gasto.MontoGasto}</Text>
+                    <Text style={styles.tableCell}>
+                      {"  "}
+                      RD
+                      {currencyFormatter({
+                        currency: "USD",
+                        value: gasto.MontoGasto,
+                      })}
+                    </Text>
                   </View>
                 </View>
               ))}
@@ -239,10 +237,38 @@ const DocumentoVentaPDF = ({ Cotizacion, resultado }) => {
             <View
               style={{ marginLeft: 20, marginTop: 40, gap: 2, fontSize: 9 }}
             >
-              <Text>Total por servicios: {Cotizacion?.TotalTarea}</Text>
-              <Text>Total por productos: {Cotizacion?.TotalProducto}</Text>
-              <Text>Total por gasto adicional: {Cotizacion?.TotalGasto}</Text>
-              <Text>Total general: {Cotizacion?.PresupuestoAcordado}</Text>
+              <Text>
+                Total por servicios: {"  "}
+                RD
+                {currencyFormatter({
+                  currency: "USD",
+                  value: Cotizacion?.TotalTarea,
+                })}
+              </Text>
+              <Text>
+                Total por productos: {"  "}
+                RD
+                {currencyFormatter({
+                  currency: "USD",
+                  value: Cotizacion?.TotalProducto,
+                })}
+              </Text>
+              <Text>
+                Total por gasto adicional: {"  "}
+                RD
+                {currencyFormatter({
+                  currency: "USD",
+                  value: Cotizacion?.TotalGasto,
+                })}
+              </Text>
+              <Text>
+                Total general: {"  "}
+                RD
+                {currencyFormatter({
+                  currency: "USD",
+                  value: Cotizacion?.PresupuestoAcordado,
+                })}
+              </Text>
             </View>
 
             <View style={{ marginLeft: 20, marginTop: 30, gap: 2 }}>
