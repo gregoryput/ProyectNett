@@ -28,23 +28,53 @@ namespace ProyectNettApi.Repositories
             return resultSet.ToList();
         }
 
+        //public IEnumerable<ListaProyectoDTO> GetObtenerDatosProyecto(int IdProyecto)
+        //{
+        //    string query = "dbo.ObtenerDatosProyecto";
+
+        //    var resultSet = _conexionDB.GetConnection(_configuration).Query<ListaProyectoDTO> (query,new {IdProyecto}, commandType: CommandType.StoredProcedure);
+
+        //    foreach (var proyecto in resultSet)
+        //    {
+        //        proyecto.TareasProyecto = JsonConvert.DeserializeObject<List<ListaTareaDTO>>(proyecto.TareasProyectoJson);
+        //        proyecto.ServicioProyecto = JsonConvert.DeserializeObject<List<ListaServicioDTO>>(proyecto.ServicioProyectoJson);
+        //        proyecto.ProductosProyecto = JsonConvert.DeserializeObject<List<ListaProductoDTO>>(proyecto.ProductosProyectoJson);
+        //        proyecto.EmpleadosProyecto = JsonConvert.DeserializeObject<List<ListaEmpleadoDTO>>(proyecto.EmpleadosProyectoJson);
+        //        proyecto.GastoProyecto = JsonConvert.DeserializeObject<List<GastoDTO>>(proyecto.GastoProyectoJson);
+        //    }
+
+        //    return resultSet.ToList();
+        //}
+
         public IEnumerable<ListaProyectoDTO> GetObtenerDatosProyecto(int IdProyecto)
         {
             string query = "dbo.ObtenerDatosProyecto";
 
-            var resultSet = _conexionDB.GetConnection(_configuration).Query<ListaProyectoDTO> (query,new {IdProyecto}, commandType: CommandType.StoredProcedure);
+            var resultSet = _conexionDB.GetConnection(_configuration)
+                .Query<ListaProyectoDTO>(query, new { IdProyecto }, commandType: CommandType.StoredProcedure);
 
             foreach (var proyecto in resultSet)
             {
-                proyecto.TareasProyecto = JsonConvert.DeserializeObject<List<ListaTareaDTO>>(proyecto.TareasProyectoJson);
-                proyecto.ServicioProyecto = JsonConvert.DeserializeObject<List<ListaServicioDTO>>(proyecto.ServicioProyectoJson);
-                proyecto.ProductosProyecto = JsonConvert.DeserializeObject<List<ListaProductoDTO>>(proyecto.ProductosProyectoJson);
-                proyecto.EmpleadosProyecto = JsonConvert.DeserializeObject<List<ListaEmpleadoDTO>>(proyecto.EmpleadosProyectoJson);
-                proyecto.GastoProyecto = JsonConvert.DeserializeObject<List<GastoDTO>>(proyecto.GastoProyectoJson);
+                proyecto.TareasProyecto = DeserializeJson<List<ListaTareaDTO>>(proyecto.TareasProyectoJson);
+                proyecto.ServicioProyecto = DeserializeJson<List<ListaServicioDTO>>(proyecto.ServicioProyectoJson);
+                proyecto.ProductosProyecto = DeserializeJson<List<ListaProductoDTO>>(proyecto.ProductosProyectoJson);
+                proyecto.EmpleadosProyecto = DeserializeJson<List<ListaEmpleadoDTO>>(proyecto.EmpleadosProyectoJson);
+                proyecto.GastoProyecto = DeserializeJson<List<GastoDTO>>(proyecto.GastoProyectoJson);
             }
 
             return resultSet.ToList();
         }
+
+        private T DeserializeJson<T>(string json)
+        {
+            if (json == null)
+            {
+                return default(T);
+            }
+
+            return JsonConvert.DeserializeObject<T>(json);
+        }
+
 
         // Lista  de get para formulario de proyecto 
         public IEnumerable<ServiciosDTO> GetServicio()
