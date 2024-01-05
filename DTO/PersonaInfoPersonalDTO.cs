@@ -1,4 +1,6 @@
-﻿namespace ProyectNettApi.DTO
+﻿using ProyectNettApi.Models;
+
+namespace ProyectNettApi.DTO
 {
     public class PersonaInfoPersonalDTO
     {
@@ -10,6 +12,7 @@
         public string Correo { get; set; }
         public string Telefono1 { get; set; }
         public string Telefono2 { get; set; }
+        public string Direccion { get; set; }
 
         // Propiedades para la relación con País
         public int IdPais { get; set; }
@@ -28,7 +31,9 @@
         public string? FileName { get; set; }
         public string? ContentType { get; set; }
         public long? FileSize { get; set; }
-        public byte[]? Data { get; set; }
+        public string Data { get; set; }
+        public bool YaEstaAsociado { get; set; }
+        public List<PersonaTipoPersona> PersonaTiposPersona { get; set; }
     }
 
 }

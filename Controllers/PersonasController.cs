@@ -25,7 +25,7 @@ namespace ProyectNettApi.Controllers
         }
 
         //
-        // .A.C.C.I.O.N -- Para insertar Persona: --------------------------------------------
+        // .A.C.C.I.O.N -- Para insertar Persona: ----------------------------------------------------------------------------------------
         [Authorize]
         [Route("insertarPersona")]
         [HttpPost]
@@ -52,7 +52,34 @@ namespace ProyectNettApi.Controllers
 
 
         //
-        // .A.C.C.I.O.N -- Para obtener la informacion persoal: --------------------------------------------
+        // .A.C.C.I.O.N -- Para Actualizar Persona: ----------------------------------------------------------------------------------------
+        [Authorize]
+        [Route("actualizarPersona")]
+        [HttpPost]
+        public IActionResult actualizarPersona(Persona persona)
+        {
+            string token = HttpContext.Request.Headers["Authorization"];
+            persona.IdModificadoPor = _infoUser.getUsuarioIdByToken(token);
+            try
+            {
+                _personaRepositorio.ActualizarPersona(persona);
+                _respuesta.Result = new { IdPersona = persona.IdPersona, NombreCompleto = persona.Nombres + ' ' + persona.Apellidos };
+                _respuesta.DisplayMessage = "Datos personales actualizados correctamente";
+                return Ok(_respuesta);
+            }
+
+            catch (Exception ex)
+            {
+                _respuesta.IsSuccess = false;
+                _respuesta.DisplayMessage = "Error al actualizar los datos personales";
+                _respuesta.ErrorMessages = new List<string> { ex.ToString() };
+                return StatusCode(500, _respuesta);
+            }
+        }
+
+
+        //
+        // .A.C.C.I.O.N -- Para obtener la informacion persoal: -------------------------------------------------------------------------
         [Authorize]
         [Route("GetPersonasInfoPersonal")]
         [HttpGet]

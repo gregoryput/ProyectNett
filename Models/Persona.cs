@@ -67,9 +67,9 @@ namespace ProyectNettApi.Models
         public int? IdEstadoRegistro { get; set; }
 
         // Relaciones -------- :
-        public PersonaTipoPersona PersonaTiposPersona { get; set; }
+        public List<PersonaTipoPersona>? PersonaTiposPersona { get; set; }
 
-        public DataImagenPersona DataImagenPersona { get; set; }
+        public DataImagenPersona? DataImagenPersona { get; set; }
     }
 
     public class Persona2
