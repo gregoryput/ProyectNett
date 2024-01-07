@@ -52,6 +52,7 @@ namespace ProyectNettApi.DTO
         public int Cantidad { get; set; }
         public string NombreProducto { get; set; }
         public decimal PrecioVenta { get; set; }
+        public decimal ITBIS { get; set; }
         public decimal Subtotal { get; set; }
      
     }
@@ -80,6 +81,8 @@ namespace ProyectNettApi.DTO
         public decimal TotalTarea { get; set; }
         public decimal TotalProducto { get; set; }
         public decimal TotalGasto { get; set; }
+        public decimal MontoInicial { get; set; }
+
 
         [JsonIgnore]
         public string TareasProyectoJson { get; set; }
