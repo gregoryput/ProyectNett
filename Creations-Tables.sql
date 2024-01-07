@@ -1,6 +1,6 @@
-CREATE DATABASE BD_PROYENETT_VF17
+CREATE DATABASE BD_PROYENETT_VF21
 GO
-USE BD_PROYENETT_VF17
+USE BD_PROYENETT_VF21
 GO
 
 
@@ -1442,13 +1442,29 @@ CREATE TABLE PersonasImagenes
 (
     IdPersonaImagen INT IDENTITY CONSTRAINT PK_IdPersonaImagen PRIMARY KEY,
     IdImagen int constraint Fk_CImg_IdImagen foreign Key references Imagenes(IdImagen),
-    IdPersona int constraint Fk_CImg_IdProducto foreign Key references Personas(IdPersona),
+    IdPersona int constraint Fk_CImg_IdPersona foreign Key references Personas(IdPersona),
     --
     IdCreadoPor int constraint Fk_CImg_IdCreadoPor foreign Key references Usuarios(IdUsuario),
     FechaCreacion Datetime,
     IdModificadoPor int constraint Fk_CImg_IdModificadoPor foreign Key references Usuarios(IdUsuario),
     FechaModificacion Datetime,
     IdEstadoRegistro int constraint Fk_CImg_IdEstadoR foreign Key references EstadosRegistros(IdEstadoRegistro),
+);
+GO
+
+
+-- CREACION DE LA TABLA EmpresasImagenes:
+CREATE TABLE EmpresasImagenes
+(
+    IdEmpresaImagen INT IDENTITY CONSTRAINT PK_IdEmpresaImagen PRIMARY KEY,
+    IdImagen int constraint Fk_EI_IdImagen foreign Key references Imagenes(IdImagen),
+    IdEmpresa int constraint Fk_EI_IdEmpresa foreign Key references Empresas(IdEmpresa),
+    --
+    IdCreadoPor int constraint Fk_EI_IdCreadoPor foreign Key references Usuarios(IdUsuario),
+    FechaCreacion Datetime,
+    IdModificadoPor int constraint Fk_EI_IdModificadoPor foreign Key references Usuarios(IdUsuario),
+    FechaModificacion Datetime,
+    IdEstadoRegistro int constraint Fk_EI_IdEstadoR foreign Key references EstadosRegistros(IdEstadoRegistro),
 );
 GO
 
@@ -1524,16 +1540,3 @@ CREATE TABLE ConfiguracionesGenerales
     IdEstadoRegistro int constraint ConfigGen_Fk3_IdCreadoPor foreign Key references EstadosRegistros(IdEstadoRegistro),
 );
 GO
-
-
-
--- Inserción de datos ficticios en la tabla NCF
-INSERT INTO NCF (IdTipoNCF, Codigo, Actual, Limite, FechaVencimiento, TipoNCFId, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro)
-VALUES 
-('FA', '001', 100, 500, '2023-12-31 23:59:59', 1, 1, '2023-01-01 08:00:00', 2, '2023-01-02 10:30:00', 3),
-('FB', '002', 50, 200, '2023-12-31 23:59:59', 2, 2, '2023-02-15 11:20:00', 3, '2023-02-18 09:45:00', 1),
-('ND', '003', 80, 300, '2023-12-31 23:59:59', 3, 3, '2023-03-20 14:45:00', 1, '2023-03-22 16:10:00', 2),
-('NC', '004', 30, 150, '2023-12-31 23:59:59', 4, 1, '2023-04-10 09:30:00', 2, '2023-04-12 12:15:00', 3),
-('RA', '005', 120, 600, '2023-12-31 23:59:59', 5, 2, '2023-05-05 13:00:00', 3, '2023-05-08 15:20:00', 1);
-
--- Puedes ajustar estos datos ficticios según tus necesidades o reglas específicas

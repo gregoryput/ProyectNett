@@ -1,4 +1,4 @@
-USE BD_PROYENETT_VF8
+USE BD_PROYENETT_VF21
 
 GO
 ----------- /*1--*/ Procedimiento almcenado para obtener una lista general de clientes (empresas y personas fisicas):
@@ -189,10 +189,6 @@ CREATE OR ALTER PROCEDURE dbo.InsertarImagen
     @FileSize INT,
     @Data VARCHAR(MAX),
     @IdCreadoPor INT
--- @FechaCreacion DATETIME,
--- @IdModificadoPor INT,
--- @FechaModificacion DATETIME,
--- @IdEstadoRegistro INT
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -611,35 +607,33 @@ GO
 
 
 GO
----------------------- PROCEDIMIENTO PARA INSERTAR EN LA TABLA PROYECTOS: ----------------------------------
-CREATE OR ALTER PROCEDURE dbo.InsertarProyecto
+CREATE or alter PROCEDURE [dbo].[InsertarProyecto]
     @Nombre VARCHAR(255),
     @Descripcion VARCHAR(MAX),
-    @FechaDeInicio DATEtime,
-    @FechaDeFinalizacion DATEtime,
+    @FechaDeInicio DATETIME,
+    @FechaDeFinalizacion DATETIME,
     @TiempoDuracionEstimado VARCHAR(70),
-    -- @FechaRealDeFinalizacion DATEtime,
-    -- @TiempoDuracionReal VARCHAR(50),
+    -- @FechaRealDeFinalizacion DATETIME,
+    @TiempoDuracionReal VARCHAR(50),
     @PresupuestoAcordado DECIMAL(18, 2),
     @ClienteEsPersonaFisica BIT,
     @IdEntidad INT,
     @IdEstado INT,
-    @IdCreadoPor INT
--- @FechaCreacion DATETIME,
--- @IdEstadoRegistro INT
--- @IdModificadoPor INT
--- @FechaModificacion DATETIME,
+    @IdCreadoPor INT,
+   -- @FechaCreacion DATETIME,
+   @IdEstadoRegistro INT -- Agregado este par�metro que estaba comentado
+    -- @IdModificadoPor INT
+    -- @FechaModificacion DATETIME
 AS
 BEGIN
-    INSERT INTO Proyectos
-        (
+    INSERT INTO Proyectos (
         Nombre,
         Descripcion,
         FechaDeInicio,
         FechaDeFinalizacion,
         TiempoDuracionEstimado,
         -- FechaRealDeFinalizacion,
-        -- TiempoDuracionReal,
+        TiempoDuracionReal,
         PresupuestoAcordado,
         ClienteEsPersonaFisica,
         IdEntidad,
@@ -648,30 +642,29 @@ BEGIN
         FechaCreacion,
         IdEstadoRegistro
         -- IdModificadoPor,
-        -- FechaModificacion,
-        )
-    VALUES
-        (
-            @Nombre,
-            @Descripcion,
-            @FechaDeInicio,
-            @FechaDeFinalizacion,
-            @TiempoDuracionEstimado,
-            -- @FechaRealDeFinalizacion,
-            -- @TiempoDuracionReal,
-            @PresupuestoAcordado,
-            @ClienteEsPersonaFisica,
-            @IdEntidad,
-            @IdCreadoPor,
-            @IdEstado,
-            GETDATE(),
-            1
+        -- FechaModificacion
+    )
+    VALUES (
+        @Nombre,
+        @Descripcion,
+        @FechaDeInicio,
+        @FechaDeFinalizacion,
+        @TiempoDuracionEstimado,
+        -- @FechaRealDeFinalizacion,
+        @TiempoDuracionReal,
+        @PresupuestoAcordado,
+        @ClienteEsPersonaFisica,
+        @IdEntidad,
+        @IdEstado,
+        @IdCreadoPor,
+		GETDATE(),
+        @IdEstadoRegistro
         -- @IdModificadoPor,
-        -- @FechaModificacion,
+        -- @FechaModificacion
     );
 
-    Select SCOPE_IDENTITY()
-END;
+    SELECT SCOPE_IDENTITY()
+END
 
 
 
@@ -1038,104 +1031,130 @@ GO
 
 
 GO
-CREATE OR ALTER PROCEDURE  ObtenerDatosProyecto
+CREATE OR ALTER PROCEDURE [dbo].[ObtenerDatosProyecto]
     @IdProyecto INT
 AS
 BEGIN
-SELECT 
-    p.IdProyecto,
-    p.Nombre AS 'NombreProyecto',
-    p.Descripcion,
-    p.FechaDeInicio,
-    p.FechaDeFinalizacion,
-    p.PresupuestoAcordado,
-    ep.EstadoNombre AS 'EstadoProyecto',
-    (SUM(CASE WHEN t.IdEstado = 3 THEN 1 ELSE 0 END) * 100.0 / COUNT(*)) AS PorcentajeCompletado,
-    -- Total por tarea 
-    (SELECT SUM(Cantidad * CostoTotal) as totalTarea FROM Tareas WHERE IdProyecto = p.IdProyecto) AS 'TotalTarea',
-    (SELECT SUM(Subtotal) as totalProducto FROM ProyectosDetallesProductos WHERE IdProyecto = p.IdProyecto) AS 'TotalProducto',
-    (SELECT SUM(MontoGasto) as totalGasto FROM GastosAdicionales WHERE IdProyecto = p.IdProyecto) AS 'TotalGasto',
-    -- Lista de Servicio para el Proyecto
-    (
-         SELECT p.IdServicio, s.NombreServicio 
-        FROM ProyectosServicios p 
-        INNER JOIN Servicios s ON s.IdServicio = p.IdServicio
-		inner join Proyectos r on r.IdProyecto = p.IdProyecto
-        WHERE p.IdProyecto = @IdProyecto
-        FOR JSON PATH
-    ) AS 'ServicioProyectoJson',
+    IF NOT EXISTS (SELECT 1 FROM Proyectos WHERE IdProyecto = @IdProyecto)
+    BEGIN
+        -- Si el proyecto no existe, devuelve NULL
+        SELECT NULL AS 'ProyectoNoExiste';
+        RETURN;
+    END
+
+    SELECT 
+        p.IdProyecto,
+        p.Nombre AS 'NombreProyecto',
+        p.Descripcion,
+        p.FechaDeInicio,
+        p.FechaDeFinalizacion,
+        p.PresupuestoAcordado,
+        cp.MontoInicial,
+        en.NombreEntidad,
+        ten.NombreTipoEntidad,
+        ep.EstadoNombre AS 'EstadoProyecto',
+        (SUM(CASE WHEN t.IdEstado = 3 THEN 1 ELSE 0 END) * 100.0 / COUNT(*)) AS PorcentajeCompletado,
+        -- Total por tarea 
+        (SELECT SUM(CostoTotal) as totalTarea FROM Tareas WHERE IdProyecto = p.IdProyecto) AS 'TotalTarea',
+        (SELECT SUM(Subtotal) as totalProducto FROM ProyectosDetallesProductos WHERE IdProyecto = p.IdProyecto) AS 'TotalProducto',
+        (SELECT SUM(MontoGasto) as totalGasto FROM GastosAdicionales WHERE IdProyecto = p.IdProyecto) AS 'TotalGasto',
+        -- Lista de Servicio para el Proyecto
+        (
+            SELECT p.IdServicio, s.NombreServicio 
+            FROM ProyectosServicios p 
+            INNER JOIN Servicios s ON s.IdServicio = p.IdServicio
+            INNER JOIN Proyectos r on r.IdProyecto = p.IdProyecto
+            WHERE p.IdProyecto = @IdProyecto
+            FOR JSON PATH
+        ) AS 'ServicioProyectoJson',
         -- Lista de Tareas para el Proyecto
         (
-       SELECT
-            t.IdTarea,
-            t.Nombre AS 'NombreTarea',
-            t.Descripcion,
-            et.NombreEstado AS 'EstadoTarea',
-            t.IdPrioridad,
-            t.FechaInicio,
-            t.FechaFinalizacion,
-            cp.NombreParametro,
-            t.CostoPorParametro,
-            t.Cantidad, t.CostoTotal ,
-            p.NombrePrioridad,
-            ep.IdEstadoTarea,
-            ep.NombreEstado
-        FROM Tareas t
-            INNER JOIN EstadosTareas et ON et.IdEstadoTarea = t.IdEstado
-            inner join Prioridades p on  t.IdPrioridad = p.IdPrioridad
-            inner join ParametrosCostos cp on  cp.IdParametroCosto = t.IdParametroCosto
-            inner join EstadosTareas ep on ep.IdEstadoTarea = p.IdEstadoRegistro
-        WHERE t.IdProyecto = @IdProyecto
-        FOR JSON PATH
-    ) AS 'TareasProyectoJson',
+            SELECT 
+                t.IdTarea,
+                t.Nombre AS 'NombreTarea',
+                t.Descripcion,
+                et.NombreEstado AS 'EstadoTarea',
+                t.IdPrioridad,
+                t.FechaInicio,
+                t.FechaFinalizacion,
+                t.FechaRealDeFinalizacion,
+                t.TiempDuracionEstimado,
+                cp.NombreParametro,
+                t.CostoPorParametro,
+                t.Cantidad,
+                t.CostoTotal,
+                p.NombrePrioridad,
+                ep.IdEstadoTarea,
+                ep.NombreEstado,
+                s.NombreServicio,
+                s.IdServicio
+            FROM Tareas t
+            LEFT JOIN EstadosTareas et ON et.IdEstadoTarea = t.IdEstado
+            LEFT JOIN Servicios s ON s.IdServicio = t.IdServicioRelacionado
+            LEFT JOIN Prioridades p ON t.IdPrioridad = p.IdPrioridad
+            LEFT JOIN ParametrosCostos cp ON cp.IdParametroCosto = t.IdParametroCosto
+            LEFT JOIN EstadosTareas ep ON ep.IdEstadoTarea = t.IdEstado
+            WHERE t.IdProyecto = @IdProyecto
+            FOR JSON PATH
+        ) AS 'TareasProyectoJson',
         -- Lista de Productos para el Proyecto
         (
-        SELECT
-            pp.Cantidad,
-            pr.Nombre AS 'NombreProducto'
-        FROM ProyectosDetallesProductos pp
+            SELECT 
+                pp.Cantidad,
+                pr.Nombre AS 'NombreProducto',
+                pp.PrecioVenta,
+				pp.ITBIS,
+                pp.Subtotal
+            FROM ProyectosDetallesProductos pp
             INNER JOIN Productos pr ON pr.IdProducto = pp.IdProducto
-        WHERE pp.IdProyecto = p.IdProyecto
-        FOR JSON PATH
-    ) AS 'ProductosProyectoJson',
+            WHERE pp.IdProyecto = p.IdProyecto
+            FOR JSON PATH
+        ) AS 'ProductosProyectoJson',
         -- Lista de Empleados para el Proyecto SELECT * FROM ProyectosEmpleados WHERE IdProyecto = 13
         (
-        SELECT
-            r.ResponsabilidadNombre,
-            pe.IdResponsabilidad,
-            pe.IdEmpleado,
-            pe.IdPersonaProyecto,
-            CONCAT(persona.Nombres, ' ', persona.Apellidos) AS 'NombreEmpleado'
-        FROM ProyectosEmpleados pe
+            SELECT 
+                r.ResponsabilidadNombre,
+                pe.IdResponsabilidad,
+                pe.IdEmpleado,
+                pe.IdPersonaProyecto,
+                CONCAT(persona.Nombres, ' ', persona.Apellidos) AS 'NombreEmpleado'
+            FROM ProyectosEmpleados pe
             INNER JOIN Responsabilidades r ON pe.IdResponsabilidad = r.IdResponsabilidad
             INNER JOIN Empleados emp ON pe.IdEmpleado = emp.IdEmpleado
             INNER JOIN Personas persona ON persona.IdPersona = emp.IdPersona
-        WHERE pe.IdProyecto = p.IdProyecto
-        FOR JSON PATH
-    ) AS 'EmpleadosProyectoJson'
+            WHERE pe.IdProyecto = p.IdProyecto
+            FOR JSON PATH
+        ) AS 'EmpleadosProyectoJson',
+        -- lista de cargo adicionales 
+        ( 
+            SELECT 
+                pp.DescripcionGasto,
+                pp.MontoGasto
+            FROM GastosAdicionales pp
+            WHERE pp.IdProyecto = p.IdProyecto
+            FOR JSON PATH
+        ) AS 'GastoProyectoJson'
     FROM Proyectos p
-        INNER JOIN Entidades en ON P.IdEntidad = en.IdEntidad
-        INNER JOIN TiposEntidades ten ON en.IdTipoEntidad = ten.IdTipoEntidad
-        INNER JOIN EstadosProyectos ep ON ep.IdEstado = p.IdEstado
-        INNER JOIN Tareas t ON t.IdProyecto = p.IdProyecto
-        INNER JOIN EstadosTareas e ON e.IdEstadoTarea = t.IdEstado
+    INNER JOIN Entidades en ON en.IdEntidad = p.IdEntidad
+    INNER JOIN TiposEntidades ten ON ten.IdTipoEntidad = en.IdTipoEntidad
+    INNER JOIN EstadosProyectos ep ON ep.IdEstado = p.IdEstado
+    INNER JOIN Tareas t ON t.IdProyecto = p.IdProyecto
+    INNER JOIN EstadosTareas e ON e.IdEstadoTarea = t.IdEstado
+    INNER JOIN CotizacionesProyectos cp ON cp.IdProyecto = p.IdProyecto
     WHERE p.IdProyecto = @IdProyecto
     GROUP BY 
-    p.IdProyecto,
-    p.Nombre,
-    p.FechaDeInicio,
-    p.FechaDeFinalizacion,
-    p.PresupuestoAcordado,
-    ep.EstadoNombre,
-    p.Descripcion,
-	en.NombreEntidad,
-	ten.NombreTipoEntidad
-    p.Descripcion,
-	en.NombreEntidad,
-	ten.NombreTipoEntidad
+        p.IdProyecto,
+        p.Nombre,
+        p.FechaDeInicio,
+        p.FechaDeFinalizacion,
+        p.PresupuestoAcordado,
+        ep.EstadoNombre,
+        p.Descripcion,
+        en.NombreEntidad,
+        ten.NombreTipoEntidad,
+        cp.MontoInicial
 END
--- exec ObtenerDatosProyecto @IdProyecto = 1
--- exec ObtenerDatosProyecto @IdProyecto = 1
+
 
 
 GO
@@ -1159,15 +1178,18 @@ BEGIN
     p.IdProyecto, p.Nombre;
 
 END
-go
+GO
 
+
+-- // --------- ----------- ----------- ----------- ----------- ----------- ----------- ----------- ----------- ----------- ----------- ----------- ----------- ----------- -----------
 GO
 CREATE OR ALTER PROCEDURE dbo.GetDatosPersonales
 AS
 BEGIN
     SELECT P.IdPersona, Nombres, Apellidos, Cedula, FechaDeNacimiento, Correo, Telefono1, Telefono2, Pa.IdPais, PaisNombre, C.IdCiudad, CiudadNombre, S.IdSexo, S.SexoNombre,
         PI.IdPersonaImagen, I.IdImagen, I.[FileName], I.ContentType, I.FileSize, I.[DATA] AS [Data], Direccion,
-        CASE WHEN EPF.IdPersona IS NOT NULL THEN CAST(1 AS bit) ELSE CAST(0 AS bit) END AS YaEstaAsociado
+        
+        CASE WHEN Cli.IdEntidad IS NOT NULL THEN CAST(1 AS bit) ELSE CAST(0 AS bit) END AS YaEstaAsociado
     FROM Personas P 
     INNER JOIN Ciudades C ON P.IdCiudad = C.IdCiudad 
     INNER JOIN Paises Pa ON C.IdPais = Pa.IdPais 
@@ -1175,30 +1197,109 @@ BEGIN
     LEFT JOIN PersonasImagenes PI ON PI.IdPersona = P.IdPersona 
     LEFT JOIN Imagenes I ON PI.IdImagen = I.IdImagen
     LEFT JOIN EntidadesPersonasFisicas EPF ON P.IdPersona = EPF.IdPersona
+    LEFT JOIN Clientes Cli ON EPF.IdEntidad = Cli.IdEntidad
 
     ORDER BY 
     P.IdPersona DESC, P.FechaModificacion DESC, P.FechaCreacion DESC;
 END
 GO
-
 -- EXEC dbo.GetDatosPersonales
 
-CREATE OR ALTER PROCEDURE dbo.EstadoTarea
-    (
+
+GO
+CREATE OR ALTER PROCEDURE Get_PersonasTiposPersonas_By_IdPersona
+(@IdPersona INT)
+AS
+BEGIN
+   SELECT * FROM PersonasTiposPersonas WHERE IdPersona = @IdPersona
+END
+
+
+GO
+-- OBTENER ENTIDADES PERSONAS FISICAS BY ID PERSONAS:
+CREATE OR ALTER PROCEDURE Get_EntidadesPersonasFisicas_By_IdPersona
+(@IdPersona INT)
+AS
+BEGIN
+    SELECT IdEntidadPersonaFisica, IdEntidad, IdPersona FROM EntidadesPersonasFisicas WHERE IdPersona = @IdPersona
+END
+
+
+GO
+-- OBTENER ENTIDADES PERSONAS FISICAS BY ID PERSONAS:
+CREATE OR ALTER PROCEDURE dbo.Get_EntidadesPersonasFisicas_By_IdPersona
+(@IdPersona INT)
+AS
+BEGIN
+    SET NOCOUNT ON
+    SELECT IdEntidad, IdPersona FROM EntidadesPersonasFisicas WHERE IdPersona = @IdPersona
+END
+
+
+GO
+-- OBTENER EntidadesPersonasFisicasRepresentantes BY IdEntidadPersonaFisica:
+CREATE OR ALTER PROCEDURE dbo.Get_EntidadesPersonasFisicasRepresentantes_By_IdEntidadPersonaFisica
+(@IdEntidadPersonaFisica INT)
+AS
+BEGIN
+    SET NOCOUNT ON
+    SELECT IdEPFR, IdEntidadPersonaFisica, IdRepresentanteActual, IdRolRepresentante, FechaInicioRepresentante, FechaFinRepresentante
+    FROM EntidadesPersonasFisicasRepresentantes WHERE IdEntidadPersonaFisica = @IdEntidadPersonaFisica AND FechaFinRepresentante IS NULL
+END
+
+
+GO
+-- OBTENER ENTIDADES PERSONAS FISICAS BY ID PERSONAS:
+CREATE OR ALTER PROCEDURE dbo.Get_EntidadesPersonasFisicas_By_IdPersona
+(@IdPersona INT)
+AS
+BEGIN
+    SET NOCOUNT ON
+    SELECT IdEntidad, IdPersona FROM EntidadesPersonasFisicas WHERE IdPersona = @IdPersona
+END
+
+
+
+GO
+CREATE OR ALTER PROCEDURE dbo.GetDatosEmpresas
+AS
+BEGIN
+    SELECT emp.IdEmpresa, NombreEmpresa, RNC, Correo, Telefono1, Telefono2, Pa.IdPais, PaisNombre, C.IdCiudad, CiudadNombre, GETDATE() AS Fundada,
+        EI.IdEmpresaImagen, I.IdImagen, I.[FileName], I.ContentType, I.FileSize, I.[DATA] AS [Data], Direccion,
+        CASE WHEN Cli.IdEntidad IS NOT NULL THEN CAST(1 AS bit) ELSE CAST(0 AS bit) END AS YaEstaAsociada
+    FROM Empresas emp 
+    INNER JOIN Ciudades C ON emp.IdCiudad = C.IdCiudad 
+    INNER JOIN Paises Pa ON C.IdPais = Pa.IdPais
+    LEFT JOIN EmpresasImagenes EI ON EI.IdEmpresa = emp.IdEmpresa 
+    LEFT JOIN Imagenes I ON EI.IdImagen = I.IdImagen
+    LEFT JOIN EntidadesEmpresas EE ON emp.IdEmpresa = EE.IdEmpresa
+    LEFT JOIN Clientes Cli ON Cli.IdEntidad = EE.IdEntidad
+
+    ORDER BY 
+    emp.IdEmpresa DESC, emp.FechaModificacion DESC, emp.FechaCreacion DESC;
+END
+GO
+-- EXEC dbo.GetDatosEmpresas
+
+
+
+GO
+CREATE or  alter   PROCEDURE [dbo].[EstadoTarea]
+(
     @IdProyecto int,
     @IdTarea int,
-    @IdEstado int
+    @IdEstado int 
 )
 AS
 BEGIN
     SET NOCOUNT ON 
 	UPDATE Tareas
-SET  IdEstado = @IdEstado
-	WHERE IdTarea = @IdTarea and IdProyecto = @IdProyecto
-
+    SET 
+        IdEstado = @IdEstado,
+        FechaRealDeFinalizacion = CASE WHEN @IdEstado = 3 THEN GETDATE() ELSE FechaRealDeFinalizacion END
+    WHERE IdTarea = @IdTarea AND IdProyecto = @IdProyecto
 END
 GO
-
 
 
 
@@ -1702,3 +1803,5 @@ BEGIN
 END
 -- EXEC dbo.ObtenerUnidadesMedida
 GO
+
+

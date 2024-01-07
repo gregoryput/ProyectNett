@@ -1,4 +1,4 @@
-USE BD_PROYENETT_VF17
+USE BD_PROYENETT_VF21
 GO
 
 
@@ -1090,20 +1090,5 @@ VALUES
 1, 
 GETDATE(),
 1)
-
-GO
--- CREACION DE LA TABLA TiposNCF:
-CREATE TABLE TiposNCF
-(
-    IdTipoNCF INT IDENTITY CONSTRAINT PK_TiposNCF PRIMARY KEY,
-    NombreLargo varchar(MAX),
-    NombreCorto varchar(70),
-    --
-    IdCreadoPor int constraint Fk_TiposNCF_IdCreadoPor foreign Key references Usuarios(IdUsuario),
-    FechaCreacion Datetime,
-    IdModificadoPor int constraint Fk_TiposNCF_IdModificadoPor foreign Key references Usuarios(IdUsuario),
-    FechaModificacion Datetime,
-    IdEstadoRegistro int constraint Fk_TiposNCF_IdEstadoR foreign Key references EstadosRegistros(IdEstadoRegistro),
-);
 
 GO
