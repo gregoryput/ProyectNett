@@ -13,7 +13,6 @@ import {
   ButtonIcon,
   Container,
   ContainerDetail,
-  SpinnerTables,
 } from "../../../../components";
 import ComponentTarea from "./TareaComponent";
 import ProductoComponent from "./ProductoComponent";
@@ -175,148 +174,156 @@ export default function FormularioProyecto() {
 
   //guardar formulario
   const onFinish = (values) => {
-    const dataSelectedClient = clientesData?.Result.find(
-      (cliente) => cliente.IdCliente == selectStateCliente
-    );
-
-    const ClienteEsPersonaFisica =
-      dataSelectedClient.IdTipoEntidad == 1 ? true : false;
-    // Manejar el envío del formulario aquí
-    const dataSubmit = {
-      IdProyecto: 0,
-      Nombre: values.Nombre,
-      Descripcion: values.Descripcion,
-      FechaDeInicio: new Date(values.FechaDeInicio),
-      FechaDeFinalizacion: fechafin,
-      TiempoDuracionEstimado: `${calcularDiferenciaEnDias(
-        new Date(values.FechaDeInicio),
-        fechafin
-      )}`,
-      //"FechaRealDeFinalizacion": "2023-12-10T05:51:27.368Z",
-      //"TiempoDuracionReal": "string",
-      PresupuestoAcordado: totalGeneral,
-      ClienteEsPersonaFisica: ClienteEsPersonaFisica,
-      IdEntidad: dataSelectedClient.IdEntidad,
-      IdEstado: 1,
-      //IdCreadoPor: 1,
-      //FechaCreacion: "2023-12-10T05:51:27.368Z",
-      //IdEstadoRegistro: 1,
-      //IdModificadoPor: 0,
-      //FechaModificacion: "2023-12-10T05:51:27.368Z",
-
-      ProyectoDetallesProductos: selectStateProducto.map((detail) => ({
-        IdProyectoDetalleProducto: 0,
-        Cantidad: detail.Cantidad,
-        PrecioCompra: detail.PrecioCosto,
-        PrecioVenta: detail.PrecioVenta,
-        ITBIS: detail.ITBIS,
-        Codigo: "AAA-AAA", // <<-- En el get de pructos traer el codigo
-        Descuento: 0, // <<-- Agregar campo de descuento en la tabla de detalles (Campo modificable)
-        Subtotal: detail.Subtotal,
-        IdProducto: detail.IdProducto,
-        IdUnidadDeMedida: detail.IdUnidadDeMedida,
+    if( tarea.length > 0 && empleado.length > 0  && gasto.length > 0 && selectStateProducto.length > 0 ) {
+      const dataSelectedClient = clientesData?.Result.find(
+        (cliente) => cliente.IdCliente == selectStateCliente
+      );
+  
+      const ClienteEsPersonaFisica =
+        dataSelectedClient.IdTipoEntidad == 1 ? true : false;
+      // Manejar el envío del formulario aquí
+      const dataSubmit = {
         IdProyecto: 0,
-        //IdCreadoPor: 0,
-        //FechaCreacion: "2023-12-10T05:51:27.368Z",
-        //IdModificadoPor: 0,
-        //FechaModificacion: "2023-12-10T05:51:27.368Z",
-        IdEstadoRegistro: 1,
-      })),
-
-      ProyectoEntidadParams: {
-        IdProyecto: 0,
-        IdEntidad: dataSelectedClient.IdEntidad,
-      },
-
-      ProyectoEmpleados: empleado.map((empleado) => ({
-        IdPersonaProyecto: 0,
-        IdProyecto: 0,
-        IdResponsabilidad: empleado.IdResponsabilidad,
-        IdEmpleado: empleado.IdEmpleado,
-        //IdCreadoPor: 0,
-        //FechaCreacion: "2023-12-10T05:51:27.368Z",
-        //IdModificadoPor: 0,
-        //FechaModificacion: "2023-12-10T05:51:27.368Z",
-        //IdEstadoRegistro: 0,
-      })),
-
-      GastoAdicionales: gasto.map((gasto) => ({
-        IdGasto: 0,
-        DescripcionGasto: gasto.Descripcion,
-        MontoGasto: gasto.Costo,
-        IdProyecto: 0,
-        //IdCreadoPor: 0,
-        //FechaCreacion: "2023-12-10T05:51:27.368Z",
-        //IdModificadoPor: 0,
-        //FechaModificacion: "2023-12-10T05:51:27.368Z",
-        //IdEstadoRegistro: 0,
-      })),
-
-      ProyectoServicios: serviciosfiltrado.map((servicio) => ({
-        IdProyectoServicio: 0,
-        Descripcion: "-", // << -- Por el momento siempre iraasi
-        IdProyecto: 0,
-        IdServicio: servicio.IdServicio,
-        // IdCreadoPor: 0,
-        // FechaCreacion: "2023-12-10T05:51:27.368Z",
-        // IdModificadoPor: 0,
-        // FechaModificacion: "2023-12-10T05:51:27.368Z",
-        // IdEstadoRegistro: 0,
-      })),
-
-      ProyectoTareas: tarea.map((tarea) => ({
-        IdTarea: 0,
-        Nombre: tarea.Titulo,
-        Descripcion: tarea.Descripcion, // <<--
-        FechaInicio: tarea.FechaInicio,
-        FechaFinalizacion: tarea.FechaFinal, //dayjs(values.FechaFinal).format("DD-MM-YYYY")
-        TiempDuracionEstimado: `${calcularDiferenciaEnDias(
-          tarea.FechaInicio,
-          tarea.FechaFinal
+        Nombre: values.Nombre,
+        Descripcion: values.Descripcion,
+        FechaDeInicio: new Date(values.FechaDeInicio),
+        FechaDeFinalizacion: fechafin,
+        TiempoDuracionEstimado: `${calcularDiferenciaEnDias(
+          new Date(values.FechaDeInicio),
+          fechafin
         )}`,
-        //FechaRealDeFinalizacion: "2023-12-10T05:51:27.368Z",
-        //TiempoDuracionReal: "string",
-        IdParametroCosto: tarea.IdParametroCosto
-          ? tarea.IdParametroCosto
-          : null,
-        CostoPorParametro: tarea.Costo ? tarea.Costo : null,
-        Cantidad: tarea.Cantidad ? tarea.Cantidad : null,
-        CostoTotal: tarea.Total,
-        IdPrioridad: tarea.IdPrioridad,
-        IdProyecto: 0,
+        //"FechaRealDeFinalizacion": "2023-12-10T05:51:27.368Z",
+        //"TiempoDuracionReal": "string",
+        PresupuestoAcordado: totalGeneral,
+        ClienteEsPersonaFisica: ClienteEsPersonaFisica,
+        IdEntidad: dataSelectedClient.IdEntidad,
         IdEstado: 1,
-        IdServicioRelacionado: tarea.Servicio,
-        //IdCreadoPor: 0,
-        // FechaCreacion: "2023-12-10T05:51:27.368Z",
-        // IdModificadoPor: 0,
-        // FechaModificacion: "2023-12-10T05:51:27.368Z",
-        // IdEstadoRegistro: 0
-      })),
+        //IdCreadoPor: 1,
+        //FechaCreacion: "2023-12-10T05:51:27.368Z",
+        //IdEstadoRegistro: 1,
+        //IdModificadoPor: 0,
+        //FechaModificacion: "2023-12-10T05:51:27.368Z",
+  
+        ProyectoDetallesProductos: selectStateProducto.map((detail) => ({
+          IdProyectoDetalleProducto: 0,
+          Cantidad: detail.Cantidad,
+          PrecioCompra: detail.PrecioCosto,
+          PrecioVenta: detail.PrecioVenta,
+          ITBIS: detail.ITBIS,
+          Codigo: "AAA-AAA", // <<-- En el get de pructos traer el codigo
+          Descuento: 0, // <<-- Agregar campo de descuento en la tabla de detalles (Campo modificable)
+          Subtotal: detail.Subtotal,
+          IdProducto: detail.IdProducto,
+          IdUnidadDeMedida: detail.IdUnidadDeMedida,
+          IdProyecto: 0,
+          //IdCreadoPor: 0,
+          //FechaCreacion: "2023-12-10T05:51:27.368Z",
+          //IdModificadoPor: 0,
+          //FechaModificacion: "2023-12-10T05:51:27.368Z",
+          IdEstadoRegistro: 1,
+        })),
+  
+        ProyectoEntidadParams: {
+          IdProyecto: 0,
+          IdEntidad: dataSelectedClient.IdEntidad,
+        },
+  
+        ProyectoEmpleados: empleado.map((empleado) => ({
+          IdPersonaProyecto: 0,
+          IdProyecto: 0,
+          IdResponsabilidad: empleado.IdResponsabilidad,
+          IdEmpleado: empleado.IdEmpleado,
+          //IdCreadoPor: 0,
+          //FechaCreacion: "2023-12-10T05:51:27.368Z",
+          //IdModificadoPor: 0,
+          //FechaModificacion: "2023-12-10T05:51:27.368Z",
+          //IdEstadoRegistro: 0,
+        })),
+  
+        GastoAdicionales: gasto.map((gasto) => ({
+          IdGasto: 0,
+          DescripcionGasto: gasto.Descripcion,
+          MontoGasto: gasto.Costo,
+          IdProyecto: 0,
+          //IdCreadoPor: 0,
+          //FechaCreacion: "2023-12-10T05:51:27.368Z",
+          //IdModificadoPor: 0,
+          //FechaModificacion: "2023-12-10T05:51:27.368Z",
+          //IdEstadoRegistro: 0,
+        })),
+  
+        ProyectoServicios: serviciosfiltrado.map((servicio) => ({
+          IdProyectoServicio: 0,
+          Descripcion: "-", // << -- Por el momento siempre iraasi
+          IdProyecto: 0,
+          IdServicio: servicio.IdServicio,
+          // IdCreadoPor: 0,
+          // FechaCreacion: "2023-12-10T05:51:27.368Z",
+          // IdModificadoPor: 0,
+          // FechaModificacion: "2023-12-10T05:51:27.368Z",
+          // IdEstadoRegistro: 0,
+        })),
+  
+        ProyectoTareas: tarea.map((tarea) => ({
+          IdTarea: 0,
+          Nombre: tarea.Titulo,
+          Descripcion: tarea.Descripcion, // <<--
+          FechaInicio: tarea.FechaInicio,
+          FechaFinalizacion: tarea.FechaFinal, //dayjs(values.FechaFinal).format("DD-MM-YYYY")
+          TiempDuracionEstimado: `${calcularDiferenciaEnDias(
+            tarea.FechaInicio,
+            tarea.FechaFinal
+          )}`,
+          //FechaRealDeFinalizacion: "2023-12-10T05:51:27.368Z",
+          //TiempoDuracionReal: "string",
+          IdParametroCosto: tarea.IdParametroCosto
+            ? tarea.IdParametroCosto
+            : null,
+          CostoPorParametro: tarea.Costo ? tarea.Costo : null,
+          Cantidad: tarea.Cantidad ? tarea.Cantidad : null,
+          CostoTotal: tarea.Total,
+          IdPrioridad: tarea.IdPrioridad,
+          IdProyecto: 0,
+          IdEstado: 1,
+          IdServicioRelacionado: tarea.Servicio,
+          //IdCreadoPor: 0,
+          // FechaCreacion: "2023-12-10T05:51:27.368Z",
+          // IdModificadoPor: 0,
+          // FechaModificacion: "2023-12-10T05:51:27.368Z",
+          // IdEstadoRegistro: 0
+        })),
+  
+        CotizacionProyecto: {
+          IdCotizacion: 0,
+          //FechaDeEmision: new Date(),
+          MontoInicial: values.MontoInicial,
+          MontoTotal: totalGeneral,
+          Secuencia: "0",
+          IdCliente: dataSelectedClient.IdCliente,
+          IdEstado: 1,
+          IdProyecto: 0,
+          IdEstadoCotizacion: 1,
+          // "IdCreadoPor": 0,
+          // "FechaCreacion": "2023-12-10T05:51:27.368Z",
+          // "IdModificadoPor": 0,
+          // "FechaModificacion": "2023-12-10T05:51:27.368Z",
+          // "IdEstadoRegistro": 0
+        },
+      };
+      createProyecto({ ...dataSubmit })
+       console.log({...dataSubmit})
+    } else {
+      message.error({
+        content: "Tiene algun campo vacio",
+        duration: 4,
+      });
 
-      CotizacionProyecto: {
-        IdCotizacion: 0,
-        //FechaDeEmision: new Date(),
-        MontoInicial: values.MontoInicial,
-        MontoTotal: totalGeneral,
-        Secuencia: "0",
-        IdCliente: dataSelectedClient.IdCliente,
-        IdEstado: 1,
-        IdProyecto: 0,
-        IdEstadoCotizacion: 1,
-        // "IdCreadoPor": 0,
-        // "FechaCreacion": "2023-12-10T05:51:27.368Z",
-        // "IdModificadoPor": 0,
-        // "FechaModificacion": "2023-12-10T05:51:27.368Z",
-        // "IdEstadoRegistro": 0
-      },
-    };
-    createProyecto({ ...dataSubmit });
-    //  console.log({...dataSubmit})
+    }
   };
 
   useEffect(() => {
     if (isCreateSuccess === true) {
-      console.log();
+      console.log(isCreateSuccess);
     }
   }, [isCreateSuccess]);
   //.. CUANDO EL INSERT TENGA UN ERROR:
@@ -356,13 +363,12 @@ export default function FormularioProyecto() {
     isServiciosSuccess,
   ]);
 
+  
+
   return (
     <>
       {isLoadingCreate == true ? (
-        <Container style={{ textAlign: "center" }}>
-          <h2>Generando proyecto</h2>
-          <SpinnerTables />
-        </Container>
+       null
       ) : (
         <>
           <div style={{ width: "100%", marginTop: 0, margin: 0 }}>
@@ -407,7 +413,7 @@ export default function FormularioProyecto() {
                     style={{ display: "flex", justifyContent: "space-between" }}
                   >
                     <Form.Item
-                      label={<strong>Nombre:</strong>}
+                      label={<strong>Nombre del proyecto:</strong>}
                       style={{ width: 200, marginTop: 30 }}
                       name={"Nombre"}
                       rules={[
@@ -426,7 +432,7 @@ export default function FormularioProyecto() {
 
                     <div style={{ display: "flex", alignItems: "center" }}>
                       <Form.Item
-                        label={<strong>Cliente:</strong>}
+                        label={<strong>Cliente seleccionado:</strong>}
                         style={{ width: 200, marginTop: 30 }}
                         name={"cliente"}
                         rules={[
@@ -453,19 +459,21 @@ export default function FormularioProyecto() {
                     </div>
 
                     <Form.Item
-                      label={<strong>Fecha de inicio:</strong>}
+                      label={<strong>Fecha de inicio del proyecto:</strong>}
                       style={{ width: 300, marginTop: 30 }}
                       name={"FechaDeInicio"}
                       rules={[
                         {
                           required: true,
                           message: "Debe ingresar fecha ",
+
                         },
                       ]}
                     >
                       <DatePicker
                         onChange={handleDateChange}
                         format={"DD-MM-YYYY"}
+                        disabledDate={current => current && current < dayjs().startOf('day')}
                       />
                     </Form.Item>
                   </div>

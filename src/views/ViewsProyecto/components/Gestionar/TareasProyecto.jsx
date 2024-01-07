@@ -1,7 +1,7 @@
 import { Tag } from "antd";
 import { BtnSelect, Container, ContainerDetail } from "../../../../components";
 
-import { IoClipboardOutline, IoRadioButtonOff } from "react-icons/io5";
+import { IoClipboardOutline } from "react-icons/io5";
 
 import PropTypes from "prop-types";
 
@@ -10,7 +10,6 @@ TareasProyecto.propTypes = {
 };
 
 export default function TareasProyecto({ proyecto }) {
-
   const maxCharacters = 15;
   const renderText = (text) => {
     if (text.length > maxCharacters) {
@@ -20,7 +19,7 @@ export default function TareasProyecto({ proyecto }) {
   };
   return (
     <>
-      <Container style={{ marginInline: 5, marginBlock: 5, height: 490 }}>
+      <Container style={{ marginInline: 5, marginBlock: 5, height: 440 }}>
         <div
           style={{
             display: "flex",
@@ -42,12 +41,11 @@ export default function TareasProyecto({ proyecto }) {
             justifyContent: "space-between",
           }}
         >
-          <p style={{ marginInline: 5 }}>Prioridad</p>
-          <p style={{ marginRight: 30 }}>Tareas</p>
+          <p style={{ marginRight: 30 }}>Tareas </p>
           <p style={{ marginInline: 15 }}>Tiempo estimado</p>
           <p style={{ marginInline: 30 }}>Estado</p>
         </div>
-        <ContainerDetail style={{ overflow: "auto", height: 350, padding: 0 }}>
+        <ContainerDetail style={{ overflow: "auto", height: 320, padding: 0 }}>
           {proyecto[0]?.TareasProyecto.map((item, key) => (
             <BtnSelect
               style={{
@@ -60,23 +58,7 @@ export default function TareasProyecto({ proyecto }) {
               }}
               key={key}
             >
-              <div
-                style={{
-                  display: "flex",
-                  marginRight: 10,
-                }}
-              >
-                <IoRadioButtonOff
-                  size={22}
-                  color={
-                    item.IdPrioridad == 1
-                      ? "red"
-                      : item.IdPrioridad == 2
-                      ? "blue"
-                      : "green"
-                  }
-                />
-              </div>
+            
               <div
                 style={{
                   display: "flex",
@@ -85,7 +67,7 @@ export default function TareasProyecto({ proyecto }) {
                   flexDirection: "column",
                 }}
               >
-                <h4>{ renderText(item.NombreTarea)}</h4>
+                <h4>{renderText(item.NombreTarea)}</h4>
                 <span>{renderText(item.Descripcion)}</span>
               </div>
 
@@ -98,7 +80,7 @@ export default function TareasProyecto({ proyecto }) {
                   color: "gray",
                 }}
               >
-                <p>1 semana</p>
+                <p>{item.TiempDuracionEstimado}</p>
               </div>
 
               <div

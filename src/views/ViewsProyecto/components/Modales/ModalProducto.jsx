@@ -162,9 +162,14 @@ export default function ModalProducto({
   };
 
   const calcuteSubTotal = (precioVenta, cantidad, itbis) => {
-    const Subtotal = precioVenta * cantidad + itbis;
-    return Subtotal;
-  };
+    // Calcula el ITBIS
+    const resultadoitbis = ((precioVenta * itbis) / 100) * cantidad;
+    
+    // Calcula el Subtotal incluyendo el ITBIS
+    const Subtotal = (precioVenta * cantidad + resultadoitbis).toFixed(2);
+    
+    return parseFloat(Subtotal); // Convertir de nuevo a número, ya que toFixed devuelve una cadena
+};
 
   // Cuando cambie la cantidad seleccionada:
   const handleCantidadChange = (value, id) => {
@@ -220,7 +225,11 @@ export default function ModalProducto({
       return newData;
     });
   };
+  
+  
   const [messageApi, contextHolder] = message.useMessage();
+ 
+ 
   const ProductoSelect = (item) => {
     const data = item;
 
@@ -264,7 +273,7 @@ export default function ModalProducto({
     // Establecer el nuevo array sin el elemento eliminado
     setProducto(updatedProductos);
   };
-  
+
   const listaDeIds = producto.map((item) => item.IdProducto);
 
   const Guardar = () => {

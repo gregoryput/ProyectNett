@@ -12,7 +12,14 @@ export default function GastoExtrasComponent({
   setGasto,
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const formatter = (value) => <CountUp end={value} separator="," />;
+  const formatter = (value) => (
+    <CountUp
+      end={value}
+      separator=","
+      decimals={2}  // Número de decimales
+      prefix="RD$"   // Símbolo de moneda
+    />
+  );
 
   const OpenModal = () => {
     setIsModalOpen(true);
@@ -33,6 +40,9 @@ export default function GastoExtrasComponent({
       title: "Costo",
       dataIndex: "Costo",
       key: "Costo",
+      render: (text) => (
+        <p>RD${parseFloat(text).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+      ),
     },
     {
       align: "Right",

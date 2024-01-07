@@ -1,9 +1,9 @@
-import { BtnNavPro, Container, ViewContainerPages } from "../../components";
+import { BtnNavPro, Container, ViewContainerPages2 } from "../../components";
 import { Colores } from "../../components/GlobalColor";
 import { IoMegaphoneOutline,IoDocumentAttachOutline } from "react-icons/io5";
 export default function Reporte() {
   return (
-    <ViewContainerPages>
+    <ViewContainerPages2>
       <Container
         style={{
           marginInline: 10,
@@ -69,6 +69,6 @@ export default function Reporte() {
       >
         <h2>Vista del reporte</h2>
       </Container>
-    </ViewContainerPages>
+    </ViewContainerPages2>
   );
 }

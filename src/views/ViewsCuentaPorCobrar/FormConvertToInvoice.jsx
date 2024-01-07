@@ -35,8 +35,7 @@ const FormConvertToInvoice = () => {
     setIsModalOpen(false);
   };
 
-  console.log(state);
-  console.log(factura);
+ 
   const columns = [
     {
       title: "Factura",
@@ -85,7 +84,7 @@ const FormConvertToInvoice = () => {
 
   const columnsProyectos = [
     {
-      title: "Nombre Entidad",
+      title: "Cliente",
       dataIndex: "NombreEntidad",
       key: "NombreEntidad",
     },
@@ -95,26 +94,45 @@ const FormConvertToInvoice = () => {
       key: "NombreTipoEntidad",
     },
     {
-      title: "Nombre Proyecto",
+      title: "Proyecto",
       dataIndex: "NombreProyecto",
       key: "NombreProyecto",
-    },
-  
+    }, 
     {
-      title: "Presupuesto Acordado",
-      dataIndex: "PresupuestoAcordado",
-      key: "PresupuestoAcordado",
-    },
-    {
-      title: "Estado Proyecto",
+      title: "Estado de proyecto",
       dataIndex: "EstadoProyecto",
       key: "EstadoProyecto",
     },
+  
+    {
+      title: "Presupuesto",
+      dataIndex: "PresupuestoAcordado",
+      key: "PresupuestoAcordado",
+      render: (text) => (
+        <p>
+          RD$
+          {parseFloat(text).toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })}
+        </p>
+      ),
+    },
+   
     {
       title: "Monto Incial",
       dataIndex: "MontoInicial",
       key: "MontoInicial",
       align:"right",
+      render: (text) => (
+        <p>
+          RD$
+          {parseFloat(text).toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })}
+        </p>
+      ),
 
     },
     // Agregar más columnas según tus necesidades
@@ -124,7 +142,7 @@ const FormConvertToInvoice = () => {
   // Columnas para la tabla de productos
   const columnsProductos = [
     {
-      title: "Nombre Producto",
+      title: "Producto",
       dataIndex: "NombreProducto",
       key: "NombreProducto",
     },
@@ -134,15 +152,40 @@ const FormConvertToInvoice = () => {
       key: "Cantidad",
     },
     {
-      title: "Precio Venta",
+      title: "Precio",
       dataIndex: "PrecioVenta",
       key: "PrecioVenta",
+      render: (text) => (
+        <p>
+          RD$
+          {parseFloat(text).toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })}
+        </p>
+      ),
+    },
+    {
+      title: "ITBIS",
+      dataIndex: "ITBIS",
+      key: "ITBIS",
+      align: "center",
+      render: (text) => <p>% {text}</p>,
     },
     {
       title: "Sub-Total",
       dataIndex: "Subtotal",
       key: "Subtotal",
       align:"right",
+      render: (text) => (
+        <p>
+          RD$
+          {parseFloat(text).toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })}
+        </p>
+      ),
     },
     // Agregar más columnas según tus necesidades
   ];
@@ -160,7 +203,15 @@ const FormConvertToInvoice = () => {
       dataIndex: "MontoGasto",
       key: "MontoGasto",
       align:"right",
-
+      render: (text) => (
+        <p>
+          RD$
+          {parseFloat(text).toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })}
+        </p>
+      ),
     },
     // Agregar más columnas según tus necesidades
   ];

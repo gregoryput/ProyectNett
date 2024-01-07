@@ -32,6 +32,7 @@ import {
 } from "../../components";
 import { useGetProyectoCompletoQuery } from "../../redux/Api/proyectoApi";
 import { JwtUtils } from "../../utils";
+import dayjs from "dayjs";
 
 export default function Proyecto() {
   const token = localStorage.getItem("token");
@@ -55,7 +56,7 @@ export default function Proyecto() {
   // Llama a la consulta usando el hook generado
   const { data, isSuccess, isLoading } =
     useGetProyectoCompletoQuery(selectProyecto);
-    console.log(proyecto);
+  console.log(proyecto);
 
   useEffect(() => {
     if (data?.Result !== undefined && isSuccess) {
@@ -208,11 +209,17 @@ export default function Proyecto() {
   );
 }
 
-const ProyectoModal = ({ proyecto, OpenModal, CloseModal, isModalOpen }) => {
   // Columnas para la tabla de proyectos
+const ProyectoModal = ({ proyecto, OpenModal, CloseModal, isModalOpen }) => {
+
   const columnsProyectos = [
     {
-      title: "Nombre Entidad",
+      title: "Proyecto",
+      dataIndex: "NombreProyecto",
+      key: "NombreProyecto",
+    },
+    {
+      title: "Cliente",
       dataIndex: "NombreEntidad",
       key: "NombreEntidad",
     },
@@ -221,70 +228,102 @@ const ProyectoModal = ({ proyecto, OpenModal, CloseModal, isModalOpen }) => {
       dataIndex: "NombreTipoEntidad",
       key: "NombreTipoEntidad",
     },
+
     {
-      title: "Nombre Proyecto",
-      dataIndex: "NombreProyecto",
-      key: "NombreProyecto",
-    },
-    {
-      title: "Fecha Inicio",
+      title: "Inicio",
       dataIndex: "FechaDeInicio",
       key: "FechaDeInicio",
+      render: (text) => <span>{dayjs(text).format("DD-MM-YYYY")}</span>,
     },
     {
-      title: "Fecha Fin",
+      title: "Terminado",
       dataIndex: "FechaDeFinalizacion",
       key: "FechaDeFinalizacion",
+      render: (text) => <span>{dayjs(text).format("DD-MM-YYYY")}</span>,
     },
+
+    // Agregar más columnas según tus necesidades
+  ];
+
+  const columnsT = [
     {
-      title: "Presupuesto Acordado",
-      dataIndex: "PresupuestoAcordado",
-      key: "PresupuestoAcordado",
-    },
-    {
-      title: "Estado Proyecto",
+      title: "Estado de Proyecto",
       dataIndex: "EstadoProyecto",
       key: "EstadoProyecto",
+    },
+    {
+      title: "Presupuesto",
+      dataIndex: "PresupuestoAcordado",
+      key: "PresupuestoAcordado",
+      render: (text) => (
+        <p>
+          RD$
+          {parseFloat(text).toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })}
+        </p>
+      ),
     },
     {
       title: "Monto Incial",
       dataIndex: "MontoInicial",
       key: "MontoInicial",
+      render: (text) => (
+        <p>
+          RD$
+          {parseFloat(text).toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })}
+        </p>
+      ),
     },
-    // Agregar más columnas según tus necesidades
   ];
-
   // Columnas para la tabla de tareas
   const columnsTareas = [
-    {
-      title: "Nombre Tarea",
-      dataIndex: "NombreTarea",
-      key: "NombreTarea",
-    },
-    {
-      title: "Fecha Inicio",
-      dataIndex: "FechaInicio",
-      key: "FechaInicio",
-    },
-    {
-      title: "Fecha Finalización",
-      dataIndex: "FechaFinalizacion",
-      key: "FechaFinalizacion",
-    },
-    {
-      title: "Estado Tarea",
-      dataIndex: "EstadoTarea",
-      key: "EstadoTarea",
-    },
     {
       title: "Prioridad",
       dataIndex: "NombrePrioridad",
       key: "NombrePrioridad",
     },
     {
-      title: "Costo Total",
+      title: "Tarea",
+      dataIndex: "NombreTarea",
+      key: "NombreTarea",
+    },
+
+    {
+      title: "Inicio",
+      dataIndex: "FechaInicio",
+      key: "FechaInicio",
+      render: (text) => <span>{dayjs(text).format("DD-MM-YYYY")}</span>,
+    },
+    {
+      title: "Finalización",
+      dataIndex: "FechaFinalizacion",
+      key: "FechaFinalizacion",
+      render: (text) => <span>{dayjs(text).format("DD-MM-YYYY")}</span>,
+    },
+
+    {
+      title: "Costo",
       dataIndex: "CostoTotal",
       key: "CostoTotal",
+      render: (text) => (
+        <p>
+          RD$
+          {parseFloat(text).toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })}
+        </p>
+      ),
+    },
+    {
+      title: "Estado",
+      dataIndex: "EstadoTarea",
+      key: "EstadoTarea",
     },
     // Agregar más columnas según tus necesidades
   ];
@@ -292,7 +331,7 @@ const ProyectoModal = ({ proyecto, OpenModal, CloseModal, isModalOpen }) => {
   // Columnas para la tabla de productos
   const columnsProductos = [
     {
-      title: "Nombre Producto",
+      title: "Producto",
       dataIndex: "NombreProducto",
       key: "NombreProducto",
     },
@@ -302,14 +341,39 @@ const ProyectoModal = ({ proyecto, OpenModal, CloseModal, isModalOpen }) => {
       key: "Cantidad",
     },
     {
-      title: "Precio Venta",
-      dataIndex: "PrecioVenta",
-      key: "PrecioVenta",
+      title: "ITBIS",
+      dataIndex: "ITBIS",
+      key: "ITBIS",
+      align: "center",
+      render: (text) => <p>% {text}</p>,
     },
     {
-      title: "Subtotal",
+      title: "Precio",
+      dataIndex: "PrecioVenta",
+      key: "PrecioVenta",
+      render: (text) => (
+        <p>
+          RD$
+          {parseFloat(text).toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })}
+        </p>
+      ),
+    },
+    {
+      title: "Sub-total",
       dataIndex: "Subtotal",
       key: "Subtotal",
+      render: (text) => (
+        <p>
+          RD$
+          {parseFloat(text).toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })}
+        </p>
+      ),
     },
     // Agregar más columnas según tus necesidades
   ];
@@ -317,7 +381,7 @@ const ProyectoModal = ({ proyecto, OpenModal, CloseModal, isModalOpen }) => {
   // Columnas para la tabla de empleados
   const columnsEmpleados = [
     {
-      title: "Nombre Empleado",
+      title: "Empleado",
       dataIndex: "NombreEmpleado",
       key: "NombreEmpleado",
     },
@@ -332,24 +396,34 @@ const ProyectoModal = ({ proyecto, OpenModal, CloseModal, isModalOpen }) => {
   // Columnas para la tabla de gastos
   const columnsGastos = [
     {
-      title: "Descripción Gasto",
+      title: "Gasto",
       dataIndex: "DescripcionGasto",
       key: "DescripcionGasto",
     },
     {
-      title: "Monto Gasto",
+      title: "Monto",
       dataIndex: "MontoGasto",
       key: "MontoGasto",
+      render: (text) => (
+        <p>
+          RD$
+          {parseFloat(text).toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })}
+        </p>
+      ),
     },
     // Agregar más columnas según tus necesidades
   ];
+
   return (
     <Modal
       open={isModalOpen}
       footer={null}
       width={1000}
       onCancel={CloseModal}
-      X
+      
     >
       <Container>
         <Table
@@ -360,6 +434,13 @@ const ProyectoModal = ({ proyecto, OpenModal, CloseModal, isModalOpen }) => {
         />
         <br />
 
+        <Table
+          dataSource={proyecto}
+          pagination={false} // Desactiva la paginación si no deseas que aparezca
+          size="middle"
+          columns={columnsT}
+        />
+        <br />
         <Table
           dataSource={proyecto[0]?.TareasProyecto}
           pagination={false} // Desactiva la paginación si no deseas que aparezca
@@ -375,6 +456,13 @@ const ProyectoModal = ({ proyecto, OpenModal, CloseModal, isModalOpen }) => {
           columns={columnsProductos}
         />
         <br />
+        <Table
+          dataSource={proyecto[0]?.GastoProyecto}
+          pagination={false} // Desactiva la paginación si no deseas que aparezca
+          size="middle"
+          columns={columnsGastos}
+        />
+        <br />
 
         <Table
           dataSource={proyecto[0]?.EmpleadosProyecto}
@@ -382,13 +470,60 @@ const ProyectoModal = ({ proyecto, OpenModal, CloseModal, isModalOpen }) => {
           size="middle"
           columns={columnsEmpleados}
         />
-        <br />
-        <Table
-          dataSource={proyecto[0]?.GastoProyecto}
-          pagination={false} // Desactiva la paginación si no deseas que aparezca
-          size="middle"
-          columns={columnsGastos}
-        />
+        <br/>
+        <ContainerDetail
+          style={{
+            marginBlock: 0,
+            marginInline: 0,
+            display: "flex",
+          }}
+        >
+          <div style={{ width: 800 }}>
+
+            <div style={{ fontSize: 12 }}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  paddingTop: 15,
+                }}
+              >
+                <p>Total productos:</p>
+                <span>RD$ {proyecto[0]?.TotalProducto}</span>
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  paddingTop: 10,
+                }}
+              >
+                <p>Total servicios:</p>
+                <span>RD$ {proyecto[0]?.TotalTarea}</span>
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  paddingTop: 10,
+                }}
+              >
+                <p>Total gasto adicional:</p>
+                <span>RD$ {proyecto[0]?.TotalGasto}</span>
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  paddingTop: 10,
+                }}
+              >
+                <h3>Total general</h3>
+                <h3>RD$ {proyecto[0]?.PresupuestoAcordado}</h3>
+              </div>
+            </div>
+          </div>
+        </ContainerDetail>
       </Container>
       {/* Agregar más secciones según tus necesidades */}
     </Modal>
