@@ -191,13 +191,23 @@ namespace ProyectNettApi.Repositories
             var connection = _conexionDB.GetConnection(_configuration);
             connection.Open();
             var transaction = connection.BeginTransaction();
+
             try
             {
+                // Generar Secuencia Para la Cotizacion:
+                var resultSecuenciaCO = connection.Query<dynamic>("dbo.GenerarSecuenciaDocumento", new { clave = "CO" }, transaction, commandType: CommandType.StoredProcedure).ToList();
+                string secuenciaCO = resultSecuenciaCO[0].SecuenciaGenerada;
+
+                // Generar Secuencia Para EL Proyecto:
+                var resultSecuenciaPR = connection.Query<dynamic>("dbo.GenerarSecuenciaDocumento", new { clave = "PR" }, transaction, commandType: CommandType.StoredProcedure).ToList();
+                string secuenciaPR = resultSecuenciaPR[0].SecuenciaGenerada;
+
                 // -------------------------- INSERTAR EN LA TABLA PROYECTOS (Procedimiento: InsertarProyecto):
                 int IdProyecto = connection.ExecuteScalar<int>("dbo.InsertarProyecto",
 
                     new
                     {
+                        Secuencia = secuenciaPR,
                         Nombre = proyecto.Nombre,
                         Descripcion = proyecto.Descripcion,
                         FechaDeInicio = proyecto.FechaDeInicio,
@@ -213,7 +223,7 @@ namespace ProyectNettApi.Repositories
                         //FechaCreacion = proyecto.FechaCreacion,
                         IdEstadoRegistro = 1
                         //IdModificadoPor = proyecto.IdModificadoPor
-                    }, transaction, commandType: CommandType.StoredProcedure);
+                    }, transaction, commandType: CommandType.StoredProcedure); ;
 
 
                 // -------------------------- INSERTAR EN LA TABLA ProyectosDetallesProductos -----PROCEDURE----- dbo.InsertarProyectoDetalleProducto:
@@ -333,14 +343,12 @@ namespace ProyectNettApi.Repositories
 
                 // -------------------------- INSERTAR EN LA TABLA Cotizaciones -----PROCEDURE----- dbo.InsertarCotizacionProyecto: -----------------------------------------
                 var cotizacion = proyecto.CotizacionProyecto;
-                //cotizacion.FechaDeEmision = DateTime.Now;
 
                 var dataCotizacion = new
                 {
-                    //FechaDeEmision = cotizacion.FechaDeEmision, // DATE
+                    Secuencia = secuenciaCO,
                     MontoInicial = cotizacion.MontoInicial, // DECIMAL(18, 2)
                     MontoTotal = cotizacion.MontoTotal, // DECIMAL(18, 2)
-                    Secuencia = cotizacion.Secuencia, // VARCHAR(20)
                     IdCliente = cotizacion.IdCliente, // INT
                     IdEstado = cotizacion.IdEstado, // INT
                     IdProyecto = IdProyecto, // INT
