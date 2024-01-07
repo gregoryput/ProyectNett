@@ -34,6 +34,10 @@ namespace ProyectNettApi.DTO
         public string Data { get; set; }
         public bool YaEstaAsociado { get; set; }
         public List<PersonaTipoPersona> PersonaTiposPersona { get; set; }
-    }
 
+        // --- Datos con la relacion EntidadesPersonasFisicas:
+        public EntidadPersonaFisica? DataEntidadPersonaFisica { get; set; }
+
+        public EntidadPersonaFisicaRepresentante? DataEntidadPersonaFisicaRepresentante { get; set; }
+    }
 }

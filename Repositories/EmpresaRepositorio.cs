@@ -26,6 +26,14 @@ namespace ProyectNettApi.Repositories
             return resultSet.ToList();
         }
 
+        public IEnumerable<EmpresaInfoDTO> GetDatosEmpresas()
+        {
+            string query = "dbo.GetDatosEmpresas";
+
+            var resultSet = _conexionDB.GetConnection(_configuration).Query<EmpresaInfoDTO>(query, commandType: CommandType.StoredProcedure);
+            return resultSet.ToList();
+        }
+
         // Lista de empresas por cliente
         public IEnumerable<EmpresaDTO> GetEmpresasByIdProveedor(int IdProveedor, int EstadoId)
         {
@@ -35,6 +43,4 @@ namespace ProyectNettApi.Repositories
             return resultSet.ToList();
         }
     }
-
-
 }

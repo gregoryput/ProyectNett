@@ -19,14 +19,42 @@ namespace ProyectNettApi.Repositories
 
         public IEnumerable<PersonaInfoPersonalDTO> GetPersonasInfoPersonal()
         {
+            // 1 Obtener listado de personas:
             string query = "dbo.GetDatosPersonales";
             var resultSet = _conexionDB.GetConnection(_configuration).Query<PersonaInfoPersonalDTO>(query, commandType: CommandType.StoredProcedure);
 
             foreach (var item in resultSet)
             {
-                var queryPTP = "SELECT * FROM PersonasTiposPersonas WHERE IdPersona = @IdPersona";
+                // 1.1 Sacar datos de la relacion con la tabla PersonasTiposPersonas:
+                var queryPTP = "EXEC dbo.Get_PersonasTiposPersonas_By_IdPersona";
                 var resultPTP = _conexionDB.GetConnection(_configuration).Query<PersonaTipoPersona>(queryPTP, new { item.IdPersona }, commandType: CommandType.Text).ToList();
                 item.PersonaTiposPersona = resultPTP;
+
+                // 1.2 Sacar datos de la relacion con la tabla EntidadesPersonasFisicas:
+                var queryExecProc1 = "EXEC dbo.Get_EntidadesPersonasFisicas_By_IdPersona";
+                //
+                var resultExecProc1 = _conexionDB.GetConnection(_configuration).Query<EntidadPersonaFisica>(queryExecProc1, new { item.IdPersona }, commandType: CommandType.Text).ToList();
+                if (resultExecProc1.Count() > 0)
+                {
+                    item.DataEntidadPersonaFisica = resultExecProc1[0];
+                }
+                else
+                {
+                    item.DataEntidadPersonaFisica = null;
+                }
+
+                // 1.3 Sacar datos de la relacion con la tabla EntidadesPersonasFisicasRepresentantes:
+                var queryExecProc2 = "EXEC dbo.Get_EntidadesPersonasFisicasRepresentantes_By_IdEntidadPersonaFisica";
+                //
+                var resultExecProc2 = _conexionDB.GetConnection(_configuration).Query<EntidadPersonaFisicaRepresentante>(queryExecProc2).ToList();
+                if (resultExecProc2.Count() > 0)
+                {
+                    item.DataEntidadPersonaFisicaRepresentante = resultExecProc2[0];
+                }
+                else
+                {
+                    item.DataEntidadPersonaFisicaRepresentante = null;
+                }
             }
 
             return resultSet.ToList();
