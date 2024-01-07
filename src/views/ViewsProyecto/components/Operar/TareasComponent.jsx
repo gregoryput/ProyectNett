@@ -7,14 +7,12 @@ import {
   ContainerDetail,
   ContainerList,
 } from "../../../../components";
-import { IoLogoOctocat } from "react-icons/io5";
 
 import { IoClipboardOutline } from "react-icons/io5";
 import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import dayjs from "dayjs";
 import { useUpdateEstadoTareaMutation } from "../../../../redux/Api/proyectoApi";
-import { Colores } from "../../../../components/GlobalColor";
 TareasComponent.propTypes = {
   proyecto: PropTypes.array.isRequired,
   setSelectProyecto: PropTypes.func.isRequired,
@@ -337,11 +335,8 @@ export default function TareasComponent({ proyecto, setSelectProyecto }) {
                 color: "gray",
               }}
             >
-              <IoLogoOctocat
-                size={50}
-                style={{ color: `${Colores.AzulMar}` }}
-              />
-              <p>no hay tarea seleccionada</p>
+              
+              <b>no hay tarea seleccionada</b>
             </Container>
           </>
         )}

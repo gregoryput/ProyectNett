@@ -24,7 +24,14 @@ export default function ProductoComponent({
     // isLoading: isLoadingProducts,
     isSuccess: isSuccessProducts,
   } = useGetProductosUnidadesDetallesQuery("");
-  const formatter = (value) => <CountUp end={value} separator="," />;
+  const formatter = (value) => (
+    <CountUp
+      end={value}
+      separator=","
+      decimals={2}  // Número de decimales
+      prefix="RD$"   // Símbolo de moneda
+    />
+  );
 
   const [producto, setProducto] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -89,12 +96,18 @@ export default function ProductoComponent({
       dataIndex: "PrecioVenta",
       key: "PrecioVenta",
       align: "center",
+      render: (text) => (
+        <p>RD${parseFloat(text).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+      ),
     },
     {
       title: "ITBIS",
       dataIndex: "ITBIS",
       key: "ITBIS",
       align: "center",
+      render: (text) => (
+        <p>% {text}</p>
+    ),
     },
 
     {
@@ -110,6 +123,9 @@ export default function ProductoComponent({
       key: "Subtotal",
       width: "120px",
       align: "center",
+      render: (text) => (
+        <p>RD${parseFloat(text).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+      ),
     },
   ];
 

@@ -24,6 +24,8 @@ export const BtnSelect = styled.button`
   &:active {
     background-color: ${Colores.BlancoGris};
     border-radius: 5px;
+    color: black;
+
   }
 `;
 export const BtnSelectt = styled.button`
@@ -46,8 +48,5 @@ export const BtnSelectt = styled.button`
     transform: scale(1);
     background-color: #d5d6ff;
   }
-  &:active {
-    background-color: ${Colores.BlancoGris};
-    border-radius: 5px;
-  }
+ 
 `;

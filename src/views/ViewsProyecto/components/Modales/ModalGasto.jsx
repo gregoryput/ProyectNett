@@ -31,7 +31,7 @@ export default function ModalGasto({
     <>
       {" "}
       <Modal
-        title="Seleccion de equipo"
+        title="Recurso adicionales"
         open={isModalOpen}
         centered
         footer={null}
@@ -50,12 +50,12 @@ export default function ModalGasto({
             }}
           >
             <Form.Item
-              label={<strong>Descripción</strong>}
+              label={<strong>Recurso adicionales</strong>}
               name={"Descripcion"}
               rules={[
                 {
                   required: true,
-                  message: "No hay Descripción",
+                  message: "No hay Recurso adicionales",
                 },
                 {
                   max: 40,

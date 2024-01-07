@@ -37,7 +37,14 @@ export default function ComponentTarea({
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [messageApi, contextHolder] = message.useMessage();
-  const formatter = (value) => <CountUp end={value} separator="," />;
+  const formatter = (value) => (
+    <CountUp
+      end={value}
+      separator=","
+      decimals={2}  // Número de decimales
+      prefix="RD$"   // Símbolo de moneda
+    />
+  );
 
   const OpenModal = () => {
     if (serviciosfiltrado <= 0) {
@@ -152,7 +159,7 @@ export default function ComponentTarea({
       <div style={{ display: "flex", justifyContent: "flex-end" }}>
         <Statistic
           title="Total"
-          value={resultado.totalGeneral}
+          value={resultado.totalGeneral} 
           formatter={formatter}
         />
       </div>
@@ -340,9 +347,7 @@ function ListaDeTarea({ tarea, setTarea, item, serviciosfiltrado }) {
                 <h4>Precio</h4>
 
                 <p style={{ fontSize: 12, color: "gray" }}>
-                  {" "}
-                  RD$
-                  { item.Total}
+                  RD${parseFloat(item.Total).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </p>
               </div>
               <div
@@ -454,7 +459,7 @@ function ListaDeTarea({ tarea, setTarea, item, serviciosfiltrado }) {
 
                     <p style={{ fontSize: 12, color: "gray" }}>
                       {" "}
-                      RD${item.Costo}
+                      RD${parseFloat(item.Costo).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </p>
                   </div>
                   <div
@@ -464,11 +469,13 @@ function ListaDeTarea({ tarea, setTarea, item, serviciosfiltrado }) {
                       flexDirection: "column",
                     }}
                   >
-                    <b>Total</b>
+                    <b>Total por parametro</b>
 
                     <p style={{ fontSize: 12, color: "gray" }}>
                       {" "}
-                      RD$ {item.Total}
+                  
+                      RD${parseFloat(item.Total).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+
                     </p>
                   </div>
                   <div

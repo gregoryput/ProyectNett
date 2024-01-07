@@ -1,5 +1,6 @@
 import {  BtnPro } from "../../../../components";
 import { IoEyeOutline ,IoCashOutline} from "react-icons/io5";
+
 export default function Detalle({OpenModal}) {
 
   return (
