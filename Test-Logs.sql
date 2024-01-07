@@ -1,4 +1,4 @@
-USE BD_PROYENETT_VF21
+USE BD_PROYENETT_VF22
 GO
 
 
@@ -1068,7 +1068,8 @@ INSERT INTO ConfiguracionesGenerales (Nombre, Clave, Valor, ValorPorDefecto, IdT
 VALUES 
 ('Código para secuencia de las cotizaciones', 'CO', '0', '0', 2, 'Esto permite manejar y autoincrementar la secuencia de las cotizaciones', 1, GETDATE(), 1),
 ('Código para secuencia de las ordenes de compra', 'OC', '0', '0', 2, 'Esto permite manejar y autoincrementar la secuencia de las ordenes de compra', 1, GETDATE(), 1),
-('Código para secuencia de ls pagos', 'P', '0', '0', 2, 'Esto permite manejar y autoincrementar la secuencia de los pagos', 1, GETDATE(), 1);
+('Código para secuencia de los pagos', 'P', '0', '0', 2, 'Esto permite manejar y autoincrementar la secuencia de los pagos', 1, GETDATE(), 1),
+('Código para secuencia de los proyectos', 'PR', '0', '0', 2, 'Esto permite manejar y autoincrementar la secuencia de los proyectos', 1, GETDATE(), 1);
 
 
 ---

@@ -1,4 +1,4 @@
-USE BD_PROYENETT_VF21
+USE BD_PROYENETT_VF22
 
 GO
 ----------- /*1--*/ Procedimiento almcenado para obtener una lista general de clientes (empresas y personas fisicas):
@@ -608,12 +608,12 @@ GO
 
 GO
 CREATE or alter PROCEDURE [dbo].[InsertarProyecto]
+    @Secuencia VARCHAR(20),
     @Nombre VARCHAR(255),
     @Descripcion VARCHAR(MAX),
     @FechaDeInicio DATETIME,
     @FechaDeFinalizacion DATETIME,
     @TiempoDuracionEstimado VARCHAR(70),
-    -- @FechaRealDeFinalizacion DATETIME,
     @TiempoDuracionReal VARCHAR(50),
     @PresupuestoAcordado DECIMAL(18, 2),
     @ClienteEsPersonaFisica BIT,
@@ -627,12 +627,12 @@ CREATE or alter PROCEDURE [dbo].[InsertarProyecto]
 AS
 BEGIN
     INSERT INTO Proyectos (
+        Secuencia,
         Nombre,
         Descripcion,
         FechaDeInicio,
         FechaDeFinalizacion,
         TiempoDuracionEstimado,
-        -- FechaRealDeFinalizacion,
         TiempoDuracionReal,
         PresupuestoAcordado,
         ClienteEsPersonaFisica,
@@ -645,6 +645,7 @@ BEGIN
         -- FechaModificacion
     )
     VALUES (
+        @Secuencia,
         @Nombre,
         @Descripcion,
         @FechaDeInicio,
@@ -981,10 +982,9 @@ END;
 GO
 ---------------------- PROCEDIMIENTO PARA INSERTAR EN LA TABLA Tareas: ----------------------------------
 CREATE OR ALTER PROCEDURE dbo.InsertarCotizacionProyecto
-   -- @FechaDeEmision DATETIME,
+    @Secuencia VARCHAR(20),
     @MontoInicial DECIMAL(18, 2),
     @MontoTotal DECIMAL(18, 2),
-    @Secuencia VARCHAR(20),
     @IdCliente INT,
     @IdEstado INT,
     @IdProyecto INT,
@@ -1307,7 +1307,7 @@ CREATE OR ALTER PROCEDURE dbo.ListadoDocumentsVentas
 AS
 BEGIN
     SELECT IdCotizacion AS IdDocumento, 1 AS IdTipoDocumento, 'Cotización de proyecto' AS DocumentoNombre,
-           FechaDeEmision, MontoTotal, Secuencia, C.IdCliente, E.NombreEntidad, E.IdTipoEntidad, TP.NombreTipoEntidad,
+           FechaDeEmision, MontoTotal, CP.Secuencia, C.IdCliente, E.NombreEntidad, E.IdTipoEntidad, TP.NombreTipoEntidad,
             CP.IdEstado, Py.IdProyecto, Py.Nombre AS NombreProyecto
 
         FROM CotizacionesProyectos CP INNER JOIN Clientes C ON CP.IdCliente = c.IdCliente
@@ -1318,7 +1318,7 @@ BEGIN
 
 
     SELECT IdFactura AS IdDocumento, 2 AS IdTipoDocumento, 'Factura de proyecto' AS DocumentoNombre,
-           FechaDeEmision, MontoTotal, Secuencia, C.IdCliente, E.NombreEntidad, E.IdTipoEntidad, TP.NombreTipoEntidad,
+           FechaDeEmision, MontoTotal, FV.Secuencia, C.IdCliente, E.NombreEntidad, E.IdTipoEntidad, TP.NombreTipoEntidad,
            FV.IdEstado, Py.IdProyecto, Py.Nombre AS NombreProyecto
            
            FROM FacturasVentasProyectos FV INNER JOIN Clientes C ON FV.IdCliente = c.IdCliente
@@ -1805,3 +1805,39 @@ END
 GO
 
 
+GO
+-- Crear un procedimiento almacenado para generar la secuencia de documentos
+CREATE OR ALTER PROCEDURE GenerarSecuenciaDocumento
+    @clave VARCHAR(60)
+AS
+BEGIN
+    DECLARE @valorActual INT;
+    DECLARE @valorAutoIncrementado INT;
+
+    -- Obtener el valor actual para la clave especificada
+    SELECT @valorActual = CONVERT(INT, Valor) FROM ConfiguracionesGenerales WHERE Clave = @clave;
+
+    -- Verificar si se encontró un valor para la clave
+    IF (@valorActual IS NOT NULL)
+    BEGIN
+        SELECT @valorAutoIncrementado = @valorActual +1
+
+        -- Generar la secuencia de documento concatenando el valor con ceros a la izquierda
+        DECLARE @secuenciaDocumento VARCHAR(60);
+
+        SET @secuenciaDocumento =  @clave + RIGHT('0000000000000', 13 - LEN(@clave + CAST(@valorActual AS VARCHAR(10)))) + CAST(@valorAutoIncrementado AS VARCHAR(10));
+
+        -- Actualizar el valor en ConfiguracionesGenerales
+        UPDATE ConfiguracionesGenerales SET Valor = CONCAT(@valorAutoIncrementado, ''), FechaModificacion = GETDATE()  WHERE Clave = @clave;
+
+        -- Imprimir o devolver la secuencia de documento generada
+        SELECT @secuenciaDocumento AS SecuenciaGenerada;
+    END
+    ELSE
+    BEGIN
+        -- Si no se encontró un valor para la clave especificada
+        RAISERROR('No se encontró una configuración para la clave especificada', 16, 1);
+    END
+END;
+
+Select * from ConfiguracionesGenerales
