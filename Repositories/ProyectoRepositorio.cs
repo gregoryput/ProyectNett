@@ -211,7 +211,7 @@ namespace ProyectNettApi.Repositories
                         IdEstado = proyecto.IdEstado,
                         IdCreadoPor = proyecto.IdCreadoPor,
                         //FechaCreacion = proyecto.FechaCreacion,
-                        //IdEstadoRegistro = proyecto.IdEstadoRegistro,
+                        IdEstadoRegistro = 1
                         //IdModificadoPor = proyecto.IdModificadoPor
                     }, transaction, commandType: CommandType.StoredProcedure);
 

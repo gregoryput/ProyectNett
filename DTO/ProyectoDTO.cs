@@ -52,6 +52,7 @@ namespace ProyectNettApi.DTO
         public int Cantidad { get; set; }
         public string NombreProducto { get; set; }
         public decimal PrecioVenta { get; set; }
+        public decimal ITBIS { get; set; }
         public decimal Subtotal { get; set; }
      
     }
