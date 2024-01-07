@@ -34,7 +34,7 @@ const FormClientsEmpresas = (props: IFormClientesProps) => {
       icon: <IoPersonCircle />,
     },
     {
-      title: "Sucursales",
+      title: "Info de la empresa",
       status: "wait",
       icon: <BsBuildingsFill />,
     },
@@ -154,3 +154,6 @@ const FormClientsEmpresas = (props: IFormClientesProps) => {
 };
 
 export default FormClientsEmpresas;
+
+
+
