@@ -23,7 +23,7 @@ const FormConvertToInvoice = () => {
   const [servicio, setServicio] = useState([]);
   const [factura, setFactura] = useState([]);
   const [plazo, setPlazo] = useState(0);
-
+  
   const sumarTotales = (proyecto) => {
     let totalGeneral = 0;
     let totalesPorServicio = [];
@@ -59,6 +59,7 @@ const FormConvertToInvoice = () => {
     }
   }, [data, isSuccess]);
 
+  console.log(state);
   function generarFacturas(
     cantidadCuotas,
     MontoInicial,
