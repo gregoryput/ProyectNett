@@ -1,85 +1,242 @@
 import { Form, Table } from "antd";
 import { useParams } from "react-router-dom";
 import { IoDocumentAttachOutline } from "react-icons/io5";
-
+import { Container } from "../../components";
+import { InputNumber } from "antd";
 import { Colores } from "../../components/GlobalColor";
 import {
   BtnNavPro,
   ButtonNext,
-  Container,
   Label,
   ViewContainerPages2,
 } from "../../components";
 import { useGetProyectoCompletoQuery } from "../../redux/Api/proyectoApi";
 import { useEffect, useState } from "react";
-import ModalPlazoPago from "./ModalPlazoPago";
 import dayjs from "dayjs";
+import { Select } from "antd";
+const { Option } = Select;
 
 const FormConvertToInvoice = () => {
   const { ID } = useParams();
   const { data, isSuccess, isLoading } = useGetProyectoCompletoQuery(ID);
   const [state, setState] = useState([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [servicio, setServicio] = useState([]);
   const [factura, setFactura] = useState([]);
+  const [plazo, setPlazo] = useState(0);
 
+  const sumarTotales = (proyecto) => {
+    let totalGeneral = 0;
+    let totalesPorServicio = [];
+
+    proyecto.forEach((tarea) => {
+      tarea.TareasProyecto.forEach((tareaDetalle) => {
+        if (tareaDetalle.CostoTotal) {
+          totalGeneral += tareaDetalle.CostoTotal;
+
+          const servicioIndex = totalesPorServicio.findIndex(
+            (item) => item.NombreServicio === tareaDetalle.NombreServicio
+          );
+
+          if (servicioIndex !== -1) {
+            totalesPorServicio[servicioIndex].Total += tareaDetalle.CostoTotal;
+          } else {
+            totalesPorServicio.push({
+              NombreServicio: tareaDetalle.NombreServicio,
+              Total: tareaDetalle.CostoTotal,
+            });
+          }
+        }
+      });
+    });
+
+    return { totalGeneral, totalesPorServicio };
+  };
   useEffect(() => {
     if (!isLoading && isSuccess) {
+      const r = sumarTotales(data.Result);
       setState(data.Result);
+      setServicio(r);
     }
   }, [data, isSuccess]);
-  const OpenModal = () => {
-    setIsModalOpen(true);
+
+  function generarFacturas(
+    cantidadCuotas,
+    MontoInicial,
+    PresupuestoAcordado,
+    plazo,
+    diaVencimiento,
+    porcentajeMora,
+    diasMora,
+    diaEmisionMensual
+  ) {
+    const facturas = [];
+    // let fechaEmision = new Date(); // Fecha de inicio
+
+    // Ensure the first invoice is equal to the initial amount
+    const montoCuotaPrimeraFactura = MontoInicial;
+
+    // Calculate the remaining budget for the rest of the invoices
+    const presupuestoRestante = PresupuestoAcordado - MontoInicial;
+
+    // Calculate the amount to distribute for each of the remaining invoices
+    const montoCuotaRestante = calcularMontoCuota(
+      presupuestoRestante,
+      cantidadCuotas - 1
+    );
+
+    for (let i = 1; i <= cantidadCuotas; i++) {
+      const montoCuota =
+        i === 1 ? montoCuotaPrimeraFactura : montoCuotaRestante;
+
+      const porcentajeMoraAplicado = calcularPorcentajeMora(
+        porcentajeMora,
+        diasMora,
+        i
+      );
+
+      const fechaEmisionQuincena = calcularFechaEmision(
+        plazo,
+        i,
+        diaEmisionMensual
+      );
+      const fechaVencimiento = calcularFechaVencimiento(
+        fechaEmisionQuincena,
+        diaVencimiento,
+        plazo,
+        i,
+        diasMora
+      );
+
+      const factura = {
+        numeroFactura: `Fact No. ${i.toString().padStart(4, "0")}`, // Número de factura
+        numero: i, // Identificador de la factura
+        monto: montoCuota,
+        porcentajeMora: `${porcentajeMoraAplicado}%`, // Porcentaje de mora aplicado
+        fechaEmision: fechaEmisionQuincena.toISOString(),
+        fechaVencimiento: fechaVencimiento,
+        tipoPlazo: plazo === 1 ? "mensual" : "quincenal",
+      };
+
+      facturas.push(factura);
+
+      // Actualizar la fecha de emisión para la siguiente factura
+      // fechaEmision = new Date(factura.fechaVencimiento);
+    }
+
+    return facturas;
+  }
+
+  function calcularMontoCuota(presupuestoRestante, cantidadCuotasRestantes) {
+    return presupuestoRestante / cantidadCuotasRestantes;
+  }
+
+  function calcularPorcentajeMora(porcentajeMora, diasMora, cuotaNumero) {
+    // Aplicar el porcentaje de mora a partir de la primera cuota
+    return cuotaNumero > 1 ? porcentajeMora : 0;
+  }
+
+  function calcularFechaEmision(plazo, cuotaNumero, diaEmisionMensual) {
+    const nuevaFecha = new Date();
+
+    if (plazo === 2) {
+      // For bi-weekly payments, set the emission date to the 15th and 30th
+      nuevaFecha.setDate(cuotaNumero % 2 === 0 ? 30 : 15);
+    } else {
+      // For monthly payments, set the emission date based on cuotaNumero or use provided 'diaEmisionMensual'
+      nuevaFecha.setDate(diaEmisionMensual || 1);
+      nuevaFecha.setMonth(nuevaFecha.getMonth() + cuotaNumero - 1);
+    }
+
+    return nuevaFecha;
+  }
+
+  function calcularFechaVencimiento(
+    fechaEmision,
+    diaVencimiento,
+    plazo,
+    cuotaNumero,
+    diasMora
+  ) {
+    const nuevaFecha = new Date(fechaEmision);
+
+    // Move to the next month for subsequent payments
+    nuevaFecha.setMonth(nuevaFecha.getMonth() + (cuotaNumero - 1) * plazo);
+
+    // Apply late fee if the payment is due after the grace period
+    if (diasMora > 0) {
+      nuevaFecha.setDate(nuevaFecha.getDate() + diasMora);
+    }
+
+    return nuevaFecha.toISOString();
+  }
+
+  // Imprimir las facturas generadas
+  const [form] = Form.useForm();
+  // Función para manejar el cambio en los campos del formulario
+
+  const handleSelectChange = (value) => {
+    setPlazo(value);
+    // Puedes realizar acciones adicionales en tiempo real aquí
   };
 
-  const CloseModal = () => {
-    setIsModalOpen(false);
+  const onFinish = (values) => {
+    const resultado = generarFacturas(
+      values.Cuota,
+      state[0]?.MontoInicial,
+      state[0]?.PresupuestoAcordado,
+      values.Plazo,
+      null,
+      values.Mora,
+      values.PlazoDias,
+      values.DiaPago,
+
+    );
+    setFactura(resultado);
   };
 
- 
   const columns = [
     {
       title: "Factura",
-      dataIndex: "Factura",
-      key: "Factura",
-      render: (text, record) => (
-        <span>
-          {"Factura" + " " + dayjs(factura.FechaDeEmision).format("DD-MM-YYYY")}
-        </span>
-      ),
+      dataIndex: "numeroFactura",
+      key: "numeroFactura",
     },
 
     {
       title: "Monto",
-      dataIndex: "Monto",
-      key: "Monto",
+      dataIndex: "monto",
+      key: "monto",
+      render: (text) => (
+        <p>
+          RD$
+          {parseFloat(text).toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })}
+        </p>
+      ),
+    },
+    {
+      title: "Mora %",
+      dataIndex: "porcentajeMora",
+      key: "porcentajeMora",
     },
     {
       title: "Fecha de emision",
-      dataIndex: "FechaDeEmision",
-      key: "FechaDeEmision",
-      render: (text, record) => (
-        <span>{dayjs(factura.FechaDeEmision).format("DD-MM-YYYY")}</span>
-      ),
+      dataIndex: "fechaEmision",
+      key: "fechaEmision",
+      render: (text) => <span>{dayjs(text).format("DD-MM-YYYY")}</span>,
     },
     {
       title: "Fecha de vencimiento",
-      dataIndex: "FechaDeVencimiento",
-      key: "FechaDeVencimiento",
-      render: (text, record) => (
-        <span>{dayjs(factura.FechaDeVencimiento).format("DD-MM-YYYY")}</span>
-      ),
+      dataIndex: "fechaVencimiento",
+      key: "fechaVencimiento",
+      render: (text) => <span>{dayjs(text).format("DD-MM-YYYY")}</span>,
     },
-    // {
-    //   align: "Right",
-    //   key: "action",
-    //   render: (_, record) => (
-    //     <ButtonIcon
-    //     // onMouseUp={() => Remover(record.idProducto)}
-    //     >
-    //       {/* <IoCloseSharp size={15} color="gray" /> */}
-    //     </ButtonIcon>
-    //   ),
-    // },
+    {
+      title: "Plazo",
+      dataIndex: "tipoPlazo",
+      key: "tipoPlazo",
+    },
   ];
 
   const columnsProyectos = [
@@ -97,13 +254,13 @@ const FormConvertToInvoice = () => {
       title: "Proyecto",
       dataIndex: "NombreProyecto",
       key: "NombreProyecto",
-    }, 
+    },
     {
       title: "Estado de proyecto",
       dataIndex: "EstadoProyecto",
       key: "EstadoProyecto",
     },
-  
+
     {
       title: "Presupuesto",
       dataIndex: "PresupuestoAcordado",
@@ -118,12 +275,12 @@ const FormConvertToInvoice = () => {
         </p>
       ),
     },
-   
+
     {
       title: "Monto Incial",
       dataIndex: "MontoInicial",
       key: "MontoInicial",
-      align:"right",
+      align: "right",
       render: (text) => (
         <p>
           RD$
@@ -133,11 +290,9 @@ const FormConvertToInvoice = () => {
           })}
         </p>
       ),
-
     },
     // Agregar más columnas según tus necesidades
   ];
-
 
   // Columnas para la tabla de productos
   const columnsProductos = [
@@ -169,14 +324,44 @@ const FormConvertToInvoice = () => {
       title: "ITBIS",
       dataIndex: "ITBIS",
       key: "ITBIS",
-      align: "center",
-      render: (text) => <p>% {text}</p>,
+      render: (text) => (
+        <p>
+          {parseFloat(text).toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })}
+        </p>
+      ),
     },
     {
-      title: "Sub-Total",
+      title: "Total",
       dataIndex: "Subtotal",
       key: "Subtotal",
-      align:"right",
+      align: "right",
+      render: (text) => (
+        <p>
+          RD$
+          {parseFloat(text).toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })}
+        </p>
+      ),
+    },
+    // Agregar más columnas según tus necesidades
+  ];
+  // Columnas para la tabla de gastos
+  const columnsServicio = [
+    {
+      title: "Servicios",
+      dataIndex: "NombreServicio",
+      key: "NombreServicio",
+    },
+    {
+      title: "Total",
+      dataIndex: "Total",
+      key: "Total",
+      align: "right",
       render: (text) => (
         <p>
           RD$
@@ -190,7 +375,6 @@ const FormConvertToInvoice = () => {
     // Agregar más columnas según tus necesidades
   ];
 
-
   // Columnas para la tabla de gastos
   const columnsGastos = [
     {
@@ -202,7 +386,7 @@ const FormConvertToInvoice = () => {
       title: "Costo",
       dataIndex: "MontoGasto",
       key: "MontoGasto",
-      align:"right",
+      align: "right",
       render: (text) => (
         <p>
           RD$
@@ -222,7 +406,6 @@ const FormConvertToInvoice = () => {
         style={{
           marginTop: 0,
           marginBottom: 15,
-          padding: 15,
           alignItems: "center",
           display: "flex",
           justifyContent: "space-between",
@@ -238,27 +421,11 @@ const FormConvertToInvoice = () => {
       <Container>
         <h3>Información basica</h3>
         <div style={{ display: "flex", width: "100%" }}>
-          <Form
-            style={{ display: "flex", width: "100%", gap: 20, padding: 20 }}
-          >
-            {/* <Form.Item
-              name={"Tipo de NCF"}
-              style={{ width: "300px" }}
-              label={"Tipo de NCF"}
-            >
-              <Select
-                options={[
-                  { value: 1, label: "Consumidor final" },
-                  { value: 1, label: "Registro unico de ingresos" },
-                ]}
-              />
-
-            </Form.Item> */}
+          <Form style={{ display: "flex" }}>
             <div
               style={{
                 display: "flex",
                 justifyContent: "space-between",
-                width: "90%",
               }}
             >
               <div
@@ -292,27 +459,6 @@ const FormConvertToInvoice = () => {
                   <span>(809) 339-2941</span>
                 </div>
               </div>
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  paddingBlock: 10,
-                  marginRight: 5,
-                }}
-              >
-                <div>
-                  <Label>Cliente: </Label>
-                  <span>{state.NombreEntidad}</span>
-                </div>
-                <div>
-                  <Label>Tipo entienda: </Label>
-                  <span>{state.NombreTipoEntidad}</span>
-                </div>
-                <div>
-                  <Label>Nombre del proyecto: </Label>
-                  <span>{state.NombreProyecto}</span>
-                </div>
-              </div>
             </div>
           </Form>
         </div>
@@ -329,16 +475,103 @@ const FormConvertToInvoice = () => {
           }}
         >
           <h3> Distribución de pago</h3>
-
-          <>
-            <ButtonNext
-              style={{ paddingInline: 10 }}
-              type="button"
-              onClick={() => OpenModal()}
+        </div>
+        <div>
+          <Container
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "space-between",
+              width: "100%",
+            }}
+          >
+            <Form
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                width: "100%",
+              }}
+              layout="vertical"
+              onFinish={onFinish}
+              form={form}
             >
-              Agregar
-            </ButtonNext>
-          </>
+              <Form.Item
+                label={<strong>Tipo plazo</strong>}
+                name={"Plazo"}
+                rules={[
+                  {
+                    required: true,
+                    message: "No hay precio",
+                  },
+                ]}
+              >
+                <Select
+                  style={{ width: 200 }}
+                  placeholder="Selecciona algo"
+                  onChange={handleSelectChange}
+                >
+                  <Option value={1}>Mensual</Option>
+                  <Option value={2}>Quincenal</Option>
+                </Select>
+              </Form.Item>
+              <Form.Item
+                label={<strong>Cuota</strong>}
+                name={"Cuota"}
+                rules={[
+                  {
+                    required: true,
+                    message: "No hay precio",
+                  },
+                ]}
+              >
+                <InputNumber min={1} defaultValue={0} style={{ width: 100 }} />
+              </Form.Item>
+
+              <Form.Item
+                label={<strong>Mora %</strong>}
+                name={"Mora"}
+                rules={[
+                  {
+                    required: true,
+                    message: "No hay precio",
+                  },
+                ]}
+              >
+                <InputNumber min={2} style={{ width: 100 }} />
+              </Form.Item>
+
+              {plazo == 1 ? (
+                <Form.Item
+                  label={<strong>Fecha dia</strong>}
+                  name={"DiaPago"}
+                  rules={[
+                    {
+                      required: true,
+                      message: "No hay precio",
+                    },
+                  ]}
+                >
+                  <InputNumber min={1} max={31} style={{ width: 100 }} />
+                </Form.Item>
+              ) : null}
+              <Form.Item
+                label={<strong>Dias para vencimiento</strong>}
+                name={"PlazoDias"}
+                rules={[
+                  {
+                    required: true,
+                    message: "No hay precio",
+                  },
+                ]}
+              >
+                <InputNumber min={1} />
+              </Form.Item>
+
+              <div style={{ display: "flex" }}>
+                <ButtonNext type="submit">Pagos</ButtonNext>
+              </div>
+            </Form>
+          </Container>
         </div>
         <div>
           <Table
@@ -364,8 +597,13 @@ const FormConvertToInvoice = () => {
             columns={columnsProyectos}
           />
           <br />
-
-        
+          <Table
+            dataSource={servicio.totalesPorServicio}
+            pagination={false} // Desactiva la paginación si no deseas que aparezca
+            size="middle"
+            columns={columnsServicio}
+          />
+          <br />
 
           <Table
             dataSource={state[0]?.ProductosProyecto}
@@ -375,7 +613,6 @@ const FormConvertToInvoice = () => {
           />
           <br />
 
-         
           <br />
           <Table
             dataSource={state[0]?.GastoProyecto}
@@ -383,6 +620,85 @@ const FormConvertToInvoice = () => {
             size="middle"
             columns={columnsGastos}
           />
+        </div>
+      </Container>
+      <Container
+        style={{
+          backgroundColor: `white`,
+          marginBlock: 5,
+          display: "flex",
+          justifyContent: "space-between",
+        }}
+      >
+        <div style={{ fontSize: 15, width: "100%" }}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              paddingTop: 15,
+              width: "100%",
+            }}
+          >
+            <p>Total productos:</p>
+            <span>
+              RD${" "}
+              {parseFloat(state[0]?.TotalProducto).toLocaleString(undefined, {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}
+            </span>
+          </div>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              paddingTop: 10,
+            }}
+          >
+            <p>Total servicios:</p>
+            <span>
+              RD${" "}
+              {parseFloat(state[0]?.TotalTarea).toLocaleString(undefined, {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}
+            </span>
+          </div>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              paddingTop: 10,
+            }}
+          >
+            <p>Total gasto adicional:</p>
+            <span>
+              RD${" "}
+              {parseFloat(state[0]?.TotalGasto).toLocaleString(undefined, {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}
+            </span>
+          </div>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              paddingTop: 10,
+            }}
+          >
+            <h3>Total general</h3>
+            <h3>
+              RD${" "}
+              {parseFloat(state[0]?.PresupuestoAcordado).toLocaleString(
+                undefined,
+                {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                }
+              )}
+            </h3>
+          </div>
         </div>
       </Container>
       <Container
@@ -410,13 +726,6 @@ const FormConvertToInvoice = () => {
           </BtnNavPro>
         </div>
       </Container>
-
-      <ModalPlazoPago
-        isModalOpen={isModalOpen}
-        CloseModal={CloseModal}
-        factura={factura}
-        setFactura={setFactura}
-      />
     </ViewContainerPages2>
   );
 };

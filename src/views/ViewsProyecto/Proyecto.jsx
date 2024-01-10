@@ -345,7 +345,10 @@ const ProyectoModal = ({ proyecto, OpenModal, CloseModal, isModalOpen }) => {
       dataIndex: "ITBIS",
       key: "ITBIS",
       align: "center",
-      render: (text) => <p>% {text}</p>,
+      render: (text) => <p> {parseFloat(text).toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      })}</p>,
     },
     {
       title: "Precio",

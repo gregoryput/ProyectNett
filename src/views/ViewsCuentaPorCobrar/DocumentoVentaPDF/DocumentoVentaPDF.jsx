@@ -46,16 +46,25 @@ const styles = StyleSheet.create({
   },
   tableRow: { margin: "auto", flexDirection: "row" },
   tableCol: {
-    width: "25%",
+    width: "36%",
     borderStyle: "solid",
     borderWidth: 1,
     borderLeftWidth: 0,
     borderTopWidth: 0,
+    textAlign: "left",
   },
-  tableCell: { margin: "auto", marginTop: 5, fontSize: 10 },
+  tableCell: { paddingLeft: 3, marginTop: 5, fontSize: 10 },
 
   tableCol2: {
     width: "50%",
+    borderStyle: "solid",
+    borderWidth: 1,
+    borderLeftWidth: 0,
+    borderTopWidth: 0,
+    textAlign: "left",
+  },
+  tableCol3: {
+    width: "16%",
     borderStyle: "solid",
     borderWidth: 1,
     borderLeftWidth: 0,
@@ -70,7 +79,6 @@ const styles = StyleSheet.create({
 
 const DocumentoVentaPDF = ({ Cotizacion, resultado }) => {
   let fecha = new Date();
-
   function currencyFormatter({ currency, value }) {
     const formatter = new Intl.NumberFormat("en-US", {
       style: "currency",
@@ -159,13 +167,16 @@ const DocumentoVentaPDF = ({ Cotizacion, resultado }) => {
                 <View style={styles.tableCol}>
                   <Text style={styles.tableCell}>Producto</Text>
                 </View>
-                <View style={styles.tableCol}>
+                <View style={styles.tableCol3}>
                   <Text style={styles.tableCell}>Cantidad</Text>
                 </View>
-                <View style={styles.tableCol}>
+                <View style={styles.tableCol3}>
                   <Text style={styles.tableCell}>Precio</Text>
                 </View>
-                <View style={styles.tableCol}>
+                <View style={styles.tableCol3}>
+                  <Text style={styles.tableCell}>ITBIS</Text>
+                </View>
+                <View style={styles.tableCol3}>
                   <Text style={styles.tableCell}>Total</Text>
                 </View>
               </View>
@@ -176,10 +187,10 @@ const DocumentoVentaPDF = ({ Cotizacion, resultado }) => {
                       {producto.NombreProducto}
                     </Text>
                   </View>
-                  <View style={styles.tableCol}>
+                  <View style={styles.tableCol3}>
                     <Text style={styles.tableCell}>{producto.Cantidad}</Text>
                   </View>
-                  <View style={styles.tableCol}>
+                  <View style={styles.tableCol3}>
                     <Text style={styles.tableCell}>
                       {"  "}
                       RD
@@ -189,7 +200,16 @@ const DocumentoVentaPDF = ({ Cotizacion, resultado }) => {
                       })}
                     </Text>
                   </View>
-                  <View style={styles.tableCol}>
+                  <View style={styles.tableCol3}>
+                    <Text style={styles.tableCell}>
+                      {" "}
+                      {parseFloat(producto.ITBIS).toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}
+                    </Text>
+                  </View>
+                  <View style={styles.tableCol3}>
                     <Text style={styles.tableCell}>
                       {"  "}
                       RD
@@ -210,7 +230,7 @@ const DocumentoVentaPDF = ({ Cotizacion, resultado }) => {
                   <Text style={styles.tableCell}>Gasto Adicional</Text>
                 </View>
                 <View style={styles.tableCol2}>
-                  <Text style={styles.tableCell}>Precio</Text>
+                  <Text style={styles.tableCell}>Costo</Text>
                 </View>
               </View>
               {Cotizacion?.GastoProyecto.map((gasto, index) => (

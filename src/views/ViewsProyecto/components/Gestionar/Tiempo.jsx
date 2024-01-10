@@ -16,7 +16,6 @@ export default function Tiempo({ proyecto }) {
     if (proyecto) {
       const resultado = analizarProyecto(proyecto);
       setB(resultado);
-      console.log(p);
     }
   }, [proyecto]);
 
@@ -60,7 +59,6 @@ export default function Tiempo({ proyecto }) {
     };
   }
 
-  console.log(p);
 
   return (
     <Container style={{ marginInline: 5, marginTop: 0 }}>
