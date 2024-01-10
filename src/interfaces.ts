@@ -58,11 +58,9 @@ export interface IEmpresa {
   FechaModificacion?: string;
   IdEstadoRegistro?: number;
 
-  //PersonaTiposPersona?: IPersonaTipoPersona[];
-
   DataImagenEmpresa?: {
     Imagen: IImagen;
-    PersonaImagen: IPersonaImagen;
+    EmpresaImagen: IEmpresaImagen;
   };
 }
 
@@ -175,12 +173,20 @@ export interface IPersonaConAsociado {
   };
 
   YaEstaAsociado: boolean;
+
+  Entidad: IEntidad;
 }
 
-interface IPersonaImagen {
+export interface IPersonaImagen {
   IdPersonaImagen: number;
   IdImagen: number;
   IdPersona: number;
+}
+
+export interface IEmpresaImagen {
+  IdEmpresaImagen: number;
+  IdImagen: number;
+  IdEmpresa: number;
 }
 
 export interface IPersonaTipoPersona {
@@ -243,6 +249,8 @@ export interface PersonaInfoPersonalDTO {
   IdPersonaImagen: number;
 
   YaEstaAsociado: boolean;
+
+  Entidad: IEntidad | null;
 }
 
 export interface IDocumentoDTO {
@@ -284,4 +292,132 @@ export interface IProductoExistencia {
   ITBIS: number;
   UnidadNombre: string;
   CantidadExistente: number;
+}
+
+// -------------------------------------------------------------------------------------------
+export interface IEntidad {
+  IdEntidad: number;
+  NombreEntidad: string;
+  IdTipoEntidad: number;
+  IdCreadoPor?: number | null;
+  FechaCreacion?: Date | null;
+  IdModificadoPor?: number | null;
+  FechaModificacion?: Date | null;
+  IdEstadoRegistro?: number | null;
+  EntidadRolEntidad?: IEntidadRolEntidad | null;
+  EntidadPersonaFisica?: IEntidadPersonaFisica | null;
+  EntidadPersonaFisicaRepresentante?: IEntidadPersonaFisicaRepresentante | null;
+  ClienteEntidad?: IClienteEntidad | null;
+}
+
+export interface IEntidadRolEntidad {
+  IdEntidadRolEntidad: number;
+  IdEntidad: number;
+  IdRolEntidad: number;
+  IdCreadoPor?: number | null;
+  FechaCreacion?: Date | null;
+  IdModificadoPor?: number | null;
+  FechaModificacion?: Date | null;
+  IdEstadoRegistro?: number | null;
+}
+
+export interface IEntidadPersonaFisica {
+  IdEntidadPersonaFisica: number;
+  IdEntidad: number;
+  IdPersona: number;
+  IdCreadoPor?: number | null;
+  FechaCreacion?: Date | null;
+  IdModificadoPor?: number | null;
+  FechaModificacion?: Date | null;
+  IdEstadoRegistro?: number | null;
+}
+
+export interface IEntidadPersonaFisicaRepresentante {
+  IdEPFR: number;
+  IdEntidadPersonaFisica: number;
+  IdRepresentanteActual: number;
+  IdRolRepresentante: number;
+  FechaInicioRepresentante: Date;
+  FechaFinRepresentante: Date;
+  IdCreadoPor?: number | null;
+  FechaCreacion?: Date | null;
+  IdModificadoPor?: number | null;
+  FechaModificacion?: Date | null;
+  IdEstadoRegistro?: number | null;
+}
+
+interface IClienteEntidad {
+  IdCliente: number;
+  Codigo: string;
+  IdEntidad: number;
+  FechaInicioCliente: Date;
+  IdCreadoPor?: number | null;
+  FechaCreacion?: Date | null;
+  IdModificadoPor?: number | null;
+  FechaModificacion?: Date | null;
+  IdEstadoRegistro?: number | null;
+}
+
+// -----------------------------------------------------------------------------------------------------------------------
+
+export interface IProductInv {
+  IdProducto: number;
+  Nombre: string;
+  Codigo: string;
+  Descripcion: string;
+  Modelo: string;
+  TieneVencimiento: boolean;
+  IdEstado?: number | null;
+  IdCreadoPor?: number | null;
+  FechaCreacion?: Date | null;
+  IdModificadoPor?: number | null;
+  FechaModificacion?: Date | null;
+  IdEstadoRegistro?: number | null;
+  ProductoUnidadesMedidaDetalles?: ProdutoDetalleUnidadMedidaDetalle[] | null;
+  // ------------------
+  DataImagenProducto?: {
+    Imagen: IImagen;
+    ProductoImagen: IProductoImagen;
+  };
+}
+
+interface ProdutoDetalleUnidadMedidaDetalle {
+  ProductoUnidadDeMedida: ProductoUnidadDeMedida;
+  DetalleProductoUnidadDeMedida: DetalleProductoUnidadDeMedida;
+}
+
+interface ProductoUnidadDeMedida {
+  IdProductoUnidadDeMedida: number;
+  IdUnidadDeMedida: number;
+  IdProducto: number;
+  IdCreadoPor?: number | null;
+  FechaCreacion?: Date | null;
+  IdModificadoPor?: number | null;
+  FechaModificacion?: Date | null;
+  IdEstadoRegistro?: number | null;
+}
+
+interface DetalleProductoUnidadDeMedida {
+  IdProducto: number;
+  IdUnidadDeMedida: number;
+  PrecioCosto: number;
+  PrecioVenta: number;
+  ITBIS: number;
+  IdProductoUnidadDeMedida: number;
+  IdCreadoPor?: number | null;
+  FechaCreacion?: Date | null;
+  IdModificadoPor?: number | null;
+  FechaModificacion?: Date | null;
+  IdEstadoRegistro?: number | null;
+}
+
+export interface IProductoImagen {
+  IdPrductoImagen: number;
+  IdImagen: number;
+  IdProducto: number;
+  IdCreadoPor?: number | null;
+  FechaCreacion?: Date | null;
+  IdModificadoPor?: number | null;
+  FechaModificacion?: Date | null;
+  IdEstadoRegistro?: number | null;
 }

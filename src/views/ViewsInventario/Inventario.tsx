@@ -13,12 +13,11 @@ import { useGetUnistOfMeasurementsQuery } from "../../redux/Api/unitsOfMeasureme
 import {
   useCreateProductMutation,
   useGetProductsInvWithExistenceInvQuery,
-  //useGetProductsInvWithExistenceQuery,
 } from "../../redux/Api/productsApi";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import React from "react";
-import { IProductoInv } from "../../interfaces";
+import { IProductInv, IProductoInv } from "../../interfaces";
 import Table, { ColumnsType } from "antd/es/table";
 import { MdDeleteOutline, MdDocumentScanner, MdImage } from "react-icons/md";
 import { MdEditSquare } from "react-icons/md";
@@ -38,6 +37,11 @@ export default function Inventario() {
     isLoading: isLoadingProducts,
   } = useGetProductsInvWithExistenceInvQuery();
 
+  // Estado para controlar si se van a crear o editar datos personales:
+  const [dataEditProducto, setDataEditProduct] = React.useState<
+    IProductInv | undefined
+  >(undefined);
+
   //Funcion peticion para el create/insert de Producto:
   const [
     createProduct,
@@ -54,23 +58,11 @@ export default function Inventario() {
     value: op?.IdUnidadDeMedida,
   }));
 
-  console.log("unitsunits", units?.data?.Result);
-
   React.useEffect(() => {
     if (isProductsError) {
       message.success("Error al solicitar la lista de productos");
     }
   }, [isProductsError]);
-
-  const scrollToSection = () => {
-    // Obtener el titulo de arriba, para cuando se de clic a un producto, si esta muy abajo se desplace hacia arriba automaticamente:
-    const targetSection = document.getElementById("titleTop");
-
-    if (targetSection) {
-      // Con el scrollIntoView se lleva a cabo el desplazamiento a la sección objetivo (titleTop):
-      targetSection.scrollIntoView({ behavior: "smooth" });
-    }
-  };
 
   React.useEffect(() => {
     if (isLoadingCreate) {
@@ -276,6 +268,10 @@ export default function Inventario() {
             success: isCreateSuccess,
             error: isErrorCreate,
           }}
+          //
+          dataEditProducto={dataEditProducto}
+          setDataEditProduct={setDataEditProduct}
+          //
           cleanInputs={cleanInputs}
           setCleanInputs={setCleanInputs}
           createProduct={createProduct}
@@ -283,7 +279,6 @@ export default function Inventario() {
           OnClose={() => setOpenDrawerForm(false)}
           OpstionsUnits={opstionsUnits}
           selectedItem={selectedItem}
-          setSelectedItem={setSelectedItem}
           Title={
             <div
               style={{

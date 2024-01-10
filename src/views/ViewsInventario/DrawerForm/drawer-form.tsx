@@ -1,27 +1,22 @@
 import {
   Drawer,
   Form,
-  Image,
   Input,
   InputNumber,
-  Skeleton,
-  Upload,
-  Tooltip,
   Collapse,
-  Checkbox,
   Modal,
   Button,
   Select,
   UploadFile,
+  Switch,
 } from "antd";
 import TextArea from "antd/es/input/TextArea";
-import PropTypes from "prop-types";
-import { MdAddLink, MdDeleteOutline } from "react-icons/md";
+
+import { MdDeleteOutline } from "react-icons/md";
 import { IoClose } from "react-icons/io5";
 import { RxInput } from "react-icons/rx";
 import { FiSave } from "react-icons/fi";
 import { FaEdit } from "react-icons/fa";
-import { MdInfo } from "react-icons/md";
 import { MdLibraryAdd } from "react-icons/md";
 
 import "../../../GeneralStyles/form-styles.css";
@@ -30,24 +25,42 @@ import {
   ButtonCancelOp,
   ButtonClearInputs,
   ButtonOperation,
-  DivAreaFoto,
-  DivContainerCheck,
   DivFooterDrawer,
-  DivFooterFoto,
-  DivSelectArea,
-  DivUpload,
 } from "./drawer-form-styled";
-import { MdDelete } from "react-icons/md";
-import { MdChangeCircle } from "react-icons/md";
-import { MdOutlineRadioButtonUnchecked } from "react-icons/md";
 import { FaRuler } from "react-icons/fa";
 
-import "./styles.css"; // Importa tu archivo de estilos CSS
-import CustomChecked from "./custom-checked";
+import "./styles.css";
 import useBase64Conversion from "../../../hooks/UseBase64Conversion";
-import { RcFile } from "antd/es/upload";
+import { CustomUploadImageProduct } from "../../../components/CustomUploadImage";
+import { IImagen, IProductInv, IProductoImagen } from "../../../interfaces";
+
+export interface IDrawerFormProps {
+  //
+  dataEditProducto: IProductInv | undefined;
+  //
+  setDataEditProduct: React.Dispatch<
+    React.SetStateAction<IProductInv | undefined>
+  >;
+  //
+  statusFetch: {
+    loading: boolean;
+    success: boolean;
+    error: boolean;
+  };
+  //
+  cleanInputs: any;
+  setCleanInputs: React.Dispatch<any>;
+  createProduct: any;
+  //
+  Open: boolean;
+  OnClose: () => void;
+  OpstionsUnits: any;
+  selectedItem: any;
+  Title: React.JSX.Element;
+}
 
 export default function DrawerForm({
+  dataEditProducto,
   Open,
   OnClose,
   Title,
@@ -57,7 +70,7 @@ export default function DrawerForm({
   setCleanInputs,
   selectedItem,
   OpstionsUnits,
-}) {
+}: IDrawerFormProps) {
   const [form] = Form.useForm();
 
   // Mi hook personalizado para obtener el base64 de la imagen
@@ -72,42 +85,44 @@ export default function DrawerForm({
     [] as UploadFile<any>[]
   );
 
+  // Obtener el archivo cargado en el upload:
+  const selectedFile = fileList[0];
+
+  const [dataImage, setDataImage] = React.useState<string | null>(null);
+
+  // Un useEffect para capturar la informacion de la imagen: --------------------------------------
+  React.useEffect(() => {
+    fileList.length > 0
+      ? convertToBase64(fileList[0]?.originFileObj as File).then(
+          (base64String) => {
+            // Extraer solo la parte base64 sin el encabezado
+            const base64WithoutHeader = base64String?.split(",")[1]; // Obtener la parte después de la coma
+            setDataImage(base64WithoutHeader || "");
+          }
+        )
+      : null;
+  }, [fileList]);
+
+  // Crear objeto data para la imagen:
+  let objectImage =
+    fileList.length > 0
+      ? ({
+          IdImagen: dataEditProducto?.DataImagenProducto?.Imagen.IdImagen || 0,
+          FileName: selectedFile.name,
+          ContentType: selectedFile.type || "",
+          FileSize: selectedFile.size || 0,
+          Data: dataImage,
+        } as IImagen)
+      : undefined;
+
   const [TieneVencimiento, setTieneVencimiento] =
     React.useState<boolean>(false);
 
-  interface ImageData {
-    index: number;
-    IdImage: number;
-    data: string | null;
-    isPrincipal: boolean;
-  }
-  const [dataImages, setDataImages] = React.useState<ImageData[]>(
-    [] as ImageData[]
-  );
-
-  console.log("dataImagesdataImages", dataImages);
-
-  React.useEffect(() => {
-    const promises = fileList.map((file, index) =>
-      convertToBase64(file?.originFileObj as File).then((base64String) => {
-        // Extraer solo la parte base64 sin el encabezado
-        const base64WithoutHeader = base64String?.split(",")[1]; // Obtener la parte después de la coma
-        return {
-          index: index,
-          IdImage: 0,
-          data: base64WithoutHeader as string,
-          isPrincipal: false,
-        };
-      })
-    );
-
-    Promise.all(promises).then((imageDataArray) => {
-      setDataImages(imageDataArray as ImageData[]);
-    });
-  }, [fileList]);
+  const [deleteImageEditMode, setDeleteImageEditMode] =
+    React.useState<boolean>(false);
 
   const handleSubmit = (dataProduct) => {
-    const dataSubmitProduct = {
+    const dataSubmitProduct: IProductInv = {
       IdProducto: 0,
       Nombre: dataProduct.Nombre,
       Codigo: dataProduct.Codigo,
@@ -134,143 +149,44 @@ export default function DrawerForm({
         })
       ),
 
-      DataProductoImagenes: fileList.map((file, index) => ({
-        Imagen: {
-          IdImagen: 0,
-          FileName: file.name,
-          ContentType: file.type || "",
-          FileSize: file.size || 0,
-          Data: dataImages[index].data,
-        },
-        ProductoImagen: {
-          IdProductoImagen: 0,
-          IdImagen: 0,
-          IdProducto: 0,
-          EsLaPrincipal: index == 0 ? true : false,
-        },
-      })),
+      DataImagenProducto:
+        objectImage !== undefined
+          ? {
+              Imagen: objectImage as IImagen,
+              ProductoImagen: {
+                IdPrductoImagen:
+                  dataEditProducto?.DataImagenProducto?.ProductoImagen
+                    .IdPrductoImagen || 0,
+                IdImagen: objectImage?.IdImagen || 0,
+                IdProducto: dataEditProducto?.IdProducto || 0,
+              } as IProductoImagen,
+            }
+          : !deleteImageEditMode
+          ? {
+              Imagen: {
+                IdImagen: 0,
+                FileName: "",
+                ContentType: "",
+                FileSize: 0,
+                Data: "",
+              } as IImagen,
+              ProductoImagen: {
+                IdPrductoImagen: 0,
+                IdImagen: 0,
+                IdProducto: 0,
+              },
+            }
+          : undefined,
     };
-
-    // {
-    //   "IdProducto": 0,
-    //   "Nombre": "string",
-    //   "Codigo": "string",
-    //   "Descripcion": "string",
-    //   "Modelo": "string",
-    //   "TieneVencimiento": true,
-    //   "IdEstado": 0,
-    //   "IdCreadoPor": 0,
-    //   "FechaCreacion": "2023-12-15T16:46:47.022Z",
-    //   "IdModificadoPor": 0,
-    //   "FechaModificacion": "2023-12-15T16:46:47.022Z",
-    //   "IdEstadoRegistro": 0,
-    //   "ProductoUnidadesDeMedida": [
-    //     {
-    //       "IdProductoUnidadDeMedida": 0,
-    //       "IdUnidadDeMedida": 0,
-    //       "IdProducto": 0,
-    //       "IdCreadoPor": 0,
-    //       "FechaCreacion": "2023-12-15T16:46:47.022Z",
-    //       "IdModificadoPor": 0,
-    //       "FechaModificacion": "2023-12-15T16:46:47.022Z",
-    //       "IdEstadoRegistro": 0
-    //     }
-    //   ],
-    //   "ProductoUnidadesMedidaDetalles": [
-    //     {
-    //       "ProductoUnidadDeMedida": {
-    //         "IdProductoUnidadDeMedida": 0,
-    //         "IdUnidadDeMedida": 0,
-    //         "IdProducto": 0,
-    //         "IdCreadoPor": 0,
-    //         "FechaCreacion": "2023-12-15T16:46:47.022Z",
-    //         "IdModificadoPor": 0,
-    //         "FechaModificacion": "2023-12-15T16:46:47.022Z",
-    //         "IdEstadoRegistro": 0
-    //       },
-    //       "DetalleProductoUnidadDeMedida": {
-    //         "IdProducto": 0,
-    //         "IdUnidadDeMedida": 0,
-    //         "PrecioCosto": 0,
-    //         "PrecioVenta": 0,
-    //         "ITBIS": 0,
-    //         "IdProductoUnidadDeMedida": 0,
-    //         "IdCreadoPor": 0,
-    //         "FechaCreacion": "2023-12-15T16:46:47.022Z",
-    //         "IdModificadoPor": 0,
-    //         "FechaModificacion": "2023-12-15T16:46:47.022Z",
-    //         "IdEstadoRegistro": 0
-    //       }
-    //     }
-    //   ],
-    //   "DataProductoImagenes": [
-    //     {
-    //       "Imagen": {
-    //         "IdImagen": 0,
-    //         "FileName": "string",
-    //         "ContentType": "string",
-    //         "FileSize": 0,
-    //         "Data": "string",
-    //         "IdCreadoPor": 0,
-    //         "FechaCreacion": "2023-12-15T16:46:47.022Z",
-    //         "IdModificadoPor": 0,
-    //         "FechaModificacion": "2023-12-15T16:46:47.022Z",
-    //         "IdEstadoRegistro": 0
-    //       },
-    //       "ProductoImagen": {
-    //         "IdProductoImagen": 0,
-    //         "IdImagen": 0,
-    //         "IdProducto": 0,
-    //         "EsLaPrincipal": true,
-    //         "IdCreadoPor": 0,
-    //         "FechaCreacion": "2023-12-15T16:46:47.022Z",
-    //         "IdModificadoPor": 0,
-    //         "FechaModificacion": "2023-12-15T16:46:47.022Z",
-    //         "IdEstadoRegistro": 0
-    //       }
-    //     }
-    //   ]
-    // }
-
-    console.log(
-      "dataSubmitProductdataSubmitProductdataSubmitProduct",
-      dataSubmitProduct
-    );
     createProduct({ ...dataSubmitProduct });
   };
 
-  // const [unidadesDeMedida, setUnidadesDeMedida] = useState([]);
-  // const [selectedUnit, setSelectedUnit] = useState(null);
   const [openModalUnit, setOpenModalUnit] = useState<boolean>(false);
 
   useEffect(() => {
     cleanInputs ? form.resetFields() : null;
     setCleanInputs(false);
   }, [cleanInputs, form, setCleanInputs]);
-
-  //Funcion para el onChange del ChekBox personalizado:
-  const handleCheckChange = (isChecked, file) => {
-    setDataImages((prevState) => {
-      //deshabilito los checks marcados y marco el clickeado:
-      const newDataImages = prevState.map((pS) => ({
-        ...pS,
-        isPrincipal: pS.index === file.index ? isChecked : false,
-      }));
-      return newDataImages;
-    });
-  };
-
-  //Funcion para borrar foto:
-  const handleDeleteFoto = (file) => {
-    setFileList((prevState) => {
-      const newFileList = prevState.filter((pS) => pS.uid !== file.uid);
-      return newFileList;
-    });
-  };
-
-  // const clickNoPropagation = (event) => {
-  //   event.stopPropagation(); // Detener la propagación del evento para evitar que alcance el Collapse
-  // };
 
   // ---- Observar el FormList
   const UnidadesDetalles = Form.useWatch("UnidadesDeMedidaDetalles", form);
@@ -430,48 +346,69 @@ export default function DrawerForm({
           </Form.Item>
 
           {/*------------ CAMPO PRECIO COSTO DEL PRODUCTO: ------------*/}
-          {/*------------ CAMPO PRECIO VENTA DEL PRODUCTO: ------------*/}
-          {/*------------ CAMPO ITBIS DEL PRODUCTO: ------------*/}
 
-          {/*------------ CAMPO CODIGO DEL PRODUCTO: ------------*/}
-          <Form.Item
-            label={<strong>Código:</strong>}
-            name={"Codigo"}
-            style={{ width: "49%" }}
-            rules={[
-              {
-                required: true,
-                message: "Debe ingresar el código del producto",
-              },
-              {
-                max: 7,
-                message: "7 caracteres como máximo",
-              },
-              {
-                min: 5,
-                message: "5 caracteres como mínimo",
-              },
-            ]}
-          >
-            <Input placeholder="Ingrese el código" />
-          </Form.Item>
-
-          {/*------------ CAMPO GENERAR CODIGO: ------------*/}
-          <Form.Item
+          <div
             style={{
-              width: "49%",
+              width: "100%",
               display: "flex",
               alignItems: "flex-end",
-              justifyContent: "flex-end",
+              justifyContent: "space-between",
+              flexWrap: "wrap",
+              flexDirection: "row",
             }}
-            valuePropName="checked"
-            name={"TieneVencimiento"}
-            label={<strong>Tiene vencimiento:</strong>}
           >
-            <Checkbox
-              onChange={() => setTieneVencimiento((prevState) => !prevState)}
-            />
-          </Form.Item>
+            {/*------------ CAMPO FOTOS DEL PRODUCTO: ------------*/}
+            <div style={{ width: "14%", marginLeft: "10px" }}>
+              <CustomUploadImageProduct
+                fileList={fileList}
+                setFileList={setFileList}
+                width="100%"
+                dataEditProduct={dataEditProducto}
+                deleteImageEditMode={deleteImageEditMode}
+                setDeleteImageEditMode={setDeleteImageEditMode}
+              />
+            </div>
+
+            {/*------------ CAMPO CODIGO DEL PRODUCTO: ------------*/}
+            <Form.Item
+              label={<strong>Código:</strong>}
+              name={"Codigo"}
+              style={{ width: "30%" }}
+              rules={[
+                {
+                  required: true,
+                  message: "Debe ingresar el código del producto",
+                },
+                {
+                  max: 7,
+                  message: "7 caracteres como máximo",
+                },
+                {
+                  min: 5,
+                  message: "5 caracteres como mínimo",
+                },
+              ]}
+            >
+              <Input placeholder="Ingrese el código" />
+            </Form.Item>
+
+            {/*------------ CAMPO TIENE VENCIMIENTO: ------------*/}
+            <Form.Item
+              style={{
+                width: "30%",
+                display: "flex",
+                alignItems: "flex-end",
+              }}
+              valuePropName="checked"
+              name={"TieneVencimiento"}
+              label={<strong>Tiene vencimiento:</strong>}
+            >
+              <Switch
+                style={{ width: "80px", marginLeft: "60px" }}
+                onChange={() => setTieneVencimiento((prevState) => !prevState)}
+              />
+            </Form.Item>
+          </div>
 
           {/*Campo Unidades de medida -----------------------------------------------------------------------------------------------------*/}
           <div style={{ width: "100%" }}>
@@ -600,199 +537,6 @@ export default function DrawerForm({
               )}
             </Form.List>
           </div>
-
-          {/*------------ CAMPO FOTOS DEL PRODUCTO DEL PRODUCTO: ------------*/}
-          <Form.Item
-            name="CapacitacionFoto"
-            style={{
-              width: "100%",
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                width: "100%",
-                alignItems: "center",
-                justifyContent: "space-between",
-              }}
-            >
-              <div style={{ width: "95%", margin: "0 auto" }}>
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    justifyContent: "center",
-                  }}
-                >
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "row",
-                      alignItems: "center",
-                      marginBottom: "5px",
-                    }}
-                  >
-                    <span style={{ fontSize: "15px", fontWeight: "bold" }}>
-                      Imágenes del producto:
-                    </span>
-                    <Tooltip
-                      title="Puede seleccionar un máximo de 4 fotos y elegir una como principal (si no elige ninguna, la primera será la principal)"
-                      placement="top"
-                    >
-                      <MdInfo size={18} />
-                    </Tooltip>
-                  </div>
-                </div>
-
-                {/*CAROUSEL*/}
-                <div
-                  style={{
-                    height: "140px",
-                    background: "#252323",
-                    padding: "10px",
-                    borderRadius: "10px",
-                    display: "flex",
-                    flexDirection: "row",
-                    justifyContent: "center",
-                  }}
-                >
-                  {fileList.length < 4 ? (
-                    <div style={{ marginRight: "20px" }}>
-                      <Upload
-                        name="ProductoFotos"
-                        multiple={false}
-                        maxCount={1}
-                        showUploadList={false}
-                        onChange={(infoFiles) => {
-                          const selectedFiles = infoFiles.fileList;
-                          const uniqueFiles = selectedFiles.filter(
-                            (file) => !fileList.some((f) => f.uid === file.uid)
-                          );
-
-                          // Agregar archivos únicos a fileList
-                          setFileList((prevState) => [
-                            ...prevState,
-                            ...uniqueFiles.map((uF) => {
-                              return {
-                                ...uF,
-                              };
-                            }),
-                          ]);
-                        }}
-                      >
-                        <DivUpload>
-                          <DivSelectArea>
-                            <span
-                              style={{
-                                marginTop: "10px",
-                                fontWeight: "bold",
-                              }}
-                            >
-                              Agregar
-                            </span>
-                            <span>
-                              <MdAddLink size={30} />
-                            </span>
-                          </DivSelectArea>
-                        </DivUpload>
-                      </Upload>
-                      <DivFooterFoto>
-                        <MdDelete size={20} color="#AAAAAA" />
-                        <MdOutlineRadioButtonUnchecked
-                          size={18}
-                          color="#AAAAAA"
-                        />
-                        <MdChangeCircle size={20} color="#AAAAAA" />
-                      </DivFooterFoto>
-                    </div>
-                  ) : null}
-                  {fileList.map((file, index) => (
-                    <div
-                      key={index}
-                      style={{
-                        marginRight: `${
-                          index === fileList.length - 1 ? "0" : "20px"
-                        }`,
-                      }}
-                    >
-                      <DivAreaFoto>
-                        <Image
-                          src={URL.createObjectURL(
-                            file.originFileObj as RcFile
-                          )}
-                          alt={`Imagen-${file.uid}`}
-                          style={{
-                            maxHeight: "80px",
-                            minWidth: "80px",
-                            borderRadius: "45px",
-                          }}
-                        />
-                      </DivAreaFoto>
-                      <DivFooterFoto>
-                        <Tooltip title="Eliminar esta foto">
-                          <MdDelete
-                            size={20}
-                            style={{ cursor: "pointer" }}
-                            onClick={() => handleDeleteFoto(file)}
-                          />
-                        </Tooltip>
-
-                        <Tooltip
-                          title={`${
-                            !dataImages[index]?.isPrincipal
-                              ? "Establecer como principal"
-                              : "Quitar de principal"
-                          }`}
-                        >
-                          <DivContainerCheck>
-                            <CustomChecked
-                              onChange={handleCheckChange}
-                              isActive={dataImages[index]?.isPrincipal}
-                              dataImage={dataImages[index]}
-                            />
-                          </DivContainerCheck>
-                        </Tooltip>
-
-                        <div>
-                          <Upload
-                            name="fileChangeFile"
-                            multiple={false}
-                            maxCount={1}
-                            showUploadList={false}
-                            onChange={(infoFiles) => {
-                              const selectedFile = infoFiles.fileList[0]; // Obtener el archivo seleccionado
-
-                              // Encuentra el índice del archivo a actualizar en el fileList
-                              const index = fileList.findIndex(
-                                (file) => file.uid === file.uid
-                              );
-
-                              if (index !== -1) {
-                                // Crear una nueva lista de archivos actualizada con la foto cambiada
-                                const updatedFileList = [...fileList];
-                                updatedFileList[index] = selectedFile;
-
-                                // Actualizar el estado fileList con la nueva lista de archivos
-                                setFileList(updatedFileList);
-                              }
-                            }}
-                          >
-                            <Tooltip title="Cambiar esta foto">
-                              <MdChangeCircle
-                                size={20}
-                                style={{ cursor: "pointer", marginBottom: 0 }}
-                              />
-                            </Tooltip>
-                          </Upload>
-                        </div>
-                      </DivFooterFoto>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </Form.Item>
         </Form>
       </Drawer>
 
