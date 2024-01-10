@@ -1,3 +1,4 @@
+import { Image } from "antd";
 import styled from "styled-components";
 
 export const DivFooterFoto = styled.div`
@@ -22,7 +23,7 @@ export const DivPrincipalContainerColumns = styled.div`
 `;
 
 /* 1.1 - ********** Columna Info personal: ************************** */
-export const DivContainerColumnPersonalInfo = styled.div`
+export const DivContainerColumn = styled.div`
   margin-top: 15px;
   width: 48%;
 `;
@@ -44,6 +45,7 @@ export const H3TitleColumn = styled.h3`
   text-align: center;
   color: white;
   margin-right: 5px;
+  padding: 3px;
 `;
 
 /* B ---------- Contenedor principal de la info personal (1 - Select de cedula-nombre con foto y PequeñasColumnas para mostrar la info del seleccionado): ---------------- */
@@ -92,7 +94,7 @@ export const DivAreaFoto = styled.div`
 `;
 
 // StyledImageAntd:
-export const StyledImageAntd = styled.div`
+export const StyledImageAntd = styled(Image)`
   max-height: 80px;
   min-width: 80px;
   border-radius: 45px;

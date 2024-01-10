@@ -482,7 +482,6 @@ const ModalFormPerson = ({
             fileList={fileList}
             setFileList={setFileList}
             width="14%"
-            //dataEditPersona={dataEditEmpresa}
             deleteImageEditMode={deleteImageEditMode}
             setDeleteImageEditMode={setDeleteImageEditMode}
           />

@@ -15,38 +15,36 @@ import { MdImageNotSupported } from "react-icons/md";
 import { MdDelete } from "react-icons/md";
 import { FcEditImage } from "react-icons/fc";
 import { MdRemoveRedEye } from "react-icons/md";
-import { IPersona } from "../../interfaces";
+import { IProductInv } from "../../interfaces";
 
 interface ICustomUploadImageProps {
   fileList: UploadFile<any>[];
   setFileList: React.Dispatch<React.SetStateAction<UploadFile<any>[]>>;
   width: string;
-  dataEditPersona: IPersona | undefined;
+  dataEditProduct: IProductInv | undefined;
   deleteImageEditMode: boolean;
   setDeleteImageEditMode: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const CustomUploadImage = ({
+const CustomUploadImageProduct = ({
   fileList,
   setFileList,
   width,
-  dataEditPersona,
+  dataEditProduct,
   deleteImageEditMode,
   setDeleteImageEditMode,
 }: ICustomUploadImageProps) => {
-  console.log("deleteImageEditMode", deleteImageEditMode);
-
   return (
     <ContainerPrincipal width={width}>
       <Form.Item name={"fotoCliente"}>
         <ContainerSubPrincipal>
           <DivAreaFoto>
-            {dataEditPersona !== undefined && fileList.length == 0 ? (
-              dataEditPersona.DataImagenPersona?.Imagen.Data != null &&
+            {dataEditProduct !== undefined && fileList.length == 0 ? (
+              dataEditProduct.DataImagenProducto?.Imagen.Data != null &&
               deleteImageEditMode == false ? (
                 <ImageAntd
-                  src={`data:${dataEditPersona.DataImagenPersona?.Imagen?.ContentType};base64,${dataEditPersona.DataImagenPersona?.Imagen?.Data}`}
-                  alt={`Imagen-${dataEditPersona.DataImagenPersona?.Imagen?.FileName}`}
+                  src={`data:${dataEditProduct.DataImagenProducto?.Imagen?.ContentType};base64,${dataEditProduct.DataImagenProducto?.Imagen?.Data}`}
+                  alt={`Imagen-${dataEditProduct.DataImagenProducto?.Imagen?.FileName}`}
                 />
               ) : (
                 renderNoImage()
@@ -76,7 +74,7 @@ const CustomUploadImage = ({
               }}
             >
               {fileList.length === 0 &&
-              !dataEditPersona?.DataImagenPersona?.Imagen.Data ? (
+              !dataEditProduct?.DataImagenProducto?.Imagen.Data ? (
                 <FcAddImage
                   size={20}
                   style={{ marginRight: "5px" }}
@@ -108,7 +106,7 @@ const CustomUploadImage = ({
   );
 };
 
-export default CustomUploadImage;
+export default CustomUploadImageProduct;
 
 const renderNoImage = () => {
   return (

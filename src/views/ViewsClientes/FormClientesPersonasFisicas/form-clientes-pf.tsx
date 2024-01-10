@@ -3,7 +3,6 @@ import {
   Button,
   DatePicker,
   Form,
-  Image,
   Input,
   Select,
   Skeleton,
@@ -26,7 +25,7 @@ import {
   DivColumnTwo,
   DivContainerAreaFoto,
   DivContainerButtonsSelectPerson,
-  DivContainerColumnPersonalInfo,
+  DivContainerColumn,
   DivContainerFotoClient,
   DivContainerInputSelectPerson,
   DivContainerItemsColumnsInfo,
@@ -54,6 +53,8 @@ import { useCreateEntitieMutation } from "../../../redux/Api/entitiesApi";
 import toast from "react-hot-toast";
 import { DefaultOptionType } from "antd/es/select";
 
+import { MdError } from "react-icons/md";
+
 interface IFormClientesProps {
   toggle: boolean;
   setToggle: React.Dispatch<React.SetStateAction<boolean>>;
@@ -65,6 +66,8 @@ const FormClientsPersonsFi = (props: IFormClientesProps) => {
   const [selectedPerson, setSelectedPerson] = React.useState<
     PersonaInfoPersonalDTO | undefined
   >();
+
+  console.log("selectedPersonselectedPerson", selectedPerson);
 
   // Estado para controlar si se van a crear o editar datos personales:
   const [dataEditPersona, setDataEditPersona] = React.useState<
@@ -193,26 +196,29 @@ const FormClientsPersonsFi = (props: IFormClientesProps) => {
   };
 
   // Funcion Onchange Del Input Select Person:
-  const OnChangeInputSelectPerso = (value: number | null) => {
+  const OnChangeInputSelectPerson = (value: number | null) => {
     const dataSelectedPerson = fecthClientes.data?.Result.find(
       (client) => client.IdPersona === value
     );
 
-    if (
-      dataSelectedPerson != undefined &&
-      dataSelectedPerson.YaEstaAsociado == false
-    ) {
+    if (dataSelectedPerson?.Entidad == null) {
       setSelectedPerson(
         fecthClientes.data?.Result.find((client) => client.IdPersona === value)
       );
 
       setIdPersona(value);
     } else {
-      toast.error("La persona seleccionada ya está asociada a un cliente");
-      form.setFieldValue("IdPersona", null);
-      form.resetFields();
-      setIdPersona(null);
-      setSelectedPerson(undefined);
+      message.info(
+        "La persona seleccionada ya está asociada a una entidad persona física, ahora puede editar los datos del mismo",
+        5
+      );
+      setSelectedPerson(
+        fecthClientes.data?.Result.find((client) => client.IdPersona === value)
+      );
+      form.setFieldValue("NombreEntidad", selectedPerson?.Entidad?.NombreEntidad);
+      // form.resetFields();
+      // setIdPersona(null);
+      // setSelectedPerson(undefined);
     }
   };
 
@@ -289,10 +295,30 @@ const FormClientsPersonsFi = (props: IFormClientesProps) => {
             onFinish={dataSubmit}
             form={form}
           >
+            <div
+              style={{
+                width: "100%",
+                background: "orange",
+                color: "white",
+                textAlign: "center",
+                borderRadius: "8px",
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <MdError />
+
+              <span style={{ marginLeft: "5px" }}>
+                La persona seleccionada ya está asociada a un cliente, ahora
+                puede editar los datos del mismo
+              </span>
+            </div>
             {/* 1 - ************************** CONTENEDOR PRINCIPAL (Contiene las dos columnas (Info Personal e Info de recnocimiento)) ************************** */}
             <DivPrincipalContainerColumns>
               {/* 1.1 - ********** Columna Info personal: ************************** */}
-              <DivContainerColumnPersonalInfo>
+              <DivContainerColumn>
                 {/* A - - -------- Contener del titulo de la columna: ---------------- */}
                 <DivContainerTitleColumn>
                   <H3TitleColumn>
@@ -308,8 +334,7 @@ const FormClientsPersonsFi = (props: IFormClientesProps) => {
                       <DivContainerAreaFoto>
                         <DivAreaFoto>
                           {selectedPerson?.Data != null &&
-                          selectedPerson?.Data != undefined &&
-                          IdPersona != null ? (
+                          selectedPerson?.Data != undefined ? (
                             <StyledImageAntd
                               src={`data:${selectedPerson?.ContentType};base64,${selectedPerson?.Data}`}
                               alt={`Imagen-${selectedPerson?.FileName}`}
@@ -362,7 +387,9 @@ const FormClientsPersonsFi = (props: IFormClientesProps) => {
                           })) || []),
                         ]}
                         placeholder="Seleccionar cliente"
-                        onChange={(value: number | null) => OnChangeInputSelectPerso(value)}
+                        onChange={(value: number | null) =>
+                          OnChangeInputSelectPerson(value)
+                        }
                       />
                       <DivContainerButtonsSelectPerson>
                         {/*BOTON NUEVO ---------------------------------------------------------*/}
@@ -467,7 +494,9 @@ const FormClientsPersonsFi = (props: IFormClientesProps) => {
                       <strong>País de residencia: </strong>
                       <span>
                         {truncateText(
-                          selectedPerson ? `${selectedPerson.Correo}` : "N/A",
+                          selectedPerson
+                            ? `${selectedPerson.PaisNombre}`
+                            : "N/A",
                           25
                         )}
                       </span>
@@ -555,43 +584,18 @@ const FormClientsPersonsFi = (props: IFormClientesProps) => {
                     </DivItemInfo>
                   </DivColumnThree>
                 </DivContainerItemsColumnsInfo>
-              </DivContainerColumnPersonalInfo>
+              </DivContainerColumn>
 
               {/* 1.2 - ********** Columna Info de reconocimiento: ************************** */}
-              <div style={{ marginTop: "15px", width: "48%" }}>
+              <DivContainerColumn>
                 {/* CONTAINER HIJO - ********** Contiene el parrafo de explicacion y los campos de indentificacion: ************************** */}
-                <div
-                  style={{
-                    display: "flex",
-                    flexWrap: "wrap",
-                    flexDirection: "row",
-                    alignItems: "flex-end",
-                    width: "100%",
-                  }}
-                >
+                <div>
                   {/* A - ------- Titulo de la columna: --------------------- */}
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "row",
-                      alignItems: "center",
-                      marginBottom: "20px",
-                      width: "100%",
-                    }}
-                  >
-                    <h3
-                      style={{
-                        width: "100%",
-                        background: "#5592E7",
-                        borderRadius: "8px",
-                        textAlign: "center",
-                        color: "white",
-                        marginRight: "5px",
-                      }}
-                    >
+                  <DivContainerTitleColumn>
+                    <H3TitleColumn>
                       Información para la entidad cliente
-                    </h3>
-                  </div>
+                    </H3TitleColumn>
+                  </DivContainerTitleColumn>
 
                   <div
                     style={{
@@ -626,9 +630,7 @@ const FormClientsPersonsFi = (props: IFormClientesProps) => {
                     >
                       <Form.Item
                         name={"NombreEntidad"}
-                        label={
-                          <strong>Nombre de entidad:</strong>
-                        }
+                        label={<strong>Nombre de entidad:</strong>}
                         style={{ width: "48%" }}
                       >
                         <Input />
@@ -676,7 +678,7 @@ const FormClientsPersonsFi = (props: IFormClientesProps) => {
                     </div>
                   </div>
                 </div>
-              </div>
+              </DivContainerColumn>
             </DivPrincipalContainerColumns>
 
             <div

@@ -10,10 +10,14 @@ import {
   Label,
   ViewContainerPages2,
 } from "../../components";
-import { useGetProyectoCompletoQuery } from "../../redux/Api/proyectoApi";
+import {
+  useCreateFacturaVentaProyectoMutation,
+  useGetProyectoCompletoQuery,
+} from "../../redux/Api/proyectoApi";
 import { useEffect, useState } from "react";
 import dayjs from "dayjs";
 import { Select } from "antd";
+import toast from "react-hot-toast";
 const { Option } = Select;
 
 const FormConvertToInvoice = () => {
@@ -57,7 +61,7 @@ const FormConvertToInvoice = () => {
       setState(data.Result);
       setServicio(r);
     }
-  }, [data, isSuccess]);
+  }, [isLoading, data, isSuccess]);
 
   console.log(state);
   function generarFacturas(
@@ -153,7 +157,6 @@ const FormConvertToInvoice = () => {
 
   function calcularFechaVencimiento(
     fechaEmision,
-    diaVencimiento,
     plazo,
     cuotaNumero,
     diasMora
@@ -171,13 +174,93 @@ const FormConvertToInvoice = () => {
     return nuevaFecha.toISOString();
   }
 
+  // Estado insert Proyecto:
+  const [
+    createFacturaVentaProyecto,
+    {
+      isLoading: isLoadingCreate,
+      isSuccess: isCreateSuccess,
+      isError: isErrorCreate,
+    },
+  ] = useCreateFacturaVentaProyectoMutation();
+
+  useEffect(() => {
+    if (isLoadingCreate) {
+      toast.loading("Guardando la factura de venta de proyecto", {
+        id: "tSavinProduct",
+      });
+    } else {
+      toast.dismiss("tSavinProduct");
+    }
+  }, [isLoadingCreate]);
+
+  useEffect(() => {
+    if (isCreateSuccess) {
+      toast.dismiss("tSavinProduct");
+      toast.success("La factura ha sido guardada correctamente", {
+        id: "tSucc",
+      });
+    }
+  }, [isCreateSuccess]);
+
+  useEffect(() => {
+    if (isErrorCreate) {
+      toast.dismiss("tSavinProduct");
+      toast.error("Error al guardar la factura", {
+        id: "tError",
+      });
+    }
+  }, [isErrorCreate]);
+
   // Imprimir las facturas generadas
   const [form] = Form.useForm();
   // Función para manejar el cambio en los campos del formulario
 
+  //Estado Para el tipo TipoNCFId
+  const [ncfId, setNCFId] = useState(1);
+
   const handleSelectChange = (value) => {
     setPlazo(value);
     // Puedes realizar acciones adicionales en tiempo real aquí
+  };
+
+  const handleSubmitCreateInvoice = () => {
+    const dataForm = form.getFieldsValue();
+
+    const dataFactura = {
+      // FechaDeEmision = DateTime.Now,
+      MontoInicial: state[0]?.MontoInicial,
+      // FechaVencimientoNCF = factura.FechaVencimientoNCF,
+      // FechaDeVencimiento = DateTime.Now,
+      MontoTotal: state[0]?.PresupuestoAcordado,
+      TipoNCFId: ncfId,
+      Secuencia: "0",
+      //
+      IdProyecto: state[0]?.IdProyecto,
+      IdEstadoFactura: 3, // <-- Pendiente de pagos
+      //
+      CantidadCuotas: dataForm.Cuota,
+      PorcientoMora: dataForm.Mora,
+      DiaPagoMensual: dataForm.DiaPago,
+      DiasParaVencimiento: dataForm.PlazoDias,
+      IdTipoPlazo: dataForm.Plazo,
+
+      DistribucionesPagos: factura.map((dist) => ({
+        IdFactura: 0,
+        MontoAPagar: dist.monto,
+        FechaPago: dist.fechaEmision,
+        FechaEmision: dist.fechaEmision,
+        FechaVencimiento: dist.fechaVencimiento,
+        SePago: false,
+        CuotaNumero: dist.numero,
+      })),
+
+      // Distrib: factura,
+    };
+
+    // Ejecutar el create:
+    createFacturaVentaProyecto({ ...dataFactura });
+    console.log("dataFacturadataFactura", dataFactura);
   };
 
   const onFinish = (values) => {
@@ -189,8 +272,7 @@ const FormConvertToInvoice = () => {
       null,
       values.Mora,
       values.PlazoDias,
-      values.DiaPago,
-
+      values.DiaPago
     );
     setFactura(resultado);
   };
@@ -422,7 +504,7 @@ const FormConvertToInvoice = () => {
       <Container>
         <h3>Información basica</h3>
         <div style={{ display: "flex", width: "100%" }}>
-          <Form style={{ display: "flex" }}>
+          <Form style={{ display: "flex" }} form={form}>
             <div
               style={{
                 display: "flex",
@@ -442,8 +524,25 @@ const FormConvertToInvoice = () => {
                   <span>0000</span>
                 </div>
                 <div>
-                  <Label>No. Rnc: </Label>
-                  <span>56789</span>
+                  <Label>No. NCF: </Label>
+                  <Form.Item name={"TipoNCFId"} noStyle>
+                    <Select
+                      style={{ minWidth: "220px" }}
+                      size="small"
+                      value={ncfId}
+                      onChange={(val) => setNCFId(val)}
+                      options={[
+                        {
+                          value: 1,
+                          label: "Factura de Crédito Fiscal",
+                        },
+                        {
+                          value: 2,
+                          label: "Factura de Consumo",
+                        },
+                      ]}
+                    />
+                  </Form.Item>
                 </div>
                 <div>
                   <Label>Empresa: </Label>
@@ -720,7 +819,10 @@ const FormConvertToInvoice = () => {
               marginInline: 15,
             }}
           >
-            <div style={{ display: "flex", justifyContent: "space-evenly" }}>
+            <div
+              style={{ display: "flex", justifyContent: "space-evenly" }}
+              onClick={() => handleSubmitCreateInvoice()}
+            >
               <h4>Crear</h4>
               <IoDocumentAttachOutline size={20} />
             </div>
