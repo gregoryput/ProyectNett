@@ -1,4 +1,4 @@
-USE BD_PROYENETT_VF22
+USE BD_PROYENETT_VF41
 GO
 
 
@@ -1039,7 +1039,8 @@ INSERT INTO EstadosDocumentos (
 )
 VALUES 
 ('Aprobado',  1, GETDATE(), 1),
-('Pagado',  1, GETDATE(), 1);
+('Pagado',  1, GETDATE(), 1),
+('Pendiente de pagos',  1, GETDATE(), 1);
 
 
 GO
@@ -1093,3 +1094,24 @@ GETDATE(),
 1)
 
 GO
+
+-- Insertar datos de prueba en la tabla NCF
+
+-- Primera fila de datos
+INSERT INTO NCF (Codigo, Actual, Limite, FechaVencimiento, TipoNCFId, IdCreadoPor, FechaCreacion, IdEstadoRegistro)
+VALUES ('B01', 0, 500, '2024-01-31', 1, 1, GETDATE(), 1);
+
+-- Segunda fila de datos
+INSERT INTO NCF (Codigo, Actual, Limite, FechaVencimiento, TipoNCFId, IdCreadoPor, FechaCreacion, IdEstadoRegistro)
+VALUES ('B02', 0, 500, '2024-01-31', 2, 1, GETDATE(), 1);
+
+
+GO
+
+-- Insertar registro para Plazo Mensual
+INSERT INTO TiposPlazos (NombrePlazo, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro)
+VALUES ('Mensual', 1, GETDATE(), 1, GETDATE(), 1);
+
+-- Insertar registro para Plazo Quincenal
+INSERT INTO TiposPlazos (NombrePlazo, IdCreadoPor, FechaCreacion, IdModificadoPor, FechaModificacion, IdEstadoRegistro)
+VALUES ('Quincenal', 1, GETDATE(), 1, GETDATE(), 1);

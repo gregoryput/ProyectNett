@@ -1,6 +1,6 @@
-CREATE DATABASE BD_PROYENETT_VF22
+CREATE DATABASE BD_PROYENETT_VF41
 GO
-USE BD_PROYENETT_VF22
+USE BD_PROYENETT_VF41
 GO
 
 
@@ -1254,7 +1254,6 @@ GO
 CREATE TABLE NCF
 (
     IdNCF INT IDENTITY CONSTRAINT PK_IdTipoNCF PRIMARY KEY,
-    IdTipoNCF varchar(30),
     Codigo varchar(30),
     Actual INT,
     Limite INT,
@@ -1270,6 +1269,22 @@ CREATE TABLE NCF
 
 
 
+-- CREACION DE LA TABLA Proyectos TiposPlazos // Quincenal, Mensual
+CREATE TABLE TiposPlazos
+(
+    IdTipoPlazo INT IDENTITY CONSTRAINT PK_IdTipoPlazo PRIMARY KEY,
+    NombrePlazo VARCHAR(30),
+    --
+    IdCreadoPor int constraint TipoPlazoId_Fk_IdCreadoPor foreign Key references Usuarios(IdUsuario),
+    FechaCreacion Datetime,
+    IdModificadoPor int constraint TipoPlazoId_Fk_IdModificadoPor foreign Key references Usuarios(IdUsuario),
+    FechaModificacion Datetime,
+    IdEstadoRegistro int constraint TipoPlazoId_Fk_IdEstadoRegistro foreign Key references EstadosRegistros(IdEstadoRegistro),
+);
+GO
+
+
+
 GO
 -- CREACION DE LA TABLA FacturaVentaProyecto:
 CREATE TABLE FacturasVentasProyectos
@@ -1278,16 +1293,19 @@ CREATE TABLE FacturasVentasProyectos
     FechaDeEmision DATEtime,
     MontoInicial DECIMAL(18, 2),
     FechaDeVencimiento DATEtime,
-    DiasMora INT,
-    MontoMora DECIMAL(18, 2),
+    FechaVencimientoNCF DateTime,
+    --
+    CantidadCuotas INT,
+    PorcientoMora DECIMAL,
+    DiaPagoMensual INT,
+    DiasParaVencimiento INT,
+
+    IdTipoPlazo INT CONSTRAINT PDP_Fk_TiposPlazos foreign Key references TiposPlazos(IdTipoPlazo),
+    --
     MontoTotal DECIMAL(18, 2),
     TipoNCFId INT CONSTRAINT Fk_FV_TipoNCFId FOREIGN KEY REFERENCES TiposNCF(IdTipoNCF),
     Secuencia varchar(20),
-    IdCliente INT,
-    IdEstado INT,
     IdProyecto INT,
-    --
-    CONSTRAINT FK_FacturasVentaProyectos_IdCliente FOREIGN KEY (IdCliente) REFERENCES Clientes(IdCliente),
     --
     IdEstadoFactura int constraint Fk_IdEstadoDocumento foreign Key references EstadosDocumentos(IdEstadoDocumento),
 
@@ -1298,6 +1316,77 @@ CREATE TABLE FacturasVentasProyectos
     IdModificadoPor int constraint Fk_FacturasVentaProyectos_IdModificadoPor foreign Key references Usuarios(IdUsuario),
     FechaModificacion Datetime,
     IdEstadoRegistro int constraint Fk_FacturasVentaProyectos_IdEstadoR foreign Key references EstadosRegistros(IdEstadoRegistro),
+);
+GO
+
+
+
+GO
+-- CREACION DE LA TABLA Proyectos ProyectosDistribucionesPagos
+CREATE TABLE ProyectosDistribucionesPagos
+(
+    IdDistribucionPago INT IDENTITY CONSTRAINT PK_IdDistribucionPago PRIMARY KEY,
+    IdFactura int constraint FK_PDP_IdFactura foreign Key references FacturasVentasProyectos(IdFactura),
+    CuotaNumero int,
+    MontoAPagar DECIMAL,
+    FechaEmision DATETIME, -- Fecha en la que se tiene que hacer el pago
+    FechaVencimiento DATETIME, -- Fecha en la que se vence el pago
+    --
+    SePago BIT, -- 0 = FALSE / 1 = TRUE
+    --
+    IdCreadoPor int constraint PDP_Fk1_IdCreadoPor foreign Key references Usuarios(IdUsuario),
+    FechaCreacion Datetime,
+    IdModificadoPor int constraint PDP_Fk2_IdCreadoPor foreign Key references Usuarios(IdUsuario),
+    FechaModificacion Datetime,
+    IdEstadoRegistro int constraint PDP_Fk3_IdCreadoPor foreign Key references EstadosRegistros(IdEstadoRegistro),
+);
+GO
+
+
+GO
+-- CREACION DE LA TABLA TIPO DE PAGOS: 1 = Tarjeta, 2 = Efectivo.
+CREATE TABLE TiposPagos
+(
+    IdTipoPago INT IDENTITY CONSTRAINT PK_IdTipo PRIMARY KEY,
+    TipoPago varchar(30),
+    --
+    IdCreadoPor int constraint Fk_TipoPagoIdCreadoPor foreign Key references Usuarios(IdUsuario),
+    FechaCreacion Datetime,
+    IdModificadoPor int constraint Fk_TipoPagoIdModificadoPor foreign Key references Usuarios(IdUsuario),
+    FechaModificacion Datetime,
+    IdEstadoRegistro int constraint Fk_PTipoPagooIdEstadoR foreign Key references EstadosRegistros(IdEstadoRegistro),
+);
+GO
+
+
+GO
+-- CREACION DE LA TABLA PAGOS:
+CREATE TABLE PagosFacturasVentas
+(
+    IdPago INT IDENTITY CONSTRAINT PK_IdPagoFV PRIMARY KEY,
+    Fecha DATEtime,
+    MontoPago DECIMAL(18, 2),
+    MontoMora Decimal,
+    MontoTotal Decimal,
+
+    ---
+    FechaPago DATEtime,
+
+    MontoEfectivo DECIMAL,
+    DevolucionEfectivo DECIMAL,
+
+    MontoTarjeta DECIMAL,
+    Tarjeta DECIMAL,
+    --
+    IdTipoPago int constraint Fk_IdTipoPago_FV foreign Key references TiposPagos(IdTipoPago),
+    --
+    IdDistribucionPago int constraint Fk_IdDistribucionPago_FV foreign Key references ProyectosDistribucionesPagos(IdDistribucionPago),
+    --
+    IdCreadoPor int constraint Fk_PagosDocIdCreadoPor_FV foreign Key references Usuarios(IdUsuario),
+    FechaCreacion Datetime,
+    IdModificadoPor int constraint Fk_PagosDoIdModificadoPor_FV foreign Key references Usuarios(IdUsuario),
+    FechaModificacion Datetime,
+    IdEstadoRegistro int constraint Fk_PagosDoIdEstadoR_FV foreign Key references EstadosRegistros(IdEstadoRegistro),
 );
 GO
 
@@ -1331,61 +1420,6 @@ GO
 
 
 GO
--- CREACION DE LA TABLA TIPO DE PAGOS:
-CREATE TABLE TiposPagos
-(
-    IdTipoPago INT IDENTITY CONSTRAINT PK_IdTipo PRIMARY KEY,
-    TipoPago varchar(30),
-    --
-    IdCreadoPor int constraint Fk_TipoPagoIdCreadoPor foreign Key references Usuarios(IdUsuario),
-    FechaCreacion Datetime,
-    IdModificadoPor int constraint Fk_TipoPagoIdModificadoPor foreign Key references Usuarios(IdUsuario),
-    FechaModificacion Datetime,
-    IdEstadoRegistro int constraint Fk_PTipoPagooIdEstadoR foreign Key references EstadosRegistros(IdEstadoRegistro),
-);
-GO
-
-
-GO
--- CREACION DE LA TABLA PAGOS:
-CREATE TABLE Pagos
-(
-    IdPago INT IDENTITY CONSTRAINT PK_IdPagoReg PRIMARY KEY,
-    Fecha DATEtime,
-    MontoPago DECIMAL(18, 2),
-    MontoRestante DECIMAL(18, 2),
-    FechaPago DATEtime,
-    --
-    IdTipoPago int constraint Fk_IdTipoPago foreign Key references TiposPagos(IdTipoPago),
-    --
-    IdCreadoPor int constraint Fk_PagosDocIdCreadoPor foreign Key references Usuarios(IdUsuario),
-    FechaCreacion Datetime,
-    IdModificadoPor int constraint Fk_PagosDoIdModificadoPor foreign Key references Usuarios(IdUsuario),
-    FechaModificacion Datetime,
-    IdEstadoRegistro int constraint Fk_PagosDoIdEstadoR foreign Key references EstadosRegistros(IdEstadoRegistro),
-);
-GO
-
-
--- CREACION DE LA TABLA PagosFacturasVentasProyectos:
-CREATE TABLE PagosFacturasVentasProyectos
-(
-    IdPagDocumento INT IDENTITY CONSTRAINT PK_IdPagoDocumento PRIMARY KEY,
-    MontoPagado DECIMAL(18, 2),
-    --
-    IdPago int constraint Fk_PagosIdPago foreign Key references Pagos(IdPago),
-    IdFactura int constraint Fk_PagosIdFactura foreign Key references FacturasVentasProyectos(IdFactura),
-    -- 
-    IdCreadoPor int constraint Fk_PDocIdCreadoPor foreign Key references Usuarios(IdUsuario),
-    FechaCreacion Datetime,
-    IdModificadoPor int constraint Fk_PDocIdModificadoPor foreign Key references Usuarios(IdUsuario),
-    FechaModificacion Datetime,
-    IdEstadoRegistro int constraint Fk_PDocIdEstadoR foreign Key references EstadosRegistros(IdEstadoRegistro),
-);
-GO
-
-
-GO
 -- CREACION DE LA TABLA Imagenes:
 CREATE TABLE Imagenes
 (
@@ -1411,7 +1445,6 @@ CREATE TABLE ProductosImagenes
     IdProductoImagen INT IDENTITY CONSTRAINT PK_IdProductoImagen PRIMARY KEY,
     IdImagen int constraint Fk_PImg_IdImagen foreign Key references Imagenes(IdImagen),
     IdProducto int constraint Fk_PImg_IdProducto foreign Key references Productos(IdProducto),
-    EsLaPrincipal bit,
     --
     IdCreadoPor int constraint Fk_PImg_IdCreadoPor foreign Key references Usuarios(IdUsuario),
     FechaCreacion Datetime,
@@ -1482,25 +1515,6 @@ CREATE TABLE ProyectosImagenes
     IdModificadoPor int constraint Fk_PYImg_IdModificadoPor foreign Key references Usuarios(IdUsuario),
     FechaModificacion Datetime,
     IdEstadoRegistro int constraint Fk_PYImg_IdEstadoR foreign Key references EstadosRegistros(IdEstadoRegistro),
-);
-GO
-
-
-
-GO
--- CREACION DE LA TABLA Proyectos ProyectosDistribucionesPagos
-CREATE TABLE ProyectosDistribucionesPagos
-(
-    IdDistribucionPago INT IDENTITY CONSTRAINT PK_IdDistribucionPago PRIMARY KEY,
-    MontoPago DECIMAL,
-    FechaPago DATETIME,
-    -- MontoMora,
-    --
-    IdCreadoPor int constraint PDP_Fk1_IdCreadoPor foreign Key references Usuarios(IdUsuario),
-    FechaCreacion Datetime,
-    IdModificadoPor int constraint PDP_Fk2_IdCreadoPor foreign Key references Usuarios(IdUsuario),
-    FechaModificacion Datetime,
-    IdEstadoRegistro int constraint PDP_Fk3_IdCreadoPor foreign Key references EstadosRegistros(IdEstadoRegistro),
 );
 GO
 
