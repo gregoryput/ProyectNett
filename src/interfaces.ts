@@ -18,6 +18,54 @@ export interface IClienteDTO {
   Data: string;
 }
 
+export interface EmpresaInfoDTO {
+  IdEmpresa: number;
+  NombreEmpresa: string;
+  RNC: string;
+  Correo: string;
+  Telefono1: string;
+  Telefono2: string;
+  IdPais: number;
+  PaisNombre: string;
+  IdCiudad: number;
+  CiudadNombre: string;
+  Fundada: Date;
+  IdEmpresaImagen?: number;
+  IdImagen?: number;
+  FileName?: string;
+  ContentType?: string;
+  FileSize?: number;
+  Data?: string; //
+  Direccion: string;
+  YaEstaAsociada: boolean;
+}
+
+export interface IEmpresa {
+  IdEmpresa: number;
+  NombreEmpresa: string;
+  RNC: string;
+  Correo: string;
+  IdPais: number;
+  Telefono1: string;
+  Telefono2: string;
+  SitioWeb: string;
+  Direccion: string;
+  IdCiudad: number;
+
+  IdCreadoPor?: number;
+  FechaCreacion?: string;
+  IdModificadoPor?: number;
+  FechaModificacion?: string;
+  IdEstadoRegistro?: number;
+
+  //PersonaTiposPersona?: IPersonaTipoPersona[];
+
+  DataImagenEmpresa?: {
+    Imagen: IImagen;
+    PersonaImagen: IPersonaImagen;
+  };
+}
+
 export interface IActionsDAT {
   Name: string;
   Title: string;
