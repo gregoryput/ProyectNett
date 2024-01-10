@@ -427,7 +427,7 @@ export default function DrawerForm({
                     {fields.map(({ key, name, ...restField }) => (
                       <Collapse.Panel
                         header={renderHeaderPanel(
-                          OpstionsUnits.find((op) =>
+                          OpstionsUnits?.find((op) =>
                             (op.value == UnidadesDetalles) != undefined
                               ? UnidadesDetalles[name]?.IdUnidadDeMedida || 0
                               : 0

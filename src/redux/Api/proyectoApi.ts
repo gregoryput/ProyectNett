@@ -62,7 +62,15 @@ export const proyectoApi = createApi({
       }),
       invalidatesTags: ["Proyecto"],
     }),
-
+    //// InsertarFacturaVentaProyecto
+    createFacturaVentaProyecto: builder.mutation({
+      query: (newFactura) => ({
+        url: "/Proyecto/InsertarFacturaVentaProyecto",
+        method: "POST",
+        body: newFactura,
+      }),
+      invalidatesTags: ["Proyecto"],
+    }),
     //// seecion de parte de presupuesto
     getListaProyecto: builder.query({
       query: () => "/Proyecto/obtenerListaProyecto",
@@ -105,4 +113,7 @@ export const {
   useLazyGetProyectoCompletoQuery,
   useUpdateEstadoTareaMutation,
   useGetListaDocumentosVentasQuery,
+
+  /// Seccion de crear factura:
+  useCreateFacturaVentaProyectoMutation,
 } = proyectoApi;
