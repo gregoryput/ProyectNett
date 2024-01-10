@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using ProyectNettApi.Models;
+using System.Text.Json.Serialization;
 
 namespace ProyectNettApi.DTO
 {
@@ -26,7 +27,7 @@ namespace ProyectNettApi.DTO
         public int IdEstadoRegistro { get; set; }
         public string NombreEstado { get; set; }
         public string? ContentType { get; set; }
-        public byte[]? Data { get; set; }
+        public string? Data { get; set; }
 
         [JsonIgnore]
         public string ProductosExistenciasJson { get; set; }
@@ -46,7 +47,8 @@ namespace ProyectNettApi.DTO
         public int IdEstadoRegistro { get; set; }
         public string NombreEstado { get; set; }
         public string? ContentType { get; set; }
-        public byte[]? Data { get; set; }
-       public List<ProductoExistenciaDTO> ProductoExistencias { get; set; }
+        public string Data { get; set; }
+        public List<ProductoExistenciaDTO> ProductoExistencias { get; set; }
+        public List<ProdutoDetalleUnidadMedidaDetalle>? ProductoUnidadesMedidaDetalles { get; set; }
     }
 }

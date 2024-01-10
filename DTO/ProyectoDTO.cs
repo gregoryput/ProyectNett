@@ -72,6 +72,7 @@ namespace ProyectNettApi.DTO
         public int PorcentajeCompletado { get; set; }
         public string NombreEntidad { get; set; }
         public string NombreTipoEntidad { get; set; }
+        // public int IdCliente { get; set; }
         public string NombreProyecto { get; set; }
         public string Descripcion { get; set; }
         public DateTime FechaDeInicio { get; set; }

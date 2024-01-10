@@ -244,6 +244,41 @@ namespace ProyectNettApi.Controllers
 
 
         //
+        // .A.C.C.I.O.N -- Para InsertarFacturaVentaProyecto: --------------------------------------------
+        [Authorize]
+        [Route("InsertarFacturaVentaProyecto")]
+        [HttpPost]
+        public IActionResult InsertarFacturaVentaProyecto(FacturaVentaProyecto facturaVenta)
+        {
+            string token = HttpContext.Request.Headers["Authorization"];
+            facturaVenta.IdCreadoPor = _infoUser.getUsuarioIdByToken(token);
+            try
+            {
+                _proyectoRepositorio.InsertarFacturaVentaProyecto(facturaVenta);
+                _respuesta.Result = facturaVenta;
+                _respuesta.DisplayMessage = "Factura de venta de proyecto creada correctamente:";
+                return Ok(_respuesta);
+            }
+            //
+            catch (InvalidOperationException ex) // Capturamos la excepción personalizada
+            {
+                _respuesta.IsSuccess = false;
+                _respuesta.DisplayMessage = "Se ha agotado o vencido el comprobante fiscal";
+                _respuesta.ErrorMessages = new List<string> { ex.Message };
+                return StatusCode(500, _respuesta);
+            }
+            //
+            catch (Exception ex)
+            {
+                _respuesta.IsSuccess = false;
+                _respuesta.DisplayMessage = "Error al crear la factura de venta";
+                _respuesta.ErrorMessages = new List<string> { ex.ToString() };
+                return StatusCode(500, _respuesta);
+            }
+        }
+
+
+        //
         // .A.C.C.I.O.N -- Para Insertar Proyectos: --------------------------------------------
         [Authorize]
         [Route("insertarProyectos")]

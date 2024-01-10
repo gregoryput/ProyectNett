@@ -19,41 +19,70 @@ namespace ProyectNettApi.Repositories
 
         public IEnumerable<PersonaInfoPersonalDTO> GetPersonasInfoPersonal()
         {
-            // 1 Obtener listado de personas:
+            // 1 - Obtener listado de personas:
             string query = "dbo.GetDatosPersonales";
             var resultSet = _conexionDB.GetConnection(_configuration).Query<PersonaInfoPersonalDTO>(query, commandType: CommandType.StoredProcedure);
 
+
+            // Por cada persona sacar los datos de la entidad:
             foreach (var item in resultSet)
             {
                 // 1.1 Sacar datos de la relacion con la tabla PersonasTiposPersonas:
-                var queryPTP = "EXEC dbo.Get_PersonasTiposPersonas_By_IdPersona";
-                var resultPTP = _conexionDB.GetConnection(_configuration).Query<PersonaTipoPersona>(queryPTP, new { item.IdPersona }, commandType: CommandType.Text).ToList();
+                var resultPTP = _conexionDB.GetConnection(_configuration).Query<PersonaTipoPersona>("dbo.Get_PersonasTiposPersonas_By_IdPersona", new { IdPersona = item.IdPersona }, commandType: CommandType.StoredProcedure).ToList();
                 item.PersonaTiposPersona = resultPTP;
 
-                // 1.2 Sacar datos de la relacion con la tabla EntidadesPersonasFisicas:
-                var queryExecProc1 = "EXEC dbo.Get_EntidadesPersonasFisicas_By_IdPersona";
-                //
-                var resultExecProc1 = _conexionDB.GetConnection(_configuration).Query<EntidadPersonaFisica>(queryExecProc1, new { item.IdPersona }, commandType: CommandType.Text).ToList();
-                if (resultExecProc1.Count() > 0)
+                // 1.2 - Sacar datos de la tabla Entidad. Datos de la Entidad relacionada con la entidad PersonaFisica:
+                var resultPE = _conexionDB.GetConnection(_configuration).Query<Entidad>("dbo.Get_Entidad_By_IdPersona", new { IdPersona = item.IdPersona }, commandType: CommandType.StoredProcedure).ToList();
+
+                // Si la persona ya esta relacionada con una entidad:
+                if (resultPE.Count > 0)
                 {
-                    item.DataEntidadPersonaFisica = resultExecProc1[0];
-                }
-                else
-                {
-                    item.DataEntidadPersonaFisica = null;
+                    var Entidad = resultPE[0];
+
+                    // 1.3 Sacar datos de la relacion con la tabla EntidadesPersonasFisicas:
+                    var resultExecProc1 = _conexionDB.GetConnection(_configuration).Query<EntidadPersonaFisica>("dbo.Get_EntidadesPersonasFisicas_By_IdPersona", new { item.IdPersona }, commandType: CommandType.StoredProcedure).ToList();
+                    if (resultExecProc1.Count() > 0)
+                    {
+                        Entidad.EntidadPersonaFisica = resultExecProc1[0];
+
+                        // 1.4 Sacar datos de la relacion con la tabla EntidadesPersonasFisicasRepresentantes:
+                        var resultExecProc2 = _conexionDB.GetConnection(_configuration).Query<EntidadPersonaFisicaRepresentante>("dbo.Get_EntidadesPersonasFisicasRepresentantes_By_IdEntidadPersonaFisica",
+                            new { resultExecProc1[0].IdEntidadPersonaFisica }, commandType: CommandType.StoredProcedure).ToList();
+
+                        if (resultExecProc2.Count() > 0)
+                        {
+                            Entidad.EntidadPersonaFisicaRepresentante = resultExecProc2[0];
+                        }
+                        else
+                        {
+                            Entidad.EntidadPersonaFisicaRepresentante = null;
+                        }
+                    }
+                    else
+                    {
+                        Entidad.EntidadPersonaFisica = null;
+                    }
+
+                    // 1.4 Sacar datos de la relacion con la tabla Clientes:
+                    var resultExecProc3 = _conexionDB.GetConnection(_configuration).Query<ClienteEntidad>("dbo.Get_EntidadCliente_By_IdPersona", 
+                        new { item.IdPersona }, commandType: CommandType.StoredProcedure).ToList();
+
+                    if (resultExecProc3.Count() > 0)
+                    {
+                        Entidad.ClienteEntidad = resultExecProc3[0];
+                    }
+                    else
+                    {
+                        Entidad.ClienteEntidad = null;
+                    }
+
+                    item.Entidad = Entidad;
                 }
 
-                // 1.3 Sacar datos de la relacion con la tabla EntidadesPersonasFisicasRepresentantes:
-                var queryExecProc2 = "EXEC dbo.Get_EntidadesPersonasFisicasRepresentantes_By_IdEntidadPersonaFisica";
-                //
-                var resultExecProc2 = _conexionDB.GetConnection(_configuration).Query<EntidadPersonaFisicaRepresentante>(queryExecProc2).ToList();
-                if (resultExecProc2.Count() > 0)
-                {
-                    item.DataEntidadPersonaFisicaRepresentante = resultExecProc2[0];
-                }
+                // Si la persona no esta relacionada con una entidad:
                 else
                 {
-                    item.DataEntidadPersonaFisicaRepresentante = null;
+                    item.Entidad = null;
                 }
             }
 

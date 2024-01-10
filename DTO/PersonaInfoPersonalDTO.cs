@@ -33,11 +33,11 @@ namespace ProyectNettApi.DTO
         public long? FileSize { get; set; }
         public string Data { get; set; }
         public bool YaEstaAsociado { get; set; }
-        public List<PersonaTipoPersona> PersonaTiposPersona { get; set; }
+        public List<PersonaTipoPersona>? PersonaTiposPersona { get; set; }
+        public Entidad? Entidad { get; set; }
 
         // --- Datos con la relacion EntidadesPersonasFisicas:
-        public EntidadPersonaFisica? DataEntidadPersonaFisica { get; set; }
-
-        public EntidadPersonaFisicaRepresentante? DataEntidadPersonaFisicaRepresentante { get; set; }
+        // --- public EntidadPersonaFisica? DataEntidadPersonaFisica { get; set; }
+        // --- public EntidadPersonaFisicaRepresentante? DataEntidadPersonaFisicaRepresentante { get; set; }
     }
 }

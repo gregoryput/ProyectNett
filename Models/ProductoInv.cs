@@ -17,13 +17,10 @@
         public int? IdEstadoRegistro { get; set; }
 
         // ---
-        public List<ProductoUnidadDeMedida>? ProductoUnidadesDeMedida { get; set; }
-
-        // ---
         public List<ProdutoDetalleUnidadMedidaDetalle>? ProductoUnidadesMedidaDetalles { get; set; }
 
         // ---
-        public List<DataImagenProducto>? DataProductoImagenes { get; set; }
+        public DataImagenProducto? DataImagenProducto { get; set; }
     }
 
 

@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using ProyectNettApi.DTO;
 using ProyectNettApi.Interfaces;
 using ProyectNettApi.Models;
+using System;
 using System.Data;
 
 namespace ProyectNettApi.Repositories
@@ -213,16 +214,13 @@ namespace ProyectNettApi.Repositories
                         FechaDeInicio = proyecto.FechaDeInicio,
                         FechaDeFinalizacion = proyecto.FechaDeFinalizacion,
                         TiempoDuracionEstimado = proyecto.TiempoDuracionEstimado,
-                        //FechaRealDeFinalizacion = null,
                         TiempoDuracionReal = proyecto.TiempoDuracionReal,
                         PresupuestoAcordado = proyecto.PresupuestoAcordado,
                         ClienteEsPersonaFisica = proyecto.ClienteEsPersonaFisica,
                         IdEntidad = proyecto.IdEntidad,
                         IdEstado = proyecto.IdEstado,
                         IdCreadoPor = proyecto.IdCreadoPor,
-                        //FechaCreacion = proyecto.FechaCreacion,
                         IdEstadoRegistro = 1
-                        //IdModificadoPor = proyecto.IdModificadoPor
                     }, transaction, commandType: CommandType.StoredProcedure); ;
 
 
@@ -394,5 +392,94 @@ namespace ProyectNettApi.Repositories
             var resultSet = _conexionDB.GetConnection(_configuration).Query<DocumentoDTO>(query, commandType: CommandType.StoredProcedure);
             return resultSet.ToList();
         }
+
+
+
+
+        // INSERTAR FacturaVentaProyecto:
+        // ------------- ------------ ------------ ------------- ----------------- --------------- --------------- ----------------- ------------------------
+        public void InsertarFacturaVentaProyecto(FacturaVentaProyecto factura)
+        {
+            var connection = _conexionDB.GetConnection(_configuration);
+            connection.Open();
+            var transaction = connection.BeginTransaction();
+
+            try
+            {
+                // Generar Secuencia(NCF) Para la Factura de venta:
+                var resultSecuenciaFV = connection.Query<dynamic>("dbo.GenerarSecuenciaNCF", new { tipoNCFId = factura.TipoNCFId }, transaction, commandType: CommandType.StoredProcedure).ToList();
+
+                dynamic objectSecuenciaFV = resultSecuenciaFV[0];
+
+                // Verificar si la secuencia vencion o se agoto:
+                if (objectSecuenciaFV.Mensaje == null || objectSecuenciaFV.Mensaje == DBNull.Value)
+                {
+                    // Asignar el vencimiento de NCF:
+                    factura.FechaVencimientoNCF = objectSecuenciaFV.FechaVencimiento;
+                    // Asignar la secuencia NCF a la factura
+                    factura.Secuencia = objectSecuenciaFV.Secuencia;
+
+                    // -------------------------- INSERTAR EN LA TABLA FACTURAS VENTAS PROYECTOS (Procedimiento: dbo.InsertarFacturaVentaProyecto):
+                    int IdFactura = connection.ExecuteScalar<int>("dbo.InsertarFacturaVentaProyecto",
+
+                        new
+                        {
+                            FechaDeEmision = DateTime.Now,
+                            MontoInicial = factura.MontoInicial,
+                            FechaVencimientoNCF = factura.FechaVencimientoNCF,
+                            FechaDeVencimiento = DateTime.Now,
+                            MontoTotal = factura.MontoTotal,
+                            TipoNCFId = factura.TipoNCFId,
+                            Secuencia = factura.Secuencia,
+                            IdProyecto = factura.IdProyecto,
+                            IdEstadoFactura = factura.IdEstadoFactura,
+                            CantidadCuotas = factura.CantidadCuotas,
+                            PorcientoMora = factura.PorcientoMora,
+                            DiaPagoMensual = factura.DiaPagoMensual,
+                            DiasParaVencimiento = factura.DiasParaVencimiento,
+                            IdTipoPlazo = factura.IdTipoPlazo,
+                            IdCreadoPor = factura.IdCreadoPor,
+
+                        }, transaction, commandType: CommandType.StoredProcedure);
+
+
+                    // -------------------------- INSERTAR EN LA TABLA DistribucionesPagos -----PROCEDURE----- dbo.InsertarDistribucionPago:
+                    var dataDistribucionesPagos = factura.DistribucionesPagos;
+
+                    foreach (var distribucion in dataDistribucionesPagos)
+                    {
+                        var dataParaInsert = new
+                        {
+                            IdFactura = IdFactura,
+                            MontoAPagar = distribucion.MontoAPagar,
+                            FechaEmision = distribucion.FechaEmision,
+                            FechaVencimiento = distribucion.FechaVencimiento,
+                            SePago = distribucion.SePago,
+                            IdCreadoPor = factura.IdCreadoPor,
+                            CuotaNumero = distribucion.CuotaNumero,
+                        };
+
+                        connection.Execute("dbo.InsertarDistribucionPago", dataParaInsert, transaction, commandType: CommandType.StoredProcedure);
+                    }
+                }
+
+                else
+                {
+                    throw objectSecuenciaFV.Mensaje;
+                }
+
+                transaction.Commit();
+            }
+
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+                transaction.Dispose();
+                connection.Close();
+                throw ex;
+            }
+            connection.Close();
+        }
     }
 }
+

@@ -8,8 +8,7 @@
         public DateTime FechaDeEmision { get; set; }
         public decimal MontoTotal { get; set; }
         public decimal MontoInicial { get; set; }
-
-        public int Secuencia { get; set; }
+        public string Secuencia { get; set; }
         public int IdCliente { get; set; }
         public string NombreEntidad { get; set; }
         public int IdTipoEntidad { get; set; }
