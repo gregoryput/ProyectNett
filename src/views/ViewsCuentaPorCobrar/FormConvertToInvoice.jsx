@@ -58,12 +58,11 @@ const FormConvertToInvoice = () => {
   useEffect(() => {
     if (!isLoading && isSuccess) {
       const r = sumarTotales(data.Result);
-      setState(data.Result);
       setServicio(r);
+      setState(data.Result);
     }
   }, [isLoading, data, isSuccess]);
 
-  console.log(state);
   function generarFacturas(
     cantidadCuotas,
     MontoInicial,

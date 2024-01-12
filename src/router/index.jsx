@@ -21,6 +21,7 @@ import ConfiguracionPerfil from "../views/ViewUsuario/ConfiguracionPerfil";
 import { Toaster } from "react-hot-toast";
 import Empleado from "../views/ViewsEmpleado/Empleado";
 import { FormConvertToInvoice } from "../views/ViewsCuentaPorCobrar";
+import PagoCuota from "../views/ViewsCuentaPorCobrar/PagoCuota";
 
 export const createRouter = () => {
   const router = createBrowserRouter([
@@ -107,6 +108,16 @@ export const createRouter = () => {
               roles={["Administrador", "Asistente Administrativo"]}
             >
               <FormConvertToInvoice />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "/PagarCuotas/:ID",
+          element: (
+            <ProtectedRoute
+              roles={["Administrador", "Asistente Administrativo"]}
+            >
+              <PagoCuota />
             </ProtectedRoute>
           ),
         },
