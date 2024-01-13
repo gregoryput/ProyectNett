@@ -7,9 +7,13 @@ import { IoMdMore } from "react-icons/io";
 
 interface IDropdownActionsListsProps {
   Actions: IActionsDAT[];
+  setOrdenId?: () => void;
 }
 
-const DropdownActionsLists = ({ Actions }: IDropdownActionsListsProps) => {
+const DropdownActionsLists = ({
+  Actions,
+  setOrdenId,
+}: IDropdownActionsListsProps) => {
   const items: MenuProps["items"] = Actions.map((ac, index) => {
     return {
       key: `${ac.Name} ${index}`,
@@ -24,7 +28,7 @@ const DropdownActionsLists = ({ Actions }: IDropdownActionsListsProps) => {
 
   return (
     <Dropdown menu={{ items }} trigger={["hover"]}>
-      <a onClick={(e) => e.preventDefault()}>
+      <a onClick={() => (setOrdenId ? setOrdenId() : null)}>
         <IoMdMore color="#25375B" size={30} style={{ cursor: "pointer" }} />
       </a>
     </Dropdown>

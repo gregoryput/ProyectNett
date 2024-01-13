@@ -2,7 +2,7 @@ import Clientes from "./ViewsClientes/clientes";
 import DashBoard from "./ViewsDashBoard/DashBoard";
 import Usuario from "./ViewUsuario/Usuario";
 import { DetailEmpleado } from "./ViewsEmpleado/DetailEmpleado";
-import FormFacturacion from "./ViewsCuentasPorPagar/FormFacturacionCP";
+//import FormFacturacion from "./ViewsCuentasPorPagar/FormFacturacionCP";
 import Inventario from "./ViewsInventario/Inventario";
 import Proyecto from "./ViewsProyecto/Proyecto";
 import Reporte from "./ViewsReporte/Reporte";
@@ -21,7 +21,7 @@ export {
   Inventario,
   Proveedores,
   DetailEmpleado,
-  FormFacturacion,
+  //FormFacturacion,
   CuentaPorPagar,
   CuentaPorCobrar,
   DashBoard,

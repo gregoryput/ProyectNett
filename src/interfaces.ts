@@ -278,6 +278,22 @@ export interface IDocumentoDTO {
   NombreProyecto: string;
 }
 
+export interface IDocumentoCompraDTO {
+  IdDocumento: number;
+  IdTipoDocumento: number;
+  DocumentoNombre: string;
+  FechaDeEmision: Date;
+  MontoTotal: number;
+  MontoInicial: number;
+  Secuencia: string;
+  IdEntidad: number;
+  NombreEntidad: string;
+  IdTipoEntidad: number;
+  NombreTipoEntidad: string;
+  IdEstado: number;
+  NombreEstadoDocumeto:string;
+}
+
 export interface IProductoInv {
   IdProducto: number;
   Nombre: string;
@@ -431,8 +447,6 @@ export interface IProductoImagen {
   IdEstadoRegistro?: number | null;
 }
 
-
-
 // orden-compra.interface.ts
 export interface IOrdenCompra {
   IdOrdenCompra: number;
@@ -468,4 +482,35 @@ export interface IOrdenCompraDetalle {
   IdModificadoPor?: number | null;
   FechaModificacion?: Date | null;
   IdEstadoRegistro?: number | null;
+}
+
+export interface IOrdenCompraDTO {
+  IdOrdenCompra: number;
+  IdEntidadProveedor: number;
+  MontoTotal: number;
+  Secuencia: number;
+  FechaEmision: Date;
+  FechaEntrega: Date;
+  IdCiudadEntrega: number;
+  PaisNombre: string;
+  CiudadNombre: string;
+  DireccionEntrega: string;
+  MontoInicial: number;
+  NombreEntidad: string;
+  NombreTipoEntidad: string;
+  DetallesOrdenCompra?: IOrdenCompraDetalleDTO[];
+}
+
+export interface IOrdenCompraDetalleDTO {
+  IdDetalleOrdenCompra: number;
+  IdProducto: number;
+  Codigo: string;
+  Nombre: string;
+  IdUnidadDeMedida: number;
+  UnidadNombre: string;
+  IdOrdenCompra: number;
+  Cantidad: number;
+  Precio: number;
+  ITBIS: number;
+  Subtotal: number;
 }

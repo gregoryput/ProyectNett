@@ -4,8 +4,8 @@ import { IProductoInv, IResponseApi } from "../../../../interfaces";
 import { FaMinus, FaProductHunt } from "react-icons/fa";
 import { MdOutlineStyle } from "react-icons/md";
 import { DivBlueFoto, DivCircleFoto } from "./drawer-select-product.styled";
-import DropDownAdvancedFilters from "../../../ViewsCuentasPorPagar/DropDownAdvancesFilters";
-import DropDownFilter from "../../../ViewsCuentasPorPagar/DropDownFilter";
+///import DropDownAdvancedFilters from "../../../ViewsCuentasPorPagar/DropDownAdvancesFilters";
+//import DropDownFilter from "../../../ViewsCuentasPorPagar/DropDownFilter";
 
 interface IDrawerSelectProductProps {
   productsData: IResponseApi<IProductoInv> | undefined;
@@ -70,16 +70,16 @@ const DrawerSelectProduct = ({
               flexDirection: "row",
             }}
           >
-            <div style={{ marginRight: "10px" }}>
+            {/* <div style={{ marginRight: "10px" }}>
               <DropDownAdvancedFilters />
-            </div>
+            </div> */}
 
-            <div>
+            {/* <div>
               <DropDownFilter
                 setFiltersDataSource={setFiltersDataSource}
                 filtersDataSource={filtersDataSource}
               />
-            </div>
+            </div> */}
 
             <div>
               <Input
