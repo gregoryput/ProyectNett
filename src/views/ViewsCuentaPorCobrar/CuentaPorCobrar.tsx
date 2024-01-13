@@ -5,7 +5,7 @@ import {
   DropdownActionsLists,
   ViewContainerPages,
 } from "../../components";
-import { Button, Tag } from "antd";
+import { Input, Tag } from "antd";
 import Table, { ColumnsType } from "antd/es/table";
 import { IDocumentoDTO } from "../../interfaces";
 import {
@@ -21,10 +21,10 @@ import {
 import { MdPrint } from "react-icons/md";
 import { MdDocumentScanner } from "react-icons/md";
 import { MdRequestQuote } from "react-icons/md";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { GeneradorDocumentoVentaPDF } from "./DocumentoVentaPDF";
-import { Colores } from "../../components/GlobalColor";
-import { IoMegaphoneOutline, IoDocumentAttachOutline } from "react-icons/io5";
+import dayjs from "dayjs";
+const { Search } = Input;
 
 export default function CuentaPorCobrar() {
   //Fetch para obtener la lista de Documentos:
@@ -46,7 +46,33 @@ export default function CuentaPorCobrar() {
     }
   };
 
+  const [filteredData, setFilteredData] = useState<IDocumentoDTO>();
+
+  const handleSearch = (value) => {
+    const searchTerm = value.toLowerCase();
+
+    const filter = fetchListaDocumentos?.data?.Result.filter((item) =>
+      item.NombreProyecto.toLowerCase().includes(searchTerm)
+    );
+
+    setFilteredData(filter);
+  };
+
+  useEffect(() => {
+    if (fetchListaDocumentos?.data?.Result !== undefined) {
+      setFilteredData(fetchListaDocumentos?.data?.Result);
+    }
+  }, [fetchListaDocumentos?.data?.Result, setFilteredData]);
+
   const navigate = useNavigate();
+
+  function obtenerElementosRepetidos(valorBuscado,valorP) {
+    // Filtrar la lista para incluir solo los elementos que se repiten y sean iguales al valor buscado
+    const elementosRepetidos = filteredData?.filter(
+      (elemento) => elemento.NombreProyecto == valorBuscado &&  elemento.MontoTotal == valorP
+    );
+    return elementosRepetidos?.length > 1 ? true : false;
+  }
 
   const columns: ColumnsType<IDocumentoDTO> = [
     {
@@ -56,9 +82,10 @@ export default function CuentaPorCobrar() {
       render: (text) => <a>{text}</a>,
     },
     {
-      title: "FechaDeEmision",
+      title: "Fecha de emision",
       dataIndex: "FechaDeEmision",
       key: "FechaDeEmision",
+      render: (text) => <span>{dayjs(text).format("DD-MM-YYYY")}</span>,
     },
     {
       title: "Tipo de documento",
@@ -70,12 +97,17 @@ export default function CuentaPorCobrar() {
       title: "Monto total",
       dataIndex: "MontoTotal",
       key: "MontoTotal",
+      render: (text) => (
+        <p>
+          RD$
+          {parseFloat(text).toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })}
+        </p>
+      ),
     },
-    {
-      title: "Monto Incial",
-      dataIndex: "MontoInicial",
-      key: "MontoInicial",
-    },
+
     {
       title: "Proyecto asociado",
       dataIndex: "NombreProyecto",
@@ -98,41 +130,43 @@ export default function CuentaPorCobrar() {
       render: (_, record: IDocumentoDTO, index) => (
         <DropdownActionsLists
           key={index}
-          Actions={[
-            {
-              Name: "ViewDetailD",
-              Title: "Detalles del documento",
-              Method: () => console.log("aa"),
-              Icon: <MdDocumentScanner size={20} color="#25375B" />,
-            },
-            {
-              Name: "ViewDetailP",
-              Title: "Detalles del proyecto",
-              Method: () => console.log("aa"),
-              Icon: <MdOutlineVisibility size={20} color="#25375B" />,
-            },
-            {
-              Name: "ConvertInvoice",
-              Title: "Convertir en factura",
-              Method: () =>
-                navigate(`/cuenta-por-paga/${record.IdProyecto}`),
-              Icon: <MdRequestQuote size={20} color="#25375B" />,
-            },
-            {
-              Name: "Delete",
-              Title: "Desactivar",
-              Method: () => console.log("aaaa"),
-              Icon: <MdDeleteOutline size={20} color="#25375B" />,
-            },
-            {
-              Name: "Imprimir",
-              Title: "Imprimir",
-              Method: () => {
-                handleButtonClick(record.IdProyecto);
-              },
-              Icon: <MdPrint size={20} color="#25375B" />,
-            },
-          ]}
+          Actions={
+            record?.DocumentoNombre === "Cotización de proyecto" &&
+            !obtenerElementosRepetidos(record?.NombreProyecto,record?.MontoTotal)
+              ? [
+                  {
+                    Name: "ConvertInvoice",
+                    Title: "Convertir en factura",
+                    Method: () =>
+                      navigate(`/cuenta-por-paga/${record.IdProyecto}`),
+                    Icon: <MdRequestQuote size={20} color="#25375B" />,
+                  },
+                  {
+                    Name: "Imprimir",
+                    Title: "Imprimir",
+                    Method: () => handleButtonClick(record.IdProyecto),
+                    Icon: <MdPrint size={20} color="#25375B" />,
+                  },
+                  // Puedes agregar más acciones aquí si se cumple la condición
+                ]
+              : record?.DocumentoNombre === "Factura de proyecto"
+              ? [
+                  {
+                    Name: "ViewDetailD",
+                    Title: "Realizar pago",
+                    Method: () => navigate(`/PagarCuotas/${record.IdProyecto}`),
+                    Icon: <MdDocumentScanner size={20} color="#25375B" />,
+                  },
+                ]
+              : [
+                  {
+                    Name: "Imprimir",
+                    Title: "Imprimir",
+                    Method: () => handleButtonClick(record.IdProyecto),
+                    Icon: <MdPrint size={20} color="#25375B" />,
+                  },
+                ]
+          }
         />
       ),
     },
@@ -140,7 +174,7 @@ export default function CuentaPorCobrar() {
 
   return (
     <ViewContainerPages>
-      <div>
+      {/* <div>
         <Container
           style={{
             marginTop: 15,
@@ -194,25 +228,40 @@ export default function CuentaPorCobrar() {
             </div>
           </div>
         </Container>
-      </div>
+      </div> */}
       <Container>
         <h3>Lista general de documentos de ventas</h3>
         <br />
+        <div>
+          <Search
+            placeholder="Buscar por nombre"
+            style={{
+              width: 304,
+              marginTop: 10,
+              marginBottom: 40,
+            }}
+            onSearch={handleSearch}
+          />
+        </div>
         <Table
           size="small"
           loading={fetchListaDocumentos.isLoading}
           pagination={{
             showTotal: (total) => ` ${total} Total`,
-            defaultPageSize: 5,
+            defaultPageSize: 100,
             showSizeChanger: true,
             pageSizeOptions: [6, 12, 18, 24, 32, 40, 45, 50, 55, 60, 100],
           }}
-          dataSource={fetchListaDocumentos?.data?.Result}
+          dataSource={filteredData}
           columns={columns}
         />
       </Container>
 
-      {openGeneradorPDF == true && Cotizacion != null && Cotizacion != undefined && Array.isArray(Cotizacion) && Cotizacion.length > 0 ? (
+      {openGeneradorPDF == true &&
+      Cotizacion != null &&
+      Cotizacion != undefined &&
+      Array.isArray(Cotizacion) &&
+      Cotizacion.length > 0 ? (
         <>
           <GeneradorDocumentoVentaPDF
             Cotizacion={Cotizacion}

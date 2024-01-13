@@ -311,7 +311,6 @@ export default function FormularioProyecto() {
         },
       };
       createProyecto({ ...dataSubmit })
-       console.log({...dataSubmit})
     } else {
       message.error({
         content: "Tiene algun campo vacio",

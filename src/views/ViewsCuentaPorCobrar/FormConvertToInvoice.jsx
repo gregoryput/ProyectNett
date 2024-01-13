@@ -27,9 +27,6 @@ const FormConvertToInvoice = () => {
   const [servicio, setServicio] = useState([]);
   const [factura, setFactura] = useState([]);
   const [plazo, setPlazo] = useState(0);
-
-  //const [form] = Form.useForm();
-
   const sumarTotales = (proyecto) => {
     let totalGeneral = 0;
     let totalesPorServicio = [];
@@ -60,8 +57,8 @@ const FormConvertToInvoice = () => {
   useEffect(() => {
     if (!isLoading && isSuccess) {
       const r = sumarTotales(data.Result);
-      setState(data.Result);
       setServicio(r);
+      setState(data.Result);
     }
   }, [isLoading, data, isSuccess]);
 
@@ -114,7 +111,7 @@ const FormConvertToInvoice = () => {
       );
 
       const factura = {
-        numeroFactura: `Fact No. ${i.toString().padStart(4, "0")}`, // Número de factura
+        numeroFactura: `Cuota No. ${i.toString().padStart(4, "0")}`, // Número de factura
         numero: i, // Identificador de la factura
         monto: montoCuota,
         porcentajeMora: `${porcentajeMoraAplicado}%`, // Porcentaje de mora aplicado
@@ -122,7 +119,6 @@ const FormConvertToInvoice = () => {
         fechaVencimiento: fechaVencimiento,
         tipoPlazo: plazo === 1 ? "mensual" : "quincenal",
       };
-
       facturas.push(factura);
 
       // Actualizar la fecha de emisión para la siguiente factura
@@ -138,23 +134,25 @@ const FormConvertToInvoice = () => {
 
   function calcularPorcentajeMora(porcentajeMora, diasMora, cuotaNumero) {
     // Aplicar el porcentaje de mora a partir de la primera cuota
-    return cuotaNumero > 1 ? porcentajeMora : 0;
+    return cuotaNumero >= 1 ? porcentajeMora : 0;
   }
-
+  
   function calcularFechaEmision(plazo, cuotaNumero, diaEmisionMensual) {
     const nuevaFecha = new Date();
 
     if (plazo === 2) {
-      // For bi-weekly payments, set the emission date to the 15th and 30th
-      nuevaFecha.setDate(cuotaNumero % 2 === 0 ? 30 : 15);
+        // Para pagos quincenales, establecer la fecha de emisión en el 15 o el 30
+        nuevaFecha.setDate(cuotaNumero % 2 === 0 ? 30 : 15);
     } else {
-      // For monthly payments, set the emission date based on cuotaNumero or use provided 'diaEmisionMensual'
-      nuevaFecha.setDate(diaEmisionMensual || 1);
-      nuevaFecha.setMonth(nuevaFecha.getMonth() + cuotaNumero - 1);
+        // Para pagos mensuales, establecer la fecha de emisión basada en cuotaNumero o utilizar 'diaEmisionMensual'
+        nuevaFecha.setDate(diaEmisionMensual || 1);
+        // Agregar un mes adicional para que los pagos comiencen un mes después
+        nuevaFecha.setMonth(nuevaFecha.getMonth() + cuotaNumero);
     }
 
     return nuevaFecha;
-  }
+}
+
 
   function calcularFechaVencimiento(
     fechaEmision,
@@ -247,6 +245,7 @@ const FormConvertToInvoice = () => {
       IdTipoPlazo: dataForm.Plazo,
 
       DistribucionesPagos: factura.map((dist) => ({
+      
         IdFactura: 0,
         MontoAPagar: dist.monto,
         FechaPago: dist.fechaEmision,
@@ -255,13 +254,10 @@ const FormConvertToInvoice = () => {
         SePago: false,
         CuotaNumero: dist.numero,
       })),
-
       // Distrib: factura,
     };
-
     // Ejecutar el create:
     createFacturaVentaProyecto({ ...dataFactura });
-    console.log("dataFacturadataFactura", dataFactura);
   };
 
   const onFinish = (values) => {
@@ -531,6 +527,7 @@ const FormConvertToInvoice = () => {
                       style={{ minWidth: "220px" }}
                       size="small"
                       value={ncfId}
+                      defaultValue={1}
                       onChange={(val) => setNCFId(val)}
                       options={[
                         {

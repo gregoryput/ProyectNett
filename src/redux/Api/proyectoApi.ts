@@ -97,6 +97,11 @@ export const proyectoApi = createApi({
       query: () => "/Proyecto/GetListaDocumentos",
       providesTags: ["Proyecto"],
     }),
+    getProyectoCouta: builder.query({
+      query: (IdProyecto) =>
+        `/Proyecto/obtenerProyectoCouta?IdProyecto=${IdProyecto}`,
+      providesTags: ["Proyecto"],
+    }),
   }),
 });
 
@@ -120,4 +125,6 @@ export const {
 
   /// Seccion de crear factura:
   useCreateFacturaVentaProyectoMutation,
+  useGetProyectoCoutaQuery,
+
 } = proyectoApi;

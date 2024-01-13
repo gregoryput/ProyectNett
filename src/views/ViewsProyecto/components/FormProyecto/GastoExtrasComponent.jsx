@@ -11,16 +11,16 @@ export default function GastoExtrasComponent({
   gasto,
   setGasto,
 }) {
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const formatter = (value) => (
     <CountUp
-      end={value}
-      separator=","
-      decimals={2}  // Número de decimales
-      prefix="RD$"   // Símbolo de moneda
+    end={value}
+    separator=","
+    decimals={2}  // Número de decimales
+    prefix="RD$"   // Símbolo de moneda
     />
-  );
-
+    );
+    
+    const [isModalOpen, setIsModalOpen] = useState(false);
   const OpenModal = () => {
     setIsModalOpen(true);
   };

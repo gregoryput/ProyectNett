@@ -272,7 +272,7 @@ export default function ModalProducto({
         ITBIS: 0,
         Subtotal: 0,
 
-        Cantidad: 1,
+        Cantidad: 0,
       };
 
       // Agregar el elemento solo si no existe en el arreglo:
@@ -300,7 +300,7 @@ export default function ModalProducto({
   const Guardar = () => {
     const tienePropiedad = producto.every((item) => "Cantidad" in item);
 
-    if (tienePropiedad) {
+    if (tienePropiedad > 0) {
       //  alert('Todos los elementos tienen la propiedad "cantidad".');
       setSelectStateProducto(producto);
       CloseModalProducto();
