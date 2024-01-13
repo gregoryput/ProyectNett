@@ -11,6 +11,10 @@
         public bool TieneVencimiento { get; set; }
         public int IdEstado { get; set; }
         public string NombreEstado { get; set; }
+        public string? Data { get; set; }
+        public string? FileName { get; set; }
+        public string? ContentType { get; set; }
+        public string? FileSize { get; set; }
     }
 
     public class ProyectoProductosDTO
@@ -24,6 +28,10 @@
         public bool TieneVencimiento { get; set; }
         public int IdEstado { get; set; }
         public string NombreEstado { get; set; }
+        public string? Data { get; set; }
+        public string? FileName { get; set; }
+        public string? ContentType { get; set; }
+        public string? FileSize { get; set; }
         public List<DetalleProductoUnidadMedidaDTO> ProductoDetallesUnidades { get; set; }
     }
 

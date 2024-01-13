@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using ProyectNettApi.DTO;
 using ProyectNettApi.Interfaces;
 using ProyectNettApi.Models;
+using System;
 using System.Data;
 namespace ProyectNettApi.Repositories
 {
@@ -20,6 +21,21 @@ namespace ProyectNettApi.Repositories
             string query = "Execute dbo.GetListaProductosConExistencia";
             var resultSet = _conexionDB.GetConnection(_configuration).Query<ProductoDTO>(query);
             return resultSet.ToList();
+        }
+
+        public OrdenCompraDTO GetOrdenCompraById(int OrdenId)
+        {
+            string query = "dbo.GetOrdenCompraById";
+            // var resultSet = _conexionDB.GetConnection(_configuration).Query<OrdenCompraDTO>(query).ToList()[0];
+            var resultSet = _conexionDB.GetConnection(_configuration).Query<OrdenCompraDTO>(query, new { IdOrdenCompra = OrdenId }, commandType: CommandType.StoredProcedure).ToList()[0];
+
+            // Sacar los datos de la relacion con OrdenesComprasDetalles:
+            string proc1 = "dbo.GetOrdenCompraDetallesById";
+            var resultProc2 = _conexionDB.GetConnection(_configuration).Query<OrdenCompraDetalleDTO>(proc1, new { IdOrdenCompra = resultSet.IdOrdenCompra }, commandType: CommandType.StoredProcedure);
+
+            resultSet.DetallesOrdenCompra = resultProc2.ToList();
+
+            return resultSet;
         }
 
         public IEnumerable<ProductoInfoBasicaDTO> GetListaProductosInfoInv()
@@ -80,6 +96,9 @@ namespace ProyectNettApi.Repositories
             return resultSet.ToList();
         }
 
+
+
+
         public void InsertarProducto(ProductoINV producto)
         {
             var connection = _conexionDB.GetConnection(_configuration);
@@ -136,8 +155,29 @@ namespace ProyectNettApi.Repositories
                         IdProductoUnidadDeMedida = IdProductoUnidadDeMedida,
                         IdCreadoPor = producto.IdCreadoPor,
                     };
-                    connection.ExecuteScalar<int>(queryDPUD, dataDPUD, transaction, commandType: CommandType.StoredProcedure);
+                    int IdProductoDetalleUnidad = connection.ExecuteScalar<int>(queryDPUD, dataDPUD, transaction, commandType: CommandType.StoredProcedure);
+
+
+                    // INSERTAR LAS EXISTENCIAS:
+                    //////////////////     //////////////////    //////////////////
+                   // var dataExistencia = productUNI.Existencia;
+                    string queryInsertExistencia = "dbo.InsertarExistencia";
+
+                    var existenciaInsert = new
+                    {
+                        Descripcion = producto.Codigo+"Unidad Id = "+productUNI.ProductoUnidadDeMedida.IdUnidadDeMedida,
+                        Codigo = producto.Codigo+"-"+productUNI.ProductoUnidadDeMedida.IdUnidadDeMedida,
+                        CantidadExistente = 0,
+                        IdProducto = IdProducto,
+                        IdUnidadMedida = productUNI.ProductoUnidadDeMedida.IdUnidadDeMedida,
+                        IdDetalleProductoUnidad = IdProductoDetalleUnidad,
+                        IdCreadoPor = producto.IdCreadoPor,
+                    };
+
+                    connection.Execute(queryInsertExistencia, existenciaInsert, transaction, commandType: CommandType.StoredProcedure);
+
                 }
+
 
 
                 // UPDATE, INSERT O DELETE A LA IMAGEN:
@@ -249,46 +289,6 @@ namespace ProyectNettApi.Repositories
                     producto.IdModificadoPor,
                 };
 
-                // Obtener las unidades en la BD:
-                var detailInBD = connection!.Execute("Get_ProductosUnidadesDeMedida_By_IdProducto", new {  ProductoId = producto!.IdProducto }, commandType: CommandType.StoredProcedure);
-
-                // -
-                // -
-                // -
-                // - .Update en la tabla ProductosUnidadesDeMedida: ........................................
-                foreach (var productUNI in producto.ProductoUnidadesMedidaDetalles)
-                {
-                    //////////////////     //////////////////    //////////////////
-                    var dataUnidades = productUNI.ProductoUnidadDeMedida;
-                    string queryPUMedida = "dbo.InsertarProductoUnidadDeMedida";
-
-                    var dataPUMedida = new
-                    {
-                        IdUnidadDeMedida = dataUnidades.IdUnidadDeMedida,
-                        IdProducto = dataUnidades.IdProducto,
-                        IdCreadoPor = producto.IdCreadoPor,
-                    };
-
-                    int IdProductoUnidadDeMedida = connection.ExecuteScalar<int>(queryPUMedida, dataPUMedida, transaction, commandType: CommandType.StoredProcedure);
-
-
-                    //////////////////   //////////////////    //////////////////
-                    var dataUnidadesDetalles = productUNI.DetalleProductoUnidadDeMedida;
-                    string queryDPUD = "dbo.InsertarDetalleProductoUnidadDeMedida";
-                    var dataDPUD = new
-                    {
-                        IdProducto = dataUnidadesDetalles.IdUnidadDeMedida,
-                        IdUnidadDeMedida = dataUnidadesDetalles.IdUnidadDeMedida,
-                        PrecioCosto = dataUnidadesDetalles.PrecioCosto,
-                        PrecioVenta = dataUnidadesDetalles.PrecioVenta,
-                        ITBIS = dataUnidadesDetalles.ITBIS,
-                        IdProductoUnidadDeMedida = IdProductoUnidadDeMedida,
-                        IdCreadoPor = producto.IdCreadoPor,
-                    };
-                    connection.ExecuteScalar<int>(queryDPUD, dataDPUD, transaction, commandType: CommandType.StoredProcedure);
-                }
-
-
                 // UPDATE, INSERT O DELETE A LA IMAGEN:
                 var dataImagenProducto = producto.DataImagenProducto;
 
@@ -354,6 +354,121 @@ namespace ProyectNettApi.Repositories
                     connection.Execute(queryProcedureDeleteImae, new { IdPersona = producto.IdProducto }, transaction, commandType: CommandType.StoredProcedure);
                 }
 
+
+
+                // - .C.O.M.M.I.T. Confirmo la transaccion
+                transaction.Commit();
+            }
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+                connection.Close();
+                throw ex;
+            }
+            connection.Close();
+        }
+
+
+
+
+
+        public void CrearOrdenCompra(OrdenCompra ordenCompra)
+        {
+            var connection = _conexionDB.GetConnection(_configuration);
+            connection.Open();
+            var transaction = connection.BeginTransaction();
+
+            // Generar Secuencia Para la Orden de compra:
+            var resultSecuenciaOC = connection.Query<dynamic>("dbo.GenerarSecuenciaDocumento", new { clave = "OC" }, transaction, commandType: CommandType.StoredProcedure).ToList();
+            string secuenciaOC = resultSecuenciaOC[0].SecuenciaGenerada.ToString();
+
+            try
+            {
+                // -
+                // - ..I.N.S.E.R.T.. Insertando en la tabla Ordenes Compras: ........................................
+                string queryOrdenCompra = "dbo.InsertarOrdenCompra";
+                var dataOrdenCompra = new
+                {
+                    IdEntidadProveedor = ordenCompra.IdEntidadProveedor,
+                    MontoTotal = ordenCompra.MontoTotal,
+                    Secuencia = secuenciaOC.ToString(),
+                    FechaEmision = ordenCompra.FechaEmision,
+                    FechaEntrega = ordenCompra.FechaEntrega,
+                    IdCiudadEntrega = ordenCompra.IdCiudadEntrega,
+                    DireccionEntrega = ordenCompra.DireccionEntrega,
+                    MontoInicial = ordenCompra.MontoInicial,
+                    IdEstadoDocumento = ordenCompra.IdEstadoDocumento,
+                    IdCreadoPor = ordenCompra.IdCreadoPor,
+
+                };
+                int IdOrdenCompra = connection.ExecuteScalar<int>(queryOrdenCompra, dataOrdenCompra, transaction, commandType: CommandType.StoredProcedure);
+
+
+                // -
+                // -
+                // - ..I.N.S.E.R.T.. Insertando en la tabla ProductosUnidadesDeMedida: ........................................
+                foreach (var ordenCompraDetalle in ordenCompra.OrdenCompraDetalles)
+                {
+                    string queryProcInsertDetail = "dbo.InsertarDetalleOrdenCompra";
+
+                    var dataDetail = new
+                    {
+                        IdProducto = ordenCompraDetalle.IdProducto,
+                        IdUnidadDeMedida = ordenCompraDetalle.IdUnidadDeMedida,
+                        IdOrdenCompra = IdOrdenCompra,
+                        Cantidad = ordenCompraDetalle.Cantidad,
+                        Precio = ordenCompraDetalle.Precio,
+                        ITBIS = ordenCompraDetalle.ITBIS,
+                        Subtotal = ordenCompraDetalle.Subtotal,
+                        IdCreadoPor = ordenCompra.IdCreadoPor,
+                    };
+
+                    connection.Execute(queryProcInsertDetail, dataDetail, transaction, commandType: CommandType.StoredProcedure);
+                }
+
+
+                // - .C.O.M.M.I.T. Confirmo la transaccion
+                transaction.Commit();
+            }
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+                connection.Close();
+                throw ex;
+            }
+            connection.Close();
+        }
+
+
+
+        public void AprobarOrdenCmpra(int OrdenId)
+        {
+            var connection = _conexionDB.GetConnection(_configuration);
+            connection.Open();
+            var transaction = connection.BeginTransaction();
+
+            try
+            {
+                // 
+                // -
+                // - ..I.N.S.E.R.T.. AprobarOrdenCompra: ........................................
+                string queryAprobar = "dbo.AprobarOrdenCompra";
+                var dataOrdenCompra = new
+                {
+                    OrdenId = OrdenId
+                };
+                //
+                connection.Execute(queryAprobar, dataOrdenCompra, transaction, commandType: CommandType.StoredProcedure);
+
+                // -
+                // - ..I.N.S.E.R.T.. IncrementarInventario: ........................................
+                string queryIncrementar = "dbo.IncrementarInventario";
+                var dataIncre = new
+                {
+                    OrdenId = OrdenId
+                };
+                //
+                connection.Execute(queryIncrementar, dataIncre, transaction, commandType: CommandType.StoredProcedure);
 
 
                 // - .C.O.M.M.I.T. Confirmo la transaccion

@@ -331,12 +331,36 @@ namespace ProyectNettApi.Controllers
         [Authorize]
         [Route("GetListaDocumentos")]
         [HttpGet]
-        public IActionResult GetListaDocumentos(int IdPr)
+        public IActionResult GetListaDocumentos()
         {
 
             try
             {
                 var listaDocs = _proyectoRepositorio.GetListaDocumentosVentas();
+                _respuesta.Result = listaDocs;
+                _respuesta.DisplayMessage = "Listado de documentos de ventas obtenida correctamente";
+                return Ok(_respuesta);
+            }
+
+            catch (Exception ex)
+            {
+                _respuesta.IsSuccess = false;
+                _respuesta.DisplayMessage = "Error al obtener la lista de documentos";
+                _respuesta.ErrorMessages = new List<string> { ex.ToString() };
+                return StatusCode(500, _respuesta);
+            }
+        }
+
+
+        [Authorize]
+        [Route("GetListaDocumentosCompras")]
+        [HttpGet]
+        public IActionResult GetListaDocumentosCompras()
+        {
+
+            try
+            {
+                var listaDocs = _proyectoRepositorio.GetListaDocumentosCompras();
                 _respuesta.Result = listaDocs;
                 _respuesta.DisplayMessage = "Listado de documentos de ventas obtenida correctamente";
                 return Ok(_respuesta);

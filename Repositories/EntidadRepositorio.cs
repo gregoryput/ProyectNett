@@ -1,4 +1,6 @@
 ﻿using Dapper;
+using Microsoft.AspNetCore.Http;
+using ProyectNettApi.DTO;
 using ProyectNettApi.Interfaces;
 using ProyectNettApi.Models;
 using System.Data;
@@ -15,6 +17,15 @@ namespace ProyectNettApi.Repositories
         {
             _configuration = configuration;
             _conexionDB = new ConexionDB();
+        }
+
+        public IEnumerable<EntidadProveedor> getEntidadesProveedores()
+        {
+            // 1 - Obtener listado de Entidades Proveedores:
+            string query = "dbo.Get_EntidadesProveedores_ForSelect";
+            var resultSet = _conexionDB.GetConnection(_configuration).Query<EntidadProveedor>(query, commandType: CommandType.StoredProcedure);
+
+            return resultSet.ToList();
         }
 
         public void InsertarEntidad(Entidad entidad)

@@ -45,6 +45,9 @@ namespace ProyectNettApi.Controllers
 
             return Ok(_respuesta);
         }
+
+
+
         // .A.C.C.I.O.N -- Para obtener la informacion del proveedor: --------------------------------------------
         [Authorize]
         [Route("obtenerInfoPersonalProveedor")]

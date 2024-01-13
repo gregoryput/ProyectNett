@@ -137,6 +137,10 @@ namespace ProyectNettApi.Repositories
                 ProductoDetalleUnidades.TieneVencimiento = producto.TieneVencimiento;
                 ProductoDetalleUnidades.IdEstado = producto.IdEstado;
                 ProductoDetalleUnidades.NombreEstado = producto.NombreEstado;
+                ProductoDetalleUnidades.Data = producto.Data;
+                ProductoDetalleUnidades.ContentType = producto.ContentType;
+                ProductoDetalleUnidades.FileName = producto.ContentType;
+                ProductoDetalleUnidades.FileSize = producto.FileSize;
 
                 // Ejecutamos el getDetalleByProductoId:
                 string queryPrcedure2 = "dbo.GetInfoProductoUnidades";
@@ -390,6 +394,16 @@ namespace ProyectNettApi.Repositories
             string query = "dbo.ListadoDocumentsVentas";
 
             var resultSet = _conexionDB.GetConnection(_configuration).Query<DocumentoDTO>(query, commandType: CommandType.StoredProcedure);
+            return resultSet.ToList();
+        }
+
+
+        // -----------------------------------------------------------------------------------------------------------------------------------------------
+        public IEnumerable<DocumentoCompraDTO> GetListaDocumentosCompras()
+        {
+            string query = "dbo.ListadoDocumentoscompras";
+
+            var resultSet = _conexionDB.GetConnection(_configuration).Query<DocumentoCompraDTO>(query, commandType: CommandType.StoredProcedure);
             return resultSet.ToList();
         }
 

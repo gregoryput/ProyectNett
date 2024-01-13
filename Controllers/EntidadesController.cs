@@ -49,5 +49,30 @@ namespace ProyectNettApi.Controllers
                 return StatusCode(500, _respuesta);
             }
         }
+
+
+        //
+        // .A.C.C.I.O.N -- Para insertar Entidades Proveedores: --------------------------------------------  --------------------------------------------  -------------------------------------------- 
+        [Authorize]
+        [Route("GetEntidadesProveedoresForSelectOption")]
+        [HttpGet]
+        public IActionResult GetEntidadesProveedores()
+        {
+            try
+            {
+                var response = _entidadRepositorio.getEntidadesProveedores();
+                _respuesta.Result = response;
+                _respuesta.DisplayMessage = "Lista de entidades proveedores obtenida correctamente";
+                return Ok(_respuesta);
+            }
+
+            catch (Exception ex)
+            {
+                _respuesta.IsSuccess = false;
+                _respuesta.DisplayMessage = "Error al obtener la lista de entidades proveedores";
+                _respuesta.ErrorMessages = new List<string> { ex.ToString() };
+                return StatusCode(500, _respuesta);
+            }
+        }
     }
 }
