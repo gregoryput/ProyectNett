@@ -55,8 +55,9 @@ export default function Presupuesto({proyecto}) {
             paddingTop: 10,
           }}
         >
-          <b>Pagos :</b>
-          <Progress percent={50} steps={10} strokeColor={"#87d068"} />
+          {/* <b>Pagos :</b>
+          <Progress percent={50} steps={10} strokeColor={"#87d068"} /> */}
+          <br />
         </div>
       
       </div>

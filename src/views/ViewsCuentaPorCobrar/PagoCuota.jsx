@@ -227,7 +227,7 @@ export default function PagoCuota() {
   const diferencia = SumaCuotaPagadas();
 
   const AgregarCuota = (item) => {
-    const lista = filteredData.filter((x) => x.CuotaNumero == item);
+    const lista = filteredData.filter((x) => x.CuotaNumero == item );
     setSelectCuota([...selectCuota, ...lista]);
     Remover(item);
   };
@@ -253,7 +253,7 @@ export default function PagoCuota() {
       let fechaVencimiento = new Date(item.FechaVencimiento);
       // Verificar si la fecha de emisión es igual o mayor a la fecha actual
       if (fechaActual >= fechaEmision) {
-        AgregarCuota(item.CuotaNumero);
+        // AgregarCuota(item.CuotaNumero);
 
         // Verificar si la fecha de vencimiento es mayor a la fecha actual
         if (fechaVencimiento >= fechaActual) {
