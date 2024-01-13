@@ -2378,7 +2378,7 @@ CREATE OR ALTER PROCEDURE DisminuirInventario
 AS
 BEGIN
     UPDATE E
-    SET CantidadExistente = E.CantidadExistente + OCD.Cantidad
+    SET CantidadExistente = E.CantidadExistente - OCD.Cantidad
     FROM Existencias E
     JOIN ProyectosDetallesProductos OCD ON E.IdProducto = OCD.IdProducto AND E.IdUnidadMedida = OCD.IdUnidadDeMedida
     WHERE OCD.IdProyecto = @ProyectoId;
