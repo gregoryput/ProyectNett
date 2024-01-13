@@ -409,17 +409,16 @@ export default function PagoCuota() {
       ListaPagos: data,
     };
     const handleCuotaSubmit = () => {
-      if (selectCuota.length > 0) {
-        InsertarPagoFacturaVentaProyecto(datasubmit);
-        setDatoFacturaPago(datasubmit);
+      InsertarPagoFacturaVentaProyecto(datasubmit);
+      setDatoFacturaPago(datasubmit);
 
-        setSelectCuota([]);
-        OpenModal();
-      }
+      setSelectCuota([]);
+      OpenModal();
     };
+
     handleCuotaSubmit();
   };
-  
+
   const [plazo, setPlazo] = useState(2);
 
   const handleSelectChange = (value) => {
@@ -445,7 +444,7 @@ export default function PagoCuota() {
       DevolucionEfectivo: value - totalCuota,
     });
 
-    setDevolucion( value - totalCuota)
+    setDevolucion(value - totalCuota);
   };
   const sumarTotales = (proyecto) => {
     let totalGeneral = 0;
@@ -480,7 +479,7 @@ export default function PagoCuota() {
   };
 
   const totalservicio = sumarTotales(state);
-  const ValorRestante = datoCompleto.MontoTotal - diferencia - totalCuota
+  const ValorRestante = datoCompleto.MontoTotal - diferencia - totalCuota;
   return (
     <ViewContainerPages2>
       <div>
@@ -781,7 +780,7 @@ function ModalGasto({
   datoCompleto,
   datoFacturaPago,
   ValorRestante,
-  devolucion
+  devolucion,
 }) {
   const handleCloses = () => {
     CloseModal();
