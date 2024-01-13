@@ -1,9 +1,10 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/dist/query/react";
 import {
-  IDocumentoDTO,
   IOrdenCompra,
+  IOrdenCompraDTO,
   IProductoInv,
   IResponseApi,
+  IResponseApiObject,
 } from "../../interfaces";
 
 const token = localStorage.getItem("token");
@@ -17,7 +18,7 @@ export const productsApi = createApi({
       Authorization: `Bearer ${token}`,
     },
   }),
-  tagTypes: ["Products"],
+  tagTypes: ["Products", "OrdenCompra"],
   endpoints: (builder) => ({
     getProductsInvWithExistenceInv: builder.query<
       IResponseApi<IProductoInv>,
@@ -50,6 +51,13 @@ export const productsApi = createApi({
       }),
       invalidatesTags: ["Products"],
     }),
+    getOrdenCompraById: builder.query<
+      IResponseApiObject<IOrdenCompraDTO>,
+      number
+    >({
+      query: (OrdenId) => `/Productos/GetOrdenCompraById?OrdenId=${OrdenId}`,
+      providesTags: ["OrdenCompra"],
+    }),
   }),
 });
 
@@ -59,4 +67,5 @@ export const {
   useGetProductsForFCQuery,
   useCreateProductMutation,
   useCreateOrdenCompraMutation,
+  useGetOrdenCompraByIdQuery,
 } = productsApi;

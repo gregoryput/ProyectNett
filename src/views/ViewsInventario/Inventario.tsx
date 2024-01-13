@@ -1,5 +1,5 @@
 //import "animate.css";
-import { message, Button, Tag, Image } from "antd";
+import { message, Button, Tag } from "antd";
 import {
   Container,
   DropdownActionsLists,
@@ -8,13 +8,9 @@ import {
 import { BiCartAdd } from "react-icons/bi";
 import {
   MdAddBox,
-  MdAddCircle,
   MdCheckCircle,
   MdClear,
-  MdClose,
   MdOutlineAddShoppingCart,
-  MdOutlineAddToPhotos,
-  MdTrolley,
 } from "react-icons/md";
 
 import { MdInventory } from "react-icons/md";

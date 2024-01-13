@@ -1,5 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/dist/query/react";
 import {
+  IDocumentoCompraDTO,
   IDocumentoDTO,
   IProductoInv,
   IResponseApi,
@@ -97,6 +98,13 @@ export const proyectoApi = createApi({
       query: () => "/Proyecto/GetListaDocumentos",
       providesTags: ["Proyecto"],
     }),
+    getListaDocumentosCompras: builder.query<
+      IResponseApi<IDocumentoCompraDTO>,
+      void
+    >({
+      query: () => "/Proyecto/GetListaDocumentosCompras",
+      providesTags: ["Proyecto"],
+    }),
     getProyectoCouta: builder.query({
       query: (IdProyecto) =>
         `/Proyecto/obtenerProyectoCouta?IdProyecto=${IdProyecto}`,
@@ -127,4 +135,6 @@ export const {
   useCreateFacturaVentaProyectoMutation,
   useGetProyectoCoutaQuery,
 
+  ///
+  useGetListaDocumentosComprasQuery,
 } = proyectoApi;

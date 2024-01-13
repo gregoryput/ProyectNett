@@ -9,7 +9,7 @@ import {
   Home,
   Proveedores,
   DetailEmpleado,
-  FormFacturacion,
+  //FormFacturacion,
   Clientes,
   FormularioOrdenesCompras,
 } from "../views";
@@ -132,16 +132,16 @@ export const createRouter = () => {
             </ProtectedRoute>
           ),
         },
-        {
-          path: "/cuenta-por-cobrar/form-facturacion",
-          element: (
-            <ProtectedRoute
-              roles={["Administrador", "Asistente Administrativo"]}
-            >
-              <FormFacturacion />
-            </ProtectedRoute>
-          ),
-        },
+        // {
+        //   path: "/cuenta-por-cobrar/form-facturacion",
+        //   element: (
+        //     <ProtectedRoute
+        //       roles={["Administrador", "Asistente Administrativo"]}
+        //     >
+        //       <FormFacturacion />
+        //     </ProtectedRoute>
+        //   ),
+        // },
         {
           path: "/cuenta-por-pagar",
           element: (
