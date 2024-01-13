@@ -24,7 +24,9 @@ namespace ProyectNettApi.Interfaces
 
         // Listado de documentos hechos a los proyectos
         public IEnumerable<DocumentoDTO> GetListaDocumentosVentas();
+        public IEnumerable<ObtenerDatosProcesarPagosProyectoDTO> GetObtenerDatosCoutaProyecto(int IdProyecto);
 
         public void InsertarFacturaVentaProyecto(FacturaVentaProyecto factura);
+        public void InsertarPago(DataPagos pago);
     }
 }

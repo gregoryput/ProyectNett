@@ -42,4 +42,34 @@
         public DateTime? FechaModificacion { get; set; }
         public int? IdEstadoRegistro { get; set; }
     }
+
+
+    public class PagosFacturasVentas
+    {
+        public int IdPago { get; set; }
+        public DateTime? Fecha { get; set; }
+        public decimal? MontoPago { get; set; }
+        public decimal? MontoMora { get; set; }
+        public decimal? MontoTotal { get; set; }
+        public DateTime? FechaPago { get; set; }
+        public decimal? MontoEfectivo { get; set; }
+        public decimal? DevolucionEfectivo { get; set; }
+        public decimal? MontoTarjeta { get; set; }
+        public string? Tarjeta { get; set; }
+        public int? IdTipoPago { get; set; }
+        public int? IdDistribucionPago { get; set; }
+
+  
+        public int IdEstadoRegistro { get; set; }
+
+
+    }
+
+    public class DataPagos
+    {
+        public List<PagosFacturasVentas> ListaPagos { get; set; }
+
+    }
+
+
 }

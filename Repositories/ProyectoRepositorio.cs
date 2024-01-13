@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using Microsoft.AspNetCore.Mvc.TagHelpers;
 using Newtonsoft.Json;
 using ProyectNettApi.DTO;
 using ProyectNettApi.Interfaces;
@@ -76,6 +77,22 @@ namespace ProyectNettApi.Repositories
             return JsonConvert.DeserializeObject<T>(json);
         }
 
+        /// GET PARA VER MODULO DE PAGOS 
+        public IEnumerable<ObtenerDatosProcesarPagosProyectoDTO> GetObtenerDatosCoutaProyecto(int IdProyecto)
+        {
+            string query = "dbo.ObtenerDatosProcesarPagosProyecto";
+
+            var resultSet = _conexionDB.GetConnection(_configuration)
+                .Query<ObtenerDatosProcesarPagosProyectoDTO>(query, new { IdProyecto }, commandType: CommandType.StoredProcedure);
+
+            foreach (var proyecto in resultSet)
+            {
+                proyecto.LCuotaProyectoDTO = DeserializeJson<List<CuotaProyectoDTO>>(proyecto.CuotaProyectoJson);
+               
+            }
+
+            return resultSet.ToList();
+        }
 
         // Lista  de get para formulario de proyecto 
         public IEnumerable<ServiciosDTO> GetServicio()
@@ -480,6 +497,60 @@ namespace ProyectNettApi.Repositories
             }
             connection.Close();
         }
+
+
+        public void InsertarPago(DataPagos pago)
+        {
+            var connection = _conexionDB.GetConnection(_configuration);
+            connection.Open();
+            var transaction = connection.BeginTransaction();
+
+            try
+            {
+
+                foreach( var item in pago.ListaPagos )
+                {
+                    // -------------------------- INSERTAR EN LA TABLA PPAGOS FACTURAS VENTAS PROYECTOS (Procedimiento: dbo.InsertarPagoFacturaVenta):
+                    connection.Execute("dbo.InsertarPagoFacturaVenta",
+
+                            new
+                            {
+                                Fecha = item.Fecha,
+                                MontoPago = item.MontoPago,
+                                MontoMora = item.MontoMora,
+                                MontoTotal = item.MontoTotal,
+                                FechaPago = item.FechaPago,
+                                MontoEfectivo = item.MontoEfectivo,
+                                DevolucionEfectivo = item.DevolucionEfectivo,
+                                MontoTarjeta = item.MontoTarjeta,
+                                Tarjeta = item.Tarjeta,
+                                IdTipoPago = item.IdTipoPago,
+                                IdDistribucionPago = item.IdDistribucionPago,
+                                IdCreadoPor = 1,
+
+                            }, transaction, commandType: CommandType.StoredProcedure);
+
+
+
+                }
+
+
+
+
+
+                transaction.Commit();
+            }
+
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+                transaction.Dispose();
+                connection.Close();
+                throw ex;
+            }
+            connection.Close();
+        }
     }
+
 }
 

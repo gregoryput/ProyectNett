@@ -88,6 +88,26 @@ namespace ProyectNettApi.Controllers
             }
         }
 
+        [Route("obtenerProyectoCouta")]
+        [HttpGet]
+        public IActionResult getCoutas(int IdProyecto)
+        {
+            try
+            {
+                var lista = _proyectoRepositorio.GetObtenerDatosCoutaProyecto(IdProyecto);
+                _respuesta.Result = lista;
+                _respuesta.DisplayMessage = "Listado  obtenido con exito:";
+                return Ok(_respuesta);
+            }
+            catch (Exception ex)
+            {
+                _respuesta.IsSuccess = false;
+                _respuesta.DisplayMessage = "Error al solicitar la lista";
+                _respuesta.ErrorMessages = new List<string> { ex.ToString() };
+                return StatusCode(500, _respuesta);
+            }
+        }
+
         [Authorize]
         [Route("obtenerServicio")]
         [HttpGet]
@@ -277,6 +297,30 @@ namespace ProyectNettApi.Controllers
             }
         }
 
+        // .A.C.C.I.O.N -- Para InsertarFacturaVentaProyecto: --------------------------------------------
+        [Authorize]
+        [Route("InsertarPagoFacturaVentaProyecto")]
+        [HttpPost]
+        public IActionResult InsertaPagos(DataPagos facturaVenta)
+        {
+          
+            try
+            {
+                _proyectoRepositorio.InsertarPago(facturaVenta);
+                _respuesta.Result = facturaVenta;
+                _respuesta.DisplayMessage = "Pagos Factura de venta de proyecto creada correctamente:";
+                return Ok(_respuesta);
+            }
+         
+            //
+            catch (Exception ex)
+            {
+                _respuesta.IsSuccess = false;
+                _respuesta.DisplayMessage = "Error ";
+                _respuesta.ErrorMessages = new List<string> { ex.ToString() };
+                return StatusCode(500, _respuesta);
+            }
+        }
 
         //
         // .A.C.C.I.O.N -- Para Insertar Proyectos: --------------------------------------------
