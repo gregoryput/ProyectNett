@@ -1,4 +1,4 @@
-USE BD_PROYENETT_VF42
+USE BD_PROYENETT_FINAL_6
 
 GO
 ----------- /*1--*/ Procedimiento almcenado para obtener una lista general de clientes (empresas y personas fisicas):
@@ -556,8 +556,13 @@ GO
 CREATE OR ALTER PROCEDURE dbo.GetInfoProductos
 AS
 BEGIN
-    SELECT P.IdProducto, Nombre, Codigo, Descripcion, Modelo, TieneVencimiento, IdEstado, ER.NombreEstado
+    SELECT P.IdProducto, Nombre, Codigo, Descripcion, Modelo, TieneVencimiento, IdEstado, ER.NombreEstado,
+           I.IdImagen, I.[FileName], I.ContentType, I.FileSize, I.[DATA] AS [Data]
     FROM Productos P INNER JOIN EstadosRegistros ER ON P.IdEstado = ER.IdEstadoRegistro
+                     LEFT JOIN ProductosImagenes PI ON PI.IdProducto = P.IdProducto
+                     LEFT JOIN Imagenes I ON PI.IdImagen = I.IdImagen
+    WHERE P.IdEstadoRegistro != 2 
+    ORDER BY P.IdProducto DESC
 END
 -- EXEC dbo.GetInfoProductos
 
@@ -1410,7 +1415,7 @@ CREATE OR ALTER PROCEDURE dbo.ListadoDocumentsVentas
 AS
 BEGIN
         SELECT IdCotizacion AS IdDocumento, 1 AS IdTipoDocumento, 'Cotización de proyecto' AS DocumentoNombre,
-            FechaDeEmision, MontoTotal, CP.Secuencia, C.IdCliente, E.NombreEntidad, E.IdTipoEntidad, TP.NombreTipoEntidad,
+            CP.FechaCreacion AS FechaDeEmision, MontoTotal, CP.Secuencia, C.IdCliente, E.NombreEntidad, E.IdTipoEntidad, TP.NombreTipoEntidad,
             CP.IdEstado, Py.IdProyecto, Py.Nombre AS NombreProyecto
 
         FROM CotizacionesProyectos CP INNER JOIN Clientes C ON CP.IdCliente = c.IdCliente
@@ -1421,7 +1426,7 @@ BEGIN
 
 
         SELECT IdFactura AS IdDocumento, 2 AS IdTipoDocumento, 'Factura de proyecto' AS DocumentoNombre,
-            FechaDeEmision, MontoTotal, FV.Secuencia, C.IdCliente, E.NombreEntidad, E.IdTipoEntidad, TP.NombreTipoEntidad,
+            FV.FechaCreacion AS FechaDeEmision, MontoTotal, FV.Secuencia, C.IdCliente, E.NombreEntidad, E.IdTipoEntidad, TP.NombreTipoEntidad,
             FV.IdEstadoFactura, Py.IdProyecto, Py.Nombre AS NombreProyecto
 
         FROM FacturasVentasProyectos FV INNER JOIN Proyectos Py ON FV.IdProyecto = Py.IdProyecto
@@ -1917,6 +1922,7 @@ END;
 
 
 
+
 GO
 CREATE OR ALTER PROCEDURE dbo.GetListaProductosInfoBasica
 AS
@@ -1966,6 +1972,30 @@ BEGIN
 
     Select SCOPE_IDENTITY();
 END
+
+
+
+GO
+-- INSERTAR PRODUCTO
+CREATE OR ALTER PROCEDURE dbo.InsertarExistencia
+    @Descripcion VARCHAR(255),
+    @Codigo VARCHAR(30),
+    @CantidadExistente INT,
+    @IdProducto INT,
+    @IdUnidadMedida INT,
+    @IdDetalleProductoUnidad INT,
+
+    @IdCreadoPor INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    -- Insertar datos en la tabla Existencias
+    INSERT INTO Existencias (
+             Descripcion, Codigo, CantidadExistente, IdProducto, IdUnidadMedida, IdDetalleProductoUnidad, IdCreadoPor, FechaCreacion, IdEstadoRegistro)
+    VALUES (@Descripcion, @Codigo, @CantidadExistente, @IdProducto, @IdUnidadMedida, @IdDetalleProductoUnidad, @IdCreadoPor, GETDATE(), 1);
+END;
+
 
 
 
@@ -2028,30 +2058,9 @@ BEGIN
         (IdProducto, IdUnidadDeMedida, PrecioCosto, PrecioVenta, ITBIS, IdProductoUnidadDeMedida, IdCreadoPor, FechaCreacion, IdEstadoRegistro)
     VALUES
         (@IdProducto, @IdUnidadDeMedida, @PrecioCosto, @PrecioVenta, @ITBIS, @IdProductoUnidadDeMedida, @IdCreadoPor, GETDATE(), 1);
+
+    SELECT SCOPE_IDENTITY();
 END
-
-
-
-
-GO
---- --- --- --- --- --- ---
-CREATE OR ALTER PROCEDURE dbo.InsertarExistencia
-    @Descripcion VARCHAR(255),
-    @Codigo VARCHAR(6),
-    @CantidadExistente INT,
-    @IdProducto INT,
-    @IdUnidadMedida INT,
-    @IdCreadoPor INT
-AS
-BEGIN
-    SET NOCOUNT ON;
-
-    INSERT INTO Existencias
-        (Descripcion, Codigo, CantidadExistente, IdProducto, IdUnidadMedida, IdCreadoPor, FechaCreacion, IdEstadoRegistro)
-    VALUES
-        (@Descripcion, @Codigo, @CantidadExistente, @IdProducto, @IdUnidadMedida, @IdCreadoPor, GETDATE(), 1);
-END
-
 
 
 
@@ -2226,5 +2235,260 @@ END;
 
 
 
-SELECT * FROM FacturasVentasProyectos
-SELECT * FROM ProyectosDistribucionesPagos
+GO
+CREATE OR ALTER PROCEDURE dbo.Get_EntidadesProveedores_ForSelect
+AS
+BEGIN
+    SELECT E.IdEntidad, E.NombreEntidad, I.[FileName], I.ContentType, I.FileSize, I.[DATA]
+    FROM Entidades E LEFT JOIN EntidadesImagenes EI ON E.IdEntidad = EI.IdEntidad
+                     LEFT JOIN Imagenes I ON EI.IdImagen = I.IdImagen
+                     INNER JOIN Proveedores P ON E.IdEntidad = P.IdEntidad
+
+    WHERE E.IdEstadoRegistro != 2 AND P.IdEstadoRegistro != 2
+END
+
+
+
+go
+CREATE OR ALTER PROCEDURE dbo.InsertarOrdenCompra
+    @IdEntidadProveedor INT,
+    @MontoTotal DECIMAL,
+    @Secuencia VARCHAR(30),
+    @FechaEmision DATETIME,
+    @FechaEntrega DATETIME,
+    @IdCiudadEntrega INT,
+    @DireccionEntrega VARCHAR(MAX),
+    @MontoInicial DECIMAL,
+    @IdEstadoDocumento INT,
+    @IdCreadoPor INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    INSERT INTO OrdenesCompras (
+        IdEntidadProveedor, MontoTotal, Secuencia, FechaEmision, FechaEntrega, IdCiudadEntrega, DireccionEntrega, MontoInicial, IdEstadoDocumento, IdCreadoPor, FechaCreacion, IdEstadoRegistro
+    )
+    VALUES (
+        @IdEntidadProveedor, @MontoTotal, @Secuencia, @FechaEmision, @FechaEntrega, @IdCiudadEntrega, @DireccionEntrega, @MontoInicial, @IdEstadoDocumento, @IdCreadoPor, GETDATE(), 1
+    );
+
+    -- Retorna el valor del SCOPE_IDENTITY
+    SELECT SCOPE_IDENTITY() AS IdOrdenCompra;
+END;
+GO
+
+
+CREATE OR ALTER PROCEDURE InsertarDetalleOrdenCompra
+    @IdProducto INT,
+    @IdUnidadDeMedida INT,
+    @IdOrdenCompra INT,
+    @Cantidad INT,
+    @Precio DECIMAL,
+    @ITBIS DECIMAL,
+    @Subtotal DECIMAL,
+    @IdCreadoPor INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    INSERT INTO OrdenesComprasDetalles (
+        IdProducto, IdUnidadDeMedida, IdOrdenCompra, Cantidad, Precio, ITBIS, Subtotal, IdCreadoPor, FechaCreacion, IdEstadoRegistro
+    )
+    VALUES (
+        @IdProducto, @IdUnidadDeMedida, @IdOrdenCompra, @Cantidad, @Precio, @ITBIS, @Subtotal, @IdCreadoPor, GETDATE(), 1
+    );
+END;
+
+
+
+GO
+
+CREATE OR ALTER PROCEDURE dbo.ListadoDocumentosCompras
+AS
+BEGIN
+        SELECT IdOrdenCompra AS IdDocumento, 1 AS IdTipoDocumento, 'Orden de compra' AS DocumentoNombre,
+            OC.FechaCreacion AS FechaDeEmision, MontoTotal, OC.Secuencia, OC.IdEntidadProveedor AS IdEntidad, E.NombreEntidad, E.IdTipoEntidad, TP.NombreTipoEntidad,
+            OC.IdEstadoDocumento, ED.NombreEstadoDocumeto
+
+        FROM OrdenesCompras OC INNER JOIN Entidades E ON OC.IdEntidadProveedor = E.IdEntidad
+            INNER JOIN TiposEntidades TP ON E.IdTipoEntidad = TP.IdTipoEntidad
+            INNER JOIN EstadosDocumentos ED ON OC.IdEstadoDocumento = ED.IdEstadoDocumento
+END
+-- EXEC dbo.ListadoDocumentosCompras
+
+
+GO
+CREATE OR ALTER PROCEDURE dbo.GetOrdenCompraById
+(@IdOrdenCompra INT)
+AS
+BEGIN
+    SELECT IdOrdenCompra, IdEntidadProveedor, NombreEntidad, NombreTipoEntidad, MontoTotal, Secuencia, FechaEmision, FechaEmision, FechaEntrega,
+           IdCiudadEntrega, PaisNombre, CiudadNombre, DireccionEntrega, MontoInicial
+    FROM OrdenesCompras OC INNER JOIN Ciudades C ON OC.IdCiudadEntrega = C.IdCiudad 
+                           INNER JOIN Paises P ON C.IdPais = P.IdPais
+                           INNER JOIN Entidades E ON OC.IdEntidadProveedor = E.IdEntidad
+                           INNER JOIN TiposEntidades TE ON TE.IdTipoEntidad = E.IdTipoEntidad
+    WHERE IdOrdenCompra = @IdOrdenCompra
+END
+-- EXEC dbo.GetOrdenCompraById @IdOrdenCompra = 3
+
+
+GO
+CREATE OR ALTER PROCEDURE dbo.GetOrdenCompraDetallesById
+(@IdOrdenCompra INT)
+AS
+BEGIN
+    SELECT IdDetalleOrdenCompra, P.IdProducto, p.Codigo, P.Nombre, UD.IdUnidadDeMedida, ud.UnidadNombre, IdOrdenCompra, Cantidad, Precio, ITBIS, Subtotal
+     FROM OrdenesComprasDetalles OCD INNER JOIN UnidadesDeMedida UD ON OCD.IdUnidadDeMedida = UD.IdUnidadDeMedida
+                                     INNER JOIN Productos P ON OCD.IdProducto = P.IdProducto
+     WHERE IdOrdenCompra = @IdOrdenCompra
+END
+-- EXEC dbo.GetOrdenCompraDetallesById @IdOrdenCompra = 3
+
+
+
+GO
+
+CREATE OR ALTER PROCEDURE AprobarOrdenCompra
+(@ordenId INT)
+AS
+BEGIN
+    UPDATE OrdenesCompras SET IdEstadoDocumento = 1 WHERE IdOrdenCompra = @ordenId
+END
+
+
+
+GO
+
+CREATE OR ALTER PROCEDURE IncrementarInventario
+    @OrdenId INT
+AS
+BEGIN
+    UPDATE E
+    SET CantidadExistente = E.CantidadExistente + OCD.Cantidad
+    FROM Existencias E
+    JOIN OrdenesComprasDetalles OCD ON E.IdProducto = OCD.IdProducto AND E.IdUnidadMedida = OCD.IdUnidadDeMedida
+    WHERE OCD.IdOrdenCompra = @OrdenId;
+END;
+
+
+GO
+CREATE OR ALTER PROCEDURE DisminuirInventario
+    @ProyectoId INT
+AS
+BEGIN
+    UPDATE E
+    SET CantidadExistente = E.CantidadExistente + OCD.Cantidad
+    FROM Existencias E
+    JOIN ProyectosDetallesProductos OCD ON E.IdProducto = OCD.IdProducto AND E.IdUnidadMedida = OCD.IdUnidadDeMedida
+    WHERE OCD.IdProyecto = @ProyectoId;
+END;
+
+
+
+
+GO
+CREATE OR ALTER PROCEDURE ObtenerDatosProcesarPagosProyecto
+    @IdProyecto INT
+AS
+BEGIN
+    SELECT
+        fp.FechaDeEmision,
+        fp.MontoInicial,
+        fp.FechaDeVencimiento,
+        fp.FechaVencimientoNCF,
+        fp.CantidadCuotas,
+        fp.PorcientoMora,
+        fp.DiaPagoMensual,
+        fp.DiasParaVencimiento,
+        tp.NombrePlazo,
+        fp.MontoTotal,
+        fp.TipoNCFId,
+        fp.Secuencia,
+      
+        (
+            SELECT
+				pp.IdDistribucionPago,
+                pp.IdFactura,
+                pp.CuotaNumero,
+                pp.MontoAPagar,
+                pp.FechaEmision,
+                pp.FechaVencimiento,
+                pp.SePago
+            FROM ProyectosDistribucionesPagos pp
+                INNER JOIN FacturasVentasProyectos f ON f.IdFactura = pp.IdFactura
+            WHERE f.IdProyecto = fp.IdProyecto 
+            FOR JSON PATH
+        ) AS 'CuotaProyectoJson'
+       
+    FROM
+        FacturasVentasProyectos fp
+        INNER JOIN Proyectos p ON p.IdProyecto = fp.IdProyecto
+        INNER JOIN TiposPlazos tp ON tp.IdTipoPlazo = fp.IdTipoPlazo
+        INNER JOIN Entidades en ON en.IdEntidad = p.IdEntidad
+        INNER JOIN TiposEntidades ten ON ten.IdTipoEntidad = en.IdTipoEntidad
+        INNER JOIN EstadosProyectos ep ON ep.IdEstado = p.IdEstado
+    WHERE
+        fp.IdProyecto = @IdProyecto;
+END
+GO
+
+
+
+go
+GO
+CREATE or alter PROCEDURE InsertarPagoFacturaVenta
+    @Fecha DATEtime,
+    @MontoPago DECIMAL(18, 2),
+    @MontoMora DECIMAL(18, 2),
+    @MontoTotal DECIMAL(18, 2),
+    @FechaPago DATE,
+    @MontoEfectivo DECIMAL(18, 2),
+    @DevolucionEfectivo DECIMAL(18, 2),
+    @MontoTarjeta DECIMAL(18, 2),
+    @Tarjeta VARCHAR(50),
+    @IdTipoPago INT,
+    @IdDistribucionPago INT,
+    @IdCreadoPor VARCHAR(50)
+AS
+BEGIN
+    INSERT INTO PagosFacturasVentas (
+        Fecha, 
+        MontoPago,
+        MontoMora, 
+        MontoTotal, 
+        FechaPago, 
+        MontoEfectivo, 
+        DevolucionEfectivo, 
+        MontoTarjeta, 
+        Tarjeta, 
+        IdTipoPago, 
+        IdDistribucionPago,
+        IdCreadoPor, 
+        FechaCreacion,  
+        IdEstadoRegistro
+    )
+    VALUES (
+        @Fecha, 
+        @MontoPago, 
+        @MontoMora, 
+        @MontoTotal, 
+        @FechaPago, 
+        @MontoEfectivo, 
+        @DevolucionEfectivo, 
+        @MontoTarjeta, 
+        @Tarjeta, 
+        @IdTipoPago, 
+        @IdDistribucionPago, 
+        @IdCreadoPor,
+        GETDATE(), 
+        1
+    );
+
+    UPDATE ProyectosDistribucionesPagos 
+    SET SePago =1 
+    WHERE IdDistribucionPago = @IdDistribucionPago;
+END
+
+
+

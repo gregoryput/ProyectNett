@@ -1,6 +1,6 @@
-CREATE DATABASE BD_PROYENETT_VF42
+CREATE DATABASE BD_PROYENETT_FINAL_6
 GO
-USE BD_PROYENETT_VF42
+USE BD_PROYENETT_FINAL_6
 GO
 
 
@@ -677,13 +677,15 @@ CREATE TABLE Existencias
 (
     IdExistencia INT IDENTITY CONSTRAINT PK_IdExistencia PRIMARY KEY,
     Descripcion VARCHAR(255),
-    Codigo VARCHAR(6) CONSTRAINT UQ_Existencia UNIQUE,
+    Codigo VARCHAR(30) CONSTRAINT UQ_Existencia UNIQUE,
     CantidadExistente INT,
     --
     IdProducto INT,
     CONSTRAINT Fk_Inventario_IdProducto FOREIGN KEY (IdProducto) REFERENCES Productos(IdProducto),
     IdUnidadMedida INT,
     CONSTRAINT Fk_Inventario_IdUnidadMedida FOREIGN KEY (IdUnidadMedida) REFERENCES UnidadesDeMedida(IdUnidadDeMedida),
+    IdDetalleProductoUnidad INT,
+    CONSTRAINT Fk_Inventario_IdDetalleProductoUnidad FOREIGN KEY (IdDetalleProductoUnidad) REFERENCES DetallesProductosUnidadesDeMedida(IdDetalle),
     --
     IdCreadoPor int constraint Fk_Existencias_IdCreadoPor foreign Key references Usuarios(IdUsuario),
     FechaCreacion Datetime,
@@ -758,15 +760,10 @@ CREATE TABLE EstadosDocumentos
     FechaModificacion Datetime,
     IdEstadoRegistro int constraint Fk_EDIdEstadoR foreign Key references EstadosRegistros(IdEstadoRegistro),
 );
+
 GO
 
 
-CREATE TABLE EstadosOrdenesCompras
-(
-    IdEstadoOrdenCompra INT IDENTITY CONSTRAINT PK_IdEstadoOrdenCompra PRIMARY KEY,
-    NombreEstado VARCHAR(70)
-);
-GO
 
 
 GO
@@ -774,15 +771,16 @@ GO
 CREATE TABLE OrdenesCompras
 (
     IdOrdenCompra INT IDENTITY CONSTRAINT PK_IdOrdenCompra PRIMARY KEY,
-    IdProveedor INT CONSTRAINT Fk_IdProveedorOC FOREIGN KEY REFERENCES Proveedores(IdProveedor),
+    IdEntidadProveedor INT CONSTRAINT Fk_IdEntidadProveedor FOREIGN KEY REFERENCES Entidades(IdEntidad),
     MontoTotal DECIMAL,
-    Secuencia Varchar(11),
+    MontoInicial DECIMAL,
+    Secuencia Varchar(30),
     FechaEmision DATEtime,
     FechaEntrega DateTime,
     IdCiudadEntrega INT CONSTRAINT FK_IdCiudadEntrega FOREIGN KEY REFERENCES Ciudades(IdCiudad),
     DireccionEntrega VARCHAR(MAX),
     --
-    IdEstadoOrdenCompra int constraint Fk_OC_IdEstadoOrdenCompra foreign Key references EstadosOrdenesCompras(IdEstadoOrdenCompra),
+    IdEstadoDocumento int constraint Fk_OC_IdEstadoDocumento foreign Key references EstadosDocumentos(IdEstadoDocumento),
     --
     IdCreadoPor int constraint Fk_OrdenesComprasIdCreadoPor foreign Key references Usuarios(IdUsuario),
     FechaCreacion Datetime,
@@ -1304,7 +1302,7 @@ CREATE TABLE FacturasVentasProyectos
     --
     MontoTotal DECIMAL(18, 2),
     TipoNCFId INT CONSTRAINT Fk_FV_TipoNCFId FOREIGN KEY REFERENCES TiposNCF(IdTipoNCF),
-    Secuencia varchar(20),
+    Secuencia varchar(30),
     IdProyecto INT,
     --
     IdEstadoFactura int constraint Fk_IdEstadoDocumento foreign Key references EstadosDocumentos(IdEstadoDocumento),
@@ -1328,7 +1326,7 @@ CREATE TABLE ProyectosDistribucionesPagos
     IdDistribucionPago INT IDENTITY CONSTRAINT PK_IdDistribucionPago PRIMARY KEY,
     IdFactura int constraint FK_PDP_IdFactura foreign Key references FacturasVentasProyectos(IdFactura),
     CuotaNumero int,
-    MontoAPagar DECIMAL,
+    MontoAPagar DECIMAL(18, 2),
     FechaEmision DATETIME, -- Fecha en la que se tiene que hacer el pago
     FechaVencimiento DATETIME, -- Fecha en la que se vence el pago
     --
@@ -1398,7 +1396,7 @@ CREATE TABLE CotizacionesProyectos
     FechaDeEmision DATETIME,
     MontoInicial DECIMAL(18, 2),
     MontoTotal DECIMAL(18, 2),
-    Secuencia varchar(20),
+    Secuencia varchar(30),
     IdCliente INT,
     IdEstado INT,
     IdProyecto INT,
