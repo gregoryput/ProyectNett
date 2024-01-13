@@ -37,6 +37,7 @@ export default function PagoCuota() {
   const [datoCompleto, setDatoCompleto] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [selectCuota, setSelectCuota] = useState([]);
+  const [devolucion, setDevolucion] = useState(0);
   const [datoFacturaPago, setDatoFacturaPago] = useState([]);
   const [Mora, setMora] = useState(0);
   const [pagode, setPagode] = useState(0);
@@ -409,7 +410,7 @@ export default function PagoCuota() {
     };
     const handleCuotaSubmit = () => {
       if (selectCuota.length > 0) {
-        // InsertarPagoFacturaVentaProyecto(datasubmit);
+        InsertarPagoFacturaVentaProyecto(datasubmit);
         setDatoFacturaPago(datasubmit);
 
         setSelectCuota([]);
@@ -418,9 +419,7 @@ export default function PagoCuota() {
     };
     handleCuotaSubmit();
   };
-  console.log(datoFacturaPago);
-  console.log(datoCompleto.Secuencia);
-
+  
   const [plazo, setPlazo] = useState(2);
 
   const handleSelectChange = (value) => {
@@ -445,6 +444,8 @@ export default function PagoCuota() {
     form.setFieldsValue({
       DevolucionEfectivo: value - totalCuota,
     });
+
+    setDevolucion( value - totalCuota)
   };
   const sumarTotales = (proyecto) => {
     let totalGeneral = 0;
@@ -479,7 +480,7 @@ export default function PagoCuota() {
   };
 
   const totalservicio = sumarTotales(state);
-
+  const ValorRestante = datoCompleto.MontoTotal - diferencia - totalCuota
   return (
     <ViewContainerPages2>
       <div>
@@ -765,6 +766,8 @@ export default function PagoCuota() {
         totalservicio={totalservicio}
         datoCompleto={datoCompleto.Secuencia}
         datoFacturaPago={datoFacturaPago}
+        ValorRestante={ValorRestante}
+        devolucion={devolucion}
       />
     </ViewContainerPages2>
   );
@@ -777,6 +780,8 @@ function ModalGasto({
   totalservicio,
   datoCompleto,
   datoFacturaPago,
+  ValorRestante,
+  devolucion
 }) {
   const handleCloses = () => {
     CloseModal();
@@ -800,6 +805,8 @@ function ModalGasto({
                 resultado={totalservicio}
                 datoCompleto={datoCompleto}
                 datoFacturaPago={datoFacturaPago}
+                ValorRestante={ValorRestante}
+                devolucion={devolucion}
               />
             }
             fileName="invoice.pdf"

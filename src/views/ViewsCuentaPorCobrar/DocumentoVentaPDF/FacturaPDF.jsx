@@ -30,19 +30,16 @@ const styles = StyleSheet.create({
   table: {
     display: "table",
     width: "auto",
-    borderStyle: "solid",
     borderWidth: 1,
     borderRightWidth: 0,
     borderBottomWidth: 0,
     marginVertical: 5,
-    marginHorizontal: 10,
     fontSize: 9,
   },
   tableRow2: {
     margin: "auto",
     flexDirection: "row",
-    backgroundColor: "#101f78",
-    color: "white",
+    color: "black",
   },
   tableRow: { margin: "auto", flexDirection: "row" },
   tableCol: {
@@ -77,7 +74,14 @@ const styles = StyleSheet.create({
   },
 });
 
-const FacturaPDF = ({ Cotizacion, resultado ,datoCompleto ,datoFacturaPago}) => {
+const FacturaPDF = ({
+  Cotizacion,
+  resultado,
+  datoCompleto,
+  datoFacturaPago,
+  ValorRestante,
+  devolucion
+}) => {
   let fecha = new Date();
   function currencyFormatter({ currency, value }) {
     const formatter = new Intl.NumberFormat("en-US", {
@@ -92,14 +96,12 @@ const FacturaPDF = ({ Cotizacion, resultado ,datoCompleto ,datoFacturaPago}) => 
       <Document>
         <Page size="A4" style={styles.page}>
           <View>
-            
             {/* Número de Cotización y Fecha */}
             <View style={{ textAlign: "right", fontSize: 9 }}>
               <Text>No. NCF: {datoCompleto}</Text>
               <Text>
                 Fecha: {dayjs(fecha.toISOString()).format("DD-MM-YYYY")}
               </Text>
-             
             </View>
             <View
               style={{
@@ -254,64 +256,152 @@ const FacturaPDF = ({ Cotizacion, resultado ,datoCompleto ,datoFacturaPago}) => 
               ))}
             </View>
 
+            <View style={styles.table}>
+              {/* Encabezado de la tabla */}
+              <View style={styles.tableRow2}>
+                <View style={styles.tableCol3}>
+                  <Text style={styles.tableCell}>Fecha Emision</Text>
+                </View>
+                <View style={styles.tableCol3}>
+                  <Text style={styles.tableCell}>Tipo de pago</Text>
+                </View>
+                <View style={styles.tableCol3}>
+                  <Text style={styles.tableCell}>Cuota</Text>
+                </View>
+                <View style={styles.tableCol3}>
+                  <Text style={styles.tableCell}>Monto Mora</Text>
+                </View>
+                {/* <View style={styles.tableCol3}>
+                  <Text style={styles.tableCell}>Monto Total</Text>
+                </View>
+                <View style={styles.tableCol3}>
+                  <Text style={styles.tableCell}>Pago</Text>
+                </View> */}
+              </View>
+
+              {/* Contenido de la tabla */}
+              {datoFacturaPago?.ListaPagos?.map((pago, index) => (
+                <View key={index} style={styles.tableRow}>
+                  <View style={styles.tableCol3}>
+                    <Text style={styles.tableCell}>
+                      {dayjs(pago.Fecha).format("DD-MM-YYYY")}
+                    </Text>
+                  </View>
+                  <View style={styles.tableCol3}>
+                    <Text style={styles.tableCell}>
+                      {pago.IdTipoPago == 2 ? "Efectivo" : "Tarjeta"}
+                    </Text>
+                  </View>
+                  <View style={styles.tableCol3}>
+                    <Text style={styles.tableCell}>
+                      {" "}
+                      RD{" "}
+                      {currencyFormatter({
+                        currency: "USD",
+                        value: pago.MontoPago,
+                      })}
+                    </Text>
+                  </View>
+                  <View style={styles.tableCol3}>
+                    <Text style={styles.tableCell}>
+                      RD{" "}
+                      {currencyFormatter({
+                        currency: "USD",
+                        value: pago.MontoMora,
+                      })}
+                    </Text>
+                  </View>
+                  {/* <View style={styles.tableCol3}>
+                    <Text style={styles.tableCell}>
+                      {"  "}
+                      RD{" "}
+                      {currencyFormatter({
+                        currency: "USD",
+                        value: pago.MontoTotal,
+                      })}
+                    </Text>
+                  </View>
+                  <View style={styles.tableCol3}>
+                    <Text style={styles.tableCell}>
+                      {"  "}
+                      RD{" "}
+                      {currencyFormatter({
+                        currency: "USD",
+                        value:
+                          pago.IdTipoPago == 2
+                            ? pago.MontoEfectivo
+                            : pago.MontoTarjeta,
+                      })}
+                    </Text>
+                  </View> */}
+                  {/* Agrega más columnas según sea necesario para otros parámetros */}
+                </View>
+              ))}
+            </View>
 
             <View style={styles.table}>
-  {/* Encabezado de la tabla */}
-  <View style={styles.tableRow2}>
-    <View style={styles.tableCol3}>
-      <Text style={styles.tableCell}>Fecha Emision</Text>
-    </View>
-    <View style={styles.tableCol3}>
-      <Text style={styles.tableCell}>Tipo de pago</Text>
-    </View>
-    <View style={styles.tableCol3}>
-      <Text style={styles.tableCell}>Cuota</Text>
-    </View>
-    <View style={styles.tableCol3}>
-      <Text style={styles.tableCell}>Monto Mora</Text>
-    </View>
-    <View style={styles.tableCol3}>
-      <Text style={styles.tableCell}>Monto Total</Text>
-    </View>
-    <View style={styles.tableCol3}>
-      <Text style={styles.tableCell}>Pago</Text>
-    </View>
-  </View>
+              {/* Encabezado de la tabla */}
+              <View style={styles.tableRow2}>
+                <View style={styles.tableCol2}>
+                  <Text style={styles.tableCell}>Monto Total</Text>
+                </View>
+                <View style={styles.tableCol2}>
+                  <Text style={styles.tableCell}>Pago</Text>
+                </View>
+              </View>
 
-  {/* Contenido de la tabla */}
-  {datoFacturaPago?.ListaPagos?.map((pago, index) => (
-    <View key={index} style={styles.tableRow}>
-      <View style={styles.tableCol3}>
-        <Text style={styles.tableCell}>{dayjs(pago.Fecha).format("DD-MM-YYYY")}</Text>
-      </View>
-      <View style={styles.tableCol3}>
-        <Text style={styles.tableCell}>{pago.IdTipoPago == 2 ? "Efectivo": "Tarjeta"}</Text>
-      </View>
-      <View style={styles.tableCol3}>
-        <Text style={styles.tableCell}> RD {currencyFormatter({ currency: "USD", value:pago.MontoPago })}</Text>
-      </View>
-      <View style={styles.tableCol3}>
-        <Text style={styles.tableCell}>RD {currencyFormatter({ currency: "USD", value:pago.MontoMora })}</Text>
-      </View>
-      <View style={styles.tableCol3}>
-        <Text style={styles.tableCell}>
-          {"  "}
-          RD {currencyFormatter({ currency: "USD", value: pago.MontoTotal })}
-        </Text>
-      </View>
-      <View style={styles.tableCol3}>
-        <Text style={styles.tableCell}>
-          {"  "}
-          RD {currencyFormatter({ currency: "USD", value: pago.IdTipoPago == 2 ? pago.MontoEfectivo  : pago.MontoTarjeta  })}
-        </Text>
-      </View>
-      {/* Agrega más columnas según sea necesario para otros parámetros */}
-    </View>
-  ))}
-</View>
-       
+              {/* Contenido de la tabla */}
+              {datoFacturaPago?.ListaPagos?.map((pago, index) => (
+                <View key={index} style={styles.tableRow}>
+                  {index === 0 && (
+                    <>
+                      <View style={styles.tableCol2}>
+                        <Text style={styles.tableCell}>
+                          {"  "}
+                          RD{" "}
+                          {currencyFormatter({
+                            currency: "USD",
+                            value: pago.MontoTotal,
+                          })}
+                        </Text>
+                      </View>
+                      <View style={styles.tableCol2}>
+                        <Text style={styles.tableCell}>
+                          {"  "}
+                          RD{" "}
+                          {currencyFormatter({
+                            currency: "USD",
+                            value:
+                              pago.IdTipoPago === 2
+                                ? pago.MontoEfectivo
+                                : pago.MontoTarjeta,
+                          })}
+                        </Text>
+                      </View>
+                      {/* Agrega más columnas según sea necesario para otros parámetros */}
+                    </>
+                  )}
+                </View>
+              ))}
 
-        
+              <View>
+              {" "}
+                <Text>Pagos restante:  
+                          RD{" "}
+                          {currencyFormatter({
+                            currency: "USD",
+                            value: ValorRestante
+                              
+                          })}</Text>
+                <Text>Devolucion:  RD{" "}
+                          {currencyFormatter({
+                            currency: "USD",
+                            value: devolucion
+                              
+                          })}</Text>
+              
+              </View>
+            </View>
           </View>
         </Page>
       </Document>
