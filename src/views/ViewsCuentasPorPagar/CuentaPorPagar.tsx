@@ -21,12 +21,53 @@ import { MdRequestQuote } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import { GeneradorOrdenCompraPDF } from "./DocumentoCompraPDF";
 import dayjs from "dayjs";
+import { useAprobarOrdenCompraMutation } from "../../redux/Api/productsApi";
+import toast from "react-hot-toast";
 //import { useGetOrdenCompraByIdQuery } from "../../redux/Api/productsApi";
 const { Search } = Input;
 
 export default function CuentaPorCobrar() {
   //Fetch para obtener la lista de Documentos:
   const fetchListaDocumentos = useGetListaDocumentosComprasQuery();
+
+  //Funcion peticion para el create/insert de Producto:
+  const [
+    aprobarOrdenCompra,
+    {
+      isLoading: isLoadingCreate,
+      isSuccess: isCreateSuccess,
+      isError: isErrorCreate,
+    },
+  ] = useAprobarOrdenCompraMutation();
+
+  useEffect(() => {
+    if (isLoadingCreate) {
+      toast.loading("Aprobando la orden de compra", {
+        id: "tSavinProduct",
+      });
+    } else {
+      toast.dismiss("tSavinProduct");
+    }
+  }, [isLoadingCreate]);
+
+  useEffect(() => {
+    if (isCreateSuccess) {
+      toast.dismiss("tSavinProduct");
+      toast.success("La orden de compra ha sido aprobada correctamente", {
+        id: "tSucc",
+      });
+      window.location.reload();
+    }
+  }, [isCreateSuccess]);
+
+  useEffect(() => {
+    if (isErrorCreate) {
+      toast.dismiss("tSavinProduct");
+      toast.error("Error al aprobar la orden de compra", {
+        id: "tError",
+      });
+    }
+  }, [isErrorCreate]);
 
   const [openGeneradorPDF, setOpenGeneradorPDF] = useState(false);
 
@@ -140,6 +181,12 @@ export default function CuentaPorCobrar() {
                     Name: "Imprimir",
                     Title: "Imprimir",
                     Method: () => setOpenGeneradorPDF(true),
+                    Icon: <MdPrint size={20} color="#25375B" />,
+                  },
+                  {
+                    Name: "Aprobar",
+                    Title: "Aprobar",
+                    Method: () => aprobarOrdenCompra(record.IdDocumento),
                     Icon: <MdPrint size={20} color="#25375B" />,
                   },
                 ]

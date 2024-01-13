@@ -58,6 +58,15 @@ export const productsApi = createApi({
       query: (OrdenId) => `/Productos/GetOrdenCompraById?OrdenId=${OrdenId}`,
       providesTags: ["OrdenCompra"],
     }),
+    //
+    aprobarOrdenCompra: builder.mutation<IResponseApi<any>, number>({
+      query: (OrdenId) => ({
+        url: `/Productos/AprobarOrdenCompra?OrdenId=${OrdenId}`,
+        method: "POST",
+        //body: OrdenId,
+      }),
+      invalidatesTags: ["Products"],
+    }),
   }),
 });
 
@@ -68,4 +77,5 @@ export const {
   useCreateProductMutation,
   useCreateOrdenCompraMutation,
   useGetOrdenCompraByIdQuery,
+  useAprobarOrdenCompraMutation,
 } = productsApi;
