@@ -1,7 +1,7 @@
 import { Dropdown, Button, Slider } from "antd";
 //icons
-import { IoFilterSharp } from "react-icons/io5";
-import { FcFilledFilter } from "react-icons/fc";
+//import { IoFilterSharp } from "react-icons/io5";
+import { MdFilterAlt } from "react-icons/md";
 
 export default function DropDownAdvancedFilters() {
   const items = [
@@ -32,11 +32,7 @@ export default function DropDownAdvancedFilters() {
       <Button
         style={{ display: "flex", flexDirection: "row", alignItems: "center" }}
       >
-        {active1icon ? (
-          <FcFilledFilter size={18} />
-        ) : (
-          <IoFilterSharp size={18} />
-        )}
+        {active1icon ? <MdFilterAlt size={18} /> : <MdFilterAlt size={18} />}
         <span style={{ marginLeft: "9px" }}>Filtros avanzados</span>
       </Button>
     </Dropdown>

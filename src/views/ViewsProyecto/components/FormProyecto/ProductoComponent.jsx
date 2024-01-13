@@ -9,7 +9,8 @@ import CountUp from "react-countup";
 import { useGetProductosUnidadesDetallesQuery } from "../../../../redux/Api/proyectoApi";
 
 ProductoComponent.propTypes = {
-  selectStateProducto: PropTypes.func.isRequired,
+  //selectStateProducto: PropTypes.func.isRequired,
+  selectStateProducto: PropTypes.array,
   setSelectStateProducto: PropTypes.func.isRequired,
   setTotalProducto: PropTypes.func.isRequired,
 };

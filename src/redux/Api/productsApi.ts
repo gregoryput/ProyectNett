@@ -1,5 +1,10 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/dist/query/react";
-import { IDocumentoDTO, IProductoInv, IResponseApi } from "../../interfaces";
+import {
+  IDocumentoDTO,
+  IOrdenCompra,
+  IProductoInv,
+  IResponseApi,
+} from "../../interfaces";
 
 const token = localStorage.getItem("token");
 const baseUrl = "https://localhost:7279/";
@@ -14,7 +19,10 @@ export const productsApi = createApi({
   }),
   tagTypes: ["Products"],
   endpoints: (builder) => ({
-    getProductsInvWithExistenceInv: builder.query<IResponseApi<IProductoInv>, void>({
+    getProductsInvWithExistenceInv: builder.query<
+      IResponseApi<IProductoInv>,
+      void
+    >({
       query: () => `Productos/GetListaProductosInfoInv`,
       providesTags: ["Products"],
     }),
@@ -34,6 +42,14 @@ export const productsApi = createApi({
       }),
       invalidatesTags: ["Products"],
     }),
+    createOrdenCompra: builder.mutation<IResponseApi<any>, IOrdenCompra>({
+      query: (newPerson) => ({
+        url: "/Productos/CrearOrdenCompra",
+        method: "POST",
+        body: newPerson,
+      }),
+      invalidatesTags: ["Products"],
+    }),
   }),
 });
 
@@ -42,4 +58,5 @@ export const {
   useGetProductsInvWithExistenceInvQuery,
   useGetProductsForFCQuery,
   useCreateProductMutation,
+  useCreateOrdenCompraMutation,
 } = productsApi;

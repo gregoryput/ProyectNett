@@ -10,6 +10,7 @@ import CuentaPorPagar from "./ViewsCuentaPorCobrar/CuentaPorCobrar";
 import CuentaPorCobrar from "./ViewsCuentaPorCobrar/CuentaPorCobrar";
 import Home from "./ViewsHome/Home";
 import { Proveedores } from "./Views-Proveedores-Real";
+import { FormularioOrdenesCompras } from "./ViewsInventario/FormularioOrdenesCompras";
 
 ///importaciones de las views de la app system
 export {
@@ -25,4 +26,5 @@ export {
   CuentaPorCobrar,
   DashBoard,
   Home,
+  FormularioOrdenesCompras,
 };

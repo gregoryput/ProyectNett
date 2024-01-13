@@ -11,6 +11,7 @@ import {
   DetailEmpleado,
   FormFacturacion,
   Clientes,
+  FormularioOrdenesCompras,
 } from "../views";
 import CuentaPorPagar from "../views/ViewsCuentasPorPagar/CuentaPorPagar";
 import Login from "../page/Login";
@@ -147,6 +148,16 @@ export const createRouter = () => {
               roles={["Administrador", "Asistente Administrativo"]}
             >
               <Inventario />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "/inventario/form-OrdenCompra",
+          element: (
+            <ProtectedRoute
+              roles={["Administrador", "Asistente Administrativo"]}
+            >
+              <FormularioOrdenesCompras />
             </ProtectedRoute>
           ),
         },
