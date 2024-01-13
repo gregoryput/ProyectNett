@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
+
 import {
+  BtnNPro,
   BtnPago,
   ButtonIcon,
-  ButtonSave,
   Container,
   ContainerDetail,
   ViewContainerPages2,
@@ -10,18 +11,24 @@ import {
 import { IoAddOutline, IoClose } from "react-icons/io5";
 // import { AiOutlineDollarCircle, AiOutlineArrowRight } from "react-icons/ai";
 import { AiOutlineDollarCircle, AiOutlineArrowRight } from "react-icons/ai";
-import { Modal, InputNumber } from "antd";
-
+import { InputNumber, Input } from "antd";
+import { IoCheckmark } from "react-icons/io5";
 import { Select } from "antd";
 const { Option } = Select;
+import FacturaPDF from "./DocumentoVentaPDF/FacturaPDF";
 
 import {
   useGetProyectoCompletoQuery,
   useGetProyectoCoutaQuery,
+  useInsertaPagoFacturaVentaProyectoMutation,
 } from "../../redux/Api/proyectoApi";
 import { Form, Table, Tag } from "antd";
 import dayjs from "dayjs";
 import { useParams } from "react-router-dom";
+import toast from "react-hot-toast";
+import { Modal } from "antd";
+import { PDFDownloadLink } from "@react-pdf/renderer";
+import { IoDocumentAttachOutline } from "react-icons/io5";
 
 export default function PagoCuota() {
   const { ID } = useParams();
@@ -30,8 +37,18 @@ export default function PagoCuota() {
   const [datoCompleto, setDatoCompleto] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [selectCuota, setSelectCuota] = useState([]);
+  const [datoFacturaPago, setDatoFacturaPago] = useState([]);
   const [Mora, setMora] = useState(0);
+  const [pagode, setPagode] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const OpenModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const CloseModal = () => {
+    setIsModalOpen(false);
+  };
 
   const {
     data: dataCompleta,
@@ -131,15 +148,22 @@ export default function PagoCuota() {
 
     {
       key: "action",
-      render: (_, record) => (
-        <ButtonIcon
-          onMouseUp={() => {
-            AgregarCuota(record.CuotaNumero);
-          }}
-        >
-          <IoAddOutline size={20} color="gray" />
-        </ButtonIcon>
-      ),
+      render: (_, record) =>
+        record.SePago == 0 ? (
+          <>
+            <ButtonIcon
+              onMouseUp={() => {
+                AgregarCuota(record.CuotaNumero);
+              }}
+            >
+              <IoAddOutline size={20} color="gray" />
+            </ButtonIcon>
+          </>
+        ) : (
+          <>
+            <IoCheckmark size={20} color="green" />
+          </>
+        ),
     },
   ];
 
@@ -192,6 +216,15 @@ export default function PagoCuota() {
     },
   ];
 
+  const SumaCuotaPagadas = () => {
+    const lista = filteredData.filter((x) => x.SePago == true);
+    let resultado = lista?.reduce((total, item) => total + item.MontoAPagar, 0);
+
+    return resultado;
+  };
+
+  const diferencia = SumaCuotaPagadas();
+
   const AgregarCuota = (item) => {
     const lista = filteredData.filter((x) => x.CuotaNumero == item);
     setSelectCuota([...selectCuota, ...lista]);
@@ -208,13 +241,6 @@ export default function PagoCuota() {
     const lista = selectCuota.filter((x) => x.CuotaNumero !== item);
     setSelectCuota(lista);
     setFilteredData([...filteredData, ...lista2]);
-  };
-  const OpenModal = () => {
-    setIsModalOpen(true);
-  };
-
-  const CloseModal = () => {
-    setIsModalOpen(false);
   };
 
   const DetectarPago = () => {
@@ -342,111 +368,117 @@ export default function PagoCuota() {
     // Agregar más columnas según tus necesidades
   ];
 
-  // // Columnas para la tabla de productos
-  // const columnsProductos = [
-  //   {
-  //     title: "Producto",
-  //     dataIndex: "NombreProducto",
-  //     key: "NombreProducto",
-  //   },
-  //   {
-  //     title: "Cantidad",
-  //     dataIndex: "Cantidad",
-  //     key: "Cantidad",
-  //   },
-  //   {
-  //     title: "Precio",
-  //     dataIndex: "PrecioVenta",
-  //     key: "PrecioVenta",
-  //     render: (text) => (
-  //       <p>
-  //         RD$
-  //         {parseFloat(text).toLocaleString(undefined, {
-  //           minimumFractionDigits: 2,
-  //           maximumFractionDigits: 2,
-  //         })}
-  //       </p>
-  //     ),
-  //   },
-  //   {
-  //     title: "ITBIS",
-  //     dataIndex: "ITBIS",
-  //     key: "ITBIS",
-  //     render: (text) => (
-  //       <p>
-  //         {parseFloat(text).toLocaleString(undefined, {
-  //           minimumFractionDigits: 2,
-  //           maximumFractionDigits: 2,
-  //         })}
-  //       </p>
-  //     ),
-  //   },
-  //   {
-  //     title: "Total",
-  //     dataIndex: "Subtotal",
-  //     key: "Subtotal",
-  //     align: "right",
-  //     render: (text) => (
-  //       <p>
-  //         RD$
-  //         {parseFloat(text).toLocaleString(undefined, {
-  //           minimumFractionDigits: 2,
-  //           maximumFractionDigits: 2,
-  //         })}
-  //       </p>
-  //     ),
-  //   },
-  //   // Agregar más columnas según tus necesidades
-  // ];
-  // // Columnas para la tabla de gastos
-  // const columnsServicio = [
-  //   {
-  //     title: "Servicios",
-  //     dataIndex: "NombreServicio",
-  //     key: "NombreServicio",
-  //   },
-  //   {
-  //     title: "Total",
-  //     dataIndex: "Total",
-  //     key: "Total",
-  //     align: "right",
-  //     render: (text) => (
-  //       <p>
-  //         RD$
-  //         {parseFloat(text).toLocaleString(undefined, {
-  //           minimumFractionDigits: 2,
-  //           maximumFractionDigits: 2,
-  //         })}
-  //       </p>
-  //     ),
-  //   },
-  //   // Agregar más columnas según tus necesidades
-  // ];
+  const [form] = Form.useForm();
+  // Estado insert Proyecto:
+  const [
+    InsertarPagoFacturaVentaProyecto,
+    {
+      // isLoading: isLoadingCreate,
+      isSuccess: isCreateSuccess,
+      // isError: isErrorCreate,
+    },
+  ] = useInsertaPagoFacturaVentaProyectoMutation();
 
-  // // Columnas para la tabla de gastos
-  // const columnsGastos = [
-  //   {
-  //     title: "Gasto adicionales",
-  //     dataIndex: "DescripcionGasto",
-  //     key: "DescripcionGasto",
-  //   },
-  //   {
-  //     title: "Costo",
-  //     dataIndex: "MontoGasto",
-  //     key: "MontoGasto",
-  //     align: "right",
-  //     render: (text) => (
-  //       <p>
-  //         RD$
-  //         {parseFloat(text).toLocaleString(undefined, {
-  //           minimumFractionDigits: 2,
-  //           maximumFractionDigits: 2,
-  //         })}
-  //       </p>
-  //     ),
-  //   },
-  //   // Agregar más columnas según tus necesidades
-  // ];
+  useEffect(() => {
+    if (isCreateSuccess) {
+      toast.dismiss("nose");
+      toast.success("La factura ha procesado", {
+        id: "nose",
+      });
+    }
+  }, [isCreateSuccess]);
+
+  const onFinish = (values) => {
+    const data = selectCuota.map((x) => ({
+      Fecha: x.FechaEmision,
+      MontoPago: x.MontoAPagar || null,
+      MontoMora: Mora,
+      MontoTotal: totalCuota + Mora,
+      FechaPago: new Date(),
+      MontoEfectivo: values.MontoEfectivo || null,
+      DevolucionEfectivo: values.DevolucionEfectivo || null,
+      MontoTarjeta: values.MontoTarjeta || null,
+      Tarjeta: values.Tarjeta || null,
+      IdTipoPago: values.IdTipoPago || plazo,
+      IdDistribucionPago: x.IdDistribucionPago,
+      IdEstadoRegistro: 1,
+    }));
+
+    const datasubmit = {
+      ListaPagos: data,
+    };
+    const handleCuotaSubmit = () => {
+      if (selectCuota.length > 0) {
+        // InsertarPagoFacturaVentaProyecto(datasubmit);
+        setDatoFacturaPago(datasubmit);
+
+        setSelectCuota([]);
+        OpenModal();
+      }
+    };
+    handleCuotaSubmit();
+  };
+  console.log(datoFacturaPago);
+  console.log(datoCompleto.Secuencia);
+
+  const [plazo, setPlazo] = useState(2);
+
+  const handleSelectChange = (value) => {
+    setPlazo(value);
+    // Puedes realizar acciones adicionales en tiempo real aquí
+  };
+  const validateCreditCard = (rule, value, callback) => {
+    // Realiza la validación de la tarjeta de crédito según tus criterios
+    // Puedes utilizar bibliotecas como 'luhn' para verificar el número de tarjeta
+
+    // Ejemplo básico utilizando una expresión regular para Visa y MasterCard
+    const regex = /^(?:4[0-9]{12}(?:[0-9]{3})?|[25][1-7][0-9]{14})$/;
+
+    if (!regex.test(value)) {
+      callback("Número de tarjeta inválido");
+    } else {
+      callback();
+    }
+  };
+
+  const handleChange = (value) => {
+    form.setFieldsValue({
+      DevolucionEfectivo: value - totalCuota,
+    });
+  };
+  const sumarTotales = (proyecto) => {
+    let totalGeneral = 0;
+    let totalesPorServicio = [];
+
+    proyecto.forEach((tarea) => {
+      tarea.TareasProyecto.forEach((tareaDetalle) => {
+        if (tareaDetalle.CostoTotal) {
+          totalGeneral += tareaDetalle.CostoTotal;
+
+          const servicioIndex = totalesPorServicio.findIndex(
+            (item) => item.NombreServicio === tareaDetalle.NombreServicio
+          );
+
+          if (servicioIndex !== -1) {
+            totalesPorServicio[servicioIndex].Total += tareaDetalle.CostoTotal;
+          } else {
+            totalesPorServicio.push({
+              NombreServicio: tareaDetalle.NombreServicio,
+              Total: tareaDetalle.CostoTotal,
+            });
+          }
+        }
+      });
+    });
+
+    // Devolver los resultados para que puedan ser utilizados fuera de la función
+    return {
+      totalGeneral,
+      totalesPorServicio,
+    };
+  };
+
+  const totalservicio = sumarTotales(state);
 
   return (
     <ViewContainerPages2>
@@ -497,7 +529,7 @@ export default function PagoCuota() {
               display: "flex",
             }}
           >
-            <div style={{ fontSize: 12, width: "100%" }}>
+            <div style={{ fontSize: 14, width: "100%" }}>
               <div
                 style={{
                   display: "flex",
@@ -519,7 +551,7 @@ export default function PagoCuota() {
                 <span>
                   RD${" "}
                   {parseFloat(
-                    datoCompleto.MontoTotal - totalCuota
+                    datoCompleto.MontoTotal - diferencia - totalCuota
                   ).toLocaleString(undefined, {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
@@ -533,7 +565,7 @@ export default function PagoCuota() {
                   paddingTop: 10,
                 }}
               >
-                <h3>Total por cuota:</h3>
+                <h3>Sub-Total:</h3>
                 <h3>
                   RD${" "}
                   {parseFloat(totalCuota).toLocaleString(undefined, {
@@ -542,203 +574,257 @@ export default function PagoCuota() {
                   })}
                 </h3>
               </div>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  paddingTop: 10,
+                }}
+              >
+                <h3>Total General:</h3>
+                <h3>
+                  RD${" "}
+                  {parseFloat(totalCuota + Mora).toLocaleString(undefined, {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}
+                </h3>
+              </div>
             </div>
           </ContainerDetail>
         </Container>
-        {/* <Container>
-          <h3 style={{display:"flex",justifyContent:"flex-end"}}>Detalle factura </h3>
-          <br />
+
+        <Container style={{ float: "right", marginBlock: 5, marginRight: 18 }}>
           <div>
-            <Table
-              dataSource={servicio.totalesPorServicio}
-              pagination={false} // Desactiva la paginación si no deseas que aparezca
-              size="middle"
-              columns={columnsServicio}
-            />
-            <br />
+            <Form form={form} onFinish={onFinish} layout="vertical">
+              <Container
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  margin: 0,
+                  width: "100%",
+                  flexWrap: "wrap",
+                  marginTop: 10,
+                  justifyContent: "space-between",
+                }}
+              >
+                <Form.Item
+                  label={<strong>Tipo de pago</strong>}
+                  name={"IdTipoPago"}
+                  rules={[
+                    {
+                      required: false,
+                      message: "Tipo de pago",
+                    },
+                  ]}
+                >
+                  <Select
+                    style={{ width: 200 }}
+                    placeholder="Tipo de pago"
+                    onChange={handleSelectChange}
+                    defaultValue={2}
+                  >
+                    <Option value={1}>Tarjeta</Option>
+                    <Option value={2}>Efectivo</Option>
+                  </Select>
+                </Form.Item>
 
-            <Table
-              dataSource={state[0]?.ProductosProyecto}
-              pagination={false} // Desactiva la paginación si no deseas que aparezca
-              size="middle"
-              columns={columnsProductos}
-            />
-            <br />
+                {plazo == 1 ? (
+                  <>
+                    <Form.Item
+                      label={<strong>No. Tarjeta</strong>}
+                      name={"Tarjeta"}
+                      rules={[
+                        {
+                          required: true,
+                          message: "No hay Tarjeta",
+                        },
+                        {
+                          min: 16,
+                          message: "16 caracteres como min",
+                        },
+                        {
+                          max: 16,
+                          message: "16 caracteres como máximo",
+                        },
+                        { validator: validateCreditCard },
+                      ]}
+                    >
+                      <Input
+                        formatter={(value) =>
+                          `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                        }
+                        parser={(value) => value.replace(/\$\s?|(,*)/g, "")}
+                        style={{ width: 300 }}
+                      />
+                    </Form.Item>
 
-            <br />
-            <Table
-              dataSource={state[0]?.GastoProyecto}
-              pagination={false} // Desactiva la paginación si no deseas que aparezca
-              size="middle"
-              columns={columnsGastos}
-            />
+                    <Form.Item
+                      label={<strong>Pago de:</strong>}
+                      name={"MontoTarjeta"}
+                      rules={[
+                        {
+                          required: true,
+                          message: "No hay pago",
+                        },
+                      ]}
+                    >
+                      <InputNumber
+                        min={0}
+                        defaultValue={0}
+                        onChange={handleChange}
+                        formatter={(value) =>
+                          ` ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                        }
+                        parser={(value) => value.replace(/\$\s?|(,*)/g, "")}
+                        style={{ width: 300 }}
+                      />
+                    </Form.Item>
+                  </>
+                ) : (
+                  <>
+                    <Form.Item
+                      label={<strong> Pago de: </strong>}
+                      name={"MontoEfectivo"}
+                      rules={[
+                        {
+                          required: true,
+                          message: "No hay pago",
+                        },
+                      ]}
+                    >
+                      <InputNumber
+                        min={0}
+                        defaultValue={0}
+                        onChange={handleChange}
+                        formatter={(value) =>
+                          ` ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                        }
+                        parser={(value) => value.replace(/\$\s?|(,*)/g, "")}
+                        style={{ width: 300 }}
+                      />
+                    </Form.Item>
+                    <Form.Item
+                      label={<strong>Devolución:</strong>}
+                      name={"DevolucionEfectivo"}
+                      rules={[
+                        {
+                          required: false,
+                          message: "No hay Devolucion",
+                        },
+                      ]}
+                    >
+                      <InputNumber
+                        min={0}
+                        readOnly
+                        defaultValue={0}
+                        onChange={pagode}
+                        formatter={(value) =>
+                          ` ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                        }
+                        parser={(value) => value.replace(/\$\s?|(,*)/g, "")}
+                        style={{ width: 300 }}
+                      />
+                    </Form.Item>
+                  </>
+                )}
+              </Container>
+
+              <BtnPago
+                style={{
+                  height: 70,
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  marginTop: 0,
+                  width: 400,
+                  float: "right",
+                }}
+                onClick={() => OpenModal()}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    padding: 5,
+                  }}
+                >
+                  <AiOutlineDollarCircle size={35} style={{ margin: 10 }} />
+                  <h4> Realizar pago</h4>
+                </div>
+                <AiOutlineArrowRight size={35} />
+              </BtnPago>
+            </Form>
           </div>
-        </Container> */}
-        <div style={{ float: "right", marginBlock: 5, marginRight: 18 }}>
-          <BtnPago
-            style={{
-              height: 70,
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              marginTop: 0,
-              width: 400,
-            }}
-            onClick={() => OpenModal()}
-          >
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                padding: 5,
-              }}
-            >
-              <AiOutlineDollarCircle size={35} style={{ margin: 10 }} />
-              <h4> Realizar pago</h4>
-            </div>
-            <AiOutlineArrowRight size={35} />
-          </BtnPago>
-        </div>
+        </Container>
       </div>
-      <ModalPago
-        CloseModal={CloseModal}
-        OpenModal={OpenModal}
+      <ModalGasto
         isModalOpen={isModalOpen}
-        selectCuota={selectCuota}
-        datoCompleto={datoCompleto}
+        CloseModal={CloseModal}
+        state={state}
+        totalservicio={totalservicio}
+        datoCompleto={datoCompleto.Secuencia}
+        datoFacturaPago={datoFacturaPago}
       />
     </ViewContainerPages2>
   );
 }
 
-function ModalPago({ isModalOpen, CloseModal, selectCuota, datoCompleto }) {
-  const [form] = Form.useForm();
-  const onFinish = (values) => {
-    console.log(values);
+function ModalGasto({
+  isModalOpen,
+  CloseModal,
+  state,
+  totalservicio,
+  datoCompleto,
+  datoFacturaPago,
+}) {
+  const handleCloses = () => {
+    CloseModal();
   };
-
-  const [plazo, setPlazo] = useState(0);
-
-  const handleSelectChange = (value) => {
-    setPlazo(value);
-    // Puedes realizar acciones adicionales en tiempo real aquí
-  };
-
   return (
-    <div>
+    <>
+      {" "}
       <Modal
-        title="General pago"
+        title="Factura "
         open={isModalOpen}
         centered
         footer={null}
         width={800}
-        onCancel={CloseModal}
+        onCancel={handleCloses}
       >
-        <Form form={form} onFinish={onFinish} layout="vertical">
-          <Container
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              margin: 0,
-              width: "100%",
-              flexWrap: "wrap",
-              marginTop:10,
-            }}
+        <div>
+          <PDFDownloadLink
+            document={
+              <FacturaPDF
+                Cotizacion={state[0]}
+                resultado={totalservicio}
+                datoCompleto={datoCompleto}
+                datoFacturaPago={datoFacturaPago}
+              />
+            }
+            fileName="invoice.pdf"
           >
-            <Form.Item
-              label={<strong>Monto</strong>}
-              name={"Costo"}
-              rules={[
-                {
-                  required: true,
-                  message: "No hay precio",
-                },
-              ]}
+            <BtnNPro
+              style={{
+                borderRadius: "12px",
+                width: "200px",
+                height: "50px",
+                padding: "15px",
+              }}
             >
-              <Select
-                style={{ width: 400 }}
-                placeholder="Tipo de pago"
-                onChange={handleSelectChange}
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-evenly",
+                }}
               >
-                <Option value={1}>Tarjeta</Option>
-                <Option value={2}>Efectivo</Option>
-              </Select>
-            </Form.Item>
-          </Container>
-          <Container style={{paddingTop:0}}>
-            {plazo == 1 ? (
-              <>
-                <Form.Item
-                  label={<strong>Monto</strong>}
-                  name={"Monto"}
-                  rules={[
-                    {
-                      required: true,
-                      message: "No hay precio",
-                    },
-                  ]}
-                >
-                  <InputNumber
-                    min={0}
-                    defaultValue={0}
-                    formatter={(value) =>
-                      `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-                    }
-                    parser={(value) => value.replace(/\$\s?|(,*)/g, "")}
-                    style={{ width: 300 }}
-                  />
-                </Form.Item>
-
-                <Form.Item
-                  label={<strong>No. Tarjeta</strong>}
-                  name={"Tarjeta"}
-                  rules={[
-                    {
-                      required: true,
-                      message: "No hay precio",
-                    },
-                  ]}
-                >
-                  <InputNumber
-                    min={0}
-                    defaultValue={0}
-                    formatter={(value) =>
-                      `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-                    }
-                    parser={(value) => value.replace(/\$\s?|(,*)/g, "")}
-                    style={{ width: 300 }}
-                  />
-                </Form.Item>
-                <Form.Item
-                  label={<strong>Devolución</strong>}
-                  name={"Devolucion"}
-                  rules={[
-                    {
-                      required: true,
-                      message: "No hay precio",
-                    },
-                  ]}
-                >
-                  <InputNumber
-                    min={0}
-                    defaultValue={0}
-                    formatter={(value) =>
-                      `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-                    }
-                    parser={(value) => value.replace(/\$\s?|(,*)/g, "")}
-                    style={{ width: 300 }}
-                  />
-                </Form.Item>
-              </>
-            ) : (
-              <></>
-            )}
-          </Container>
-          <div style={{ display: "flex", justifyContent: "flex-end" }}>
-            <ButtonSave type="submit">Facturar</ButtonSave>
-          </div>
-        </Form>
+                <h4>Descargar PDF</h4>
+                <IoDocumentAttachOutline size={20} />
+              </div>
+            </BtnNPro>
+          </PDFDownloadLink>
+        </div>
       </Modal>
-    </div>
+    </>
   );
 }
