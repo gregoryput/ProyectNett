@@ -66,10 +66,10 @@ export default function CuentaPorCobrar() {
 
   const navigate = useNavigate();
 
-  function obtenerElementosRepetidos(valorBuscado) {
+  function obtenerElementosRepetidos(valorBuscado,valorP) {
     // Filtrar la lista para incluir solo los elementos que se repiten y sean iguales al valor buscado
     const elementosRepetidos = filteredData?.filter(
-      (elemento) => elemento.NombreProyecto == valorBuscado
+      (elemento) => elemento.NombreProyecto == valorBuscado &&  elemento.MontoTotal == valorP
     );
     return elementosRepetidos?.length > 1 ? true : false;
   }
@@ -132,7 +132,7 @@ export default function CuentaPorCobrar() {
           key={index}
           Actions={
             record?.DocumentoNombre === "Cotización de proyecto" &&
-            !obtenerElementosRepetidos(record?.NombreProyecto)
+            !obtenerElementosRepetidos(record?.NombreProyecto,record?.MontoTotal)
               ? [
                   {
                     Name: "ConvertInvoice",
@@ -248,7 +248,7 @@ export default function CuentaPorCobrar() {
           loading={fetchListaDocumentos.isLoading}
           pagination={{
             showTotal: (total) => ` ${total} Total`,
-            defaultPageSize: 5,
+            defaultPageSize: 100,
             showSizeChanger: true,
             pageSizeOptions: [6, 12, 18, 24, 32, 40, 45, 50, 55, 60, 100],
           }}

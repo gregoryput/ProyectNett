@@ -1,6 +1,19 @@
 import { useEffect, useState } from "react";
-import { ButtonIcon, Container, ViewContainerPages2 } from "../../components";
+import {
+  BtnPago,
+  ButtonIcon,
+  ButtonSave,
+  Container,
+  ContainerDetail,
+  ViewContainerPages2,
+} from "../../components";
 import { IoAddOutline, IoClose } from "react-icons/io5";
+// import { AiOutlineDollarCircle, AiOutlineArrowRight } from "react-icons/ai";
+import { AiOutlineDollarCircle, AiOutlineArrowRight } from "react-icons/ai";
+import { Modal, InputNumber } from "antd";
+
+import { Select } from "antd";
+const { Option } = Select;
 
 import {
   useGetProyectoCompletoQuery,
@@ -14,10 +27,11 @@ export default function PagoCuota() {
   const { ID } = useParams();
   const data = useGetProyectoCoutaQuery(ID);
   const [state, setState] = useState([]);
+  const [datoCompleto, setDatoCompleto] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
-  const [ListaCouta, setListaCouta] = useState([]);
   const [selectCuota, setSelectCuota] = useState([]);
-  // const [servicio, setServicio] = useState([]);
+  const [Mora, setMora] = useState(0);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const {
     data: dataCompleta,
@@ -28,8 +42,9 @@ export default function PagoCuota() {
   useEffect(() => {
     if (data?.data?.Result !== undefined) {
       setFilteredData(data?.data?.Result[0]?.LCuotaProyectoDTO);
+      setDatoCompleto(data?.data?.Result[0]);
     }
-  }, [data?.data?.Result, setFilteredData, setListaCouta]);
+  }, [data?.data?.Result, setFilteredData]);
 
   useEffect(() => {
     if (!isLoading && isSuccess) {
@@ -73,8 +88,8 @@ export default function PagoCuota() {
       dataIndex: "CuotaNumero",
       key: "CuotaNumero",
       sorter: (a, b) => a.CuotaNumero - b.CuotaNumero,
-      defaultSortOrder: 'ascend',
-      sortOrder: 'ascend',
+      defaultSortOrder: "ascend",
+      sortOrder: "ascend",
     },
     {
       title: "Monto ",
@@ -134,8 +149,8 @@ export default function PagoCuota() {
       dataIndex: "CuotaNumero",
       key: "CuotaNumero",
       sorter: (a, b) => a.CuotaNumero - b.CuotaNumero,
-      defaultSortOrder: 'ascend',
-      sortOrder: 'ascend',
+      defaultSortOrder: "ascend",
+      sortOrder: "ascend",
     },
     {
       title: "Monto ",
@@ -194,6 +209,13 @@ export default function PagoCuota() {
     setSelectCuota(lista);
     setFilteredData([...filteredData, ...lista2]);
   };
+  const OpenModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const CloseModal = () => {
+    setIsModalOpen(false);
+  };
 
   const DetectarPago = () => {
     let fechaActual = new Date();
@@ -202,22 +224,27 @@ export default function PagoCuota() {
     filteredData?.forEach((item) => {
       let fechaEmision = new Date(item.FechaEmision);
       let fechaVencimiento = new Date(item.FechaVencimiento);
-
       // Verificar si la fecha de emisión es igual o mayor a la fecha actual
       if (fechaActual >= fechaEmision) {
         AgregarCuota(item.CuotaNumero);
 
         // Verificar si la fecha de vencimiento es mayor a la fecha actual
-        if (fechaActual > fechaVencimiento) {
+        if (fechaVencimiento >= fechaActual) {
           // Realizar acciones adicionales si es necesario
-          const result = calcularDiferenciaEnDias(
-            fechaActual,
-            fechaVencimiento
+          const dias = calcularDiferenciaEnDias(fechaActual, fechaVencimiento);
+
+          // Ejemplo de uso
+          const mora = calcularMora(
+            item.MontoAPagar,
+            Math.abs(dias),
+            datoCompleto.PorcientoMora
           );
+          setMora(mora);
         }
       }
     });
   };
+
   const calcularDiferenciaEnDias = (fechaInicio, fechaFin) => {
     // Convertir las fechas a objetos de fecha
     const inicio = new Date(fechaInicio);
@@ -238,6 +265,25 @@ export default function PagoCuota() {
 
     return diferenciaEnDias;
   };
+  function calcularMora(montoCuota, diasMora, tasaMora) {
+    // Calcula el interés diario
+
+    const porciento = tasaMora / 100;
+    const interesDiario = porciento / 30;
+
+    // Calcula el monto adicional debido a la mora
+    const mora = montoCuota * interesDiario * diasMora;
+
+    return parseFloat(mora).toLocaleString(undefined, {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+  }
+
+  const totalCuota = selectCuota?.reduce(
+    (total, item) => total + item.MontoAPagar,
+    0
+  );
 
   DetectarPago();
 
@@ -402,8 +448,6 @@ export default function PagoCuota() {
   //   // Agregar más columnas según tus necesidades
   // ];
 
-  console.log(filteredData);
-
   return (
     <ViewContainerPages2>
       <div>
@@ -445,6 +489,61 @@ export default function PagoCuota() {
             locale={{ emptyText: "No hay Cuotas" }}
             size="small"
           />
+
+          <ContainerDetail
+            style={{
+              marginBlock: 0,
+              marginInline: 0,
+              display: "flex",
+            }}
+          >
+            <div style={{ fontSize: 12, width: "100%" }}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  paddingTop: 15,
+                }}
+              >
+                <p>Mora:</p>
+                <span>RD$ {Mora}</span>
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  paddingTop: 10,
+                }}
+              >
+                <p>Diferencia:</p>
+                <span>
+                  RD${" "}
+                  {parseFloat(
+                    datoCompleto.MontoTotal - totalCuota
+                  ).toLocaleString(undefined, {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}
+                </span>
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  paddingTop: 10,
+                }}
+              >
+                <h3>Total por cuota:</h3>
+                <h3>
+                  RD${" "}
+                  {parseFloat(totalCuota).toLocaleString(undefined, {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}
+                </h3>
+              </div>
+            </div>
+          </ContainerDetail>
         </Container>
         {/* <Container>
           <h3 style={{display:"flex",justifyContent:"flex-end"}}>Detalle factura </h3>
@@ -475,7 +574,171 @@ export default function PagoCuota() {
             />
           </div>
         </Container> */}
+        <div style={{ float: "right", marginBlock: 5, marginRight: 18 }}>
+          <BtnPago
+            style={{
+              height: 70,
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginTop: 0,
+              width: 400,
+            }}
+            onClick={() => OpenModal()}
+          >
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                padding: 5,
+              }}
+            >
+              <AiOutlineDollarCircle size={35} style={{ margin: 10 }} />
+              <h4> Realizar pago</h4>
+            </div>
+            <AiOutlineArrowRight size={35} />
+          </BtnPago>
+        </div>
       </div>
+      <ModalPago
+        CloseModal={CloseModal}
+        OpenModal={OpenModal}
+        isModalOpen={isModalOpen}
+        selectCuota={selectCuota}
+        datoCompleto={datoCompleto}
+      />
     </ViewContainerPages2>
+  );
+}
+
+function ModalPago({ isModalOpen, CloseModal, selectCuota, datoCompleto }) {
+  const [form] = Form.useForm();
+  const onFinish = (values) => {
+    console.log(values);
+  };
+
+  const [plazo, setPlazo] = useState(0);
+
+  const handleSelectChange = (value) => {
+    setPlazo(value);
+    // Puedes realizar acciones adicionales en tiempo real aquí
+  };
+
+  return (
+    <div>
+      <Modal
+        title="General pago"
+        open={isModalOpen}
+        centered
+        footer={null}
+        width={800}
+        onCancel={CloseModal}
+      >
+        <Form form={form} onFinish={onFinish} layout="vertical">
+          <Container
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              margin: 0,
+              width: "100%",
+              flexWrap: "wrap",
+              marginTop:10,
+            }}
+          >
+            <Form.Item
+              label={<strong>Monto</strong>}
+              name={"Costo"}
+              rules={[
+                {
+                  required: true,
+                  message: "No hay precio",
+                },
+              ]}
+            >
+              <Select
+                style={{ width: 400 }}
+                placeholder="Tipo de pago"
+                onChange={handleSelectChange}
+              >
+                <Option value={1}>Tarjeta</Option>
+                <Option value={2}>Efectivo</Option>
+              </Select>
+            </Form.Item>
+          </Container>
+          <Container style={{paddingTop:0}}>
+            {plazo == 1 ? (
+              <>
+                <Form.Item
+                  label={<strong>Monto</strong>}
+                  name={"Monto"}
+                  rules={[
+                    {
+                      required: true,
+                      message: "No hay precio",
+                    },
+                  ]}
+                >
+                  <InputNumber
+                    min={0}
+                    defaultValue={0}
+                    formatter={(value) =>
+                      `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                    }
+                    parser={(value) => value.replace(/\$\s?|(,*)/g, "")}
+                    style={{ width: 300 }}
+                  />
+                </Form.Item>
+
+                <Form.Item
+                  label={<strong>No. Tarjeta</strong>}
+                  name={"Tarjeta"}
+                  rules={[
+                    {
+                      required: true,
+                      message: "No hay precio",
+                    },
+                  ]}
+                >
+                  <InputNumber
+                    min={0}
+                    defaultValue={0}
+                    formatter={(value) =>
+                      `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                    }
+                    parser={(value) => value.replace(/\$\s?|(,*)/g, "")}
+                    style={{ width: 300 }}
+                  />
+                </Form.Item>
+                <Form.Item
+                  label={<strong>Devolución</strong>}
+                  name={"Devolucion"}
+                  rules={[
+                    {
+                      required: true,
+                      message: "No hay precio",
+                    },
+                  ]}
+                >
+                  <InputNumber
+                    min={0}
+                    defaultValue={0}
+                    formatter={(value) =>
+                      `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                    }
+                    parser={(value) => value.replace(/\$\s?|(,*)/g, "")}
+                    style={{ width: 300 }}
+                  />
+                </Form.Item>
+              </>
+            ) : (
+              <></>
+            )}
+          </Container>
+          <div style={{ display: "flex", justifyContent: "flex-end" }}>
+            <ButtonSave type="submit">Facturar</ButtonSave>
+          </div>
+        </Form>
+      </Modal>
+    </div>
   );
 }
