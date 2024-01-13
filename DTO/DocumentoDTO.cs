@@ -31,6 +31,7 @@
         public string NombreEntidad { get; set; }
         public int IdTipoEntidad { get; set; }
         public string NombreTipoEntidad { get; set; }
+        public string NombreEstadoDocumeto { get; set; }
         public int IdEstado { get; set; }
     }
 }

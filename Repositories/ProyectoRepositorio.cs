@@ -492,6 +492,14 @@ namespace ProyectNettApi.Repositories
 
                         connection.Execute("dbo.InsertarDistribucionPago", dataParaInsert, transaction, commandType: CommandType.StoredProcedure);
                     }
+
+                    // --------------- 
+                    var dataDisminuir = new
+                    {
+                        IdProyecto = factura.IdProyecto,
+                    };
+
+                    connection.Execute("dbo.DisminuirInventario", dataDisminuir, transaction, commandType: CommandType.StoredProcedure);
                 }
 
                 else
