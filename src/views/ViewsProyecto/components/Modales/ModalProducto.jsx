@@ -7,10 +7,13 @@ import {
   Popover,
   Tooltip,
   Select,
+  //Image,
 } from "antd";
 import { IoCloseSharp } from "react-icons/io5";
 import Search from "antd/es/input/Search";
 import PropTypes from "prop-types";
+//import { FaProductHunt } from "react-icons/fa";
+
 import {
   BtnSelect,
   ButtonIcon,
@@ -21,6 +24,7 @@ import {
 import { FaCheck } from "react-icons/fa";
 import { IoCloseOutline } from "react-icons/io5";
 import { FiAlertTriangle } from "react-icons/fi";
+import CustomAvatar from "../../../../components/CustomAvatar";
 
 ModalProducto.propTypes = {
   isModalOpen: PropTypes.func.isRequired,
@@ -45,7 +49,26 @@ export default function ModalProducto({
       title: "Código",
       dataIndex: "Codigo",
       key: "Codigo",
-      width: "8%",
+      width: "12%",
+      render: (_, record) => (
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+          }}
+        >
+          <CustomAvatar
+            sizeImage={36}
+            sizeIcon={25}
+            Data={record.Data}
+            ContentType={record.ContentType}
+          />
+          <div>
+            <span>{record.Codigo}</span>
+          </div>
+        </div>
+      ),
     },
     {
       title: "Nombre",
@@ -164,12 +187,12 @@ export default function ModalProducto({
   const calcuteSubTotal = (precioVenta, cantidad, itbis) => {
     // Calcula el ITBIS
     const resultadoitbis = ((precioVenta * itbis) / 100) * cantidad;
-    
+
     // Calcula el Subtotal incluyendo el ITBIS
     const Subtotal = (precioVenta * cantidad + resultadoitbis).toFixed(2);
-    
+
     return parseFloat(Subtotal); // Convertir de nuevo a número, ya que toFixed devuelve una cadena
-};
+  };
 
   // Cuando cambie la cantidad seleccionada:
   const handleCantidadChange = (value, id) => {
@@ -225,11 +248,9 @@ export default function ModalProducto({
       return newData;
     });
   };
-  
-  
+
   const [messageApi, contextHolder] = message.useMessage();
- 
- 
+
   const ProductoSelect = (item) => {
     const data = item;
 
@@ -416,7 +437,21 @@ export default function ModalProducto({
                     >
                       Producto
                     </p>
-                    <h4>{item.Codigo + ": " + item.Nombre}</h4>
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        alignItems: "center",
+                      }}
+                    >
+                      <CustomAvatar
+                        sizeImage={20}
+                        sizeIcon={20}
+                        Data={item.Data}
+                        ContentType={item.ContentType}
+                      />
+                      <h4>{item.Codigo + ": " + item.Nombre}</h4>
+                    </div>
                   </div>
                   <div
                     style={{

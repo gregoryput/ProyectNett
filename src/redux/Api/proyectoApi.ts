@@ -1,6 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/dist/query/react";
 import {
   IDocumentoDTO,
+  IProductoInv,
   IResponseApi,
   PersonaInfoPersonalDTO,
 } from "../../interfaces";
@@ -42,7 +43,10 @@ export const proyectoApi = createApi({
       query: () => "/Proyecto/obtenerEmpleado",
       providesTags: ["Proyecto"],
     }),
-    getProductosUnidadesDetalles: builder.query({
+    getProductosUnidadesDetalles: builder.query<
+      IResponseApi<IProductoInv>,
+      void
+    >({
       query: () => "/Proyecto/getProductosUnidadesDetalles",
       providesTags: ["Proyecto"],
     }),

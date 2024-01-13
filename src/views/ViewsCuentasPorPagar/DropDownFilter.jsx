@@ -9,8 +9,8 @@ export default function DropDownFilter({
   setFiltersDataSource,
 }) {
   DropDownFilter.propTypes = {
-    setFiltersDataSource: PropTypes.func.isRequired,
-    filtersDataSource: PropTypes.array.isRequired,
+    setFiltersDataSource: PropTypes.func,
+    filtersDataSource: PropTypes.array,
   };
 
   const items = filtersDataSource.map((filter) => {

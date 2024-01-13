@@ -18,6 +18,15 @@ export interface IClienteDTO {
   Data: string;
 }
 
+export interface IEntidadProveedorDTO {
+  IdEntidad: number;
+  NombreEntidad: string;
+  FileName?: string | null;
+  ContentType?: string | null;
+  FileSize?: number | null;
+  Data?: Uint8Array | null;
+}
+
 export interface EmpresaInfoDTO {
   IdEmpresa: number;
   NombreEmpresa: string;
@@ -415,6 +424,45 @@ export interface IProductoImagen {
   IdPrductoImagen: number;
   IdImagen: number;
   IdProducto: number;
+  IdCreadoPor?: number | null;
+  FechaCreacion?: Date | null;
+  IdModificadoPor?: number | null;
+  FechaModificacion?: Date | null;
+  IdEstadoRegistro?: number | null;
+}
+
+
+
+// orden-compra.interface.ts
+export interface IOrdenCompra {
+  IdOrdenCompra: number;
+  IdEntidadProveedor: number;
+  MontoTotal: number;
+  MontoInicial?: number; // Puede ser opcional, según el modelo de datos en SQL Server
+  Secuencia: string;
+  FechaEmision: Date;
+  FechaEntrega: Date;
+  IdCiudadEntrega: number;
+  DireccionEntrega: string;
+  IdEstadoDocumento: number;
+  IdCreadoPor?: number | null;
+  FechaCreacion?: Date | null;
+  IdModificadoPor?: number | null;
+  FechaModificacion?: Date | null;
+  IdEstadoRegistro?: number | null;
+  OrdenCompraDetalles?: IOrdenCompraDetalle[] | null;
+}
+
+// orden-compra-detalle.interface.ts
+export interface IOrdenCompraDetalle {
+  IdDetalleOrdenCompra: number;
+  IdProducto: number;
+  IdUnidadDeMedida: number;
+  IdOrdenCompra: number;
+  Cantidad: number;
+  Precio: number;
+  ITBIS: number;
+  Subtotal: number;
   IdCreadoPor?: number | null;
   FechaCreacion?: Date | null;
   IdModificadoPor?: number | null;

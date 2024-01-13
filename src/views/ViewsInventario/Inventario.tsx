@@ -6,7 +6,18 @@ import {
   ViewContainerPages,
 } from "../../components";
 import { BiCartAdd } from "react-icons/bi";
-import { FaFileInvoiceDollar } from "react-icons/fa";
+import {
+  MdAddBox,
+  MdAddCircle,
+  MdCheckCircle,
+  MdClear,
+  MdClose,
+  MdOutlineAddShoppingCart,
+  MdOutlineAddToPhotos,
+  MdTrolley,
+} from "react-icons/md";
+
+import { MdInventory } from "react-icons/md";
 
 import { DrawerForm } from "./DrawerForm";
 import { useGetUnistOfMeasurementsQuery } from "../../redux/Api/unitsOfMeasurementsApi";
@@ -17,11 +28,20 @@ import {
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import React from "react";
-import { IProductInv, IProductoInv } from "../../interfaces";
+import {
+  IProductInv,
+  IProductoExistencia,
+  IProductoInv,
+} from "../../interfaces";
 import Table, { ColumnsType } from "antd/es/table";
-import { MdDeleteOutline, MdDocumentScanner, MdImage } from "react-icons/md";
+import { MdDeleteOutline, MdDocumentScanner } from "react-icons/md";
 import { MdEditSquare } from "react-icons/md";
-import { MdRemoveRedEye } from "react-icons/md";
+import {
+  DivContainerTitle,
+  DivHeaderInput,
+  SpanTitleHeader,
+} from "./FormularioOrdenesCompras/formulario-ordenes-compras.styled";
+import CustomAvatar from "../../components/CustomAvatar";
 
 export default function Inventario() {
   const navigate = useNavigate();
@@ -60,7 +80,7 @@ export default function Inventario() {
 
   React.useEffect(() => {
     if (isProductsError) {
-      message.success("Error al solicitar la lista de productos");
+      message.error("Error al solicitar la lista de productos");
     }
   }, [isProductsError]);
 
@@ -82,6 +102,7 @@ export default function Inventario() {
       });
       setOpenDrawerForm(false);
       setCleanInputs(true);
+      window.location.reload();
     }
   }, [isCreateSuccess]);
 
@@ -99,6 +120,7 @@ export default function Inventario() {
       title: "Código y nombre del producto",
       dataIndex: "Codigo",
       key: "Codigo",
+      width: "22%",
       render: (_, record) => (
         <div
           style={{
@@ -107,33 +129,17 @@ export default function Inventario() {
             alignItems: "center",
           }}
         >
-          <div
-            style={{
-              background: "#BFBFBF",
-              maxWidth: "30px",
-              maxHeight: "30px",
-              minWidth: "30px",
-              minHeight: "30px",
-              display: "flex",
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "center",
-              borderRadius: "50%",
-              border: "1px solid #6DA7FB",
-            }}
-          >
-            {record.Data !== null ? (
-              <Image
-                src={`data:${record.ContentType};base64,${record.Data}`}
-                alt="Producto"
-              />
-            ) : (
-              <MdImage color="#DDDDDD" size={25} />
-            )}
+          <CustomAvatar
+            sizeImage={36}
+            sizeIcon={25}
+            Data={record.Data}
+            ContentType={record.ContentType}
+          />
+          <div>
+            <strong style={{ color: "#1C3C6D" }}>
+              {record.Codigo} - {record.Nombre}
+            </strong>
           </div>
-          <a
-            style={{ marginLeft: "5px" }}
-          >{`(${record.Codigo}) - ${record.Nombre}`}</a>
         </div>
       ),
     },
@@ -141,50 +147,59 @@ export default function Inventario() {
       title: "Modelo",
       dataIndex: "Modelo",
       key: "Modelo",
+      align: "center",
+      width: "10%",
     },
     {
-      title: "Tiene vencimiento",
+      title: "Vence?",
       dataIndex: "TieneVencimiento",
       align: "center",
-      render: (_, record) => (
-        <span>{record.TieneVencimiento ? "Si" : "No"}</span>
-      ),
+      width: "5%",
+      render: (_, record) =>
+        record.TieneVencimiento ? <MdCheckCircle /> : <MdClear />,
     },
     {
       title: "Estado en inventario",
       dataIndex: "EstadoNombreProducto",
-      key: "EstadoNombreProducto",
-      render: (_, record) => <Tag>{record.EstadoNombreProducto}</Tag>,
+      key: "EstadoNombreProd9ucto",
+      width: "15%",
+      align: "center",
+      render: (_, record) => (
+        <Tag
+          color={
+            record.IdEstado == 1
+              ? "#FFB645"
+              : record.IdEstado == 2
+              ? "#71B0B9"
+              : "#EA6C58"
+          }
+          style={{ minWidth: "90px", textAlign: "center" }}
+        >
+          {record.EstadoNombreProducto}
+        </Tag>
+      ),
     },
     {
       title: "Unidades",
       dataIndex: "ProductoExistencias",
       key: "ProductoExistencias",
-      render: (_, record) => (
-        <center>
-          {" "}
-          <a
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              alignItems: "center",
-            }}
-          >
-            <MdRemoveRedEye />
-            <span>{record.ProductoExistencias.length}</span>
-          </a>
-        </center>
-      ),
+      width: "7%",
+      align: "center",
+      render: (_, record) => <span>{record.ProductoExistencias.length}</span>,
     },
     {
       title: "Estado registro",
       dataIndex: "NombreEstado",
       key: "NombreEstado",
-      render: (_, record) => <Tag>{record.NombreEstado}</Tag>,
+      width: "15%",
+      align: "center",
+      render: (_, record) => <Tag color="#68D492">{record.NombreEstado}</Tag>,
     },
     {
       title: "Action",
       key: "action",
+      width: "15%",
+      align: "center",
       render: (_, record: IProductoInv, index) => (
         <DropdownActionsLists
           key={index}
@@ -220,26 +235,56 @@ export default function Inventario() {
         {/* <h2 style={{ marginLeft: 15, marginBottom: 40 }} id="titleTop">
           Gestión de inventario
         </h2> */}
-        <div style={{ marginLeft: "20px" }}>
-          <Button
-            style={{ marginRight: "10px" }}
-            onClick={() => {
-              setCleanInputs(true),
-                setOpenDrawerForm(true),
-                setSelectedItem(undefined);
+
+        <DivHeaderInput>
+          <DivContainerTitle>
+            <MdInventory size={23} />
+            <SpanTitleHeader>
+              Listado de productos en el inventario
+            </SpanTitleHeader>
+          </DivContainerTitle>
+
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
             }}
           >
-            Registrar nuevo producto
-          </Button>
-          <Button style={{ marginRight: "10px" }}>Crear orden de compra</Button>
-          <Button
-            style={{ marginRight: "10px" }}
-            onClick={() => navigate("/cuenta-por-cobrar/form-facturacion")}
-          >
-            <FaFileInvoiceDollar color="#1C3C6D" size={20} />
-            <span style={{ marginLeft: "5px" }}>Crear Factura de entrada</span>
-          </Button>
-        </div>
+            <Button
+              style={{
+                marginRight: "10px",
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+              onClick={() => {
+                setCleanInputs(true),
+                  setOpenDrawerForm(true),
+                  setSelectedItem(undefined);
+              }}
+            >
+              <MdAddBox size={20} color="#1C3C6D" />
+              <span style={{ marginLeft: "5px" }}>
+                Registrar nuevo producto
+              </span>
+            </Button>
+            <Button
+              style={{
+                marginRight: "10px",
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+              onClick={() => navigate("/inventario/form-OrdenCompra")}
+            >
+              <MdOutlineAddShoppingCart size={20} color="#1C3C6D" />
+              <span style={{ marginLeft: "5px" }}>Crear orden de compra</span>
+            </Button>
+          </div>
+        </DivHeaderInput>
 
         <Container
           style={{
@@ -259,6 +304,73 @@ export default function Inventario() {
             }}
             dataSource={productsData?.Result}
             columns={columns}
+            expandable={{
+              expandedRowRender: (record) => (
+                <div
+                  style={{
+                    display: "Flex",
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <div style={{ width: "100px" }}></div>
+                  <Table
+                    style={{ width: "90%" }}
+                    dataSource={record.ProductoExistencias}
+                    size="small"
+                  >
+                    <Table.Column
+                      title="Unidad"
+                      dataIndex="UnidadNombre"
+                      key="UnidadNombre"
+                      width={"9%"}
+                      align="center"
+                    />
+                    <Table.Column
+                      title="Precio costo"
+                      dataIndex="PrecioCosto"
+                      key="PrecioCosto"
+                      width={"9%"}
+                      align="center"
+                    />
+                    <Table.Column
+                      title="Precio venta"
+                      dataIndex="PrecioVenta"
+                      key="PrecioVenta"
+                      width={"9%"}
+                      align="center"
+                    />
+                    <Table.Column
+                      title="ITBIS"
+                      dataIndex="ITBIS"
+                      key="ITBIS"
+                      width={"9%"}
+                      align="center"
+                    />
+                    <Table.Column
+                      title="Estado"
+                      key="Estado"
+                      width={"9%"}
+                      align="center"
+                      render={(_, record: IProductoExistencia) => (
+                        <Tag>
+                          {record.CantidadExistente == 0
+                            ? "No disponible"
+                            : "Disponible"}
+                        </Tag>
+                      )}
+                    />
+                    <Table.Column
+                      title="Existente"
+                      dataIndex="CantidadExistente"
+                      key="CantidadExistente"
+                      width={"9%"}
+                      align="center"
+                    />
+                  </Table>
+                </div>
+              ),
+            }}
           />
         </Container>
 
